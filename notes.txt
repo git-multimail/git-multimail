@@ -127,3 +127,75 @@ To do
                          \
                           *---*  <-- branch
 
+
+
+git-multimail-v2:
+
+* Configuration variables:
+
+  * Rename config variables to emailhook.* rather than hooks.*.
+
+  * Add an option to read the old configuration settings and migrate
+    them to the new settings, doing consistency checks along the way.
+    Optionally also delete the old settings.
+
+  * Explain procedure in README file.
+
+* Allow old-style announcement emails to be sent.
+
+  * Send old-style (long) announcements to hooks.announcelist.
+
+  * Send new-style refchange emails (as now) to hooks.refchangelist.
+
+  * What to do for people who are subscribed to both lists?  Do we
+    need a separate option for people who want refchange emails
+    *except* for annotated tag change emails?  Perhaps just add a way
+    to disable short annotated tag change emails entirely?
+
+  * Perhaps support hooks.showrev in this context?
+
+* Make it easier to skip sending refchange emails.
+
+* Better document the variables that can be used in the templates.
+
+* Better configurability:
+
+  * Rename script to make it importable.
+
+  * Make it easier to get the script functionality via an import and a
+    function call.
+
+  * Better support and document how to change template contents and
+    make other configuration changes without editing the script.
+
+* Make sure that email texts (i.e., in templates) are appropriate even
+  for people who are subscribed to only some of the lists.
+
+* Patch formatting:
+
+  * Make sure that the script does not barf on binary files that are
+    improperly marked.
+
+  * Make sure that script does not emit enormous emails for
+    apparently-text files that have extremely long lines.
+
+  * Perhaps add a hook to allow patches to be cleaned up somehow
+    before being sent.
+
+* Write a README file:
+
+  * Move main documentation to README file.
+
+  * Explain how to migrate from the old script to the new one.
+
+  * Document how to run the script both ways (as script or as Python
+    import).
+
+  * Document how to modify templates.
+
+  * Document variables available in templates.
+
+  * Document how to define a new Environment.
+
+* Add an LDAP environment (?)
+
