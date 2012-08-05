@@ -221,6 +221,20 @@ def read_config(name, default=''):
         return default
 
 
+def read_recipients(name, default=None):
+    """Read a recipients list from the configuration.
+
+    Return the result as a comma-separated list of email addresses, or
+    default if the option is unset.  If the setting has multiple
+    values, concatenate them with comma separators."""
+
+    try:
+        lines = read_lines(['git', 'config', '--get-all', name])
+    except CommandError:
+        return default
+    return ', '.join(line.strip() for line in lines)
+
+
 def read_log_oneline(*log_args):
     """Generate a one-line summary for each revision in revspec."""
 
@@ -1053,10 +1067,10 @@ class Environment(object):
         RFC 2822 email addresses separated by commas, or the empty
         string if no recipients are configured."""
 
-        retval = self.recipients or read_config('hooks.%s' % (name,), None)
+        retval = self.recipients or read_recipients('hooks.%s' % (name,))
         if retval is None:
             # Fall back to 'hooks.mailinglist':
-            retval = read_config('hooks.mailinglist')
+            retval = read_recipients('hooks.mailinglist', '')
         return retval
 
     def get_refchange_recipients(self):

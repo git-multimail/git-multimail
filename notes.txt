@@ -68,8 +68,6 @@ git-multimail-v2
 * Test that setting email recipient lists to the empty string really
   disables the sending of those emails.
 
-* Allow email recipient lists to be set on multiple lines.
-
 * Make it easier to skip sending refchange emails.
 
 * Better document the variables that can be used in the templates.
