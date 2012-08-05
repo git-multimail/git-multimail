@@ -11,7 +11,8 @@ contrib/hooks/post-receive-mail, but has many differences:
   format-patch" style used on the git mailing list) makes it much
   easier to scan through the emails, jump to patches that need further
   attention, and write comments about specific emails.  Commits are
-  handled in chronological order.  For example,
+  handled in reverse topological order (i.e., parents shown before
+  children).  For example,
 
   [repo] branch master updated
   + [repo] 01/08: doc: fix xref link from api docs to manual pages

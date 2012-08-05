@@ -708,7 +708,8 @@ class ReferenceChange(Change):
             # revisions in the summary even though we will not send
             # new notification emails for them.
             adds = list(read_log_oneline(
-                    '--reverse', '%s..%s' % (self.old.commit, self.new.commit,)
+                    '--topo-order', '--reverse', '%s..%s'
+                    % (self.old.commit, self.new.commit,)
                     ))
 
             # List of the revisions that were removed from the branch
