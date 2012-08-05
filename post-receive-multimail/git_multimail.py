@@ -1417,5 +1417,6 @@ def main(args):
     push.send_emails(mailer, maxlines=maxlines)
 
 
-main(sys.argv[1:])
+if __name__ == '__main__':
+    main(sys.argv[1:])
 
