@@ -7,144 +7,26 @@
 
 """Generate notification emails for pushes to a git repository.
 
-This hook sends emails describing changes introduced by a push to a
+This hook sends emails describing changes introduced by pushes to a
 git repository.  For each reference that was changed, it emits one
 ReferenceChange email summarizing how the reference was changed,
 followed by one Revision email for each new commit that was introduced
-by the reference change.  The Revision emails are marked In-Reply-To
-the ReferenceChange email to give email clients a hint to show them in
-a thread.
+by the reference change.
 
-The goal is to announce each commit in exactly one email.  If the same
+Each commit is announced in exactly one Revision email.  If the same
 commit is merged into another branch in the same or a later push, then
 the ReferenceChange email will list the commit's SHA1 and its one-line
 summary, but no new Revision email will be generated.
 
 This script is designed to be used as a "post-receive" hook in a git
-repository (see githooks(5)).  As such, it expects the changes
-introduced by the push to be described by information passed to its
-standard input.  This script should be linked or copied to
-$GIT_DIR/hooks/post-receive within the repository for which email
-notifications are desired.  Usually it should be installed on the
-central repository for a project.
-
-For use on pre-v1.5.1 git servers, this script can also work as an
-"update" hook, taking its arguments on the command line.
-Unfortunately, because of the way information is passed to update
-hooks, the script's method of determining whether a commit has already
-been seen does not work in all cases.  In particular, no notification
-email will be generated for a new commit that is added to multiple
-references in the same push.
+repository (see githooks(5)).  It can also be used as an "update"
+script, but this usage is not completely reliable and is deprecated.
 
 To help with debugging, this script accepts a --stdout option, which
 causes the emails to be written to standard output rather than sent
 using sendmail.
 
-
-Config
-------
-
-hooks.environment
-
-    This describes the general environment of the repository.
-    Currently supported values:
-
-    "generic" -- the username of the pusher is read from $USER and the
-        repository name is derived from the repository's path.
-
-    "gitolite" -- the username of the pusher is read from $GL_USER and
-        the repository name from $GL_REPO.
-
-    It is possible to define a new environment by implementing a class
-    that inherits from Environment, then adding it to
-    KNOWN_ENVIRONMENTS.
-
-    The environment value can be overridden on the command line using
-    the --environment option.  If it is not specified on the command
-    line or by hooks.environment, then it defaults to "gitolite" if
-    the environment contains variables $GL_USER and $GL_REPO;
-    otherwise "generic".
-
-hooks.reponame
-
-    A short name of this git repository, to be used in various places
-    in the notification email text.  Default is to derive this value
-    from the repository path, or to use $GL_REPO for gitolite
-    repositories.
-
-hooks.mailinglist
-
-    The list of email addresses to which notification emails should be
-    sent, as RFC 2822 email addresses separated by commas.  Set it to
-    the empty string to not send emails by default.  The next few
-    settings can be used to configure specific address lists for
-    specific types of notification email.
-
-hooks.refchangelist
-
-    The list of email addresses to which summary emails about
-    reference changes should be sent, as RFC 2822 email addresses
-    separated by commas.  Defaults to the value in hooks.mailinglist.
-
-hooks.commitlist
-
-    The list of email addresses to which emails about individual
-    revisions should be sent, as RFC 2822 email addresses separated by
-    commas.  Defaults to the value in hooks.mailinglist.
-
-hooks.announcelist
-
-    The list of email addresses to which emails about new annotated
-    tags should be sent, as RFC 2822 email addresses separated by
-    commas.  Defaults to the value in hooks.mailinglist.
-
-hooks.envelopesender
-
-    If set then pass this value to sendmail via the -f option to set
-    the envelope sender address.
-
-hooks.administrator
-
-    The name and/or email address of the administrator of the git
-    repository; used in FOOTER_TEMPLATE.  Default is
-    hooks.envelopesender.
-
-hooks.emailprefix
-
-    All emails have this string prepended to their subjects, to aid
-    filtering.  Default is the short name of the repository in square
-    brackets; e.g., "[myrepo]".
-
-hooks.emailmaxlines
-
-    The maximum number of lines that should be included in the
-    generated email body. If not specified, there is no limit.  Lines
-    beyond the limit are suppressed and counted, and a final line is
-    added indicating the number of suppressed lines.
-
-hooks.diffopts
-
-    Alternate options for the git diff-tree invocation that summarizes
-    changes in ReferenceChange emails.  Default is "--stat --summary
-    --find-copies-harder". Add -p to those options to include a
-    unified diff of changes in addition to the usual summary output.
-
-hooks.emaildomain
-
-    Domain name appended to the username of the person doing the push
-    to convert it into an email address (via "%s@%s" % (username,
-    emaildomain)).  More complicated schemes can be implemented by
-    overriding Environment.username_to_email().
-
-
-Notes
------
-
-All emails include extra headers to enable fine tuned filtering and
-give information for debugging.  All emails include the headers
-"X-Git-Repo", "X-Git-Refname", and "X-Git-Reftype".  ReferenceChange
-emails also include headers "X-Git-Oldrev" and "X-Git-Newrev";
-Revision emails also include header "X-Git-Rev".
+See the accompanying README file for the complete documentation.
 
 """
 

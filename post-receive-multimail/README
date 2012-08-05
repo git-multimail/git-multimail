@@ -1,3 +1,6 @@
+			   git_multimail.py
+			   ================
+
 git_multimail.py is a Python script/module that sends notification
 emails for pushes to a git repository.
 
@@ -6,6 +9,7 @@ contrib/hooks/post-receive-mail, and is mostly compatible with that
 script.  See README.migrate-from-post-receive-mail for details about
 the differences and for how to migrate from post-receive-email to
 git_multimail.py.
+
 
 For each push received by the repository, git_multimail.py:
 
@@ -47,28 +51,171 @@ the person who pushed the change, and commit emails have their
 "Reply-To" field set to the author of the commit.
 
 
-Configuration:
+Invocation
+----------
 
-* (Mostly) use template expansion to generate email contents.
+git_multimail.py is designed to be used as a "post-receive" hook in a
+git repository (see githooks(5)).  It should be linked or copied to
+$GIT_DIR/hooks/post-receive within the repository for which email
+notifications are desired.  Usually it should be installed on the
+central repository for a project, to which all commits are eventually
+pushed.
 
-* Add an "Environment" abstraction that describes the environment in
-  which the script is running.  Users can override this class to
-  customize the script to their own environment, for example by
-  reading users' email addresses from LDAP.
-
-* Add a "GitoliteEnvironment" to support the use of the script with
-  Gitolite-managed repositories.  For Gitolite repositories, the name
-  of the repository and the name of the user doing the push have to be
-  determined from the $GL_REPO and $GL_USER variables, respectively.
-  By default, git_multimail.py checks for the presence of those two
-  environment variables.  If they are set, it assumes a "gitolite"
-  environment; otherwise it assumes a "generic" environment.
-  Alternatively, the environment can be set explicitly by setting a
-  "hooks.environment" config setting (which can have the value
-  "generic" or "gitolite") or by passing an --environment option to
-  the script.
-
-* Add a "hooks.administrator" email address to which unsubscribe
-  requests can be directed.
+For use on pre-v1.5.1 git servers, git_multimail.py can also work as
+an "update" hook, taking its arguments on the command line.  To use
+this script in this manner, link or copy it to $GIT_DIR/hooks/update.
+Please note that the script is not completely reliable in this mode
+[1].
 
 
+Configuration
+-------------
+
+git_multimail.py mostly takes its configuration from the following
+"git config" settings:
+
+hooks.environment
+
+    This describes the general environment of the repository.
+    Currently supported values:
+
+    "generic" -- the username of the pusher is read from $USER and the
+        repository name is derived from the repository's path.
+
+    "gitolite" -- the username of the pusher is read from $GL_USER and
+        the repository name from $GL_REPO.
+
+    It is possible to define a new environment by implementing a class
+    that inherits from Environment, then adding it to
+    KNOWN_ENVIRONMENTS.
+
+    The environment value can be overridden on the command line using
+    the --environment option.  If it is not specified on the command
+    line or by hooks.environment, then it defaults to "gitolite" if
+    the environment contains variables $GL_USER and $GL_REPO;
+    otherwise "generic".
+
+hooks.reponame
+
+    A short name of this git repository, to be used in various places
+    in the notification email text.  Default is to derive this value
+    from the repository path, or to use $GL_REPO for gitolite
+    repositories.
+
+hooks.mailinglist
+
+    The list of email addresses to which notification emails should be
+    sent, as RFC 2822 email addresses separated by commas.  Set it to
+    the empty string to not send emails by default.  The next few
+    settings can be used to configure specific address lists for
+    specific types of notification email.
+
+hooks.refchangelist
+
+    The list of email addresses to which summary emails about
+    reference changes should be sent, as RFC 2822 email addresses
+    separated by commas.  Defaults to the value in hooks.mailinglist.
+
+hooks.commitlist
+
+    The list of email addresses to which emails about individual
+    revisions should be sent, as RFC 2822 email addresses separated by
+    commas.  Defaults to the value in hooks.mailinglist.
+
+hooks.announcelist
+
+    The list of email addresses to which emails about new annotated
+    tags should be sent, as RFC 2822 email addresses separated by
+    commas.  Defaults to the value in hooks.mailinglist.
+
+hooks.envelopesender
+
+    If set then pass this value to sendmail via the -f option to set
+    the envelope sender address.
+
+hooks.administrator
+
+    The name and/or email address of the administrator of the git
+    repository; used in FOOTER_TEMPLATE.  Default is
+    hooks.envelopesender.
+
+hooks.emailprefix
+
+    All emails have this string prepended to their subjects, to aid
+    filtering.  Default is the short name of the repository in square
+    brackets; e.g., "[myrepo]".
+
+hooks.emailmaxlines
+
+    The maximum number of lines that should be included in the
+    generated email body. If not specified, there is no limit.  Lines
+    beyond the limit are suppressed and counted, and a final line is
+    added indicating the number of suppressed lines.
+
+hooks.diffopts
+
+    Alternate options for the git diff-tree invocation that summarizes
+    changes in ReferenceChange emails.  Default is "--stat --summary
+    --find-copies-harder". Add -p to those options to include a
+    unified diff of changes in addition to the usual summary output.
+
+hooks.emaildomain
+
+    Domain name appended to the username of the person doing the push
+    to convert it into an email address (via "%s@%s" % (username,
+    emaildomain)).  More complicated schemes can be implemented by
+    overriding Environment.username_to_email().
+
+
+Email filtering
+---------------
+
+All emails include extra headers to enable fine tuned filtering and
+give information for debugging.  All emails include the headers
+"X-Git-Repo", "X-Git-Refname", and "X-Git-Reftype".  ReferenceChange
+emails also include headers "X-Git-Oldrev" and "X-Git-Newrev";
+Revision emails also include header "X-Git-Rev".
+
+
+Customizing email contents
+--------------------------
+
+git_multimail.py mostly generates emails by expanding templates.  The
+templates can be customized.
+
+
+Customizing git_multimail.py for your environment
+-------------------------------------------------
+
+git_multimail.py has a concept called an "Environment" that describes
+the local environment in which git is running.  It has built-in
+support for two kinds of environments:
+
+* GenericEnvironment: a stand-alone git repository.
+
+* GitoliteEnvironment: a git repository that is managed by gitolite
+  [2].  For such repositories, the identity of the pusher is read from
+  environment variable $GL_USER, and the name of the repository is
+  read from $GL_REPO (if it is not overridden by hooks.reponame).
+
+By default, git_multimail.py assumes GitoliteEnvironment if $GL_USER
+and $GL_REPO are set, and otherwise assumes GenericEnvironment.
+Alternatively, the environment can be set explicitly by setting a
+"hooks.environment" config setting (which can have the value "generic"
+or "gitolite") or by passing an --environment option to the script.
+
+Users can override the Environment class to customize the script to
+idiosyncrasies their own environment, for example by using LDAP to map
+usernames to email addresses.
+
+
+Footnotes
+---------
+
+[1] Because of the way information is passed to update hooks, the
+    script's method of determining whether a commit has already been
+    seen does not work when it is used as an "update" script.  In
+    particular, no notification email will be generated for a new
+    commit that is added to multiple references in the same push.
+
+[2] https://github.com/sitaramc/gitolite
