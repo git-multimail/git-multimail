@@ -1405,8 +1405,6 @@ def main(args):
     else:
         mailer = SendMailer(environment)
 
-    maxlines = environment.get_maxlines()
-
     # Allow dual mode: run from the command line just like the update hook, or
     # if no arguments are given then run as a hook script
     if args:
@@ -1428,7 +1426,7 @@ def main(args):
             ]
 
     push = Push(environment, changes)
-    push.send_emails(mailer, maxlines=maxlines)
+    push.send_emails(mailer, maxlines=environment.get_maxlines())
 
 
 if __name__ == '__main__':
