@@ -106,3 +106,22 @@ Ideas for the future
   using Python's smtplib rather than by using /usr/sbin/sendmail.
 
 
+Recipients list policy
+======================
+
+1. mailinglist, if it is set, is the default for all types of email.
+   If it is not set, then the default for all types of email is not to
+   generate them at all.
+
+2. commitlist (or mailinglist) always gets emails about every new
+   commit.
+
+3. announcelist (or refchangelist or mailinglist) gets emails about
+   changes to annotated tags.  If announcedelta is true (default is
+   false), then emails about annotated tags include a list of changes
+   since the last tag.  Default is false.
+
+4. refchangelist (or mailinglist) gets emails about changes to all
+   other kinds of references.
+
+
