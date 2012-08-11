@@ -265,7 +265,11 @@ def limit_lines(lines, max_lines):
 
 
 class CommitSet(object):
-    """A set of object names that can be inquired by abbreviated name."""
+    """A (constant) set of object names.
+
+    The set should be initialized with full SHA1 object names.  The
+    __contains__() method returns True iff its argument is an
+    abbreviation of any the names in the set."""
 
     def __init__(self, names):
         self._names = sorted(names)
