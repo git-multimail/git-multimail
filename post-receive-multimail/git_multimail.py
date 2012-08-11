@@ -1396,10 +1396,6 @@ def main(args):
         )
 
     parser.add_option(
-        '--stdout', action='store_true', default=False,
-        help='Output emails to stdout.',
-        )
-    parser.add_option(
         '--environment', '--env', action='store', type='choice',
         choices=['generic', 'gitolite'], default=None,
         help=(
@@ -1408,8 +1404,12 @@ def main(args):
             ),
         )
     parser.add_option(
+        '--stdout', action='store_true', default=False,
+        help='Output emails to stdout rather than sending them.',
+        )
+    parser.add_option(
         '--recipients', action='store', default=None,
-        help='Set list of email recipients.',
+        help='Set list of email recipients for all types of emails.',
         )
 
     (options, args) = parser.parse_args(args)
