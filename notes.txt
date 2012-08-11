@@ -6,39 +6,6 @@ Notes
   copyright notice, since the script is mostly rewritten.
 
 
-To do
-=====
-
-* More testing.
-
-* Each commit is threaded with one of the ReferenceChanges in the push
-  that first introduced the commit.  The algorithm for grouping them
-  could be made cleverer:
-
-  * Distinguish between first and subsequent parents of merge commits.
-
-  * Recognize specific git idioms (e.g., merging and deleting a
-    feature branch) and describe them in more abstract terms in the
-    commit emails.
-
-* When a reference is created, show the branch(es) from which it
-  appears to sprout.
-
-* Use textwrap to correctly wrap prose output in the notification emails.
-
-* Perhaps handle specially the case when multiple new tags point at
-  the same commit (e.g., describe them all in a single email rather
-  than one email per tag).
-
-* Perhaps add an option to send emails to an arbitrary SMTP server
-  using Python's smtplib rather than by using /usr/sbin/sendmail.
-
-* Perhaps add an example plugin for working with LDAP.
-
-* Perhaps make the templating system more flexible and easier to
-  configure.
-
-
 git-multimail-v2
 ================
 
@@ -50,7 +17,7 @@ git-multimail-v2
     them to the new settings, doing consistency checks along the way.
     Optionally also delete the old settings.
 
-  * Explain procedure in README file.
+  * Explain procedure in README.migrate-from-post-receive-mail file.
 
 * Allow old-style announcement emails to be sent.
 
@@ -70,17 +37,13 @@ git-multimail-v2
 
 * Make it easier to skip sending refchange emails.
 
-* Better document the variables that can be used in the templates.
+* Better configurability; add support and documentation for:
 
-* Better configurability:
+  * Changing template contents.
 
-  * Rename script to make it importable.
+    * Document the variables that can be used in the templates.
 
-  * Make it easier to get the script functionality via an import and a
-    function call.
-
-  * Better support and document how to change template contents and
-    make other configuration changes without editing the script.
+  * Making other configuration changes without editing the script.
 
 * Make sure that email texts (i.e., in templates) are appropriate even
   for people who are subscribed to only some of the lists.
@@ -98,21 +61,48 @@ git-multimail-v2
 
 * Write a README file:
 
-  * Move main documentation to README file.
-
-  * Explain how to migrate from the old script to the new one.
-
   * Document how to run the script both ways (as script or as Python
     import).
 
-  * Document how to modify templates.
-
-  * Document variables available in templates.
-
   * Document how to define a new Environment.
-
-* Add an LDAP environment (?)
 
 * Make sure that default values for envelopesender, From, Reply-To,
   etc. are OK.
+
+* Support LDAP, for example:
+
+  * Add an LDAP environment (?)
+
+  * Add an example plugin for working with LDAP (?)
+
+* More testing.
+
+
+Ideas for the future
+====================
+
+* Make the templating system more flexible and easier to configure.
+
+* Use textwrap to correctly wrap prose output in the notification emails.
+
+* Each commit is threaded with one of the ReferenceChanges in the push
+  that first introduced the commit.  The algorithm for grouping them
+  could be made cleverer:
+
+  * Distinguish between first and subsequent parents of merge commits.
+
+  * Recognize specific git idioms (e.g., merging and deleting a
+    feature branch) and describe them in more abstract terms in the
+    commit emails.
+
+* Perhaps handle specially the case when multiple new tags point at
+  the same commit (e.g., describe them all in a single email rather
+  than one email per tag).
+
+* When a reference is created, show the branch(es) from which it
+  appears to sprout.
+
+* Perhaps add an option to send emails to an arbitrary SMTP server
+  using Python's smtplib rather than by using /usr/sbin/sendmail.
+
 
