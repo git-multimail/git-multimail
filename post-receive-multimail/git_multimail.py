@@ -1361,6 +1361,28 @@ class Push(object):
                 )
 
 
+def run_as_post_receive_hook(environment, mailer):
+    changes = [
+        get_change(environment, oldrev, newrev, refname)
+        for (oldrev, newrev, refname) in read_updates(sys.stdin)
+        ]
+    push = Push(environment, changes)
+    push.send_emails(mailer, maxlines=environment.get_maxlines())
+
+
+def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
+    changes = [
+        get_change(
+            environment,
+            read_output(['git', 'rev-parse', '--verify', oldrev]),
+            read_output(['git', 'rev-parse', '--verify', newrev]),
+            refname,
+            ),
+        ]
+    push = Push(environment, changes)
+    push.send_emails(mailer, maxlines=environment.get_maxlines())
+
+
 KNOWN_ENVIRONMENTS = {
     'generic' : GenericEnvironment,
     'gitolite' : GitoliteEnvironment,
@@ -1405,28 +1427,15 @@ def main(args):
     else:
         mailer = SendMailer(environment)
 
-    # Allow dual mode: run from the command line just like the update hook, or
-    # if no arguments are given then run as a hook script
+    # Dual mode: if arguments were specified on the command line, run
+    # like an update hook; otherwise, run as a post-receive hook.
     if args:
         if len(args) != 3:
             parser.error('Need zero or three arguments')
         (refname, oldrev, newrev) = args
-        changes = [
-            get_change(
-                environment,
-                read_output(['git', 'rev-parse', '--verify', oldrev]),
-                read_output(['git', 'rev-parse', '--verify', newrev]),
-                refname,
-                ),
-            ]
+        run_as_update_hook(environment, mailer, refname, oldrev, newrev)
     else:
-        changes = [
-            get_change(environment, oldrev, newrev, refname)
-            for (oldrev, newrev, refname) in read_updates(sys.stdin)
-            ]
-
-    push = Push(environment, changes)
-    push.send_emails(mailer, maxlines=environment.get_maxlines())
+        run_as_post_receive_hook(environment, mailer)
 
 
 if __name__ == '__main__':
