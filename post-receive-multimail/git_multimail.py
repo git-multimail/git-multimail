@@ -305,15 +305,13 @@ class GitObject(object):
             else:
                 self.commit = None
 
+        self.short = read_output(['git', 'rev-parse', '--short=10', sha1])
+
     def __nonzero__(self):
         return bool(self.sha1)
 
     def __str__(self):
         return self.sha1 or ZEROS
-
-    @property
-    def short(self):
-        return str(self)[:10]
 
 
 class Change(object):
