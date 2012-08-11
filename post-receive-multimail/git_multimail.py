@@ -763,6 +763,7 @@ class AnnotatedTagChange(ReferenceChange):
             old=old, new=new, rev=rev,
             )
         self.recipients = environment.get_announce_recipients()
+        self.show_shortlog = True
 
     ANNOTATED_TAG_FORMAT = (
         '%(*objectname)\n'
@@ -781,7 +782,18 @@ class AnnotatedTagChange(ReferenceChange):
             )
 
         yield '   tagging  %s (%s)\n' % (tagobject, tagtype)
-        if tagtype != 'commit':
+        if tagtype == 'commit':
+            # If the tagged object is a commit, then we assume this is a
+            # release, and so we calculate which tag this tag is
+            # replacing
+            try:
+                prevtag = read_output(['git', 'describe', '--abbrev=0', '%s^' % (self.new,)])
+            except CommandError:
+                prevtag = None
+            if prevtag:
+                yield '  replaces  %s\n' % (prevtag,)
+        else:
+            prevtag = None
             yield '    length  %s bytes\n' % (read_output(['git', 'cat-file', '-s', tagobject]),)
 
         yield ' tagged by  %s\n' % (tagger,)
@@ -797,6 +809,26 @@ class AnnotatedTagChange(ReferenceChange):
             contents.append('\n')
         for line in contents:
             yield line
+
+        if self.show_shortlog and tagtype == 'commit':
+            # Only commit tags make sense to have rev-list operations
+            # performed on them
+            yield '\n'
+            if prevtag:
+                # Show changes since the previous release
+                revlist = read_output(
+                    ['git', 'rev-list', '--pretty=short', '%s..%s' % (prevtag, self.new,)],
+                    keepends=True,
+                    )
+            else:
+                # No previous tag, show all the changes since time
+                # began
+                revlist = read_output(
+                    ['git', 'rev-list', '--pretty=short', '%s' % (self.new,)],
+                    keepends=True,
+                    )
+            for line in read_lines(['git', 'shortlog'], input=revlist, keepends=True):
+                yield line
 
         yield LOGEND
         yield '\n'
