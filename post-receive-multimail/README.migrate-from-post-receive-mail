@@ -3,9 +3,12 @@ contrib/hooks/post-receive-mail.  This document describes the
 differences and explains how to configure git_multimail.py to get
 behavior closest to that of post-receive-email.
 
-* Emails about changes to annotated tags do *not* include a summary of
-  all the changes since the last annotated tag.  (post-receive-email
-  sends such emails to subscribers of hooks.announcelist.)
+* In emails about new annotated tags, post-receive-email includes a
+  shortlog of all changes since the previous annotated tag.  To get
+  this behavior with git_multimail.py, you need to set
+  hooks.announceshortlog set to true:
+
+      git config hooks.announceshortlog true
 
 * hooks.commitlist -- This is a new configuration variable.
   Recipients listed here will receive a separate email for each new

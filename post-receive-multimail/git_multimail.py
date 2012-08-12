@@ -771,7 +771,7 @@ class AnnotatedTagChange(ReferenceChange):
             old=old, new=new, rev=rev,
             )
         self.recipients = environment.get_announce_recipients()
-        self.show_shortlog = True
+        self.show_shortlog = environment.announce_show_shortlog
 
     ANNOTATED_TAG_FORMAT = (
         '%(*objectname)\n'
@@ -1065,6 +1065,7 @@ class Environment(object):
         self._refchange_recipients = self._get_recipients('refchangelist')
         self._announce_recipients = self._get_recipients('announcelist')
         self._revision_recipients = self._get_recipients('commitlist')
+        self.announce_show_shortlog = read_config_bool('hooks.announceshortlog', default=False)
 
     def get_repo_shortname(self):
         """Return a short name for the repository, for display purposes."""

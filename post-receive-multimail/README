@@ -126,7 +126,18 @@ hooks.announcelist
 
     The list of email addresses to which emails about new annotated
     tags should be sent, as RFC 2822 email addresses separated by
-    commas.  Defaults to the value in hooks.mailinglist.
+    commas.  Defaults to the value in hooks.refchangelist or
+    hooks.mailinglist.
+
+hooks.announceshortlog
+
+    If this option is set to true, then emails about changes to
+    annotated tags include a shortlog of changes since the previous
+    tag.  This can be useful if the annotated tags represent releases;
+    then the shortlog will be a kind of rough summary of what has
+    happened since the last release.  But if your tagging policy is
+    not so straightforward, then the shortlog might be confusing
+    rather than useful.
 
 hooks.envelopesender
 

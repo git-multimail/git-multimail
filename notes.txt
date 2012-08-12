@@ -19,19 +19,6 @@ git-multimail-v2
 
   * Explain procedure in README.migrate-from-post-receive-mail file.
 
-* Allow old-style announcement emails to be sent.
-
-  * Send old-style (long) announcements to hooks.announcelist.
-
-  * Send new-style refchange emails (as now) to hooks.refchangelist.
-
-  * What to do for people who are subscribed to both lists?  Do we
-    need a separate option for people who want refchange emails
-    *except* for annotated tag change emails?  Perhaps just add a way
-    to disable short annotated tag change emails entirely?
-
-  * Perhaps support hooks.showrev in this context?
-
 * Test that setting email recipient lists to the empty string really
   disables the sending of those emails.
 
@@ -80,6 +67,9 @@ git-multimail-v2
 
 Ideas for the future
 ====================
+
+* Perhaps support hooks.showrev for announcement emails with
+  shortlogs.
 
 * Make the templating system more flexible and easier to configure.
 
