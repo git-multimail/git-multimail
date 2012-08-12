@@ -221,6 +221,14 @@ def read_config(name, default=''):
         return default
 
 
+def read_config_bool(name, default=None):
+    try:
+        value = read_output(['git', 'config', '--get', '--bool', name])
+    except CommandError:
+        return default
+    return value == 'true'
+
+
 def read_recipients(name, default=None):
     """Read a recipients list from the configuration.
 
