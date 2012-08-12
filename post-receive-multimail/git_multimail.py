@@ -1156,7 +1156,7 @@ class Environment(object):
         this length and append a line indicating how many more lines
         were discarded)."""
 
-        maxlines = read_config('hooks.emailmaxlines', None)
+        maxlines = read_config('hooks.emailmaxlines', default=None)
         if maxlines is not None:
             maxlines = int(maxlines)
         return maxlines
@@ -1196,7 +1196,7 @@ class GenericEnvironment(Environment):
         Environment.__init__(self, recipients=recipients)
 
     def get_repo_shortname(self):
-        retval = read_config('hooks.reponame', None)
+        retval = read_config('hooks.reponame', default=None)
         if retval:
             return retval
 
@@ -1224,7 +1224,7 @@ class GitoliteEnvironment(Environment):
         Environment.__init__(self, recipients=recipients)
 
     def get_repo_shortname(self):
-        retval = read_config('hooks.reponame', None)
+        retval = read_config('hooks.reponame', default=None)
         if retval:
             return retval
         else:
