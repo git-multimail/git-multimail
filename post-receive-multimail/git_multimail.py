@@ -216,7 +216,7 @@ def read_lines(cmd, keepends=False, **kw):
 
 def read_config(name, default=''):
     try:
-        return read_output(['git', 'config', name])
+        return read_output(['git', 'config', '--get', name])
     except CommandError:
         return default
 
