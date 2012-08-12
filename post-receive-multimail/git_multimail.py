@@ -218,9 +218,20 @@ class Config(object):
     def __init__(self, section):
         self.section = section
 
+    @staticmethod
+    def _split(s):
+        """Split NUL-terminated values."""
+
+        words = s.split('\0')
+        assert words[-1] == ''
+        return words[:-1]
+
     def get(self, name, default=''):
         try:
-            return read_output(['git', 'config', '--get', '%s.%s' % (self.section, name)])
+            return self._split(read_output(
+                    ['git', 'config', '--get', '--null', '%s.%s' % (self.section, name)],
+                    keepends=True,
+                    ))
         except CommandError:
             return default
 
@@ -241,9 +252,10 @@ class Config(object):
         has multiple values, concatenate them with comma separators."""
 
         try:
-            lines = read_lines(
-                ['git', 'config', '--get-all', '%s.%s' % (self.section, name)]
-                )
+            lines = self._split(read_lines(
+                ['git', 'config', '--get-all', '--null', '%s.%s' % (self.section, name)],
+                keepends=True,
+                ))
         except CommandError:
             return default
         return ', '.join(line.strip() for line in lines)
