@@ -214,33 +214,39 @@ def read_lines(cmd, keepends=False, **kw):
     return read_output(cmd, keepends=True, **kw).splitlines(keepends)
 
 
-def read_config(name, default=''):
-    try:
-        return read_output(['git', 'config', '--get', name])
-    except CommandError:
-        return default
+class Config(object):
+    def __init__(self, section):
+        self.section = section
 
+    def get(self, name, default=''):
+        try:
+            return read_output(['git', 'config', '--get', '%s.%s' % (self.section, name)])
+        except CommandError:
+            return default
 
-def read_config_bool(name, default=None):
-    try:
-        value = read_output(['git', 'config', '--get', '--bool', name])
-    except CommandError:
-        return default
-    return value == 'true'
+    def get_bool(self, name, default=None):
+        try:
+            value = read_output(
+                ['git', 'config', '--get', '--bool', '%s.%s' % (self.section, name)]
+                )
+        except CommandError:
+            return default
+        return value == 'true'
 
+    def get_recipients(self, name, default=None):
+        """Read a recipients list from the configuration.
 
-def read_recipients(name, default=None):
-    """Read a recipients list from the configuration.
+        Return the result as a comma-separated list of email
+        addresses, or default if the option is unset.  If the setting
+        has multiple values, concatenate them with comma separators."""
 
-    Return the result as a comma-separated list of email addresses, or
-    default if the option is unset.  If the setting has multiple
-    values, concatenate them with comma separators."""
-
-    try:
-        lines = read_lines(['git', 'config', '--get-all', name])
-    except CommandError:
-        return default
-    return ', '.join(line.strip() for line in lines)
+        try:
+            lines = read_lines(
+                ['git', 'config', '--get-all', '%s.%s' % (self.section, name)]
+                )
+        except CommandError:
+            return default
+        return ', '.join(line.strip() for line in lines)
 
 
 def read_log_oneline(*log_args):
@@ -1056,7 +1062,8 @@ class UnknownUserError(Exception):
 
 
 class Environment(object):
-    def __init__(self, recipients=None):
+    def __init__(self, config, recipients=None):
+        self.config = config
         self.recipients = recipients
         self.emaildomain = None
         # The recipients for various types of notification emails, as
@@ -1065,7 +1072,7 @@ class Environment(object):
         self._refchange_recipients = self._get_recipients('refchangelist')
         self._announce_recipients = self._get_recipients('announcelist')
         self._revision_recipients = self._get_recipients('commitlist')
-        self.announce_show_shortlog = read_config_bool('hooks.announceshortlog', default=False)
+        self.announce_show_shortlog = self.config.get_bool('announceshortlog', default=False)
 
     def get_repo_shortname(self):
         """Return a short name for the repository, for display purposes."""
@@ -1084,7 +1091,7 @@ class Environment(object):
         a string.  Raise UnknownUserError on error."""
 
         if self.emaildomain is None:
-            self.emaildomain = read_config('hooks.emaildomain') or 'localhost'
+            self.emaildomain = self.config.get('emaildomain') or 'localhost'
 
         return '%s@%s' % (username, self.emaildomain)
 
@@ -1110,10 +1117,10 @@ class Environment(object):
         RFC 2822 email addresses separated by commas, or the empty
         string if no recipients are configured."""
 
-        retval = self.recipients or read_recipients('hooks.%s' % (name,))
+        retval = self.recipients or self.config.get_recipients(name)
         if retval is None:
             # Fall back to 'hooks.mailinglist':
-            retval = read_recipients('hooks.mailinglist', '')
+            retval = self.config.get_recipients('mailinglist', '')
         return retval
 
     def get_refchange_recipients(self):
@@ -1137,13 +1144,13 @@ class Environment(object):
     def get_envelopesender(self):
         """Return the 'From' email address."""
 
-        return read_config('hooks.envelopesender', default=None)
+        return self.config.get('envelopesender', default=None)
 
     def get_administrator(self):
         """Return the name and/or email of the repository administrator."""
 
         return (
-            read_config('hooks.administrator')
+            self.config.get('administrator')
             or self.get_envelopesender()
             or 'the administrator of this repository.'
             )
@@ -1151,7 +1158,7 @@ class Environment(object):
     def get_emailprefix(self):
         """Return a string that will be prefixed to every subject."""
 
-        retval = read_config('hooks.emailprefix', default=None)
+        retval = self.config.get('emailprefix', default=None)
         if retval is None:
             retval = '[%s] ' % (self.get_repo_shortname(),)
         elif retval and not retval.endswith(' '):
@@ -1165,7 +1172,7 @@ class Environment(object):
         this length and append a line indicating how many more lines
         were discarded)."""
 
-        maxlines = read_config('hooks.emailmaxlines', default=None)
+        maxlines = self.config.get('emailmaxlines', default=None)
         if maxlines is not None:
             maxlines = int(maxlines)
         return maxlines
@@ -1192,8 +1199,8 @@ class Environment(object):
         summary email.  The return value should be a list of strings
         representing words to be passed to the command."""
 
-        return read_config(
-            'hooks.diffopts',
+        return self.config.get(
+            'diffopts',
             default='--stat --summary --find-copies-harder'
             ).split()
 
@@ -1201,11 +1208,11 @@ class Environment(object):
 class GenericEnvironment(Environment):
     repo_name_re = re.compile(r'^(?P<name>.+?)(?:\.git)?$')
 
-    def __init__(self, recipients=None):
-        Environment.__init__(self, recipients=recipients)
+    def __init__(self, config, recipients=None):
+        Environment.__init__(self, config, recipients=recipients)
 
     def get_repo_shortname(self):
-        retval = read_config('hooks.reponame', default=None)
+        retval = self.config.get('reponame', default=None)
         if retval:
             return retval
 
@@ -1229,11 +1236,11 @@ class GenericEnvironment(Environment):
 
 
 class GitoliteEnvironment(Environment):
-    def __init__(self, recipients=None):
-        Environment.__init__(self, recipients=recipients)
+    def __init__(self, config, recipients=None):
+        Environment.__init__(self, config, recipients=recipients)
 
     def get_repo_shortname(self):
-        retval = read_config('hooks.reponame', default=None)
+        retval = self.config.get('reponame', default=None)
         if retval:
             return retval
         else:
@@ -1457,13 +1464,14 @@ def main(args):
 
     (options, args) = parser.parse_args(args)
 
-    env = options.environment or read_config('hooks.environment', default=None)
+    config = Config('hooks')
+    env = options.environment or config.get('environment', default=None)
     if not env:
         if 'GL_USER' in os.environ and 'GL_REPO' in os.environ:
             env = 'gitolite'
         else:
             env = 'generic'
-    environment = KNOWN_ENVIRONMENTS[env](recipients=options.recipients)
+    environment = KNOWN_ENVIRONMENTS[env](config, recipients=options.recipients)
 
     if options.stdout:
         mailer = OutputMailer(environment, sys.stdout)
