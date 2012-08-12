@@ -9,9 +9,11 @@ Notes
 git-multimail-v2
 ================
 
-* Configuration variables:
+* Are people happy with the convention of using configuration
+  namespace "multimailhook.*", as opposed to something like
+  "hook.multimail.*"?
 
-  * Rename config variables to emailhook.* rather than hooks.*.
+* Configuration variables:
 
   * Add an option to read the old configuration settings and migrate
     them to the new settings, doing consistency checks along the way.
@@ -67,9 +69,6 @@ git-multimail-v2
 
 Ideas for the future
 ====================
-
-* Perhaps support hooks.showrev for announcement emails with
-  shortlogs.
 
 * Make the templating system more flexible and easier to configure.
 

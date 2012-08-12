@@ -1112,14 +1112,14 @@ class Environment(object):
         """Return the recipients for a particular type of message.
 
         Return the list of email addresses to which a particular type
-        of notification email should be sent by looking at config
-        value 'hooks.$name'.  The return value is a string containing
-        RFC 2822 email addresses separated by commas, or the empty
-        string if no recipients are configured."""
+        of notification email should be sent by looking at the config
+        value for "multimailhook.$name".  The return value is a
+        string containing RFC 2822 email addresses separated by
+        commas, or the empty string if no recipients are configured."""
 
         retval = self.recipients or self.config.get_recipients(name)
         if retval is None:
-            # Fall back to 'hooks.mailinglist':
+            # Fall back to 'multimailhook.mailinglist':
             retval = self.config.get_recipients('mailinglist', '')
         return retval
 
@@ -1450,7 +1450,7 @@ def main(args):
         choices=['generic', 'gitolite'], default=None,
         help=(
             'Choose type of environment is in use.  Default is taken from '
-            'hooks.environment if set; otherwise "generic".'
+            'multimailhook.environment if set; otherwise "generic".'
             ),
         )
     parser.add_option(
@@ -1464,7 +1464,7 @@ def main(args):
 
     (options, args) = parser.parse_args(args)
 
-    config = Config('hooks')
+    config = Config('multimailhook')
     env = options.environment or config.get('environment', default=None)
     if not env:
         if 'GL_USER' in os.environ and 'GL_REPO' in os.environ:

@@ -74,7 +74,7 @@ Configuration
 git_multimail.py mostly takes its configuration from the following
 "git config" settings:
 
-hooks.environment
+multimailhook.environment
 
     This describes the general environment of the repository.
     Currently supported values:
@@ -91,18 +91,18 @@ hooks.environment
 
     The environment value can be overridden on the command line using
     the --environment option.  If it is not specified on the command
-    line or by hooks.environment, then it defaults to "gitolite" if
-    the environment contains variables $GL_USER and $GL_REPO;
-    otherwise "generic".
+    line or by multimailhook.environment, then it defaults to
+    "gitolite" if the environment contains variables $GL_USER and
+    $GL_REPO; otherwise "generic".
 
-hooks.reponame
+multimailhook.reponame
 
     A short name of this git repository, to be used in various places
     in the notification email text.  Default is to derive this value
     from the repository path, or to use $GL_REPO for gitolite
     repositories.
 
-hooks.mailinglist
+multimailhook.mailinglist
 
     The list of email addresses to which notification emails should be
     sent, as RFC 2822 email addresses separated by commas.  Set it to
@@ -110,26 +110,27 @@ hooks.mailinglist
     settings can be used to configure specific address lists for
     specific types of notification email.
 
-hooks.refchangelist
+multimailhook.refchangelist
 
     The list of email addresses to which summary emails about
     reference changes should be sent, as RFC 2822 email addresses
-    separated by commas.  Defaults to the value in hooks.mailinglist.
+    separated by commas.  Defaults to the value in
+    multimailhook.mailinglist.
 
-hooks.commitlist
+multimailhook.commitlist
 
     The list of email addresses to which emails about individual
     revisions should be sent, as RFC 2822 email addresses separated by
-    commas.  Defaults to the value in hooks.mailinglist.
+    commas.  Defaults to the value in multimailhook.mailinglist.
 
-hooks.announcelist
+multimailhook.announcelist
 
     The list of email addresses to which emails about new annotated
     tags should be sent, as RFC 2822 email addresses separated by
-    commas.  Defaults to the value in hooks.refchangelist or
-    hooks.mailinglist.
+    commas.  Defaults to the value in multimailhook.refchangelist or
+    multimailhook.mailinglist.
 
-hooks.announceshortlog
+multimailhook.announceshortlog
 
     If this option is set to true, then emails about changes to
     annotated tags include a shortlog of changes since the previous
@@ -139,38 +140,38 @@ hooks.announceshortlog
     not so straightforward, then the shortlog might be confusing
     rather than useful.
 
-hooks.envelopesender
+multimailhook.envelopesender
 
     If set then pass this value to sendmail via the -f option to set
     the envelope sender address.
 
-hooks.administrator
+multimailhook.administrator
 
     The name and/or email address of the administrator of the git
     repository; used in FOOTER_TEMPLATE.  Default is
-    hooks.envelopesender.
+    multimailhook.envelopesender.
 
-hooks.emailprefix
+multimailhook.emailprefix
 
     All emails have this string prepended to their subjects, to aid
     filtering.  Default is the short name of the repository in square
     brackets; e.g., "[myrepo]".
 
-hooks.emailmaxlines
+multimailhook.emailmaxlines
 
     The maximum number of lines that should be included in the
     generated email body. If not specified, there is no limit.  Lines
     beyond the limit are suppressed and counted, and a final line is
     added indicating the number of suppressed lines.
 
-hooks.diffopts
+multimailhook.diffopts
 
     Alternate options for the git diff-tree invocation that summarizes
     changes in ReferenceChange emails.  Default is "--stat --summary
     --find-copies-harder". Add -p to those options to include a
     unified diff of changes in addition to the usual summary output.
 
-hooks.emaildomain
+multimailhook.emaildomain
 
     Domain name appended to the username of the person doing the push
     to convert it into an email address (via "%s@%s" % (username,
@@ -207,13 +208,15 @@ support for two kinds of environments:
 * GitoliteEnvironment: a git repository that is managed by gitolite
   [2].  For such repositories, the identity of the pusher is read from
   environment variable $GL_USER, and the name of the repository is
-  read from $GL_REPO (if it is not overridden by hooks.reponame).
+  read from $GL_REPO (if it is not overridden by
+  multimailhook.reponame).
 
 By default, git_multimail.py assumes GitoliteEnvironment if $GL_USER
 and $GL_REPO are set, and otherwise assumes GenericEnvironment.
 Alternatively, the environment can be set explicitly by setting a
-"hooks.environment" config setting (which can have the value "generic"
-or "gitolite") or by passing an --environment option to the script.
+"multimailhook.environment" config setting (which can have the value
+"generic" or "gitolite") or by passing an --environment option to the
+script.
 
 Users can override the Environment class to customize the script to
 idiosyncrasies their own environment, for example by using LDAP to map

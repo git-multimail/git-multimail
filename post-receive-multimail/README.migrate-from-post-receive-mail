@@ -3,33 +3,38 @@ contrib/hooks/post-receive-mail.  This document describes the
 differences and explains how to configure git_multimail.py to get
 behavior closest to that of post-receive-email.
 
+* The names of the config options for git_multimail.py are in
+  namespace "multimailhook.*" instead of "hooks.*".
+  (post-receive-email should never have used such a generic top-level
+  namespace.)
+
 * In emails about new annotated tags, post-receive-email includes a
   shortlog of all changes since the previous annotated tag.  To get
   this behavior with git_multimail.py, you need to set
-  hooks.announceshortlog set to true:
+  multimailhook.announceshortlog set to true:
 
-      git config hooks.announceshortlog true
+      git config multimailhook.announceshortlog true
 
-* hooks.commitlist -- This is a new configuration variable.
+* multimailhook.commitlist -- This is a new configuration variable.
   Recipients listed here will receive a separate email for each new
   commit.  However, if this variable is *not* set, it defaults to the
-  value of hooks.mailinglist.  Therefore, if you *don't* want the
-  members of hooks.mailinglist to receive one email per commit, then
-  set this value to the empty string:
+  value of multimailhook.mailinglist.  Therefore, if you *don't* want
+  the members of multimailhook.mailinglist to receive one email per
+  commit, then set this value to the empty string:
 
-      git config hooks.commitlist ''
+      git config multimailhook.commitlist ''
 
-* hooks.emailprefix -- If this value is not set, then emails are
-  prefixed with the short name of the repository enclosed in square
-  brackets; e.g., "[myrepo]".  post-receive-email would set the prefix
-  to "[SCM]" if this option was not set.  So if you were relying on
-  the old default (for example, for email filtering), set this
-  variable explicitly to the old value:
+* multimailhook.emailprefix -- If this value is not set, then emails
+  are prefixed with the short name of the repository enclosed in
+  square brackets; e.g., "[myrepo]".  post-receive-email would set the
+  prefix to "[SCM]" if this option was not set.  So if you were
+  relying on the old default (for example, for email filtering), set
+  this variable explicitly to the old value:
 
-      git config hooks.emailprefix "[SCM]"
+      git config multimailhook.emailprefix "[SCM]"
 
-* The "hooks.showrev" configuration option is not supported.  Its main
-  use is superseded by the one-email-per-commit feature.
+* The "multimailhook.showrev" configuration option is not supported.
+  Its main use is superseded by the one-email-per-commit feature.
 
 
 Differences between post-receive-email and git_multimail.py.  For full
@@ -40,9 +45,9 @@ details, please refer to the main README file:
   one-line summaries of the new commits), then it outputs a separate
   email for each new commit that was introduced, including patches.
   These one-email-per-commit emails go to the addresses listed in
-  hooks.commitlist.  post-receive-mail sends only one email for each
-  *reference* that is changed, no matter how many commits were added
-  to the reference.
+  multimailhook.commitlist.  post-receive-mail sends only one email
+  for each *reference* that is changed, no matter how many commits
+  were added to the reference.
 
 * Better algorithm for detecting new commits.  post-receive-mail
   processes one reference change at a time, which causes it to fail to
