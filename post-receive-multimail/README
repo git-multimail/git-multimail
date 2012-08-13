@@ -117,18 +117,18 @@ multimailhook.refchangelist
     separated by commas.  Defaults to the value in
     multimailhook.mailinglist.
 
-multimailhook.commitlist
-
-    The list of email addresses to which emails about individual
-    revisions should be sent, as RFC 2822 email addresses separated by
-    commas.  Defaults to the value in multimailhook.mailinglist.
-
 multimailhook.announcelist
 
     The list of email addresses to which emails about new annotated
     tags should be sent, as RFC 2822 email addresses separated by
     commas.  Defaults to the value in multimailhook.refchangelist or
     multimailhook.mailinglist.
+
+multimailhook.commitlist
+
+    The list of email addresses to which emails about individual
+    revisions should be sent, as RFC 2822 email addresses separated by
+    commas.  Defaults to the value in multimailhook.mailinglist.
 
 multimailhook.announceshortlog
 
