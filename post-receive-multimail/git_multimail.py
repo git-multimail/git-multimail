@@ -193,6 +193,10 @@ class CommandError(Exception):
             )
 
 
+class ConfigurationException(Exception):
+    pass
+
+
 def read_output(cmd, input=None, keepends=False, **kw):
     if input:
         stdin = subprocess.PIPE
@@ -1124,9 +1128,11 @@ class Environment(object):
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
         # string if no recipients are configured):
-        self._refchange_recipients = self._get_recipients('refchangelist')
-        self._announce_recipients = self._get_recipients('announcelist')
-        self._revision_recipients = self._get_recipients('commitlist')
+        self._refchange_recipients = self._get_recipients('refchangelist', 'mailinglist')
+        self._announce_recipients = self._get_recipients(
+            'announcelist', 'refchangelist', 'mailinglist'
+            )
+        self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
         self.announce_show_shortlog = self.config.get_bool('announceshortlog', default=False)
 
     def get_repo_shortname(self):
@@ -1163,20 +1169,34 @@ class Environment(object):
         # By default, just return the short form:
         return email
 
-    def _get_recipients(self, name):
+    def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
 
         Return the list of email addresses to which a particular type
-        of notification email should be sent by looking at the config
-        value for "multimailhook.$name".  The return value is a
-        string containing RFC 2822 email addresses separated by
-        commas, or the empty string if no recipients are configured."""
+        of notification email should be sent, by looking at the config
+        value for "multimailhook.$name" for each of names.  The return
+        value is a (possibly empty) string containing RFC 2822 email
+        addresses separated by commas from the first name that was
+        configured.  If no configuration could be found, raise a
+        ConfigurationException."""
 
-        retval = self.recipients or self.config.get_recipients(name)
-        if retval is None:
-            # Fall back to 'multimailhook.mailinglist':
-            retval = self.config.get_recipients('mailinglist', '')
-        return retval
+        if self.recipients is not None:
+            return self.recipients
+        for name in names:
+            retval = self.config.get_recipients(name)
+            if retval is not None:
+                return retval
+        if len(names) == 1:
+            hint = 'Please set "%s.%s"' % (self.config.section, name)
+        else:
+            hint = (
+                'Please set one of the following:\n    "%s"'
+                % ('"\n    "'.join('%s.%s' % (self.config.section, name) for name in names))
+                )
+
+        raise ConfigurationException(
+            'The list of recipients for %s is not configured.\n%s' % (name, hint)
+            )
 
     def get_refchange_recipients(self):
         """Return the recipients for refchange messages."""
@@ -1526,22 +1546,26 @@ def main(args):
             env = 'gitolite'
         else:
             env = 'generic'
-    environment = KNOWN_ENVIRONMENTS[env](config, recipients=options.recipients)
 
-    if options.stdout:
-        mailer = OutputMailer(environment, sys.stdout)
-    else:
-        mailer = SendMailer(environment)
+    try:
+        environment = KNOWN_ENVIRONMENTS[env](config, recipients=options.recipients)
 
-    # Dual mode: if arguments were specified on the command line, run
-    # like an update hook; otherwise, run as a post-receive hook.
-    if args:
-        if len(args) != 3:
-            parser.error('Need zero or three arguments')
-        (refname, oldrev, newrev) = args
-        run_as_update_hook(environment, mailer, refname, oldrev, newrev)
-    else:
-        run_as_post_receive_hook(environment, mailer)
+        if options.stdout:
+            mailer = OutputMailer(environment, sys.stdout)
+        else:
+            mailer = SendMailer(environment)
+
+        # Dual mode: if arguments were specified on the command line, run
+        # like an update hook; otherwise, run as a post-receive hook.
+        if args:
+            if len(args) != 3:
+                parser.error('Need zero or three arguments')
+            (refname, oldrev, newrev) = args
+            run_as_update_hook(environment, mailer, refname, oldrev, newrev)
+        else:
+            run_as_post_receive_hook(environment, mailer)
+    except ConfigurationException, e:
+        sys.exit(str(e))
 
 
 if __name__ == '__main__':
