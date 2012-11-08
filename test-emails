@@ -4,7 +4,9 @@ ZEROS=0000000000000000000000000000000000000000
 
 D=$(cd $(dirname "$0") && pwd)
 MULTIMAIL="$D/post-receive-multimail/git_multimail.py"
-TESTREPO=$(cd "$D"/.. && pwd)/email-test.git
+
+"$D/create-test-repo"
+TESTREPO="$D/email-test-repo.git"
 
 cd $TESTREPO
 
@@ -94,4 +96,6 @@ test-delete refs/tags/recursive-tag
 #test-create refs/foo/bar
 #test-update refs/foo/bar refs/heads/master
 #test-delete refs/foo/bar
+
+rm -rf "$TESTREPO"
 

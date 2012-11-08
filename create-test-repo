@@ -1,0 +1,40 @@
+#! /bin/bash
+
+D=$(cd $(dirname "$0") && pwd)
+T="$D/email-test-repo.git"
+DUMPFILE="$D/email-test-repo.dump"
+
+test -d "$T" && rm -rf "$T"
+git init --bare "$T"
+GIT_DIR="$T"
+export GIT_DIR
+
+git fast-import <"$DUMPFILE"
+
+git config user.name 'Joe User'
+git config user.email 'user@example.com'
+
+git config multimailhook.environment 'generic'
+git config multimailhook.reponame 'test-repo'
+
+git config multimailhook.mailinglist 'Mailing List <mailinglist@example.com>'
+git config multimailhook.refchangelist 'Refchange List <refchangelist@example.com>'
+git config multimailhook.announcelist 'Announce List <announcelist@example.com>'
+git config multimailhook.commitlist 'Commit List <commitlist@example.com>'
+
+git config multimailhook.announceshortlog 'true'
+git config multimailhook.envelopesender 'Sender <sender@example.com>'
+git config multimailhook.administrator 'Administrator <administrator@example.com>'
+
+git config multimailhook.emailprefix '*test-repo*'
+git config multimailhook.emaildomain 'example.com'
+
+# Create some bizarre tags that git-fast-export cannot handle:
+git tag recursive-tag refs/tags/tag-annotated \
+    -m 'This annotated tag points at another annotated tag.'
+git tag tree tag: \
+    -m 'This annotated tag points at a tree.'
+git tag tree-tag tree \
+    -m 'This annotated tag points at a tag that points at a tree.'
+
+echo "$T"
