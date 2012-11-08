@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2
 
 # Copyright (c) 2012 Michael Haggerty
 # Derived from contrib/hooks/post-receive-email, which is
