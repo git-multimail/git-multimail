@@ -105,17 +105,18 @@ multimailhook.reponame
 multimailhook.mailinglist
 
     The list of email addresses to which notification emails should be
-    sent, as RFC 2822 email addresses separated by commas.  Set it to
-    the empty string to not send emails by default.  The next few
-    settings can be used to configure specific address lists for
-    specific types of notification email.
+    sent, as RFC 2822 email addresses separated by commas.  This
+    configuration option can be multvalued.  Set it to the empty
+    string to not send emails by default.  The next few settings can
+    be used to configure specific address lists for specific types of
+    notification email.
 
 multimailhook.refchangelist
 
     The list of email addresses to which summary emails about
-    reference changes should be sent, as RFC 2822 email addresses
-    separated by commas.  Defaults to the value in
-    multimailhook.mailinglist.
+    reference changes should be sent, as RFC 2822 email addreesses
+    separated by commas.  This configuration option can be multvalued.
+    Defaults to the value in multimailhook.mailinglist.
 
 multimailhook.announcelist
 
@@ -128,7 +129,8 @@ multimailhook.commitlist
 
     The list of email addresses to which emails about individual
     revisions should be sent, as RFC 2822 email addresses separated by
-    commas.  Defaults to the value in multimailhook.mailinglist.
+    commas.  This configuration option can be multvalued.  Defaults to
+    the value in multimailhook.mailinglist.
 
 multimailhook.announceshortlog
 
