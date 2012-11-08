@@ -37,6 +37,8 @@ import bisect
 import subprocess
 import email.utils
 import optparse
+from email.utils import getaddresses
+from email.utils import formataddr
 
 
 ZEROS = '0' * 40
@@ -183,6 +185,8 @@ REVISION_FOOTER_TEMPLATE = FOOTER_TEMPLATE
 
 class CommandError(Exception):
     def __init__(self, cmd, retcode):
+        self.cmd = cmd
+        self.retcode = retcode
         Exception.__init__(
             self,
             'Command "%s" failed with retcode %s' % (' '.join(cmd), retcode,)
@@ -228,10 +232,12 @@ class Config(object):
 
     def get(self, name, default=''):
         try:
-            return self._split(read_output(
+            values = self._split(read_output(
                     ['git', 'config', '--get', '--null', '%s.%s' % (self.section, name)],
                     keepends=True,
                     ))
+            assert len(values) == 1
+            return values[0]
         except CommandError:
             return default
 
@@ -244,6 +250,23 @@ class Config(object):
             return default
         return value == 'true'
 
+    def get_all(self, name, default=None):
+        """Read a (possibly multivalued) setting from the configuration.
+
+        Return the result as a list of values, or default if the name
+        is unset."""
+
+        try:
+            return self._split(read_output(
+                ['git', 'config', '--get-all', '--null', '%s.%s' % (self.section, name)],
+                keepends=True,
+                ))
+        except CommandError, e:
+            if e.retcode == 1:
+                return default
+            else:
+                raise
+
     def get_recipients(self, name, default=None):
         """Read a recipients list from the configuration.
 
@@ -251,14 +274,34 @@ class Config(object):
         addresses, or default if the option is unset.  If the setting
         has multiple values, concatenate them with comma separators."""
 
-        try:
-            lines = self._split(read_lines(
-                ['git', 'config', '--get-all', '--null', '%s.%s' % (self.section, name)],
-                keepends=True,
-                ))
-        except CommandError:
+        lines = self.get_all(name, default=None)
+        if lines is None:
             return default
         return ', '.join(line.strip() for line in lines)
+
+    def set(self, name, value):
+        read_output(['git', 'config', '%s.%s' % (self.section, name), value])
+
+    def add(self, name, value):
+        read_output(['git', 'config', '--add', '%s.%s' % (self.section, name), value])
+
+    def has_key(self, name):
+        return self.get_all(name, default=None) is not None
+
+    def unset_all(self, name):
+        try:
+            read_output(['git', 'config', '--unset-all', '%s.%s' % (self.section, name)])
+        except CommandError, e:
+            if e.retcode == 5:
+                # The name doesn't exist, which is what we wanted anyway...
+                pass
+            else:
+                raise
+
+    def set_recipients(self, name, value):
+        self.unset_all(name)
+        for pair in getaddresses([value]):
+            self.add(name, formataddr(pair))
 
 
 def read_log_oneline(*log_args):

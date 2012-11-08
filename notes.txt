@@ -13,14 +13,6 @@ git-multimail-v2
   namespace "multimailhook.*", as opposed to something like
   "hook.multimail.*"?
 
-* Configuration variables:
-
-  * Add an option to read the old configuration settings and migrate
-    them to the new settings, doing consistency checks along the way.
-    Optionally also delete the old settings.
-
-  * Explain procedure in README.migrate-from-post-receive-email file.
-
 * Test that setting email recipient lists to the empty string really
   disables the sending of those emails.
 
