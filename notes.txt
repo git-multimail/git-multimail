@@ -19,7 +19,7 @@ git-multimail-v2
     them to the new settings, doing consistency checks along the way.
     Optionally also delete the old settings.
 
-  * Explain procedure in README.migrate-from-post-receive-mail file.
+  * Explain procedure in README.migrate-from-post-receive-email file.
 
 * Test that setting email recipient lists to the empty string really
   disables the sending of those emails.

@@ -1,7 +1,8 @@
-git_multimail.py is mostly a plug-in replacement for the old script
-contrib/hooks/post-receive-mail.  This document describes the
-differences and explains how to configure git_multimail.py to get
-behavior closest to that of post-receive-email.
+post-receive-multimail is close to, but not exactly, a plug-in
+replacement for the old script contrib/hooks/post-receive-email.  This
+document describes the differences and explains how to configure
+post-receive-multimail to get behavior closest to that of
+post-receive-email.
 
 * The names of the config options for git_multimail.py are in
   namespace "multimailhook.*" instead of "hooks.*".
@@ -45,15 +46,15 @@ details, please refer to the main README file:
   one-line summaries of the new commits), then it outputs a separate
   email for each new commit that was introduced, including patches.
   These one-email-per-commit emails go to the addresses listed in
-  multimailhook.commitlist.  post-receive-mail sends only one email
+  multimailhook.commitlist.  post-receive-email sends only one email
   for each *reference* that is changed, no matter how many commits
   were added to the reference.
 
-* Better algorithm for detecting new commits.  post-receive-mail
+* Better algorithm for detecting new commits.  post-receive-email
   processes one reference change at a time, which causes it to fail to
   describe new commits that were included in multiple branches.  For
   example, if a single push adds the "*" commits in the diagram below,
-  then post-receive-mail would never include the details of the two
+  then post-receive-email would never include the details of the two
   commits that are common to "master" and "branch" in its
   notifications.
 
