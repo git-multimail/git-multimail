@@ -1,74 +1,3 @@
-post-receive-multimail.py is a Python script that sends notification
-emails for pushes to a git repository.  It is derived from
-contrib/hooks/post-receive-mail, but has many differences:
-
-* One email per commit [1].  For each reference change, the script
-  first outputs one email summarizing the reference change (including
-  one-line summaries of the new commits), then it outputs a separate
-  email for each new commit that was introduced, including patches.
-  The commit notification emails are threaded to the reference change
-  email via "In-Reply-To".  This style (similar to the "git
-  format-patch" style used on the git mailing list) makes it much
-  easier to scan through the emails, jump to patches that need further
-  attention, and write comments about specific emails.  Commits are
-  handled in reverse topological order (i.e., parents shown before
-  children).  For example,
-
-  [repo] branch master updated
-  + [repo] 01/08: doc: fix xref link from api docs to manual pages
-  + [repo] 02/08: api-credentials.txt: show the big picture first
-  + [repo] 03/08: api-credentials.txt: mention credential.helper explicitly
-  + [repo] 04/08: api-credentials.txt: add "see also" section
-  + [repo] 05/08: t3510 (cherry-pick-sequence): add missing '&&'
-  + [repo] 06/08: Merge branch 'rr/maint-t3510-cascade-fix'
-  + [repo] 07/08: Merge branch 'mm/api-credentials-doc'
-  + [repo] 08/08: Git 1.7.11-rc2
-
-* (Mostly) use template expansion to generate email contents.
-
-* By default, use a short version of the repository name in the prefix
-  for the emails' subject lines.
-
-* Better algorithm for detecting new commits [2].
-  post-receive-multimail.py analyzes all reference modifications to
-  determine which commits were not present before the change.
-
-* Add an "Environment" abstraction that describes the environment in
-  which the script is running.  Users can override this class to
-  customize the script to their own environment, for example by
-  reading users' email addresses from LDAP.
-
-* Add a "GitoliteEnvironment" to support the use of the script with
-  Gitolite-managed repositories.  For Gitolite repositories, the name
-  of the repository and the name of the user doing the push have to be
-  determined from the $GL_REPO and $GL_USER variables, respectively.
-  By default, post-receive-multimail.py checks for the presence of
-  those two environment variables.  If they are set, it assumes a
-  "gitolite" environment; otherwise it assumes a "generic"
-  environment.  Alternatively, the environment can be set explicitly
-  by setting a "hooks.environment" config setting (which can have the
-  value "generic" or "gitolite") or by passing an --environment option
-  to the script.
-
-* Use abbreviated commit names in most places in emails.  Also add
-  one-line log message summaries where possible.
-
-* In the schematic diagrams that explain non-fast-forward commits,
-  show the names of the branches involved.
-
-* Make the email "From" address configurable.  By default, set the
-  email "Reply-To" headers to reply to the pusher (for reference
-  updates) and to the author (for commit notifications).
-
-* Add a "hooks.administrator" email address to which unsubscribe
-  requests can be directed.
-
-* Written in Python.  Easier to implement nontrivial data structures
-  and to add new features.
-
-* The "hooks.showrev" configuration option is not supported.
-
-
 Notes
 =====
 
@@ -110,26 +39,8 @@ To do
   configure.
 
 
-
-[1] post-receive-mail sends only one email for each reference that is
-    changed, no matter how many commits were added to the reference.
-    It is possible to have it show patches for each commit, but since
-    they are inline in a long email they are hard to read.
-
-[2] post-receive-mail processes one reference change at a time, which
-    causes it to fail to describe new commits that were included in
-    multiple branches.  For example, if a single push adds the "*"
-    commits in the diagram below, then post-receive-mail would never
-    include the details of the two commits that are common to "master"
-    and "branch" in its notifications.
-
-        o---o---o---*---*---*    <-- master
-                         \
-                          *---*  <-- branch
-
-
-
-git-multimail-v2:
+git-multimail-v2
+================
 
 * Configuration variables:
 
@@ -153,6 +64,11 @@ git-multimail-v2:
     to disable short annotated tag change emails entirely?
 
   * Perhaps support hooks.showrev in this context?
+
+* Test that setting email recipient lists to the empty string really
+  disables the sending of those emails.
+
+* Allow email recipient lists to be set on multiple lines.
 
 * Make it easier to skip sending refchange emails.
 
@@ -198,4 +114,7 @@ git-multimail-v2:
   * Document how to define a new Environment.
 
 * Add an LDAP environment (?)
+
+* Make sure that default values for envelopesender, From, Reply-To,
+  etc. are OK.
 

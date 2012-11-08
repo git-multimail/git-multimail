@@ -1,0 +1,74 @@
+git_multimail.py is a Python script/module that sends notification
+emails for pushes to a git repository.
+
+git_multimail.py is derived from the old
+contrib/hooks/post-receive-mail, and is mostly compatible with that
+script.  See README.migrate-from-post-receive-mail for details about
+the differences and for how to migrate from post-receive-email to
+git_multimail.py.
+
+For each push received by the repository, git_multimail.py:
+
+1. Outputs one email summarizing each reference that was changed.
+   These "reference change" emails describe the nature of the change
+   (e.g., was the reference created, deleted, fast-forwarded, etc.)
+   and include one-line summaries of the commits that were added to
+   the reference.
+
+2. Outputs one email for each new commit that was introduced by the
+   reference change.  These "commit" emails include a list of the
+   files changed by the commit, followed by the diffs to text files.
+   The commit emails are threaded to the corresponding reference
+   change email via "In-Reply-To".  This style (similar to the "git
+   format-patch" style used on the git mailing list) makes it easy
+   to scan through the emails, jump to patches that need further
+   attention, and write comments about specific emails.  Commits are
+   handled in reverse topological order (i.e., parents shown before
+   children).  For example,
+
+   [git] branch master updated
+   + [git] 01/08: doc: fix xref link from api docs to manual pages
+   + [git] 02/08: api-credentials.txt: show the big picture first
+   + [git] 03/08: api-credentials.txt: mention credential.helper explicitly
+   + [git] 04/08: api-credentials.txt: add "see also" section
+   + [git] 05/08: t3510 (cherry-pick-sequence): add missing '&&'
+   + [git] 06/08: Merge branch 'rr/maint-t3510-cascade-fix'
+   + [git] 07/08: Merge branch 'mm/api-credentials-doc'
+   + [git] 08/08: Git 1.7.11-rc2
+
+Each commit appears in exactly one commit email, the first time that
+it is pushed to the repository.  If a commit is later merged into
+another branch, then a one-line summary of the commit is included in
+the reference change email (as usual), but no additional commit email
+is generated.
+
+By default, reference change emails have their "Reply-To" field set to
+the person who pushed the change, and commit emails have their
+"Reply-To" field set to the author of the commit.
+
+
+Configuration:
+
+* (Mostly) use template expansion to generate email contents.
+
+* Add an "Environment" abstraction that describes the environment in
+  which the script is running.  Users can override this class to
+  customize the script to their own environment, for example by
+  reading users' email addresses from LDAP.
+
+* Add a "GitoliteEnvironment" to support the use of the script with
+  Gitolite-managed repositories.  For Gitolite repositories, the name
+  of the repository and the name of the user doing the push have to be
+  determined from the $GL_REPO and $GL_USER variables, respectively.
+  By default, git_multimail.py checks for the presence of those two
+  environment variables.  If they are set, it assumes a "gitolite"
+  environment; otherwise it assumes a "generic" environment.
+  Alternatively, the environment can be set explicitly by setting a
+  "hooks.environment" config setting (which can have the value
+  "generic" or "gitolite") or by passing an --environment option to
+  the script.
+
+* Add a "hooks.administrator" email address to which unsubscribe
+  requests can be directed.
+
+
