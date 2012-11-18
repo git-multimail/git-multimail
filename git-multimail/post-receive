@@ -1,23 +1,29 @@
 #! /usr/bin/env python2
 
-"""Example post-receive hook based on git_multimail.
+"""Example post-receive hook based on git-multimail.
+
+This script is a simple example of a post-receive hook implemented
+using git_multimail.py as a Python module.  It is not intended to be
+customized before use; see the comments in the script to help you get
+started.
 
 It is possible to use git_multimail.py itself as a post-receive or
 update hook, configured via git config settings and/or command-line
 parameters.  But for more flexibility, it can also be imported as a
-Python module by a custom post-receive script.  This has the following
-advantages:
+Python module by a custom post-receive script.  The latter has the
+following advantages:
 
 * The tool's behavior can be customized using arbitrary Python code,
   without having to edit git_multimail.py.
 
 * Configuration settings can be read from other sources; for example,
-  user names and email addresses can be read from LDAP or from a
+  user names and email addresses could be read from LDAP or from a
   database.  Or the settings can even be hardcoded in the importing
   Python script, if this is preferred.
 
-This script is a simple example of a post-receive hook implemented
-using git_multimail as a Python module.
+This script is a very basic example of how to use git_multimail.py as
+a module.  The comments below explain some of the points at which the
+script's behavior could be changed or customized.
 
 """
 
@@ -49,9 +55,12 @@ config = git_multimail.Config('multimailhook')
 
 # Select the type of environment:
 environment = git_multimail.GenericEnvironment(config)
+#environment = git_multimail.GitoliteEnvironment(config)
 
-# Choose the method of sending emails:
+# Choose the method of sending emails.  OutputMailer is intended only
+# for testing; it writes the emails to the specified file stream.
 mailer = git_multimail.SendMailer(environment)
+#mailer = git_multimail.OutputMailer(environment, sys.stdout)
 
 # Read changes from stdin and send notification emails:
 git_multimail.run_as_post_receive_hook(environment, mailer)
