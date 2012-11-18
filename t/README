@@ -1,0 +1,16 @@
+Aids to testing git-multimail.
+
+create-test-repo:
+
+    Create a test repository "test-repo.git" that can be used for
+    testing git-multimail.  Most of the repository is created by
+    loading the dumpfile "test-repo.dump", then a few more weird tags
+    are created that point to objects other than commits.
+
+test-emails:
+
+    Runs create-test-repo and then simulates a bunch of pushes to the
+    repository, writing to stdout the emails that would normally be
+    sent for those pushes.  There's as yet no automated check of the
+    output; you still have to eyeball it.
+
