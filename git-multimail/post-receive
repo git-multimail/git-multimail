@@ -43,8 +43,12 @@ import git_multimail
 #""".splitlines(True)
 
 
+# Specify which "git config" section contains the configuration for
+# git-multimail:
+config = git_multimail.Config('multimailhook')
+
 # Select the type of environment:
-environment = git_multimail.GenericEnvironment()
+environment = git_multimail.GenericEnvironment(config)
 
 # Choose the method of sending emails:
 mailer = git_multimail.SendMailer(environment)
