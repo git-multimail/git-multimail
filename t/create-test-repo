@@ -1,8 +1,8 @@
 #! /bin/bash
 
 D=$(cd $(dirname "$0") && pwd)
-T="$D/email-test-repo.git"
-DUMPFILE="$D/email-test-repo.dump"
+T="$D/test-repo.git"
+DUMPFILE="$D/test-repo.dump"
 
 test -d "$T" && rm -rf "$T"
 git init --bare "$T"
