@@ -13,7 +13,7 @@ git-multimail-v2
   namespace "multimailhook.*", as opposed to something like
   "hook.multimail.*"?
 
-* Straighten up naming: post-receive-multimail vs. git_multimail.py
+* Straighten up naming: git-multimail vs. git_multimail.py
   vs. git_multimail in files and in text and docs.
 
 * Test that setting email recipient lists to the empty string really
