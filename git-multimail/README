@@ -67,6 +67,17 @@ this script in this manner, link or copy it to $GIT_DIR/hooks/update.
 Please note that the script is not completely reliable in this mode
 [1].
 
+Alternatively, git_multimail.py can be imported as a Python module
+into your own Python post-receive script.  This method is a bit more
+work, but allows the behavior of the hook to be customized using
+arbitrary Python code.  For example, if you want to read email
+addresses from an LDAP server or from a database, you could write your
+own environment class (perhaps inheriting from GenericEnvironment or
+GitoliteEnvironment) and pass an instance into git_multimail.  Or if
+you want to send emails using a different mechanism, you can write
+your own mailer class.  The "post-receive" script in this directory
+demonstrates how to use git_multimail.py in this manner.
+
 
 Configuration
 -------------
