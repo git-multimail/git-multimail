@@ -64,7 +64,7 @@ This is an automated email from the git hooks/post-receive script.
 %(pusher)s pushed a change to %(refname_type)s %(short_refname)s
 in repository %(repo_shortname)s.
 
-""".splitlines(True)
+"""
 
 
 FOOTER_TEMPLATE = """\
@@ -72,7 +72,7 @@ FOOTER_TEMPLATE = """\
 -- \n\
 To stop receiving notification emails like this one, please contact
 %(administrator)s.
-""".splitlines(True)
+"""
 
 
 REWIND_ONLY_TEMPLATE = """\
@@ -85,7 +85,7 @@ reference pointing at a previous point in the repository history.
 
 Any revisions marked "omits" are not gone; other references still
 refer to them.  Any revisions marked "discards" are gone forever.
-""".splitlines(True)
+"""
 
 
 NON_FF_TEMPLATE = """\
@@ -105,24 +105,24 @@ from the common base, B.
 
 Any revisions marked "omits" are not gone; other references still
 refer to them.  Any revisions marked "discards" are gone forever.
-""".splitlines(True)
+"""
 
 
 NO_NEW_REVISIONS_TEMPLATE = """\
 No new revisions were added by this update.
-""".splitlines(True)
+"""
 
 
 DISCARDED_REVISIONS_TEMPLATE = """\
 This change permanently discards the following revisions:
-""".splitlines(True)
+"""
 
 
 NO_DISCARDED_REVISIONS_TEMPLATE = """\
 The revisions that were on this %(refname_type)s are still contained in
 other references; therefore, this change does not discard any commits
 from the repository.
-""".splitlines(True)
+"""
 
 
 NEW_REVISIONS_TEMPLATE = """\
@@ -131,12 +131,12 @@ repository and will be described in separate emails.  The revisions
 listed as "adds" were already present in the repository and have only
 been added to this reference.
 
-""".splitlines(True)
+"""
 
 
 TAG_CREATED_TEMPLATE = """\
         at  %(newrev_short)s (%(newrev_type)s)
-""".splitlines(True)
+"""
 
 
 TAG_UPDATED_TEMPLATE = """\
@@ -144,20 +144,20 @@ TAG_UPDATED_TEMPLATE = """\
 
       from  %(oldrev_short)s (%(oldrev_type)s)
         to  %(newrev_short)s (%(newrev_type)s)
-""".splitlines(True)
+"""
 
 
 TAG_DELETED_TEMPLATE = """\
 *** WARNING: tag %(short_refname)s was deleted! ***
 
-""".splitlines(True)
+"""
 
 
 NON_COMMIT_UPDATE_TEMPLATE = """\
 This is an unusual reference change because the reference did not
 refer to a commit either before or after the change.  We do not know
 how to provide full information about this reference change.
-""".splitlines(True)
+"""
 
 
 REVISION_HEADER_TEMPLATE = """\
@@ -177,7 +177,7 @@ This is an automated email from the git hooks/post-receive script.
 %(pusher)s add a commit to %(refname_type)s %(short_refname)s
 in repository %(repo_shortname)s.
 
-""".splitlines(True)
+"""
 
 
 REVISION_FOOTER_TEMPLATE = FOOTER_TEMPLATE
@@ -421,8 +421,10 @@ class Change(object):
         return template % self.get_values(**extra_values)
 
     def expand_lines(self, template, **extra_values):
+        """Break template into lines and expand each line."""
+
         values = self.get_values(**extra_values)
-        for line in template:
+        for line in template.splitlines(True):
             yield line % values
 
     def generate_email(self, push, maxlines=None):
