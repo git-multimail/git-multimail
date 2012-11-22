@@ -205,8 +205,12 @@ Revision emails also include header "X-Git-Rev".
 Customizing email contents
 --------------------------
 
-git_multimail.py mostly generates emails by expanding templates.  The
-templates can be customized.
+git-multimail mostly generates emails by expanding templates.  The
+templates can be customized.  To avoid the need to edit
+git_multimail.py directly, the preferred way to change the templates
+is to write a separate Python script that imports git_multimail.py as
+a module, then replace the templates in place.  See the provided
+post-receive script for an example of how this is done.
 
 
 Customizing git_multimail.py for your environment
