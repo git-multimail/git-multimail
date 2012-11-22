@@ -13,11 +13,6 @@ git-multimail-v2
   namespace "multimailhook.*", as opposed to something like
   "hook.multimail.*"?
 
-* Test that setting email recipient lists to the empty string really
-  disables the sending of those emails.
-
-* Make it easier to skip sending refchange emails.
-
 * Better configurability; add support and documentation for:
 
   * Changing template contents.
@@ -39,13 +34,6 @@ git-multimail-v2
 
   * Perhaps add a hook to allow patches to be cleaned up somehow
     before being sent.
-
-* Write a README file:
-
-  * Document how to run the script both ways (as script or as Python
-    import).
-
-  * Document how to define a new Environment.
 
 * Make sure that default values for envelopesender, From, Reply-To,
   etc. are OK.
@@ -85,24 +73,5 @@ Ideas for the future
 
 * Perhaps add an option to send emails to an arbitrary SMTP server
   using Python's smtplib rather than by using /usr/sbin/sendmail.
-
-
-Recipients list policy
-======================
-
-1. mailinglist, if it is set, is the default for all types of email.
-   If it is not set, then the default for all types of email is not to
-   generate them at all.
-
-2. commitlist (or mailinglist) always gets emails about every new
-   commit.
-
-3. announcelist (or refchangelist or mailinglist) gets emails about
-   changes to annotated tags.  If announceshortlog is true (default is
-   false), then emails about annotated tags include a list of changes
-   since the last tag.
-
-4. refchangelist (or mailinglist) gets emails about changes to all
-   other kinds of references.
 
 
