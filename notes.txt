@@ -100,7 +100,7 @@ Recipients list policy
 3. announcelist (or refchangelist or mailinglist) gets emails about
    changes to annotated tags.  If announceshortlog is true (default is
    false), then emails about annotated tags include a list of changes
-   since the last tag.  Default is false.
+   since the last tag.
 
 4. refchangelist (or mailinglist) gets emails about changes to all
    other kinds of references.
