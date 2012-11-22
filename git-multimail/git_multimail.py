@@ -397,16 +397,17 @@ class Change(object):
     def _compute_values(self):
         retval = dict(
             repo_shortname=self.environment.get_repo_shortname(),
-            sender=self.environment.get_envelopesender(),
             administrator=self.environment.get_administrator(),
             pusher=self.environment.get_pusher(),
             projectdesc=self.environment.get_projectdesc(),
             emailprefix=self.environment.get_emailprefix(),
             )
+        if self.environment.get_envelopesender() is not None:
+            retval.update(sender=self.environment.get_envelopesender())
         try:
             retval.update(pusher_email=self.environment.username_to_email(retval['pusher']))
         except UnknownUserError:
-            retval.update(pusher_email='unknown user <%s>' % (retval['sender'],))
+            pass
         return retval
 
     def get_values(self, **extra_values):
@@ -498,7 +499,7 @@ class Revision(Change):
         try:
             retval.update(author=self.environment.email_to_email(self.get_author_email()))
         except UnknownUserError:
-            retval.update(author='unknown user <%s>' % (self.environment.get_envelopesender(),))
+            pass
         return retval
 
     def get_author_email(self):
