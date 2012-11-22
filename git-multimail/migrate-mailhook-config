@@ -56,16 +56,6 @@ to see if they would be useful in your situation:
 
 """
 
-NOVEL_NAMES = [
-    'environment',
-    'reponame',
-    'refchangelist',
-    'commitlist',
-    'announceshortlog',
-    'administrator',
-    'emaildomain',
-    ]
-
 
 def _check_old_config_exists(old):
     """Check that at least one old configuration value is set."""
@@ -192,8 +182,9 @@ def migrate_config(strict=False, retain=False, overwrite=False):
                 )
 
     sys.stderr.write(INFO)
-    for name in NOVEL_NAMES:
-        sys.stderr.write('    "%s.%s"\n' % (new.section, name,))
+    for name in NEW_NAMES:
+        if name not in OLD_NAMES:
+            sys.stderr.write('    "%s.%s"\n' % (new.section, name,))
     sys.stderr.write('\n')
 
 
