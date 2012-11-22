@@ -1,17 +1,17 @@
-			   git_multimail.py
-			   ================
+			   git-multimail
+			   =============
 
-git_multimail.py is a Python script/module that sends notification
-emails for pushes to a git repository.
+git-multimail is a Python script/module that sends notification emails
+for pushes to a git repository.
 
-git_multimail.py is derived from the old
+git-multimail is derived from the old
 contrib/hooks/post-receive-email, and is mostly compatible with that
 script.  See README.migrate-from-post-receive-email for details about
 the differences and for how to migrate from post-receive-email to
-git_multimail.py.
+git-multimail.
 
 
-For each push received by the repository, git_multimail.py:
+For each push received by the repository, git-multimail:
 
 1. Outputs one email summarizing each reference that was changed.
    These "reference change" emails describe the nature of the change
@@ -73,17 +73,18 @@ work, but allows the behavior of the hook to be customized using
 arbitrary Python code.  For example, if you want to read email
 addresses from an LDAP server or from a database, you could write your
 own environment class (perhaps inheriting from GenericEnvironment or
-GitoliteEnvironment) and pass an instance into git_multimail.  Or if
-you want to send emails using a different mechanism, you can write
-your own mailer class.  The "post-receive" script in this directory
-demonstrates how to use git_multimail.py in this manner.
+GitoliteEnvironment) and pass an instance into the git_multimail
+module.  Or if you want to send emails using a different mechanism,
+you can write your own mailer class.  The "post-receive" script in
+this directory demonstrates how to use git_multimail.py in this
+manner.
 
 
 Configuration
 -------------
 
-git_multimail.py mostly takes its configuration from the following
-"git config" settings:
+git-multimail mostly takes its configuration from the following "git
+config" settings:
 
 multimailhook.environment
 
@@ -213,12 +214,12 @@ a module, then replace the templates in place.  See the provided
 post-receive script for an example of how this is done.
 
 
-Customizing git_multimail.py for your environment
--------------------------------------------------
+Customizing git-multimail for your environment
+----------------------------------------------
 
-git_multimail.py has a concept called an "Environment" that describes
-the local environment in which git is running.  It has built-in
-support for two kinds of environments:
+git-multimail has a concept called an "Environment" that describes the
+local environment in which git is running.  It has built-in support
+for two kinds of environments:
 
 * GenericEnvironment: a stand-alone git repository.
 
@@ -228,8 +229,8 @@ support for two kinds of environments:
   read from $GL_REPO (if it is not overridden by
   multimailhook.reponame).
 
-By default, git_multimail.py assumes GitoliteEnvironment if $GL_USER
-and $GL_REPO are set, and otherwise assumes GenericEnvironment.
+By default, git-multimail assumes GitoliteEnvironment if $GL_USER and
+$GL_REPO are set, and otherwise assumes GenericEnvironment.
 Alternatively, the environment can be set explicitly by setting a
 "multimailhook.environment" config setting (which can have the value
 "generic" or "gitolite") or by passing an --environment option to the

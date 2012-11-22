@@ -46,13 +46,13 @@ INFO = """\
 SUCCESS!
 
 Your post-receive-email configuration has been converted to
-git_multimail format.  Please see README and
+git-multimail format.  Please see README and
 README.migrate-from-post-receive-email to learn about other
-git_multimail configuration possibilities.
+git-multimail configuration possibilities.
 
-For example, git_multimail has the following new options with no
-equivalent in post-receive-email.  You might want to read about them to
-see if they would be useful in your situation:
+For example, git-multimail has the following new options with no
+equivalent in post-receive-email.  You might want to read about them
+to see if they would be useful in your situation:
 
 """
 
@@ -125,7 +125,7 @@ def migrate_config(strict=False, retain=False, overwrite=False):
 
     name = 'showrev'
     if old.has_key(name):
-        msg = 'git_multimail does not support "%s.%s"' % (old.section, name,)
+        msg = 'git-multimail does not support "%s.%s"' % (old.section, name,)
         if strict:
             sys.exit(
                 'ERROR: %s.\n'
@@ -206,7 +206,7 @@ def main(args):
     parser.add_option(
         '--strict', action='store_true', default=False,
         help=(
-            'Slavishly configure git_multimail.py as closely as possible to '
+            'Slavishly configure git-multimail as closely as possible to '
             'the post-receive-email configuration.  Default is to turn '
             'on some new features that have no equivalent in post-receive-email.'
             ),
@@ -221,7 +221,7 @@ def main(args):
     parser.add_option(
         '--overwrite', action='store_true', default=False,
         help=(
-            'Overwrite any existing git_multimail configuration settings.  '
+            'Overwrite any existing git-multimail configuration settings.  '
             'Default is to abort if such settings already exist.'
             ),
         )
