@@ -1467,17 +1467,18 @@ class Push(object):
             else:
                 sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
                 mailer.send(change.generate_email(self, maxlines))
-                sha1s = []
-                for sha1 in reversed(list(self.get_new_commits(change))):
-                    if sha1 in unhandled_sha1s:
-                        sha1s.append(sha1)
-                        unhandled_sha1s.remove(sha1)
-                for (num, sha1) in enumerate(sha1s):
-                    rev = Revision(
-                        self.environment, change,
-                        GitObject(sha1), num=num+1, tot=len(sha1s),
-                        )
-                    mailer.send(rev.generate_email(self, maxlines))
+
+            sha1s = []
+            for sha1 in reversed(list(self.get_new_commits(change))):
+                if sha1 in unhandled_sha1s:
+                    sha1s.append(sha1)
+                    unhandled_sha1s.remove(sha1)
+            for (num, sha1) in enumerate(sha1s):
+                rev = Revision(
+                    self.environment, change,
+                    GitObject(sha1), num=num+1, tot=len(sha1s),
+                    )
+                mailer.send(rev.generate_email(self, maxlines))
 
         # Consistency check:
         if unhandled_sha1s:
