@@ -1197,7 +1197,7 @@ class Environment(object):
                 )
 
         raise ConfigurationException(
-            'The list of recipients for %s is not configured.\n%s' % (name, hint)
+            'The list of recipients for %s is not configured.\n%s' % (names[0], hint)
             )
 
     def get_refchange_recipients(self):
