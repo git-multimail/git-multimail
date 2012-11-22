@@ -1478,7 +1478,8 @@ class Push(object):
                     self.environment, change,
                     GitObject(sha1), num=num+1, tot=len(sha1s),
                     )
-                mailer.send(rev.generate_email(self, maxlines))
+                if rev.recipients:
+                    mailer.send(rev.generate_email(self, maxlines))
 
         # Consistency check:
         if unhandled_sha1s:
