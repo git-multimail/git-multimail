@@ -26,7 +26,7 @@ Configuration differences
 * In emails about new annotated tags, post-receive-email includes a
   shortlog of all changes since the previous annotated tag.  To get
   this behavior with git-multimail, you need to set
-  multimailhook.announceshortlog set to true:
+  multimailhook.announceshortlog to true:
 
       git config multimailhook.announceshortlog true
 
