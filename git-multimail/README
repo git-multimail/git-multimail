@@ -70,14 +70,22 @@ Please note that the script is not completely reliable in this mode
 Alternatively, git_multimail.py can be imported as a Python module
 into your own Python post-receive script.  This method is a bit more
 work, but allows the behavior of the hook to be customized using
-arbitrary Python code.  For example, if you want to read email
-addresses from an LDAP server or from a database, you could write your
-own environment class (perhaps inheriting from GenericEnvironment or
-GitoliteEnvironment) and pass an instance into the git_multimail
-module.  Or if you want to send emails using a different mechanism,
-you can write your own mailer class.  The "post-receive" script in
-this directory demonstrates how to use git_multimail.py in this
-manner.
+arbitrary Python code.  For example, you can use a custom environment
+(perhaps inheriting from GenericEnvironment or GitoliteEnvironment) to
+
+* change how the user who did the push is determined
+
+* read users' email addresses from an LDAP server or from a database
+
+* decide which users should be notified about which commits based on
+  the contents of the commits (e.g., for users who want to be notified
+  only about changes affecting particular files or subdirectories)
+
+Or you can change how emails are sent by writing your own mailer
+class.  The "post-receive" script in this directory demonstrates how
+to use git_multimail.py as a Python module.  (If you make interesting
+changes of this type, please consider sharing them with the
+community.)
 
 
 Configuration

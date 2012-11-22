@@ -1214,7 +1214,14 @@ class Environment(object):
         return self._announce_recipients
 
     def get_revision_recipients(self, revision):
-        """Return the recipients for messages about the specified revision."""
+        """Return the recipients for messages about the specified revision.
+
+        This method could be overridden, for example, to take into
+        account the contents of the revision when deciding whom to
+        notify about it.  For example, there could be a scheme for
+        users to express interest in particular files or
+        subdirectories, and only receive notification emails for
+        revisions that affecting those files."""
 
         return self._revision_recipients
 
