@@ -41,6 +41,8 @@ from email.utils import getaddresses
 from email.utils import formataddr
 
 
+DEBUG = False
+
 ZEROS = '0' * 40
 LOGBEGIN = '- Log -----------------------------------------------------------------\n'
 LOGEND = '-----------------------------------------------------------------------\n'
@@ -421,11 +423,22 @@ class Change(object):
         return template % self.get_values(**extra_values)
 
     def expand_lines(self, template, **extra_values):
-        """Break template into lines and expand each line."""
+        """Break template into lines and expand each line.
+
+        Silently skip lines that contain references to unknown
+        variables."""
 
         values = self.get_values(**extra_values)
         for line in template.splitlines(True):
-            yield line % values
+            try:
+                yield line % values
+            except KeyError, e:
+                if DEBUG:
+                    sys.stderr.write(
+                        'Warning: unknown variable %r in the following line; line skipped:\n'
+                        '    %s'
+                        % (e.args[0], line,)
+                        )
 
     def generate_email(self, push, maxlines=None):
         """Generate an email describing this change.
