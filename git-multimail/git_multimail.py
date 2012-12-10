@@ -852,7 +852,7 @@ class AnnotatedTagChange(ReferenceChange):
             old=old, new=new, rev=rev,
             )
         self.recipients = environment.get_announce_recipients()
-        self.show_shortlog = environment.announce_show_shortlog
+        self.show_shortlog = environment.get_announce_show_shortlog()
 
     ANNOTATED_TAG_FORMAT = (
         '%(*objectname)\n'
@@ -1144,12 +1144,10 @@ class Environment(object):
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
         # string if no recipients are configured):
-        self._refchange_recipients = self._get_recipients('refchangelist', 'mailinglist')
-        self._announce_recipients = self._get_recipients(
-            'announcelist', 'refchangelist', 'mailinglist'
-            )
-        self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
-        self.announce_show_shortlog = self.config.get_bool('announceshortlog', default=False)
+        self._refchange_recipients = None
+        self._announce_recipients = None
+        self._revision_recipients = None
+        self._announce_show_shortlog = None
 
     def get_repo_shortname(self):
         """Return a short name for the repository, for display purposes."""
@@ -1217,6 +1215,8 @@ class Environment(object):
     def get_refchange_recipients(self):
         """Return the recipients for refchange messages."""
 
+        if self._refchange_recipients is None:
+            self._refchange_recipients = self._get_recipients('refchangelist', 'mailinglist')
         return self._refchange_recipients
 
     def get_announce_recipients(self):
@@ -1225,6 +1225,10 @@ class Environment(object):
         Return the list of email addresses to which AnnotatedTagChange
         emails should be sent."""
 
+        if self._announce_recipients is None:
+            self._announce_recipients = self._get_recipients(
+                'announcelist', 'refchangelist', 'mailinglist'
+                )
         return self._announce_recipients
 
     def get_revision_recipients(self, revision):
@@ -1237,7 +1241,14 @@ class Environment(object):
         subdirectories, and only receive notification emails for
         revisions that affecting those files."""
 
+        if self._revision_recipients is None:
+            self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
         return self._revision_recipients
+
+    def get_announce_show_shortlog(self):
+        if self._announce_show_shortlog is None:
+            self._announce_show_shortlog = self.config.get_bool('announceshortlog', default=False)
+        return self._announce_show_shortlog
 
     def get_envelopesender(self):
         """Return the 'From' email address."""
