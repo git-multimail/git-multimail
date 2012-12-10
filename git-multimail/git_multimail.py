@@ -1114,7 +1114,7 @@ class OutputMailer(Mailer):
 
     This is intended for debugging purposes."""
 
-    def __init__(self, environment, f):
+    def __init__(self, f):
         self.f = f
 
     def send(self, lines):
@@ -1587,7 +1587,7 @@ def main(args):
         environment = KNOWN_ENVIRONMENTS[env](config, recipients=options.recipients)
 
         if options.stdout:
-            mailer = OutputMailer(environment, sys.stdout)
+            mailer = OutputMailer(sys.stdout)
         else:
             mailer = SendMailer(environment.get_envelopesender())
 
