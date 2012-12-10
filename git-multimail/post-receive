@@ -59,7 +59,7 @@ environment = git_multimail.GenericEnvironment(config)
 
 # Choose the method of sending emails.  OutputMailer is intended only
 # for testing; it writes the emails to the specified file stream.
-mailer = git_multimail.SendMailer(environment)
+mailer = git_multimail.SendMailer(environment.get_envelopesender())
 #mailer = git_multimail.OutputMailer(environment, sys.stdout)
 
 # Read changes from stdin and send notification emails:

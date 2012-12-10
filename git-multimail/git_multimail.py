@@ -1085,8 +1085,8 @@ class Mailer(object):
 class SendMailer(Mailer):
     """Send emails using '/usr/sbin/sendmail -t'."""
 
-    def __init__(self, environment):
-        self.envelopesender = environment.get_envelopesender()
+    def __init__(self, envelopesender):
+        self.envelopesender = envelopesender
 
     def send(self, lines):
         cmd = ['/usr/sbin/sendmail', '-t']
@@ -1589,7 +1589,7 @@ def main(args):
         if options.stdout:
             mailer = OutputMailer(environment, sys.stdout)
         else:
-            mailer = SendMailer(environment)
+            mailer = SendMailer(environment.get_envelopesender())
 
         # Dual mode: if arguments were specified on the command line, run
         # like an update hook; otherwise, run as a post-receive hook.
