@@ -11,7 +11,7 @@ the differences and for how to migrate from post-receive-email to
 git-multimail.
 
 
-For each push received by the repository, git-multimail:
+By default, for each push received by the repository, git-multimail:
 
 1. Outputs one email summarizing each reference that was changed.
    These "reference change" emails describe the nature of the change
@@ -55,7 +55,7 @@ Invocation
 ----------
 
 git_multimail.py is designed to be used as a "post-receive" hook in a
-git repository (see githooks(5)).  It should be linked or copied to
+git repository (see githooks(5)).  Link or copy it to
 $GIT_DIR/hooks/post-receive within the repository for which email
 notifications are desired.  Usually it should be installed on the
 central repository for a project, to which all commits are eventually
@@ -91,8 +91,8 @@ community.)
 Configuration
 -------------
 
-git-multimail mostly takes its configuration from the following "git
-config" settings:
+By default, git-multimail mostly takes its configuration from the
+following "git config" settings:
 
 multimailhook.environment
 
@@ -165,7 +165,7 @@ multimailhook.announceshortlog
     then the shortlog will be a kind of rough summary of what has
     happened since the last release.  But if your tagging policy is
     not so straightforward, then the shortlog might be confusing
-    rather than useful.
+    rather than useful.  Default is false.
 
 multimailhook.envelopesender
 
@@ -181,8 +181,9 @@ multimailhook.administrator
 multimailhook.emailprefix
 
     All emails have this string prepended to their subjects, to aid
-    filtering.  Default is the short name of the repository in square
-    brackets; e.g., "[myrepo]".
+    email filtering (though using the X-Git-* email headers, if
+    possible, is probably more robust).  Default is the short name of
+    the repository in square brackets; e.g., "[myrepo]".
 
 multimailhook.emailmaxlines
 
@@ -244,14 +245,16 @@ for two kinds of environments:
 
 By default, git-multimail assumes GitoliteEnvironment if $GL_USER and
 $GL_REPO are set, and otherwise assumes GenericEnvironment.
-Alternatively, the environment can be set explicitly by setting a
-"multimailhook.environment" config setting (which can have the value
-"generic" or "gitolite") or by passing an --environment option to the
-script.
+Alternatively, you can choose one of these two environments explicitly
+by setting a "multimailhook.environment" config setting (which can
+have the value "generic" or "gitolite") or by passing an --environment
+option to the script.
 
-Users can override the Environment class to customize the script to
-idiosyncrasies their own environment, for example by using LDAP to map
-usernames to email addresses.
+You can override the Environment class to customize the script to
+idiosyncrasies your own environment.  To do so, you need to import
+git_multimail.py as a Python module, as in the example post-receive
+script, and set the "environment" variable to an instance of your
+environment class.
 
 
 Footnotes
