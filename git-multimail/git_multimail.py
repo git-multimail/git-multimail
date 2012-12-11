@@ -400,8 +400,13 @@ class Change(object):
             administrator=self.environment.get_administrator(),
             pusher=self.environment.get_pusher(),
             projectdesc=self.environment.get_projectdesc(),
-            emailprefix=self.environment.get_emailprefix(),
             )
+        emailprefix = self.environment.get_emailprefix()
+        if not emailprefix or not emailprefix.strip():
+            emailprefix = ''
+        else:
+            emailprefix = emailprefix.strip() + ' '
+        retval.update(emailprefix=emailprefix)
         if self.environment.get_envelopesender() is not None:
             retval.update(sender=self.environment.get_envelopesender())
         try:
@@ -1269,9 +1274,7 @@ class Environment(object):
 
         retval = self.config.get('emailprefix', default=None)
         if retval is None:
-            retval = '[%s] ' % (self.get_repo_shortname(),)
-        elif retval and not retval.endswith(' '):
-            retval += ' '
+            retval = '[%s]' % (self.get_repo_shortname(),)
         return retval
 
     def get_maxlines(self):
