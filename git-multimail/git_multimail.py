@@ -844,7 +844,7 @@ class BranchChange(ReferenceChange):
             refname=refname, short_refname=short_refname,
             old=old, new=new, rev=rev,
             )
-        self.recipients = environment.get_refchange_recipients()
+        self.recipients = environment.get_refchange_recipients(self)
 
 
 class AnnotatedTagChange(ReferenceChange):
@@ -856,7 +856,7 @@ class AnnotatedTagChange(ReferenceChange):
             refname=refname, short_refname=short_refname,
             old=old, new=new, rev=rev,
             )
-        self.recipients = environment.get_announce_recipients()
+        self.recipients = environment.get_announce_recipients(self)
         self.show_shortlog = environment.get_announce_show_shortlog()
 
     ANNOTATED_TAG_FORMAT = (
@@ -966,7 +966,7 @@ class NonAnnotatedTagChange(ReferenceChange):
             refname=refname, short_refname=short_refname,
             old=old, new=new, rev=rev,
             )
-        self.recipients = environment.get_refchange_recipients()
+        self.recipients = environment.get_refchange_recipients(self)
 
     def generate_create_summary(self, push):
         """Called for the creation of an annotated tag."""
@@ -999,7 +999,7 @@ class OtherReferenceChange(ReferenceChange):
             refname=refname, short_refname=short_refname,
             old=old, new=new, rev=rev,
             )
-        self.recipients = environment.get_refchange_recipients()
+        self.recipients = environment.get_refchange_recipients(self)
 
 
 ref_re = re.compile(r'^refs\/(?P<area>[^\/]+)\/(?P<shortname>.*)$')
@@ -1174,12 +1174,12 @@ class Environment(object):
         # By default, just return the short form:
         return email
 
-    def get_refchange_recipients(self):
+    def get_refchange_recipients(self, refchange):
         """Return the recipients for refchange messages."""
 
         raise NotImplementedError()
 
-    def get_announce_recipients(self):
+    def get_announce_recipients(self, annotated_tag_change):
         """Return the recipients for announcement messages.
 
         Return the list of email addresses to which AnnotatedTagChange
@@ -1303,12 +1303,12 @@ class ConfigEnvironment(Environment):
             'The list of recipients for %s is not configured.\n%s' % (names[0], hint)
             )
 
-    def get_refchange_recipients(self):
+    def get_refchange_recipients(self, refchange):
         if self._refchange_recipients is None:
             self._refchange_recipients = self._get_recipients('refchangelist', 'mailinglist')
         return self._refchange_recipients
 
-    def get_announce_recipients(self):
+    def get_announce_recipients(self, annotated_tag_change):
         if self._announce_recipients is None:
             self._announce_recipients = self._get_recipients(
                 'announcelist', 'refchangelist', 'mailinglist'
