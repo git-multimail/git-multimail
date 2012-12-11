@@ -410,7 +410,7 @@ class Change(object):
         if self.environment.get_envelopesender() is not None:
             retval.update(sender=self.environment.get_envelopesender())
         try:
-            retval.update(pusher_email=self.environment.username_to_email(retval['pusher']))
+            retval.update(pusher_email=self.environment.get_pusher_email())
         except UnknownUserError:
             pass
         return retval
@@ -1152,11 +1152,12 @@ class Environment(object):
 
         raise NotImplementedError()
 
-    def username_to_email(self, username):
-        """Return the email address for the specified username.
+    def get_pusher_email(self):
+        """Return the email address of the person who pushed the changes.
 
-        The return values should be a single RFC 2822 email address as
-        a string.  Raise UnknownUserError on error."""
+        The return value should be a single RFC 2822 email address as
+        a string.  The email address is used as the Reply-To address
+        for refchange emails."""
 
         raise NotImplementedError()
 
@@ -1267,11 +1268,11 @@ class ConfigEnvironment(Environment):
         self._revision_recipients = None
         self._announce_show_shortlog = None
 
-    def username_to_email(self, username):
+    def get_pusher_email(self):
         if self.emaildomain is None:
             self.emaildomain = self.config.get('emaildomain') or 'localhost'
 
-        return '%s@%s' % (username, self.emaildomain)
+        return '%s@%s' % (self.get_pusher(), self.emaildomain)
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
