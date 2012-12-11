@@ -1142,18 +1142,6 @@ class UnknownUserError(Exception):
 
 
 class Environment(object):
-    def __init__(self, config, recipients=None):
-        self.config = config
-        self.recipients = recipients
-        self.emaildomain = None
-        # The recipients for various types of notification emails, as
-        # RFC 2822 email addresses separated by commas (or the empty
-        # string if no recipients are configured):
-        self._refchange_recipients = None
-        self._announce_recipients = None
-        self._revision_recipients = None
-        self._announce_show_shortlog = None
-
     def get_repo_shortname(self):
         """Return a short name for the repository, for display purposes."""
 
@@ -1170,10 +1158,7 @@ class Environment(object):
         The return values should be a single RFC 2822 email address as
         a string.  Raise UnknownUserError on error."""
 
-        if self.emaildomain is None:
-            self.emaildomain = self.config.get('emaildomain') or 'localhost'
-
-        return '%s@%s' % (username, self.emaildomain)
+        raise NotImplementedError()
 
     def email_to_email(self, email):
         """(Possibly) convert a short email address into a full email address.
@@ -1188,16 +1173,116 @@ class Environment(object):
         # By default, just return the short form:
         return email
 
+    def get_refchange_recipients(self):
+        """Return the recipients for refchange messages."""
+
+        raise NotImplementedError()
+
+    def get_announce_recipients(self):
+        """Return the recipients for announcement messages.
+
+        Return the list of email addresses to which AnnotatedTagChange
+        emails should be sent."""
+
+        raise NotImplementedError()
+
+    def get_revision_recipients(self, revision):
+        """Return the recipients for messages about the specified revision.
+
+        This method could be overridden, for example, to take into
+        account the contents of the revision when deciding whom to
+        notify about it.  For example, there could be a scheme for
+        users to express interest in particular files or
+        subdirectories, and only receive notification emails for
+        revisions that affecting those files."""
+
+        raise NotImplementedError()
+
+    def get_announce_show_shortlog(self):
+        """Return True iff announce emails should include a shortlog."""
+
+        return False
+
+    def get_envelopesender(self):
+        """Return the 'From' email address."""
+
+        raise NotImplementedError()
+
+    def get_administrator(self):
+        """Return the name and/or email of the repository administrator."""
+
+        return (
+            self.get_envelopesender()
+            or 'the administrator of this repository'
+            )
+
+    def get_emailprefix(self):
+        """Return a string that will be prefixed to every subject."""
+
+        return '[%s]' % (self.get_repo_shortname(),)
+
+    def get_maxlines(self):
+        """Return the maximum number of lines that should be included in an email.
+
+        If this value is set and is not None or zero, then truncate
+        emails at this length and append a line indicating how many
+        more lines were discarded)."""
+
+        return None
+
+    def get_projectdesc(self):
+        """Return a one-line description of the project."""
+
+        try:
+            projectdesc = open(os.path.join(GIT_DIR, 'description')).readline().strip()
+            if projectdesc and not projectdesc.startswith('Unnamed repository'):
+                return projectdesc
+        except IOError:
+            pass
+
+        return 'UNNAMED PROJECT'
+
+    def get_diffopts(self):
+        """Return options to pass to 'git diff'.
+
+        Return the options that should be passed to 'git diff' for the
+        summary email.  The return value should be a list of strings
+        representing words to be passed to the command."""
+
+        return ['--stat', '--summary', '--find-copies-harder']
+
+
+class ConfigEnvironment(Environment):
+    """An Environment that reads most of its information from "git config"."""
+
+    def __init__(self, config, recipients=None):
+        self.config = config
+        self.recipients = recipients
+        self.emaildomain = None
+        # The recipients for various types of notification emails, as
+        # RFC 2822 email addresses separated by commas (or the empty
+        # string if no recipients are configured):
+        self._refchange_recipients = None
+        self._announce_recipients = None
+        self._revision_recipients = None
+        self._announce_show_shortlog = None
+
+    def username_to_email(self, username):
+        if self.emaildomain is None:
+            self.emaildomain = self.config.get('emaildomain') or 'localhost'
+
+        return '%s@%s' % (username, self.emaildomain)
+
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
 
         Return the list of email addresses to which a particular type
         of notification email should be sent, by looking at the config
-        value for "multimailhook.$name" for each of names.  The return
+        value for "multimailhook.$name" for each of names.  Use the
+        value from the first name that is configured.  The return
         value is a (possibly empty) string containing RFC 2822 email
-        addresses separated by commas from the first name that was
-        configured.  If no configuration could be found, raise a
-        ConfigurationException."""
+        addresses separated by commas.  If no configuration could be
+        found, raise a ConfigurationException."""
 
         if self.recipients is not None:
             return self.recipients
@@ -1218,18 +1303,11 @@ class Environment(object):
             )
 
     def get_refchange_recipients(self):
-        """Return the recipients for refchange messages."""
-
         if self._refchange_recipients is None:
             self._refchange_recipients = self._get_recipients('refchangelist', 'mailinglist')
         return self._refchange_recipients
 
     def get_announce_recipients(self):
-        """Return the recipients for announcement messages.
-
-        Return the list of email addresses to which AnnotatedTagChange
-        emails should be sent."""
-
         if self._announce_recipients is None:
             self._announce_recipients = self._get_recipients(
                 'announcelist', 'refchangelist', 'mailinglist'
@@ -1237,15 +1315,6 @@ class Environment(object):
         return self._announce_recipients
 
     def get_revision_recipients(self, revision):
-        """Return the recipients for messages about the specified revision.
-
-        This method could be overridden, for example, to take into
-        account the contents of the revision when deciding whom to
-        notify about it.  For example, there could be a scheme for
-        users to express interest in particular files or
-        subdirectories, and only receive notification emails for
-        revisions that affecting those files."""
-
         if self._revision_recipients is None:
             self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
         return self._revision_recipients
@@ -1256,72 +1325,40 @@ class Environment(object):
         return self._announce_show_shortlog
 
     def get_envelopesender(self):
-        """Return the 'From' email address."""
-
         return self.config.get('envelopesender', default=None)
 
     def get_administrator(self):
-        """Return the name and/or email of the repository administrator."""
-
         return (
             self.config.get('administrator')
-            or self.get_envelopesender()
-            or 'the administrator of this repository.'
+            or Environment.get_administrator(self)
             )
 
     def get_emailprefix(self):
-        """Return a string that will be prefixed to every subject."""
-
         retval = self.config.get('emailprefix', default=None)
-        if retval is None:
-            retval = '[%s]' % (self.get_repo_shortname(),)
-        return retval
+        if retval is not None:
+            return retval
+        else:
+            return Environment.get_emailprefix(self)
 
     def get_maxlines(self):
-        """Return the maximum number of lines that should be included in an email.
-
-        If this value is set and is not zero, then truncate emails at
-        this length and append a line indicating how many more lines
-        were discarded)."""
-
         maxlines = self.config.get('emailmaxlines', default=None)
         if maxlines is not None:
             maxlines = int(maxlines)
         return maxlines
 
-    def get_projectdesc(self):
-        """Return a one-line description of the project."""
-
-        try:
-            projectdesc = open(os.path.join(GIT_DIR, 'description')).readline().strip()
-        except IOError:
-            projectdesc = None
-        else:
-            # Check if the description is unchanged from its default, and
-            # shorten it to a more manageable length if it is
-            if projectdesc.startswith('Unnamed repository'):
-                projectdesc = None
-
-        return projectdesc or 'UNNAMED PROJECT'
-
     def get_diffopts(self):
-        """Return options to pass to 'git diff'.
-
-        Return the options that should be passed to 'git diff' for the
-        summary email.  The return value should be a list of strings
-        representing words to be passed to the command."""
-
-        return self.config.get(
-            'diffopts',
-            default='--stat --summary --find-copies-harder'
-            ).split()
+        retval = self.config.get('diffopts', None)
+        if retval is not None:
+            return retval.split()
+        else:
+            return Environment.get_diffopts(self)
 
 
-class GenericEnvironment(Environment):
+class GenericEnvironment(ConfigEnvironment):
     repo_name_re = re.compile(r'^(?P<name>.+?)(?:\.git)?$')
 
     def __init__(self, config, recipients=None):
-        Environment.__init__(self, config, recipients=recipients)
+        ConfigEnvironment.__init__(self, config, recipients=recipients)
 
     def get_repo_shortname(self):
         retval = self.config.get('reponame', default=None)
@@ -1347,9 +1384,9 @@ class GenericEnvironment(Environment):
         return os.environ.get('USER', 'unknown user')
 
 
-class GitoliteEnvironment(Environment):
+class GitoliteEnvironment(ConfigEnvironment):
     def __init__(self, config, recipients=None):
-        Environment.__init__(self, config, recipients=recipients)
+        ConfigEnvironment.__init__(self, config, recipients=recipients)
 
     def get_repo_shortname(self):
         retval = self.config.get('reponame', default=None)
