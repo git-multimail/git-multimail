@@ -1164,12 +1164,12 @@ class Environment(object):
     def email_to_email(self, email):
         """(Possibly) convert a short email address into a full email address.
 
-        email is a short email address, like 'user@example.com'.
-        Convert it into the RFC 2822 email address that should be used
-        in the email headers for commit messages, which might be of
-        the long form 'Lou User <user@example.com>'.  Raise
-        UnknownUserError if the user is unknown (i.e., if this email
-        address should be skipped)."""
+        email is a short email address, like 'user@example.com', taken
+        from a git revision's author field.  Convert it into the RFC
+        2822 email address that should be used in the email headers
+        for commit messages, which might be of the long form 'Lou User
+        <user@example.com>'.  Raise UnknownUserError if the user is
+        unknown (i.e., if this email address should be skipped)."""
 
         # By default, just return the short form:
         return email
