@@ -1191,6 +1191,10 @@ class Environment(object):
 
     An Environment object is expected to have the following attributes:
 
+        repo_shortname
+
+            A short name for the repository, for display purposes.
+
         pusher
 
             The username of the person who pushed the changes.  If
@@ -1220,7 +1224,7 @@ class Environment(object):
         templates."""
 
         values = {
-            'repo_shortname' : self.get_repo_shortname(),
+            'repo_shortname' : self.repo_shortname,
             'administrator' : self.get_administrator(),
             'projectdesc' : self.get_projectdesc(),
             }
@@ -1243,11 +1247,6 @@ class Environment(object):
             values['pusher'] = self.pusher
 
         return values
-
-    def get_repo_shortname(self):
-        """Return a short name for the repository, for display purposes."""
-
-        raise NotImplementedError()
 
     def get_pusher_email(self):
         """Return the email address of the person who pushed the changes.
@@ -1318,7 +1317,7 @@ class Environment(object):
     def get_emailprefix(self):
         """Return a string that will be prefixed to every email's subject."""
 
-        return '[%s]' % (self.get_repo_shortname(),)
+        return '[%s]' % (self.repo_shortname,)
 
     def get_maxlines(self):
         """Return the maximum number of lines that should be included in an email.
@@ -1359,7 +1358,7 @@ class ConfigEnvironment(Environment):
         self.config = config
 
         # If there is a config setting, it overrides the constructor parameter:
-        self._repo_shortname = self.config.get('reponame', default=repo_shortname)
+        self.repo_shortname = self.config.get('reponame', default=repo_shortname)
 
         self.pusher = pusher
         self.recipients = recipients
@@ -1433,9 +1432,6 @@ class ConfigEnvironment(Environment):
 
     def get_revision_recipients(self, revision):
         return self._revision_recipients
-
-    def get_repo_shortname(self):
-        return self._repo_shortname
 
     def get_announce_show_shortlog(self):
         return self._announce_show_shortlog
