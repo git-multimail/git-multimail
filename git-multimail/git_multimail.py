@@ -1206,9 +1206,8 @@ class Environment(object):
         pusher
 
             The username of the person who pushed the changes.  If
-            pusher_email is valid, then this attribute is never used.
-            But if pusher_email is None, then this value is used in
-            the email body to indicate who pushed the change.
+            This value is used in the email body to indicate who
+            pushed the change.
 
         pusher_email (may be None)
 
@@ -1216,12 +1215,10 @@ class Environment(object):
             The value should be a single RFC 2822 email address as a
             string; e.g., "Joe User <user@example.com>" if available,
             otherwise "user@example.com".  If set, the value is used
-            in the body of the mail to indicate who pushed the change,
-            and also as the Reply-To address for refchange emails.  If
-            it is impossible to determine the pusher's email, this
-            attribute should be set to None (in which case self.pusher
-            will used in the email body and no Reply-To header will be
-            output).
+            as the Reply-To address for refchange emails.  If it is
+            impossible to determine the pusher's email, this attribute
+            should be set to None (in which case no Reply-To header
+            will be output).
 
         sender
 
@@ -1257,7 +1254,6 @@ class Environment(object):
     def __init__(self):
         self.pusher_email = None
         self.administrator = 'the administrator of this repository'
-        self._values = None
         self.emailprefix = ''
 
         try:
@@ -1270,6 +1266,8 @@ class Environment(object):
         self.announce_show_shortlog = False
         self.maxlines = None
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
+
+        self._values = None
 
     def get_values(self):
         if self._values is None:
@@ -1295,14 +1293,9 @@ class Environment(object):
         if self.sender is not None:
             values['sender'] = self.sender
 
+        values['pusher'] = self.pusher
         if self.pusher_email is not None:
-            # If pusher_email is available, use it for both pusher and
-            # pusher_email.
-            values['pusher'] = values['pusher_email'] = self.pusher_email
-        else:
-            # pusher_email is not available; use the plain pusher and
-            # leave pusher_email unset.
-            values['pusher'] = self.pusher
+            values['pusher_email'] = self.pusher_email
 
         return values
 
@@ -1347,11 +1340,19 @@ class ConfigEnvironment(Environment):
         # If there is a config setting, it overrides the constructor parameter:
         self.repo_shortname = self.config.get('reponame', default=repo_shortname)
 
-        self.pusher = pusher
         self.recipients = recipients
         self.emaildomain = self.config.get('emaildomain')
+
         if self.emaildomain:
-            self.pusher_email = '%s@%s' % (self.pusher, self.emaildomain)
+            # Derive the pusher's full email address, and use it for
+            # both pusher and pusher_email.
+            self.pusher = self.pusher_email = '%s@%s' % (pusher, self.emaildomain)
+        else:
+            # We can't derive the pusher's email address, so leave
+            # pusher_email set to None and use the naked username as
+            # pusher.
+            self.pusher = pusher
+
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
         # string if no recipients are configured):
