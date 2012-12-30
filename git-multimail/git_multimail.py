@@ -1359,19 +1359,33 @@ class ConfigEnvironment(Environment):
         Environment.__init__(self)
         self.config = config
         self.recipients = recipients
-        self.emaildomain = None
+        self.emaildomain = self.config.get('emaildomain')
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
         # string if no recipients are configured):
-        self._refchange_recipients = None
-        self._announce_recipients = None
-        self._revision_recipients = None
-        self._announce_show_shortlog = None
+        self._refchange_recipients = self._get_recipients('refchangelist', 'mailinglist')
+        self._announce_recipients = self._get_recipients(
+            'announcelist', 'refchangelist', 'mailinglist'
+            )
+        self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
+        self._announce_show_shortlog = self.config.get_bool('announceshortlog', default=False)
+        self._envelopesender = self.config.get('envelopesender', default=None)
+        self._administrator = (
+            self.config.get('administrator')
+            or Environment.get_administrator(self)
+            )
+        self._emailprefix = self.config.get('emailprefix', default=None)
+        if self._emailprefix is None:
+            self._emailprefix = Environment.get_emailprefix(self)
+        self._maxlines = int(self.config.get('emailmaxlines', default='0')) or None
+
+        diffopts = self.config.get('diffopts', None)
+        if diffopts is not None:
+            self._diffopts = diffopts.split()
+        else:
+            self._diffopts = Environment.get_diffopts(self)
 
     def get_pusher_email(self):
-        if self.emaildomain is None:
-            self.emaildomain = self.config.get('emaildomain')
-
         if self.emaildomain:
             return '%s@%s' % (self.get_pusher(), self.emaildomain)
         else:
@@ -1389,6 +1403,7 @@ class ConfigEnvironment(Environment):
         found, raise a ConfigurationException."""
 
         if self.recipients is not None:
+            # The constructor argument (if any) trumps all others.
             return self.recipients
         for name in names:
             retval = self.config.get_recipients(name)
@@ -1407,55 +1422,31 @@ class ConfigEnvironment(Environment):
             )
 
     def get_refchange_recipients(self, refchange):
-        if self._refchange_recipients is None:
-            self._refchange_recipients = self._get_recipients('refchangelist', 'mailinglist')
         return self._refchange_recipients
 
     def get_announce_recipients(self, annotated_tag_change):
-        if self._announce_recipients is None:
-            self._announce_recipients = self._get_recipients(
-                'announcelist', 'refchangelist', 'mailinglist'
-                )
         return self._announce_recipients
 
     def get_revision_recipients(self, revision):
-        if self._revision_recipients is None:
-            self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
         return self._revision_recipients
 
     def get_announce_show_shortlog(self):
-        if self._announce_show_shortlog is None:
-            self._announce_show_shortlog = self.config.get_bool('announceshortlog', default=False)
         return self._announce_show_shortlog
 
     def get_envelopesender(self):
-        return self.config.get('envelopesender', default=None)
+        return self._envelopesender
 
     def get_administrator(self):
-        return (
-            self.config.get('administrator')
-            or Environment.get_administrator(self)
-            )
+        return self._administrator
 
     def get_emailprefix(self):
-        retval = self.config.get('emailprefix', default=None)
-        if retval is not None:
-            return retval
-        else:
-            return Environment.get_emailprefix(self)
+        return self._emailprefix
 
     def get_maxlines(self):
-        maxlines = self.config.get('emailmaxlines', default=None)
-        if maxlines is not None:
-            maxlines = int(maxlines)
-        return maxlines
+        return self._maxlines
 
     def get_diffopts(self):
-        retval = self.config.get('diffopts', None)
-        if retval is not None:
-            return retval.split()
-        else:
-            return Environment.get_diffopts(self)
+        return self._diffopts
 
 
 class GenericEnvironment(ConfigEnvironment):
@@ -1463,8 +1454,10 @@ class GenericEnvironment(ConfigEnvironment):
 
     def __init__(self, config, recipients=None):
         ConfigEnvironment.__init__(self, config, recipients=recipients)
+        self._repo_shortname = self._compute_repo_shortname()
+        self._pusher = os.environ.get('USER', 'unknown user')
 
-    def get_repo_shortname(self):
+    def _compute_repo_shortname(self):
         retval = self.config.get('reponame', default=None)
         if retval:
             return retval
@@ -1484,23 +1477,31 @@ class GenericEnvironment(ConfigEnvironment):
         else:
             return 'unknown repository'
 
+    def get_repo_shortname(self):
+        return self._repo_shortname
+
     def get_pusher(self):
-        return os.environ.get('USER', 'unknown user')
+        return self._pusher
 
 
 class GitoliteEnvironment(ConfigEnvironment):
     def __init__(self, config, recipients=None):
         ConfigEnvironment.__init__(self, config, recipients=recipients)
+        self._repo_shortname = self._compute_repo_shortname()
+        self._pusher = os.environ.get('GL_USER', 'unknown user')
 
-    def get_repo_shortname(self):
+    def _compute_repo_shortname(self):
         retval = self.config.get('reponame', default=None)
         if retval:
             return retval
         else:
             return os.environ.get('GL_REPO', 'unknown repository')
 
+    def get_repo_shortname(self):
+        return self._repo_shortname
+
     def get_pusher(self):
-        return os.environ.get('GL_USER', 'unknown user')
+        return self._pusher
 
 
 class Push(object):
