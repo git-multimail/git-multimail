@@ -1199,6 +1199,10 @@ class Environment(object):
 
             A string that will be prefixed to every email's subject.
 
+        projectdesc
+
+            A one-line description of the project.
+
         pusher
 
             The username of the person who pushed the changes.  If
@@ -1239,6 +1243,13 @@ class Environment(object):
         self._values = None
         self.emailprefix = ''
 
+        try:
+            self.projectdesc = open(os.path.join(GIT_DIR, 'description')).readline().strip()
+            if not self.projectdesc or self.projectdesc.startswith('Unnamed repository'):
+                self.projectdesc = 'UNNAMED PROJECT'
+        except IOError:
+            self.projectdesc = 'UNNAMED PROJECT'
+
     def get_values(self):
         if self._values is None:
             self._values = self._compute_values()
@@ -1257,7 +1268,7 @@ class Environment(object):
         values = {
             'repo_shortname' : self.repo_shortname,
             'administrator' : self.administrator,
-            'projectdesc' : self.get_projectdesc(),
+            'projectdesc' : self.projectdesc,
             }
         values['emailprefix'] = self.emailprefix
         if self.sender is not None:
@@ -1317,18 +1328,6 @@ class Environment(object):
         more lines were discarded)."""
 
         return None
-
-    def get_projectdesc(self):
-        """Return a one-line description of the project."""
-
-        try:
-            projectdesc = open(os.path.join(GIT_DIR, 'description')).readline().strip()
-            if projectdesc and not projectdesc.startswith('Unnamed repository'):
-                return projectdesc
-        except IOError:
-            pass
-
-        return 'UNNAMED PROJECT'
 
     def get_diffopts(self):
         """Return options to pass to 'git diff'.
