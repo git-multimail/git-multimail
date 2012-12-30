@@ -514,23 +514,23 @@ class Revision(Change):
         except CommandError:
             oneline = self.rev.sha1
 
-        retval.update(
-            rev=self.rev.sha1,
-            rev_short=self.rev.short,
-            change_type=self.change_type,
-            refname=self.refname,
-            short_refname=self.reference_change.short_refname,
-            refname_type=self.reference_change.refname_type,
-            reply_to_msgid=self.reference_change.msgid,
-            num=self.num,
-            tot=self.tot,
-            recipients=self.recipients,
-            oneline=oneline,
-            )
+        retval['rev'] = self.rev.sha1
+        retval['rev_short'] = self.rev.short
+        retval['change_type'] = self.change_type
+        retval['refname'] = self.refname
+        retval['short_refname'] = self.reference_change.short_refname
+        retval['refname_type'] = self.reference_change.refname_type
+        retval['reply_to_msgid'] = self.reference_change.msgid
+        retval['num'] = self.num
+        retval['tot'] = self.tot
+        retval['recipients'] = self.recipients
+        retval['oneline'] = oneline
+
         try:
-            retval.update(author=self.get_author())
+            retval['author'] = self.get_author()
         except UnknownUserError:
             pass
+
         return retval
 
     def get_author(self):
@@ -569,22 +569,22 @@ class ReferenceChange(Change):
 
     def _compute_values(self):
         retval = Change._compute_values(self)
-        retval.update(
-            change_type=self.change_type,
-            refname_type=self.refname_type,
-            refname=self.refname,
-            short_refname=self.short_refname,
-            msgid=self.msgid,
-            recipients=self.recipients,
-            oldrev=str(self.old),
-            oldrev_short=self.old.short,
-            newrev=str(self.new),
-            newrev_short=self.new.short,
-            )
+
+        retval['change_type'] = self.change_type
+        retval['refname_type'] = self.refname_type
+        retval['refname'] = self.refname
+        retval['short_refname'] = self.short_refname
+        retval['msgid'] = self.msgid
+        retval['recipients'] = self.recipients
+        retval['oldrev'] = str(self.old)
+        retval['oldrev_short'] = self.old.short
+        retval['newrev'] = str(self.new)
+        retval['newrev_short'] = self.new.short
+
         if self.old:
-            retval.update(oldrev_type=self.old.type)
+            retval['oldrev_type'] = self.old.type
         if self.new:
-            retval.update(newrev_type=self.new.type)
+            retval['newrev_type'] = self.new.type
         return retval
 
     def generate_email_header(self):
@@ -1200,33 +1200,28 @@ class Environment(object):
         unless you want to provide additional values to be used in the
         templates."""
 
-        retval = dict(
-            repo_shortname=self.get_repo_shortname(),
-            administrator=self.get_administrator(),
-            projectdesc=self.get_projectdesc(),
-            )
+        retval = {
+            'repo_shortname' : self.get_repo_shortname(),
+            'administrator' : self.get_administrator(),
+            'projectdesc' : self.get_projectdesc(),
+            }
         emailprefix = self.get_emailprefix()
         if not emailprefix or not emailprefix.strip():
             emailprefix = ''
         else:
             emailprefix = emailprefix.strip() + ' '
-        retval.update(emailprefix=emailprefix)
+        retval['emailprefix'] = emailprefix
         if self.get_envelopesender() is not None:
-            retval.update(sender=self.get_envelopesender())
+            retval['sender'] = self.get_envelopesender()
 
         try:
-            pusher_email = self.get_pusher_email()
+            # If pusher_email is available, use it for both pusher and
+            # pusher_email.
+            retval['pusher'] = retval['pusher_email'] = self.get_pusher_email()
         except UnknownUserError:
             # pusher_email is not available; use the plain pusher and
             # leave pusher_email unset.
-            retval.update(pusher=self.get_pusher())
-        else:
-            # pusher_email is available; use it for both pusher and
-            # pusher_email.
-            retval.update(
-                pusher_email=pusher_email,
-                pusher=pusher_email,
-                )
+            retval['pusher'] = self.get_pusher()
 
         return retval
 
