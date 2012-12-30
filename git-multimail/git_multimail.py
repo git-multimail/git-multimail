@@ -404,7 +404,6 @@ class Change(object):
         retval = dict(
             repo_shortname=self.environment.get_repo_shortname(),
             administrator=self.environment.get_administrator(),
-            pusher=self.environment.get_pusher(),
             projectdesc=self.environment.get_projectdesc(),
             )
         emailprefix = self.environment.get_emailprefix()
@@ -415,10 +414,21 @@ class Change(object):
         retval.update(emailprefix=emailprefix)
         if self.environment.get_envelopesender() is not None:
             retval.update(sender=self.environment.get_envelopesender())
+
         try:
-            retval.update(pusher_email=self.environment.get_pusher_email())
+            pusher_email = self.environment.get_pusher_email()
         except UnknownUserError:
-            pass
+            # pusher_email is not available; use the plain pusher and
+            # leave pusher_email unset.
+            retval.update(pusher=self.get_pusher())
+        else:
+            # pusher_email is available; use it for both pusher and
+            # pusher_email.
+            retval.update(
+                pusher_email=pusher_email,
+                pusher=pusher_email,
+                )
+
         return retval
 
     def get_values(self, **extra_values):
