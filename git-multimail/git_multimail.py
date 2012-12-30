@@ -1189,6 +1189,16 @@ class Environment(object):
 
     * what users want to be informed about various types of changes.
 
+    An Environment object is expected to have the following attributes:
+
+        pusher
+
+            The username of the person who pushed the changes.  If
+            get_pusher_email() returns a valid value, then this
+            attribute is never used.  But if get_pusher_email() raises
+            UnknownUserError, then this value is used in the email
+            body to indicate who pushed the change.
+
     """
 
     def __init__(self):
@@ -1230,22 +1240,12 @@ class Environment(object):
         except UnknownUserError:
             # pusher_email is not available; use the plain pusher and
             # leave pusher_email unset.
-            values['pusher'] = self.get_pusher()
+            values['pusher'] = self.pusher
 
         return values
 
     def get_repo_shortname(self):
         """Return a short name for the repository, for display purposes."""
-
-        raise NotImplementedError()
-
-    def get_pusher(self):
-        """Return the username of the person who pushed the changes.
-
-        If get_pusher_email() returns a valid value, then this method
-        is never called.  But if get_pusher_email() raises
-        UnknownUserError, then the value returned by this method is
-        used in the email body to indicate who pushed the change."""
 
         raise NotImplementedError()
 
@@ -1258,9 +1258,8 @@ class Environment(object):
         of the mail to indicate who pushed the change, and also as the
         Reply-To address for refchange emails.  If it is impossible to
         determine the pusher's email, this method should raise
-        UnknownUserError (in which case the result of get_pusher()
-        will used in the email body and no Reply-To header will be
-        output)."""
+        UnknownUserError (in which case self.pusher will used in the
+        email body and no Reply-To header will be output)."""
 
         raise UnknownUserError()
 
@@ -1362,7 +1361,7 @@ class ConfigEnvironment(Environment):
         # If there is a config setting, it overrides the constructor parameter:
         self._repo_shortname = self.config.get('reponame', default=repo_shortname)
 
-        self._pusher = pusher
+        self.pusher = pusher
         self.recipients = recipients
         self.emaildomain = self.config.get('emaildomain')
         # The recipients for various types of notification emails, as
@@ -1392,7 +1391,7 @@ class ConfigEnvironment(Environment):
 
     def get_pusher_email(self):
         if self.emaildomain:
-            return '%s@%s' % (self.get_pusher(), self.emaildomain)
+            return '%s@%s' % (self.pusher, self.emaildomain)
         else:
             raise UnknownUserError()
 
@@ -1437,9 +1436,6 @@ class ConfigEnvironment(Environment):
 
     def get_repo_shortname(self):
         return self._repo_shortname
-
-    def get_pusher(self):
-        return self._pusher
 
     def get_announce_show_shortlog(self):
         return self._announce_show_shortlog
