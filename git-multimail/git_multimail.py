@@ -176,7 +176,7 @@ X-Git-Rev: %(rev)s
 
 This is an automated email from the git hooks/post-receive script.
 
-%(pusher)s add a commit to %(refname_type)s %(short_refname)s
+%(pusher)s pushed a commit to %(refname_type)s %(short_refname)s
 in repository %(repo_shortname)s.
 
 """
