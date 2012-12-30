@@ -548,13 +548,13 @@ class Revision(Change):
             oneline=oneline,
             )
         try:
-            retval.update(author=self.environment.email_to_email(self.get_author_email()))
+            retval.update(author=self.get_author())
         except UnknownUserError:
             pass
         return retval
 
-    def get_author_email(self):
-        return read_output(['git', 'log', '--max-count=1', '--format=%ae', self.rev.sha1])
+    def get_author(self):
+        return read_output(['git', 'log', '--max-count=1', '--format=%aN <%aE>', self.rev.sha1])
 
     def generate_email_header(self):
         return self.expand_lines(REVISION_HEADER_TEMPLATE)
@@ -1229,19 +1229,6 @@ class Environment(object):
         for refchange emails."""
 
         raise NotImplementedError()
-
-    def email_to_email(self, email):
-        """(Possibly) convert a short email address into a full email address.
-
-        email is a short email address, like 'user@example.com', taken
-        from a git revision's author field.  Convert it into the RFC
-        2822 email address that should be used in the email header for
-        commit messages, which might be of the long form 'Lou User
-        <user@example.com>'.  Raise UnknownUserError if the user is
-        unknown (i.e., if this email address should be skipped)."""
-
-        # By default, just return the short form:
-        return email
 
     def get_refchange_recipients(self, refchange):
         """Return the recipients for notifications about refchange.
