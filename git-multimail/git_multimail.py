@@ -1198,10 +1198,22 @@ class Environment(object):
         pusher
 
             The username of the person who pushed the changes.  If
-            get_pusher_email() returns a valid value, then this
-            attribute is never used.  But if get_pusher_email() raises
-            UnknownUserError, then this value is used in the email
-            body to indicate who pushed the change.
+            pusher_email is valid, then this attribute is never used.
+            But if pusher_email is None, then this value is used in
+            the email body to indicate who pushed the change.
+
+        pusher_email (may be None)
+
+            The email address of the person who pushed the changes.
+            The value should be a single RFC 2822 email address as a
+            string; e.g., "Joe User <user@example.com>" if available,
+            otherwise "user@example.com".  If set, the value is used
+            in the body of the mail to indicate who pushed the change,
+            and also as the Reply-To address for refchange emails.  If
+            it is impossible to determine the pusher's email, this
+            attribute should be set to None (in which case self.pusher
+            will used in the email body and no Reply-To header will be
+            output).
 
         sender
 
@@ -1218,6 +1230,7 @@ class Environment(object):
     """
 
     def __init__(self):
+        self.pusher_email = None
         self.administrator = 'the administrator of this repository'
         self._values = None
 
@@ -1250,30 +1263,16 @@ class Environment(object):
         if self.sender is not None:
             values['sender'] = self.sender
 
-        try:
+        if self.pusher_email is not None:
             # If pusher_email is available, use it for both pusher and
             # pusher_email.
-            values['pusher'] = values['pusher_email'] = self.get_pusher_email()
-        except UnknownUserError:
+            values['pusher'] = values['pusher_email'] = self.pusher_email
+        else:
             # pusher_email is not available; use the plain pusher and
             # leave pusher_email unset.
             values['pusher'] = self.pusher
 
         return values
-
-    def get_pusher_email(self):
-        """Return the email address of the person who pushed the changes.
-
-        The return value should be a single RFC 2822 email address as
-        a string; e.g., "Joe User <user@example.com>" if available,
-        otherwise "user@example.com".  The result is used in the body
-        of the mail to indicate who pushed the change, and also as the
-        Reply-To address for refchange emails.  If it is impossible to
-        determine the pusher's email, this method should raise
-        UnknownUserError (in which case self.pusher will used in the
-        email body and no Reply-To header will be output)."""
-
-        raise UnknownUserError()
 
     def get_refchange_recipients(self, refchange):
         """Return the recipients for notifications about refchange.
@@ -1359,6 +1358,8 @@ class ConfigEnvironment(Environment):
         self.pusher = pusher
         self.recipients = recipients
         self.emaildomain = self.config.get('emaildomain')
+        if self.emaildomain:
+            self.pusher_email = '%s@%s' % (self.pusher, self.emaildomain)
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
         # string if no recipients are configured):
@@ -1383,12 +1384,6 @@ class ConfigEnvironment(Environment):
             self._diffopts = diffopts.split()
         else:
             self._diffopts = Environment.get_diffopts(self)
-
-    def get_pusher_email(self):
-        if self.emaildomain:
-            return '%s@%s' % (self.pusher, self.emaildomain)
-        else:
-            raise UnknownUserError()
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
