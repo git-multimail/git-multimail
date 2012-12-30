@@ -1251,6 +1251,16 @@ class Environment(object):
 
     """
 
+    VALUE_KEYS = [
+        'repo_shortname',
+        'projectdesc',
+        'administrator',
+        'emailprefix',
+        'sender',
+        'pusher',
+        'pusher_email',
+        ]
+
     def __init__(self):
         self.pusher_email = None
         self.administrator = 'the administrator of this repository'
@@ -1280,23 +1290,14 @@ class Environment(object):
 
         This method is called by Change._compute_values().  The keys
         in the returned dictionary are available to be used in any of
-        the templates.  It is unnecessary to override this method
-        unless you want to provide additional values to be used in the
-        templates."""
+        the templates.  The dictionary is created by reading from self
+        the attributes named in VALUE_KEYS."""
 
-        values = {
-            'repo_shortname' : self.repo_shortname,
-            'administrator' : self.administrator,
-            'projectdesc' : self.projectdesc,
-            }
-        values['emailprefix'] = self.emailprefix
-        if self.sender is not None:
-            values['sender'] = self.sender
-
-        values['pusher'] = self.pusher
-        if self.pusher_email is not None:
-            values['pusher_email'] = self.pusher_email
-
+        values = {}
+        for key in self.VALUE_KEYS:
+            value = getattr(self, key, None)
+            if value is not None:
+                values[key] = value
         return values
 
     def get_refchange_recipients(self, refchange):
