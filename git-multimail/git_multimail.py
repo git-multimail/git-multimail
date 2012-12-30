@@ -1191,6 +1191,9 @@ class Environment(object):
 
     """
 
+    def __init__(self):
+        pass
+
     def get_values(self):
         """Return a dictionary {keyword : expansion} for this Environment.
 
@@ -1347,6 +1350,7 @@ class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
 
     def __init__(self, config, recipients=None):
+        Environment.__init__(self)
         self.config = config
         self.recipients = recipients
         self.emaildomain = None
