@@ -395,6 +395,12 @@ class Change(object):
         self._values = None
 
     def _compute_values(self):
+        """Return a dictionary {keyword : expansion} for this Change.
+
+        Derived classes overload this method to add more entries to
+        the return value.  This method is used internally by
+        get_values()."""
+
         retval = dict(
             repo_shortname=self.environment.get_repo_shortname(),
             administrator=self.environment.get_administrator(),
@@ -416,6 +422,14 @@ class Change(object):
         return retval
 
     def get_values(self, **extra_values):
+        """Return a dictionary {keyword : expansion} for this Change.
+
+        Return a dictionary mapping keywords to the values that they
+        should be expanded to for this Change (used when interpolating
+        template strings).  If any keyword arguments are supplied, add
+        those to the return value as well.  The return value should
+        not be modified."""
+
         if self._values is None:
             self._values = self._compute_values()
         if extra_values:
@@ -426,6 +440,13 @@ class Change(object):
             return self._values
 
     def expand(self, template, **extra_values):
+        """Expand template.
+
+        Expand the template (which should be a string) using string
+        interpolation of the values for this Change.  If any keyword
+        arguments are provided, also include those in the keywords
+        available for interpolation."""
+
         return template % self.get_values(**extra_values)
 
     def expand_lines(self, template, **extra_values):
@@ -446,12 +467,37 @@ class Change(object):
                         % (e.args[0], line,)
                         )
 
+    def generate_email_header(self):
+        """Generate the email header for this Change, a line at a time.
+
+        The header should include the RFC 2822 email header, a blank
+        line, plus any standard boilerplate to be included at the top
+        of the email body."""
+
+        raise NotImplementedError()
+
+    def generate_email_body(self):
+        """Generate the main part of the email body, a line at a time.
+
+        The text in the body might be truncated after a specified
+        number of lines (see multimailhook.emailmaxlines)."""
+
+        raise NotImplementedError()
+
+    def generate_email_footer(self):
+        """Generate the footer of the email, a line at a time.
+
+        The footer is always included, irrespective of
+        multimailhook.emailmaxlines."""
+
+        raise NotImplementedError()
+
     def generate_email(self, push, maxlines=None):
         """Generate an email describing this change.
 
-        Iterate over the lines (including the headers) of an email
-        describing this change.  If maxlines is set, then limit the
-        body of the email to approximately that many lines."""
+        Iterate over the lines (including the header lines) of an
+        email describing this change.  If maxlines is set, then limit
+        the body of the email to approximately that many lines."""
 
         for line in self.generate_email_header():
             yield line
@@ -1083,14 +1129,22 @@ def get_change(environment, oldrev, newrev, refname):
 
 
 class Mailer(object):
+    """An object that can send emails."""
+
     def send(self, lines):
+        """Send an email consisting of lines.
+
+        lines must be an iterable over the lines constituting the
+        header and body of the email.  The recipients will be read
+        from the email header."""
+
         raise NotImplementedError()
 
 
 class SendMailer(Mailer):
     """Send emails using '/usr/sbin/sendmail -t'."""
 
-    def __init__(self, envelopesender):
+    def __init__(self, envelopesender=None):
         self.envelopesender = envelopesender
 
     def send(self, lines):
@@ -1144,6 +1198,19 @@ class UnknownUserError(Exception):
 
 
 class Environment(object):
+    """Describes the environment in which the push is occurring.
+
+    An Environment object encapsulates information about the local
+    environment.  For example, it knows how to determine:
+
+    * the name of the repository to which the push occurred
+
+    * what user did the push
+
+    * what users want to be informed about various types of changes.
+
+    """
+
     def get_repo_shortname(self):
         """Return a short name for the repository, for display purposes."""
 
@@ -1168,8 +1235,8 @@ class Environment(object):
 
         email is a short email address, like 'user@example.com', taken
         from a git revision's author field.  Convert it into the RFC
-        2822 email address that should be used in the email headers
-        for commit messages, which might be of the long form 'Lou User
+        2822 email address that should be used in the email header for
+        commit messages, which might be of the long form 'Lou User
         <user@example.com>'.  Raise UnknownUserError if the user is
         unknown (i.e., if this email address should be skipped)."""
 
@@ -1177,27 +1244,32 @@ class Environment(object):
         return email
 
     def get_refchange_recipients(self, refchange):
-        """Return the recipients for refchange messages."""
+        """Return the recipients for notifications about refchange.
+
+        Return the list of email addresses to which notifications
+        about the specified ReferenceChange should be sent."""
 
         raise NotImplementedError()
 
     def get_announce_recipients(self, annotated_tag_change):
-        """Return the recipients for announcement messages.
+        """Return the recipients for notifications about annotated_tag_change.
 
-        Return the list of email addresses to which AnnotatedTagChange
-        emails should be sent."""
+        Return the list of email addresses to which notifications
+        about the specified AnnotatedTagChange should be sent."""
 
         raise NotImplementedError()
 
     def get_revision_recipients(self, revision):
-        """Return the recipients for messages about the specified revision.
+        """Return the recipients for messages about revision.
 
-        This method could be overridden, for example, to take into
-        account the contents of the revision when deciding whom to
-        notify about it.  For example, there could be a scheme for
-        users to express interest in particular files or
-        subdirectories, and only receive notification emails for
-        revisions that affecting those files."""
+        Return the list of email addresses to which notifications
+        about the specified Revision should be sent.  This method
+        could be overridden, for example, to take into account the
+        contents of the revision when deciding whom to notify about
+        it.  For example, there could be a scheme for users to express
+        interest in particular files or subdirectories, and only
+        receive notification emails for revisions that affecting those
+        files."""
 
         raise NotImplementedError()
 
@@ -1212,7 +1284,11 @@ class Environment(object):
         raise NotImplementedError()
 
     def get_administrator(self):
-        """Return the name and/or email of the repository administrator."""
+        """Return the name and/or email of the repository administrator.
+
+        It is used in the footer as the person to whom requests to be
+        removed from the notification list should be sent.  Ideally,
+        it should include a valid email address."""
 
         return (
             self.get_envelopesender()
@@ -1220,7 +1296,7 @@ class Environment(object):
             )
 
     def get_emailprefix(self):
-        """Return a string that will be prefixed to every subject."""
+        """Return a string that will be prefixed to every email's subject."""
 
         return '[%s]' % (self.get_repo_shortname(),)
 
@@ -1405,6 +1481,13 @@ class GitoliteEnvironment(ConfigEnvironment):
 class Push(object):
     """Represent an entire push (i.e., a group of ReferenceChanges)."""
 
+    # A map {(changeclass, changetype) : integer} specifying the order
+    # that reference changes will be processed if multiple reference
+    # changes are included in a single push.  The order is significant
+    # mostly because new commit notifications are threaded together
+    # with the first reference change that includes the commit.  The
+    # following order thus causes commits to be grouped with branch
+    # changes (as opposed to tag changes) if possible.
     SORT_ORDER = dict(
         (value, i) for (i, value) in enumerate([
             (BranchChange, 'update'),
@@ -1530,6 +1613,18 @@ class Push(object):
         return read_lines(cmd, input=self._new_rev_exclusion_spec)
 
     def send_emails(self, mailer, maxlines=None):
+        """Use send all of the notification emails needed for this push.
+
+        Use send all of the notification emails (including reference
+        change emails and commit emails) needed for this push.  Send
+        the emails using mailer.  If maxlines is specified, limit the
+        size of the email bodies to approximately that number of
+        lines."""
+
+        # The sha1s of commits that were introduced by this push.
+        # They will be removed from this set as they are processed, to
+        # guarantee that one (and only one) email is generated for
+        # each new commit.
         unhandled_sha1s = set(self.get_new_commits())
         for change in self.changes:
             # Check if we've got anyone to send to
