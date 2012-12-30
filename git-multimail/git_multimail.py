@@ -565,7 +565,7 @@ class ReferenceChange(Change):
         self.new = new
         self.rev = rev
         self.msgid = email.utils.make_msgid()
-        self.diffopts = environment.get_diffopts()
+        self.diffopts = environment.diffopts
 
     def _compute_values(self):
         values = Change._compute_values(self)
@@ -1246,6 +1246,12 @@ class Environment(object):
             truncate emails at this length and append a line
             indicating how many more lines were discarded).
 
+        diffopts (list of strings)
+
+            The options that should be passed to 'git diff' for the
+            summary email.  The value should be a list of strings
+            representing words to be passed to the command.
+
     """
 
     def __init__(self):
@@ -1263,6 +1269,7 @@ class Environment(object):
 
         self.announce_show_shortlog = False
         self.maxlines = None
+        self.diffopts = ['--stat', '--summary', '--find-copies-harder']
 
     def get_values(self):
         if self._values is None:
@@ -1329,15 +1336,6 @@ class Environment(object):
 
         raise NotImplementedError()
 
-    def get_diffopts(self):
-        """Return options to pass to 'git diff'.
-
-        Return the options that should be passed to 'git diff' for the
-        summary email.  The return value should be a list of strings
-        representing words to be passed to the command."""
-
-        return ['--stat', '--summary', '--find-copies-harder']
-
 
 class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
@@ -1383,9 +1381,7 @@ class ConfigEnvironment(Environment):
 
         diffopts = self.config.get('diffopts', None)
         if diffopts is not None:
-            self._diffopts = diffopts.split()
-        else:
-            self._diffopts = Environment.get_diffopts(self)
+            self.diffopts = diffopts.split()
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
@@ -1425,9 +1421,6 @@ class ConfigEnvironment(Environment):
 
     def get_revision_recipients(self, revision):
         return self._revision_recipients
-
-    def get_diffopts(self):
-        return self._diffopts
 
 
 class GenericEnvironment(ConfigEnvironment):
