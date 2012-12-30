@@ -1239,6 +1239,13 @@ class Environment(object):
 
             True iff announce emails should include a shortlog.
 
+        maxlines (int)
+
+            The maximum number of lines that should be included in an
+            email.  If this value is set and is not None or zero, then
+            truncate emails at this length and append a line
+            indicating how many more lines were discarded).
+
     """
 
     def __init__(self):
@@ -1255,6 +1262,7 @@ class Environment(object):
             self.projectdesc = 'UNNAMED PROJECT'
 
         self.announce_show_shortlog = False
+        self.maxlines = None
 
     def get_values(self):
         if self._values is None:
@@ -1321,15 +1329,6 @@ class Environment(object):
 
         raise NotImplementedError()
 
-    def get_maxlines(self):
-        """Return the maximum number of lines that should be included in an email.
-
-        If this value is set and is not None or zero, then truncate
-        emails at this length and append a line indicating how many
-        more lines were discarded)."""
-
-        return None
-
     def get_diffopts(self):
         """Return options to pass to 'git diff'.
 
@@ -1378,7 +1377,9 @@ class ConfigEnvironment(Environment):
         else:
             self.emailprefix = '[%s]' % (self.repo_shortname,)
 
-        self._maxlines = int(self.config.get('emailmaxlines', default='0')) or None
+        maxlines = self.config.get('emailmaxlines', default=None)
+        if maxlines is not None:
+            self.maxlines = int(maxlines)
 
         diffopts = self.config.get('diffopts', None)
         if diffopts is not None:
@@ -1424,9 +1425,6 @@ class ConfigEnvironment(Environment):
 
     def get_revision_recipients(self, revision):
         return self._revision_recipients
-
-    def get_maxlines(self):
-        return self._maxlines
 
     def get_diffopts(self):
         return self._diffopts
@@ -1658,7 +1656,7 @@ def run_as_post_receive_hook(environment, mailer):
         for (oldrev, newrev, refname) in read_updates(sys.stdin)
         ]
     push = Push(environment, changes)
-    push.send_emails(mailer, maxlines=environment.get_maxlines())
+    push.send_emails(mailer, maxlines=environment.maxlines)
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
@@ -1671,7 +1669,7 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
             ),
         ]
     push = Push(environment, changes)
-    push.send_emails(mailer, maxlines=environment.get_maxlines())
+    push.send_emails(mailer, maxlines=environment.maxlines)
 
 
 KNOWN_ENVIRONMENTS = {
