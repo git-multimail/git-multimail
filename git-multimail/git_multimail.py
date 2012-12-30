@@ -1454,7 +1454,7 @@ class ConfigEnvironment(Environment):
 
 
 class GenericEnvironment(ConfigEnvironment):
-    repo_name_re = re.compile(r'^(?P<name>.+?)(?:\.git)?$')
+    REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)?$')
 
     def __init__(self, config, recipients=None):
         ConfigEnvironment.__init__(self, config, recipients=recipients)
@@ -1473,7 +1473,7 @@ class GenericEnvironment(ConfigEnvironment):
                 return 'unknown repository'
 
         basename = os.path.basename(os.path.abspath(path))
-        m = self.repo_name_re.match(basename)
+        m = self.REPO_NAME_RE.match(basename)
         if m:
             return m.group('name')
         else:
