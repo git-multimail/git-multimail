@@ -1238,7 +1238,12 @@ class Environment(object):
         raise NotImplementedError()
 
     def get_pusher(self):
-        """Return the username of the person who pushed the changes."""
+        """Return the username of the person who pushed the changes.
+
+        If get_pusher_email() returns a valid value, then this method
+        is never called.  But if get_pusher_email() raises
+        UnknownUserError, then the value returned by this method is
+        used in the email body to indicate who pushed the change."""
 
         raise NotImplementedError()
 
@@ -1246,10 +1251,16 @@ class Environment(object):
         """Return the email address of the person who pushed the changes.
 
         The return value should be a single RFC 2822 email address as
-        a string.  The email address is used as the Reply-To address
-        for refchange emails."""
+        a string; e.g., "Joe User <user@example.com>" if available,
+        otherwise "user@example.com".  The result is used in the body
+        of the mail to indicate who pushed the change, and also as the
+        Reply-To address for refchange emails.  If it is impossible to
+        determine the pusher's email, this method should raise
+        UnknownUserError (in which case the result of get_pusher()
+        will used in the email body and no Reply-To header will be
+        output)."""
 
-        raise NotImplementedError()
+        raise UnknownUserError()
 
     def get_refchange_recipients(self, refchange):
         """Return the recipients for notifications about refchange.
@@ -1356,9 +1367,12 @@ class ConfigEnvironment(Environment):
 
     def get_pusher_email(self):
         if self.emaildomain is None:
-            self.emaildomain = self.config.get('emaildomain') or 'localhost'
+            self.emaildomain = self.config.get('emaildomain')
 
-        return '%s@%s' % (self.get_pusher(), self.emaildomain)
+        if self.emaildomain:
+            return '%s@%s' % (self.get_pusher(), self.emaildomain)
+        else:
+            raise UnknownUserError()
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
