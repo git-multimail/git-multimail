@@ -401,35 +401,7 @@ class Change(object):
         the return value.  This method is used internally by
         get_values()."""
 
-        retval = dict(
-            repo_shortname=self.environment.get_repo_shortname(),
-            administrator=self.environment.get_administrator(),
-            projectdesc=self.environment.get_projectdesc(),
-            )
-        emailprefix = self.environment.get_emailprefix()
-        if not emailprefix or not emailprefix.strip():
-            emailprefix = ''
-        else:
-            emailprefix = emailprefix.strip() + ' '
-        retval.update(emailprefix=emailprefix)
-        if self.environment.get_envelopesender() is not None:
-            retval.update(sender=self.environment.get_envelopesender())
-
-        try:
-            pusher_email = self.environment.get_pusher_email()
-        except UnknownUserError:
-            # pusher_email is not available; use the plain pusher and
-            # leave pusher_email unset.
-            retval.update(pusher=self.get_pusher())
-        else:
-            # pusher_email is available; use it for both pusher and
-            # pusher_email.
-            retval.update(
-                pusher_email=pusher_email,
-                pusher=pusher_email,
-                )
-
-        return retval
+        return self.environment.get_values().copy()
 
     def get_values(self, **extra_values):
         """Return a dictionary {keyword : expansion} for this Change.
@@ -1220,6 +1192,45 @@ class Environment(object):
     * what users want to be informed about various types of changes.
 
     """
+
+    def get_values(self):
+        """Return a dictionary {keyword : expansion} for this Environment.
+
+        This method is called by Change._compute_values().  The keys
+        in the returned dictionary are available to be used in any of
+        the templates.  It is unnecessary to override this method
+        unless you want to provide additional values to be used in the
+        templates."""
+
+        retval = dict(
+            repo_shortname=self.get_repo_shortname(),
+            administrator=self.get_administrator(),
+            projectdesc=self.get_projectdesc(),
+            )
+        emailprefix = self.get_emailprefix()
+        if not emailprefix or not emailprefix.strip():
+            emailprefix = ''
+        else:
+            emailprefix = emailprefix.strip() + ' '
+        retval.update(emailprefix=emailprefix)
+        if self.get_envelopesender() is not None:
+            retval.update(sender=self.get_envelopesender())
+
+        try:
+            pusher_email = self.get_pusher_email()
+        except UnknownUserError:
+            # pusher_email is not available; use the plain pusher and
+            # leave pusher_email unset.
+            retval.update(pusher=self.get_pusher())
+        else:
+            # pusher_email is available; use it for both pusher and
+            # pusher_email.
+            retval.update(
+                pusher_email=pusher_email,
+                pusher=pusher_email,
+                )
+
+        return retval
 
     def get_repo_shortname(self):
         """Return a short name for the repository, for display purposes."""
