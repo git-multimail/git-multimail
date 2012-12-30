@@ -1477,7 +1477,7 @@ class GenericEnvironment(ConfigEnvironment):
         if m:
             return m.group('name')
         else:
-            return basename
+            return 'unknown repository'
 
     def get_pusher(self):
         return os.environ.get('USER', 'unknown user')
