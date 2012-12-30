@@ -504,7 +504,7 @@ class Revision(Change):
         self.recipients = self.environment.get_revision_recipients(self)
 
     def _compute_values(self):
-        retval = Change._compute_values(self)
+        values = Change._compute_values(self)
 
         # First line of commit message:
         try:
@@ -514,24 +514,24 @@ class Revision(Change):
         except CommandError:
             oneline = self.rev.sha1
 
-        retval['rev'] = self.rev.sha1
-        retval['rev_short'] = self.rev.short
-        retval['change_type'] = self.change_type
-        retval['refname'] = self.refname
-        retval['short_refname'] = self.reference_change.short_refname
-        retval['refname_type'] = self.reference_change.refname_type
-        retval['reply_to_msgid'] = self.reference_change.msgid
-        retval['num'] = self.num
-        retval['tot'] = self.tot
-        retval['recipients'] = self.recipients
-        retval['oneline'] = oneline
+        values['rev'] = self.rev.sha1
+        values['rev_short'] = self.rev.short
+        values['change_type'] = self.change_type
+        values['refname'] = self.refname
+        values['short_refname'] = self.reference_change.short_refname
+        values['refname_type'] = self.reference_change.refname_type
+        values['reply_to_msgid'] = self.reference_change.msgid
+        values['num'] = self.num
+        values['tot'] = self.tot
+        values['recipients'] = self.recipients
+        values['oneline'] = oneline
 
         try:
-            retval['author'] = self.get_author()
+            values['author'] = self.get_author()
         except UnknownUserError:
             pass
 
-        return retval
+        return values
 
     def get_author(self):
         return read_output(['git', 'log', '--max-count=1', '--format=%aN <%aE>', self.rev.sha1])
@@ -568,24 +568,24 @@ class ReferenceChange(Change):
         self.diffopts = environment.get_diffopts()
 
     def _compute_values(self):
-        retval = Change._compute_values(self)
+        values = Change._compute_values(self)
 
-        retval['change_type'] = self.change_type
-        retval['refname_type'] = self.refname_type
-        retval['refname'] = self.refname
-        retval['short_refname'] = self.short_refname
-        retval['msgid'] = self.msgid
-        retval['recipients'] = self.recipients
-        retval['oldrev'] = str(self.old)
-        retval['oldrev_short'] = self.old.short
-        retval['newrev'] = str(self.new)
-        retval['newrev_short'] = self.new.short
+        values['change_type'] = self.change_type
+        values['refname_type'] = self.refname_type
+        values['refname'] = self.refname
+        values['short_refname'] = self.short_refname
+        values['msgid'] = self.msgid
+        values['recipients'] = self.recipients
+        values['oldrev'] = str(self.old)
+        values['oldrev_short'] = self.old.short
+        values['newrev'] = str(self.new)
+        values['newrev_short'] = self.new.short
 
         if self.old:
-            retval['oldrev_type'] = self.old.type
+            values['oldrev_type'] = self.old.type
         if self.new:
-            retval['newrev_type'] = self.new.type
-        return retval
+            values['newrev_type'] = self.new.type
+        return values
 
     def generate_email_header(self):
         return self.expand_lines(HEADER_TEMPLATE)
@@ -1209,7 +1209,7 @@ class Environment(object):
         unless you want to provide additional values to be used in the
         templates."""
 
-        retval = {
+        values = {
             'repo_shortname' : self.get_repo_shortname(),
             'administrator' : self.get_administrator(),
             'projectdesc' : self.get_projectdesc(),
@@ -1219,20 +1219,20 @@ class Environment(object):
             emailprefix = ''
         else:
             emailprefix = emailprefix.strip() + ' '
-        retval['emailprefix'] = emailprefix
+        values['emailprefix'] = emailprefix
         if self.get_envelopesender() is not None:
-            retval['sender'] = self.get_envelopesender()
+            values['sender'] = self.get_envelopesender()
 
         try:
             # If pusher_email is available, use it for both pusher and
             # pusher_email.
-            retval['pusher'] = retval['pusher_email'] = self.get_pusher_email()
+            values['pusher'] = values['pusher_email'] = self.get_pusher_email()
         except UnknownUserError:
             # pusher_email is not available; use the plain pusher and
             # leave pusher_email unset.
-            retval['pusher'] = self.get_pusher()
+            values['pusher'] = self.get_pusher()
 
-        return retval
+        return values
 
     def get_repo_shortname(self):
         """Return a short name for the repository, for display purposes."""
