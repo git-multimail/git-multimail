@@ -883,7 +883,7 @@ class AnnotatedTagChange(ReferenceChange):
             old=old, new=new, rev=rev,
             )
         self.recipients = environment.get_announce_recipients(self)
-        self.show_shortlog = environment.get_announce_show_shortlog()
+        self.show_shortlog = environment.announce_show_shortlog
 
     ANNOTATED_TAG_FORMAT = (
         '%(*objectname)\n'
@@ -1235,6 +1235,10 @@ class Environment(object):
             be sent.  Ideally, it should include a valid email
             address.
 
+        announce_show_shortlog (bool)
+
+            True iff announce emails should include a shortlog.
+
     """
 
     def __init__(self):
@@ -1249,6 +1253,8 @@ class Environment(object):
                 self.projectdesc = 'UNNAMED PROJECT'
         except IOError:
             self.projectdesc = 'UNNAMED PROJECT'
+
+        self.announce_show_shortlog = False
 
     def get_values(self):
         if self._values is None:
@@ -1315,11 +1321,6 @@ class Environment(object):
 
         raise NotImplementedError()
 
-    def get_announce_show_shortlog(self):
-        """Return True iff announce emails should include a shortlog."""
-
-        return False
-
     def get_maxlines(self):
         """Return the maximum number of lines that should be included in an email.
 
@@ -1362,7 +1363,9 @@ class ConfigEnvironment(Environment):
             'announcelist', 'refchangelist', 'mailinglist'
             )
         self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
-        self._announce_show_shortlog = self.config.get_bool('announceshortlog', default=False)
+        self.announce_show_shortlog = self.config.get_bool(
+            'announceshortlog', default=self.announce_show_shortlog
+            )
         self.sender = self.config.get('envelopesender', default=None)
         self.administrator = (
             self.config.get('administrator')
@@ -1421,9 +1424,6 @@ class ConfigEnvironment(Environment):
 
     def get_revision_recipients(self, revision):
         return self._revision_recipients
-
-    def get_announce_show_shortlog(self):
-        return self._announce_show_shortlog
 
     def get_maxlines(self):
         return self._maxlines
