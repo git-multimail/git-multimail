@@ -1195,6 +1195,10 @@ class Environment(object):
 
             A short name for the repository, for display purposes.
 
+        emailprefix
+
+            A string that will be prefixed to every email's subject.
+
         pusher
 
             The username of the person who pushed the changes.  If
@@ -1233,6 +1237,7 @@ class Environment(object):
         self.pusher_email = None
         self.administrator = 'the administrator of this repository'
         self._values = None
+        self.emailprefix = ''
 
     def get_values(self):
         if self._values is None:
@@ -1254,12 +1259,7 @@ class Environment(object):
             'administrator' : self.administrator,
             'projectdesc' : self.get_projectdesc(),
             }
-        emailprefix = self.get_emailprefix()
-        if not emailprefix or not emailprefix.strip():
-            emailprefix = ''
-        else:
-            emailprefix = emailprefix.strip() + ' '
-        values['emailprefix'] = emailprefix
+        values['emailprefix'] = self.emailprefix
         if self.sender is not None:
             values['sender'] = self.sender
 
@@ -1308,11 +1308,6 @@ class Environment(object):
         """Return True iff announce emails should include a shortlog."""
 
         return False
-
-    def get_emailprefix(self):
-        """Return a string that will be prefixed to every email's subject."""
-
-        return '[%s]' % (self.repo_shortname,)
 
     def get_maxlines(self):
         """Return the maximum number of lines that should be included in an email.
@@ -1374,9 +1369,13 @@ class ConfigEnvironment(Environment):
             self.config.get('administrator')
             or self.administrator
             )
-        self._emailprefix = self.config.get('emailprefix', default=None)
-        if self._emailprefix is None:
-            self._emailprefix = Environment.get_emailprefix(self)
+
+        emailprefix = self.config.get('emailprefix', default=None)
+        if emailprefix and emailprefix.strip():
+            self.emailprefix = emailprefix.strip() + ' '
+        else:
+            self.emailprefix = '[%s]' % (self.repo_shortname,)
+
         self._maxlines = int(self.config.get('emailmaxlines', default='0')) or None
 
         diffopts = self.config.get('diffopts', None)
@@ -1426,9 +1425,6 @@ class ConfigEnvironment(Environment):
 
     def get_announce_show_shortlog(self):
         return self._announce_show_shortlog
-
-    def get_emailprefix(self):
-        return self._emailprefix
 
     def get_maxlines(self):
         return self._maxlines
