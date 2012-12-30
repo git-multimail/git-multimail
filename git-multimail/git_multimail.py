@@ -1119,13 +1119,15 @@ class OutputMailer(Mailer):
 
     This is intended for debugging purposes."""
 
+    SEPARATOR = '=' * 75 + '\n'
+
     def __init__(self, f):
         self.f = f
 
     def send(self, lines):
-        self.f.write('=' * 75 + '\n')
+        self.f.write(self.SEPARATOR)
         self.f.writelines(lines)
-        self.f.write('=' * 75 + '\n')
+        self.f.write(self.SEPARATOR)
 
 
 # Set GIT_DIR either from the working directory, or based on the
