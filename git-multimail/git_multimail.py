@@ -1207,9 +1207,18 @@ class Environment(object):
 
             The 'From' email address.
 
+        administrator
+
+            The name and/or email of the repository administrator.
+            This value is used in the footer as the person to whom
+            requests to be removed from the notification list should
+            be sent.  Ideally, it should include a valid email
+            address.
+
     """
 
     def __init__(self):
+        self.administrator = 'the administrator of this repository'
         self._values = None
 
     def get_values(self):
@@ -1229,7 +1238,7 @@ class Environment(object):
 
         values = {
             'repo_shortname' : self.repo_shortname,
-            'administrator' : self.get_administrator(),
+            'administrator' : self.administrator,
             'projectdesc' : self.get_projectdesc(),
             }
         emailprefix = self.get_emailprefix()
@@ -1301,18 +1310,6 @@ class Environment(object):
 
         return False
 
-    def get_administrator(self):
-        """Return the name and/or email of the repository administrator.
-
-        It is used in the footer as the person to whom requests to be
-        removed from the notification list should be sent.  Ideally,
-        it should include a valid email address."""
-
-        return (
-            self.sender
-            or 'the administrator of this repository'
-            )
-
     def get_emailprefix(self):
         """Return a string that will be prefixed to every email's subject."""
 
@@ -1372,9 +1369,9 @@ class ConfigEnvironment(Environment):
         self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
         self._announce_show_shortlog = self.config.get_bool('announceshortlog', default=False)
         self.sender = self.config.get('envelopesender', default=None)
-        self._administrator = (
+        self.administrator = (
             self.config.get('administrator')
-            or Environment.get_administrator(self)
+            or self.administrator
             )
         self._emailprefix = self.config.get('emailprefix', default=None)
         if self._emailprefix is None:
@@ -1434,9 +1431,6 @@ class ConfigEnvironment(Environment):
 
     def get_announce_show_shortlog(self):
         return self._announce_show_shortlog
-
-    def get_administrator(self):
-        return self._administrator
 
     def get_emailprefix(self):
         return self._emailprefix
