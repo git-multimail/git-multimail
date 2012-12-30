@@ -1192,9 +1192,15 @@ class Environment(object):
     """
 
     def __init__(self):
-        pass
+        self._values = None
 
     def get_values(self):
+        if self._values is None:
+            self._values = self._compute_values()
+
+        return self._values.copy()
+
+    def _compute_values(self):
         """Return a dictionary {keyword : expansion} for this Environment.
 
         This method is called by Change._compute_values().  The keys
