@@ -1220,8 +1220,8 @@ class Environment(object):
         else:
             emailprefix = emailprefix.strip() + ' '
         values['emailprefix'] = emailprefix
-        if self.get_envelopesender() is not None:
-            values['sender'] = self.get_envelopesender()
+        if self.get_sender() is not None:
+            values['sender'] = self.get_sender()
 
         try:
             # If pusher_email is available, use it for both pusher and
@@ -1299,7 +1299,7 @@ class Environment(object):
 
         return False
 
-    def get_envelopesender(self):
+    def get_sender(self):
         """Return the 'From' email address."""
 
         raise NotImplementedError()
@@ -1312,7 +1312,7 @@ class Environment(object):
         it should include a valid email address."""
 
         return (
-            self.get_envelopesender()
+            self.get_sender()
             or 'the administrator of this repository'
             )
 
@@ -1369,7 +1369,7 @@ class ConfigEnvironment(Environment):
             )
         self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
         self._announce_show_shortlog = self.config.get_bool('announceshortlog', default=False)
-        self._envelopesender = self.config.get('envelopesender', default=None)
+        self._sender = self.config.get('envelopesender', default=None)
         self._administrator = (
             self.config.get('administrator')
             or Environment.get_administrator(self)
@@ -1433,8 +1433,8 @@ class ConfigEnvironment(Environment):
     def get_announce_show_shortlog(self):
         return self._announce_show_shortlog
 
-    def get_envelopesender(self):
-        return self._envelopesender
+    def get_sender(self):
+        return self._sender
 
     def get_administrator(self):
         return self._administrator
@@ -1753,7 +1753,7 @@ def main(args):
         if options.stdout:
             mailer = OutputMailer(sys.stdout)
         else:
-            mailer = SendMailer(environment.get_envelopesender())
+            mailer = SendMailer(environment.get_sender())
 
         # Dual mode: if arguments were specified on the command line, run
         # like an update hook; otherwise, run as a post-receive hook.
