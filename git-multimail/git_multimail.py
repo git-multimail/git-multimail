@@ -409,17 +409,15 @@ class Change(object):
         Return a dictionary mapping keywords to the values that they
         should be expanded to for this Change (used when interpolating
         template strings).  If any keyword arguments are supplied, add
-        those to the return value as well.  The return value should
-        not be modified."""
+        those to the return value as well."""
 
         if self._values is None:
             self._values = self._compute_values()
+
+        values = self._values.copy()
         if extra_values:
-            values = self._values.copy()
             values.update(extra_values)
-            return values
-        else:
-            return self._values
+        return values
 
     def expand(self, template, **extra_values):
         """Expand template.
