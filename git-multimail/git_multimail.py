@@ -1355,9 +1355,14 @@ class Environment(object):
 class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
 
-    def __init__(self, config, recipients=None):
+    def __init__(self, config, repo_shortname, pusher, recipients=None):
         Environment.__init__(self)
         self.config = config
+
+        # If there is a config setting, it overrides the constructor parameter:
+        self._repo_shortname = self.config.get('reponame', default=repo_shortname)
+
+        self._pusher = pusher
         self.recipients = recipients
         self.emaildomain = self.config.get('emaildomain')
         # The recipients for various types of notification emails, as
@@ -1430,6 +1435,12 @@ class ConfigEnvironment(Environment):
     def get_revision_recipients(self, revision):
         return self._revision_recipients
 
+    def get_repo_shortname(self):
+        return self._repo_shortname
+
+    def get_pusher(self):
+        return self._pusher
+
     def get_announce_show_shortlog(self):
         return self._announce_show_shortlog
 
@@ -1453,15 +1464,14 @@ class GenericEnvironment(ConfigEnvironment):
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)?$')
 
     def __init__(self, config, recipients=None):
-        ConfigEnvironment.__init__(self, config, recipients=recipients)
-        self._repo_shortname = self._compute_repo_shortname()
-        self._pusher = os.environ.get('USER', 'unknown user')
+        ConfigEnvironment.__init__(
+            self, config,
+            repo_shortname=self._compute_repo_shortname(),
+            pusher=os.environ.get('USER', 'unknown user'),
+            recipients=recipients,
+            )
 
     def _compute_repo_shortname(self):
-        retval = self.config.get('reponame', default=None)
-        if retval:
-            return retval
-
         if read_output(['git', 'rev-parse', '--is-bare-repository']) == 'true':
             path = GIT_DIR
         else:
@@ -1477,31 +1487,15 @@ class GenericEnvironment(ConfigEnvironment):
         else:
             return 'unknown repository'
 
-    def get_repo_shortname(self):
-        return self._repo_shortname
-
-    def get_pusher(self):
-        return self._pusher
-
 
 class GitoliteEnvironment(ConfigEnvironment):
     def __init__(self, config, recipients=None):
-        ConfigEnvironment.__init__(self, config, recipients=recipients)
-        self._repo_shortname = self._compute_repo_shortname()
-        self._pusher = os.environ.get('GL_USER', 'unknown user')
-
-    def _compute_repo_shortname(self):
-        retval = self.config.get('reponame', default=None)
-        if retval:
-            return retval
-        else:
-            return os.environ.get('GL_REPO', 'unknown repository')
-
-    def get_repo_shortname(self):
-        return self._repo_shortname
-
-    def get_pusher(self):
-        return self._pusher
+        ConfigEnvironment.__init__(
+            self, config,
+            repo_shortname=os.environ.get('GL_REPO', 'unknown repository'),
+            pusher=os.environ.get('GL_USER', 'unknown user'),
+            recipients=recipients,
+            )
 
 
 class Push(object):
