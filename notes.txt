@@ -46,6 +46,9 @@ git-multimail-v2
 
 * More testing.
 
+* Check for and reimplement any changes that have been made in
+  post-receive-email since the last import.
+
 
 Ideas for the future
 ====================
