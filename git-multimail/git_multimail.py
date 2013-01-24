@@ -1300,12 +1300,6 @@ class Environment(object):
         self._values = None
 
     def get_values(self):
-        if self._values is None:
-            self._values = self._compute_values()
-
-        return self._values.copy()
-
-    def _compute_values(self):
         """Return a dictionary {keyword : expansion} for this Environment.
 
         This method is called by Change._compute_values().  The keys
@@ -1313,12 +1307,15 @@ class Environment(object):
         the templates.  The dictionary is created by reading from self
         the attributes named in VALUE_KEYS."""
 
-        values = {}
-        for key in self.VALUE_KEYS:
-            value = getattr(self, key, None)
-            if value is not None:
-                values[key] = value
-        return values
+        if self._values is None:
+            values = {}
+            for key in self.VALUE_KEYS:
+                value = getattr(self, key, None)
+                if value is not None:
+                    values[key] = value
+            self._values = values
+
+        return self._values.copy()
 
     def get_refchange_recipients(self, refchange):
         """Return the recipients for notifications about refchange.
