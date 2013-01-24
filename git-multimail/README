@@ -10,6 +10,9 @@ script.  See README.migrate-from-post-receive-email for details about
 the differences and for how to migrate from post-receive-email to
 git-multimail.
 
+git-multimail, like the rest of the git project, is licensed under
+GPLv2 (see the COPYING file for details).
+
 
 By default, for each push received by the repository, git-multimail:
 
