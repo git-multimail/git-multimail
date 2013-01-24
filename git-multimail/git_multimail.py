@@ -410,6 +410,12 @@ class GitObject(object):
 
 
 class Change(object):
+    """A Change that has been made to the Git repository.
+
+    Abstract class from which both Revisions and ReferenceChanges are
+    derived.  A Change knows how to generate a notification email
+    describing itself."""
+
     def __init__(self, environment):
         self.environment = environment
         self._values = None
@@ -515,6 +521,8 @@ class Change(object):
 
 
 class Revision(Change):
+    """A Change consisting of a single git commit."""
+
     def __init__(self, environment, reference_change, rev, num, tot):
         Change.__init__(self, environment)
         self.reference_change = reference_change
@@ -574,6 +582,18 @@ class Revision(Change):
 
 
 class ReferenceChange(Change):
+    """A Change to a Git reference.
+
+    An abstract class representing a create, update, or delete of a
+    Git reference.  Derived classes handle specific types of reference
+    (e.g., tags vs. branches).  These classes generate the main
+    reference change email summarizing the reference change and
+    whether it caused any any commits to be added or removed.
+
+    ReferenceChange objects are usually created using the get_change()
+    function, which has the logic to decide which derived class to
+    instantiate."""
+
     def __init__(self, environment, refname, short_refname, old, new, rev):
         Change.__init__(self, environment)
         self.change_type = {
