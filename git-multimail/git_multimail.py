@@ -419,9 +419,10 @@ class Change(object):
 
         Derived classes overload this method to add more entries to
         the return value.  This method is used internally by
-        get_values()."""
+        get_values().  The return value should always be a new
+        dictionary."""
 
-        return self.environment.get_values().copy()
+        return self.environment.get_values()
 
     def get_values(self, **extra_values):
         """Return a dictionary {keyword : expansion} for this Change.
@@ -429,7 +430,8 @@ class Change(object):
         Return a dictionary mapping keywords to the values that they
         should be expanded to for this Change (used when interpolating
         template strings).  If any keyword arguments are supplied, add
-        those to the return value as well."""
+        those to the return value as well.  The return value is always
+        a new dictionary."""
 
         if self._values is None:
             self._values = self._compute_values()
@@ -1305,7 +1307,8 @@ class Environment(object):
         This method is called by Change._compute_values().  The keys
         in the returned dictionary are available to be used in any of
         the templates.  The dictionary is created by reading from self
-        the attributes named in VALUE_KEYS."""
+        the attributes named in VALUE_KEYS that are set and not None.
+        The return value is always a new dictionary."""
 
         if self._values is None:
             values = {}
