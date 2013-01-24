@@ -326,9 +326,14 @@ class Config(object):
 
 
 def read_log_oneline(*log_args):
-    """Generate a one-line summary for each revision in revspec."""
+    """Generate a one-line summary for each revision requested.
 
-    cmd = ['git', 'log', '--abbrev=10', '--format=%h %s'] + list(log_args)
+    The arguments are strings that will be passed directly to "git
+    log" as revision selectors."""
+
+    cmd = [
+        'git', 'log', '--abbrev=10', '--format=%h %s',
+        ] + list(log_args) + ['--']
     return read_lines(cmd)
 
 
