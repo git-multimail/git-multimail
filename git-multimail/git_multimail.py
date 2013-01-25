@@ -1099,26 +1099,14 @@ def get_change(environment, oldrev, newrev, refname):
 
     if rev.type == 'tag':
         # Annotated tag:
-        return AnnotatedTagChange(
-            environment,
-            refname=refname, short_refname=short_refname,
-            old=old, new=new, rev=rev,
-            )
+        klass = AnnotatedTagChange
     elif rev.type == 'commit':
         if area == 'tags':
             # Non-annotated tag:
-            return NonAnnotatedTagChange(
-                environment,
-                refname=refname, short_refname=short_refname,
-                old=old, new=new, rev=rev,
-                )
+            klass = NonAnnotatedTagChange
         elif area == 'heads':
             # Branch:
-            return BranchChange(
-                environment,
-                refname=refname, short_refname=short_refname,
-                old=old, new=new, rev=rev,
-                )
+            klass = BranchChange
         elif area == 'remotes':
             # Tracking branch:
             sys.stderr.write(
@@ -1126,6 +1114,7 @@ def get_change(environment, oldrev, newrev, refname):
                 '***  - incomplete email generated.\n'
                  % (refname,)
                 )
+            klass = OtherReferenceChange
         else:
             # Some other reference namespace:
             sys.stderr.write(
@@ -1133,6 +1122,7 @@ def get_change(environment, oldrev, newrev, refname):
                 '***  - incomplete email generated.\n'
                  % (refname,)
                 )
+            klass = OtherReferenceChange
     else:
         # Anything else (is there anything else?)
         sys.stderr.write(
@@ -1140,10 +1130,9 @@ def get_change(environment, oldrev, newrev, refname):
             '***  - incomplete email generated.\n'
              % (refname, rev.type,)
             )
+        klass = OtherReferenceChange
 
-    # For the cases not handled explicitly above, generate an
-    # OtherReferenceChange:
-    return OtherReferenceChange(
+    return klass(
         environment,
         refname=refname, short_refname=short_refname,
         old=old, new=new, rev=rev,
