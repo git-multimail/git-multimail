@@ -1224,7 +1224,6 @@ class Environment(object):
         ]
 
     def __init__(self):
-        self.pusher_email = None
         self.administrator = 'the administrator of this repository'
         self.emailprefix = ''
 
@@ -1309,10 +1308,10 @@ class ConfigEnvironment(Environment):
             # both pusher and pusher_email.
             self.pusher = self.pusher_email = '%s@%s' % (pusher, self.emaildomain)
         else:
-            # We can't derive the pusher's email address, so leave
-            # pusher_email set to None and use the naked username as
-            # pusher.
+            # We can't derive the pusher's email address, so use the
+            # naked username as pusher and set pusher_email to None.
             self.pusher = pusher
+            self.pusher_email = None
 
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
