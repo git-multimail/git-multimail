@@ -13,13 +13,7 @@ git-multimail-v2
   namespace "multimailhook.*", as opposed to something like
   "hook.multimail.*"?
 
-* Better configurability; add support and documentation for:
-
-  * Changing template contents.
-
-    * Document the variables that can be used in the templates.
-
-  * Making other configuration changes without editing the script.
+* Document the variables that can be used in the templates.
 
 * Make sure that email texts (i.e., in templates) are appropriate even
   for people who are subscribed to only some of the lists.
@@ -32,17 +26,8 @@ git-multimail-v2
   * Make sure that script does not emit enormous emails for
     apparently-text files that have extremely long lines.
 
-  * Perhaps add a hook to allow patches to be cleaned up somehow
-    before being sent.
-
-* Make sure that default values for envelopesender, From, Reply-To,
-  etc. are OK.
-
-* Support LDAP, for example:
-
-  * Add an LDAP environment (?)
-
-  * Add an example plugin for working with LDAP (?)
+  * Perhaps add a hook to allow patches to be cleaned up more
+    generally before being sent.
 
 * More testing.
 
@@ -53,9 +38,19 @@ git-multimail-v2
 Ideas for the future
 ====================
 
+* Support LDAP, for example by adding an LDAP environment:
+
+  * Use LDAP to convert pusher usernames to email addresses.
+
+  * Allow recipients to be configured via LDAP
+
+  Are LDAP schemas uniform enough that we could do something that
+  would be generally useful?
+
 * Make the templating system more flexible and easier to configure.
 
-* Use textwrap to correctly wrap prose output in the notification emails.
+* Use textwrap to correctly wrap prose output in the notification
+  emails.
 
 * Each commit is threaded with one of the ReferenceChanges in the push
   that first introduced the commit.  The algorithm for grouping them

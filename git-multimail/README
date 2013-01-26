@@ -253,11 +253,12 @@ by setting a "multimailhook.environment" config setting (which can
 have the value "generic" or "gitolite") or by passing an --environment
 option to the script.
 
-You can override the Environment class to customize the script to
-idiosyncrasies your own environment.  To do so, you need to import
-git_multimail.py as a Python module, as in the example post-receive
-script, and set the "environment" variable to an instance of your
-environment class.
+You can override the Environment class using arbitrary Python code to
+customize the script to idiosyncrasies your own environment.  To do
+so, you need to import git_multimail.py as a Python module, as in the
+example post-receive script, and set the "environment" variable to an
+instance of your environment class.  Your environment class should
+usually inherit from one of the provided Environment classes.
 
 
 Footnotes

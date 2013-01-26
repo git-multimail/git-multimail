@@ -86,6 +86,11 @@ to the main README file:
   which commits were not present before the change, therefore avoiding
   that error.
 
+* In reference change emails, git-multimail tells which commits have
+  been added to the reference vs. are entirely new to the repository,
+  and which commits that have been omitted from the reference
+  vs. entirely discarded from the repository.
+
 * The environment in which git is running can be configured via an
   "Environment" abstraction.
 
