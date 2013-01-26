@@ -590,9 +590,77 @@ class ReferenceChange(Change):
     reference change email summarizing the reference change and
     whether it caused any any commits to be added or removed.
 
-    ReferenceChange objects are usually created using the get_change()
-    function, which has the logic to decide which derived class to
-    instantiate."""
+    ReferenceChange objects are usually created using the static
+    create() method, which has the logic to decide which derived class
+    to instantiate."""
+
+    REF_RE = re.compile(r'^refs\/(?P<area>[^\/]+)\/(?P<shortname>.*)$')
+
+    @staticmethod
+    def create(environment, oldrev, newrev, refname):
+        """Return a ReferenceChange object representing the change.
+
+        Return an object that represents the type of change that is being
+        made. oldrev and newrev should be SHA1s or ZEROS."""
+
+        old = GitObject(oldrev)
+        new = GitObject(newrev)
+        rev = new or old
+
+        # The revision type tells us what type the commit is, combined with
+        # the location of the ref we can decide between
+        #  - working branch
+        #  - tracking branch
+        #  - unannotated tag
+        #  - annotated tag
+        m = ReferenceChange.REF_RE.match(refname)
+        if m:
+            area = m.group('area')
+            short_refname = m.group('shortname')
+        else:
+            area = ''
+            short_refname = refname
+
+        if rev.type == 'tag':
+            # Annotated tag:
+            klass = AnnotatedTagChange
+        elif rev.type == 'commit':
+            if area == 'tags':
+                # Non-annotated tag:
+                klass = NonAnnotatedTagChange
+            elif area == 'heads':
+                # Branch:
+                klass = BranchChange
+            elif area == 'remotes':
+                # Tracking branch:
+                sys.stderr.write(
+                    '*** Push-update of tracking branch %r\n'
+                    '***  - incomplete email generated.\n'
+                     % (refname,)
+                    )
+                klass = OtherReferenceChange
+            else:
+                # Some other reference namespace:
+                sys.stderr.write(
+                    '*** Push-update of strange reference %r\n'
+                    '***  - incomplete email generated.\n'
+                     % (refname,)
+                    )
+                klass = OtherReferenceChange
+        else:
+            # Anything else (is there anything else?)
+            sys.stderr.write(
+                '*** Unknown type of update to %r (%s)\n'
+                '***  - incomplete email generated.\n'
+                 % (refname, rev.type,)
+                )
+            klass = OtherReferenceChange
+
+        return klass(
+            environment,
+            refname=refname, short_refname=short_refname,
+            old=old, new=new, rev=rev,
+            )
 
     def __init__(self, environment, refname, short_refname, old, new, rev):
         Change.__init__(self, environment)
@@ -1068,75 +1136,6 @@ class OtherReferenceChange(ReferenceChange):
             old=old, new=new, rev=rev,
             )
         self.recipients = environment.get_refchange_recipients(self)
-
-
-ref_re = re.compile(r'^refs\/(?P<area>[^\/]+)\/(?P<shortname>.*)$')
-
-
-def get_change(environment, oldrev, newrev, refname):
-    """Return a ReferenceChange object representing the change.
-
-    Return an object that represents the type of change that is being
-    made. oldrev and newrev should be SHA1s or ZEROS."""
-
-    old = GitObject(oldrev)
-    new = GitObject(newrev)
-    rev = new or old
-
-    # The revision type tells us what type the commit is, combined with
-    # the location of the ref we can decide between
-    #  - working branch
-    #  - tracking branch
-    #  - unannotated tag
-    #  - annotated tag
-    m = ref_re.match(refname)
-    if m:
-        area = m.group('area')
-        short_refname = m.group('shortname')
-    else:
-        area = ''
-        short_refname = refname
-
-    if rev.type == 'tag':
-        # Annotated tag:
-        klass = AnnotatedTagChange
-    elif rev.type == 'commit':
-        if area == 'tags':
-            # Non-annotated tag:
-            klass = NonAnnotatedTagChange
-        elif area == 'heads':
-            # Branch:
-            klass = BranchChange
-        elif area == 'remotes':
-            # Tracking branch:
-            sys.stderr.write(
-                '*** Push-update of tracking branch %r\n'
-                '***  - incomplete email generated.\n'
-                 % (refname,)
-                )
-            klass = OtherReferenceChange
-        else:
-            # Some other reference namespace:
-            sys.stderr.write(
-                '*** Push-update of strange reference %r\n'
-                '***  - incomplete email generated.\n'
-                 % (refname,)
-                )
-            klass = OtherReferenceChange
-    else:
-        # Anything else (is there anything else?)
-        sys.stderr.write(
-            '*** Unknown type of update to %r (%s)\n'
-            '***  - incomplete email generated.\n'
-             % (refname, rev.type,)
-            )
-        klass = OtherReferenceChange
-
-    return klass(
-        environment,
-        refname=refname, short_refname=short_refname,
-        old=old, new=new, rev=rev,
-        )
 
 
 class Mailer(object):
@@ -1676,7 +1675,7 @@ class Push(object):
 
 def run_as_post_receive_hook(environment, mailer):
     changes = [
-        get_change(environment, oldrev, newrev, refname)
+        ReferenceChange.create(environment, oldrev, newrev, refname)
         for (oldrev, newrev, refname) in read_updates(sys.stdin)
         ]
     push = Push(environment, changes)
@@ -1685,7 +1684,7 @@ def run_as_post_receive_hook(environment, mailer):
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
     changes = [
-        get_change(
+        ReferenceChange.create(
             environment,
             read_output(['git', 'rev-parse', '--verify', oldrev]),
             read_output(['git', 'rev-parse', '--verify', newrev]),
