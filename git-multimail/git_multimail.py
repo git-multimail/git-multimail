@@ -1056,12 +1056,15 @@ class NonAnnotatedTagChange(ReferenceChange):
 
 
 class OtherReferenceChange(ReferenceChange):
-    refname_type = 'other reference'
+    refname_type = 'reference'
 
     def __init__(self, environment, refname, short_refname, old, new, rev):
+        # We use the full refname as short_refname, because otherwise
+        # the full name of the reference would not be obvious from the
+        # text of the email.
         ReferenceChange.__init__(
             self, environment,
-            refname=refname, short_refname=short_refname,
+            refname=refname, short_refname=refname,
             old=old, new=new, rev=rev,
             )
         self.recipients = environment.get_refchange_recipients(self)
