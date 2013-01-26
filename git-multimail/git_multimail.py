@@ -1522,7 +1522,7 @@ class Push(object):
         self.environment = environment
         self.changes = sorted(changes, key=self._sort_key)
 
-        # The set of refnames unaffected by this push:
+        # The SHA1s referred to by references unaffected by this push:
         self.other_refs = self._compute_other_refs()
 
         self._old_rev_exclusion_spec = self._compute_old_rev_exclusion_spec()
@@ -1533,18 +1533,30 @@ class Push(object):
         return (klass.SORT_ORDER[change.__class__, change.change_type], change.refname,)
 
     def _compute_other_refs(self):
-        """Return the set of names of references unaffected by this push."""
+        """Return the set of SHA1 targets of references unaffected by this push.
 
-        # The refnames of all references in this repository:
-        all_refs = set(
-            read_lines(['git', 'for-each-ref', '--format=%(refname)'])
-            )
+        These will be needed when determining which commits have never
+        been seen before and which commits are being discarded by the
+        push.  We record SHA1s rather than reference names because
+        reference names are always subject to change (e.g., by another
+        push).  In fact, there is no way to entirely rule out
+        simultaneous changes, but at least we can minimize the window
+        of time during which they matter."""
+
         # The refnames being changed by this push:
         updated_refs = set(
             change.refname
             for change in self.changes
             )
-        return all_refs - updated_refs
+
+        # The refnames of all references in this repository:
+        all_refs = set()
+        for line in read_lines(['git', 'for-each-ref']):
+            (sha1, type, name) = line.split()
+            if name not in updated_refs:
+                all_refs.add(sha1)
+
+        return all_refs
 
     def _compute_old_rev_exclusion_spec(self):
         """Return a string that excludes old revisions from 'git rev-list' output.
@@ -1563,7 +1575,7 @@ class Push(object):
             )
 
         return ''.join(
-            ['^%s\n' % (refname,) for refname in self.other_refs]
+            ['^%s\n' % (sha1,) for sha1 in self.other_refs]
             + ['^%s\n' % (rev,) for rev in old_revs]
             )
 
@@ -1606,7 +1618,7 @@ class Push(object):
             )
 
         return ''.join(
-            ['^%s\n' % (refname,) for refname in self.other_refs]
+            ['^%s\n' % (sha1,) for sha1 in self.other_refs]
             + ['^%s\n' % (rev,) for rev in new_revs]
             )
 
