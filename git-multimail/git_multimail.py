@@ -402,6 +402,12 @@ class GitObject(object):
 
         self.short = read_output(['git', 'rev-parse', '--short=10', sha1])
 
+    def __eq__(self, other):
+        return isinstance(other, GitObject) and self.sha1 == other.sha1
+
+    def __hash__(self):
+        return hash(self.sha1)
+
     def __nonzero__(self):
         return bool(self.sha1)
 
@@ -1522,26 +1528,22 @@ class Push(object):
         self.environment = environment
         self.changes = sorted(changes, key=self._sort_key)
 
-        # The SHA1s referred to by references unaffected by this push:
-        self.other_refs = self._compute_other_refs()
+        # The GitObjects referred to by references unaffected by this push:
+        other_refs = self._compute_other_refs()
 
-        self._old_rev_exclusion_spec = self._compute_old_rev_exclusion_spec()
-        self._new_rev_exclusion_spec = self._compute_new_rev_exclusion_spec()
+        self._old_rev_exclusion_spec = self._compute_rev_exclusion_spec(
+            other_refs.union(change.old for change in self.changes)
+            )
+        self._new_rev_exclusion_spec = self._compute_rev_exclusion_spec(
+            other_refs.union(change.new for change in self.changes)
+            )
 
     @classmethod
     def _sort_key(klass, change):
         return (klass.SORT_ORDER[change.__class__, change.change_type], change.refname,)
 
     def _compute_other_refs(self):
-        """Return the set of SHA1 targets of references unaffected by this push.
-
-        These will be needed when determining which commits have never
-        been seen before and which commits are being discarded by the
-        push.  We record SHA1s rather than reference names because
-        reference names are always subject to change (e.g., by another
-        push).  In fact, there is no way to entirely rule out
-        simultaneous changes, but at least we can minimize the window
-        of time during which they matter."""
+        """Return the GitObjects referred to by references unaffected by this push."""
 
         # The refnames being changed by this push:
         updated_refs = set(
@@ -1549,35 +1551,32 @@ class Push(object):
             for change in self.changes
             )
 
-        # The refnames of all references in this repository *except*
-        # those affected by this push:
+        # The GitObjects referred to by all references in this
+        # repository *except* updated_refs:
         all_refs = set()
         for line in read_lines(['git', 'for-each-ref']):
             (sha1, type, name) = line.split()
-            if type in ['commit', 'tag'] and name not in updated_refs:
-                all_refs.add(sha1)
+            if name not in updated_refs:
+                all_refs.add(GitObject(sha1, type))
 
         return all_refs
 
-    def _compute_old_rev_exclusion_spec(self):
-        """Return a string that excludes old revisions from 'git rev-list' output.
+    def _compute_rev_exclusion_spec(self, git_objects):
+        """Return an exclusion specification for 'git rev-list'.
 
-        Return a string that can be passed to the standard input of
-        'git rev-list --stdin' to exclude all of the commits that were
-        in the repository before this push."""
+        git_objects is an iterable over GitObject instances.  Return a
+        string that can be passed to the standard input of 'git
+        rev-list --stdin' to exclude all of the commits referred to by
+        git_objects."""
 
-        # The objects pointed to by the old values of the refs that
-        # were updated.  (Some of these might not be commits, but that
-        # doesn't bother 'git rev-list'):
-        old_revs = set(
-            change.old.sha1
-            for change in self.changes
-            if change.old and change.old.type in ['commit', 'tag']
+        sha1s = set(
+            git_object.sha1
+            for git_object in git_objects
+            if git_object and git_object.type in ['commit', 'tag']
             )
 
         return ''.join(
-            ['^%s\n' % (sha1,) for sha1 in self.other_refs]
-            + ['^%s\n' % (rev,) for rev in old_revs]
+            ['^%s\n' % (sha1,) for sha1 in sorted(sha1s)]
             )
 
     def get_new_commits(self, reference_change=None):
@@ -1601,27 +1600,6 @@ class Push(object):
 
         cmd = ['git', 'rev-list', '--stdin'] + new_revs
         return read_lines(cmd, input=self._old_rev_exclusion_spec)
-
-    def _compute_new_rev_exclusion_spec(self):
-        """Return a string that excludes new revisions from 'git rev-list' output.
-
-        Return a string that can be passed to the standard input of
-        'git rev-list --stdin' to exclude all of the commits that are
-        in the repository after this push."""
-
-        # The objects pointed to by the old values of the refs that
-        # were updated.  (Some of these might not be commits, but that
-        # doesn't bother 'git rev-list'):
-        new_revs = set(
-            change.new.sha1
-            for change in self.changes
-            if change.new and change.new.type in ['commit', 'tag']
-            )
-
-        return ''.join(
-            ['^%s\n' % (sha1,) for sha1 in self.other_refs]
-            + ['^%s\n' % (rev,) for rev in new_revs]
-            )
 
     def get_discarded_commits(self, reference_change):
         """Return a list of commits discarded by this push.
