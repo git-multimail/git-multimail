@@ -1315,7 +1315,11 @@ class ConfigEnvironment(Environment):
 
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
-        # string if no recipients are configured):
+        # string if no recipients are configured).  Although there is
+        # a mechanism to choose the recipient lists based on on the
+        # actual *contents* of the change being reported, we only
+        # choose based on the *type* of the change.  Therefore we can
+        # compute them once and for all:
         self._refchange_recipients = self._get_recipients('refchangelist', 'mailinglist')
         self._announce_recipients = self._get_recipients(
             'announcelist', 'refchangelist', 'mailinglist'
