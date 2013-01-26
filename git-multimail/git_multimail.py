@@ -1549,11 +1549,12 @@ class Push(object):
             for change in self.changes
             )
 
-        # The refnames of all references in this repository:
+        # The refnames of all references in this repository *except*
+        # those affected by this push:
         all_refs = set()
         for line in read_lines(['git', 'for-each-ref']):
             (sha1, type, name) = line.split()
-            if name not in updated_refs:
+            if type in ['commit', 'tag'] and name not in updated_refs:
                 all_refs.add(sha1)
 
         return all_refs
@@ -1571,7 +1572,7 @@ class Push(object):
         old_revs = set(
             change.old.sha1
             for change in self.changes
-            if change.old
+            if change.old and change.old.type in ['commit', 'tag']
             )
 
         return ''.join(
@@ -1614,7 +1615,7 @@ class Push(object):
         new_revs = set(
             change.new.sha1
             for change in self.changes
-            if change.new
+            if change.new and change.new.type in ['commit', 'tag']
             )
 
         return ''.join(
