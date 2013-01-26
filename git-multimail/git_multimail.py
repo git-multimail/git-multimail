@@ -75,6 +75,7 @@ X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
 X-Git-Oldrev: %(oldrev)s
 X-Git-Newrev: %(newrev)s
+Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
@@ -188,6 +189,7 @@ X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
 X-Git-Rev: %(rev)s
+Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
