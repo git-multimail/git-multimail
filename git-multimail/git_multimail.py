@@ -529,8 +529,8 @@ class Change(object):
 class Revision(Change):
     """A Change consisting of a single git commit."""
 
-    def __init__(self, environment, reference_change, rev, num, tot):
-        Change.__init__(self, environment)
+    def __init__(self, reference_change, rev, num, tot):
+        Change.__init__(self, reference_change.environment)
         self.reference_change = reference_change
         self.rev = rev
         self.change_type = self.reference_change.change_type
@@ -738,10 +738,7 @@ class ReferenceChange(Change):
             sha1s.reverse()
             tot = len(sha1s)
             new_revisions = [
-                Revision(
-                    push.environment, self,
-                    GitObject(sha1), num=i+1, tot=tot,
-                    )
+                Revision(self, GitObject(sha1), num=i+1, tot=tot)
                 for (i, sha1) in enumerate(sha1s)
                 ]
 
@@ -860,10 +857,7 @@ class ReferenceChange(Change):
             sha1s = list(push.get_discarded_commits(self))
             tot = len(sha1s)
             discarded_revisions = [
-                Revision(
-                    push.environment, self,
-                    GitObject(sha1), num=i+1, tot=tot,
-                    )
+                Revision(self, GitObject(sha1), num=i+1, tot=tot)
                 for (i, sha1) in enumerate(sha1s)
                 ]
 
@@ -1508,8 +1502,7 @@ class Push(object):
             ])
         )
 
-    def __init__(self, environment, changes):
-        self.environment = environment
+    def __init__(self, changes):
         self.changes = sorted(changes, key=self._sort_key)
 
         # The GitObjects referred to by references unaffected by this push:
@@ -1632,10 +1625,7 @@ class Push(object):
                     sha1s.append(sha1)
                     unhandled_sha1s.remove(sha1)
             for (num, sha1) in enumerate(sha1s):
-                rev = Revision(
-                    self.environment, change,
-                    GitObject(sha1), num=num+1, tot=len(sha1s),
-                    )
+                rev = Revision(change, GitObject(sha1), num=num+1, tot=len(sha1s))
                 if rev.recipients:
                     mailer.send(rev.generate_email(self, maxlines))
 
@@ -1653,7 +1643,7 @@ def run_as_post_receive_hook(environment, mailer):
         ReferenceChange.create(environment, oldrev, newrev, refname)
         for (oldrev, newrev, refname) in read_updates(sys.stdin)
         ]
-    push = Push(environment, changes)
+    push = Push(changes)
     push.send_emails(mailer, maxlines=environment.maxlines)
 
 
@@ -1666,7 +1656,7 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
             refname,
             ),
         ]
-    push = Push(environment, changes)
+    push = Push(changes)
     push.send_emails(mailer, maxlines=environment.maxlines)
 
 
