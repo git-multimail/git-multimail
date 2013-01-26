@@ -237,6 +237,51 @@ t2
 from :32
 M 100644 :33 a.txt
 
+blob
+mark :35
+data 3
+x1
+
+commit refs/remotes/remote
+mark :36
+author Joe User <user@example.com> 1359182362 +0100
+committer Joe User <user@example.com> 1359182362 +0100
+data 3
+x1
+from :2
+M 100644 :35 a.txt
+
+blob
+mark :37
+data 3
+x2
+
+commit refs/remotes/remote
+mark :38
+author Joe User <user@example.com> 1359182379 +0100
+committer Joe User <user@example.com> 1359182379 +0100
+data 3
+x2
+from :36
+M 100644 :37 a.txt
+
+blob
+mark :39
+data 3
+b1
+
+commit refs/foo/bar
+mark :40
+author Joe User <user@example.com> 1359182594 +0100
+committer Joe User <user@example.com> 1359182594 +0100
+data 3
+b1
+from :2
+M 100644 :39 a.txt
+
+reset refs/heads/master
+from :18
+
 tag tag-annotated-new-content
 from :34
 tagger Joe User <user@example.com> 1341056838 +0200
@@ -251,4 +296,7 @@ from :26
 tagger Joe User <user@example.com> 1328258055 +0100
 data 25
 This is an annotated tag
+
+reset refs/tags/tag
+from :26
 

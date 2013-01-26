@@ -89,13 +89,13 @@ test-create refs/tags/recursive-tag
 test-update refs/tags/recursive-tag refs/heads/master
 test-delete refs/tags/recursive-tag
 
-#test-create refs/remotes/remote
-#test-update refs/remotes/remote refs/heads/master
-#test-delete refs/remotes/remote
+test-create refs/remotes/remote
+test-update refs/remotes/remote refs/heads/master
+test-delete refs/remotes/remote
 
-#test-create refs/foo/bar
-#test-update refs/foo/bar refs/heads/master
-#test-delete refs/foo/bar
+test-create refs/foo/bar
+test-update refs/foo/bar refs/heads/master
+test-delete refs/foo/bar
 
 rm -rf "$TESTREPO"
 
