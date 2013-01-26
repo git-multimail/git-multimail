@@ -337,19 +337,6 @@ def read_log_oneline(*log_args):
     return read_lines(cmd)
 
 
-def read_updates(f):
-    """Iterate over (oldrev, newrev, refname) for updates read from f.
-
-    Read from f, which is assumed to be the format passed to the git
-    pre-receive and post-receive hooks.  Output (oldrev, newrev,
-    refname) tuples for each update, where oldrev and newrev are SHA1s
-    or ZEROS and refname is the name of the reference being updated."""
-
-    for line in f:
-        (oldrev, newrev, refname) = line.strip().split(' ', 2)
-        yield (oldrev, newrev, refname)
-
-
 def limit_lines(lines, max_lines):
     for (index, line) in enumerate(lines):
         if index < max_lines:
@@ -1645,10 +1632,12 @@ class Push(object):
 
 
 def run_as_post_receive_hook(environment, mailer):
-    changes = [
-        ReferenceChange.create(environment, oldrev, newrev, refname)
-        for (oldrev, newrev, refname) in read_updates(sys.stdin)
-        ]
+    changes = []
+    for line in sys.stdin:
+        (oldrev, newrev, refname) = line.strip().split(' ', 2)
+        changes.append(
+            ReferenceChange.create(environment, oldrev, newrev, refname)
+            )
     push = Push(changes)
     push.send_emails(mailer, maxlines=environment.maxlines)
 
