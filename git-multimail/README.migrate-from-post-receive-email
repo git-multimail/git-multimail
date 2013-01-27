@@ -133,5 +133,14 @@ to the main README file:
   lists the name of the administrator who should be contacted to
   unsubscribe from notification emails.
 
+* New option multimailhook.emailmaxlinelength to limit the length of
+  lines in the main part of the email body.  The default limit is 500
+  characters.
+
+* New option multimailhook.emailstrictutf8 to ensure that the main
+  part of the email body is valid UTF-8.  Invalid characters are
+  turned into the Unicode replacement character, U+FFFD.  By default
+  this option is turned on.
+
 * Written in Python.  Easier to add new features.
 

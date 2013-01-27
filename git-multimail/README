@@ -195,6 +195,23 @@ multimailhook.emailmaxlines
     beyond the limit are suppressed and counted, and a final line is
     added indicating the number of suppressed lines.
 
+multimailhook.emailmaxlinelength
+
+    The maximum length of a line in the email body.  Lines longer than
+    this limit are truncated to this length with a trailing " [...]"
+    added to indicate the missing text.  The default is 500, because
+    (a) diffs with longer lines are probably from binary files, for
+    which a diff is useless, and (b) even if a text file has such long
+    lines, the diffs are probably unreadable anyway.  To disable line
+    truncation, set this option to 0.
+
+multimailhook.emailstrictutf8
+
+    If this boolean option is set to "true", then the main part of the
+    email body is forced to be valid UTF-8.  Any characters that are
+    not valid UTF-8 are converted to the Unicode replacement
+    character, U+FFFD.  The default is "true".
+
 multimailhook.diffopts
 
     Alternate options for the git diff-tree invocation that summarizes

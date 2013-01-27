@@ -348,6 +348,14 @@ def limit_lines(lines, max_lines):
         yield '... %d lines suppressed ...\n' % (index + 1 - max_lines,)
 
 
+def limit_linelength(lines, max_linelength):
+    for line in lines:
+        # Don't forget that lines always include a trailing newline.
+        if len(line) > max_linelength + 1:
+            line = line[:max_linelength - 7] + ' [...]\n'
+        yield line
+
+
 class CommitSet(object):
     """A (constant) set of object names.
 
@@ -1192,18 +1200,34 @@ class Environment(object):
 
             True iff announce emails should include a shortlog.
 
-        maxlines (int)
+        diffopts (list of strings)
+
+            The options that should be passed to 'git diff' for the
+            summary email.  The value should be a list of strings
+            representing words to be passed to the command.
+
+    Additionally, the default implementation of filter_body() expects
+    the following:
+
+        maxlines (int or None)
 
             The maximum number of lines that should be included in an
             email.  If this value is set and is not None or zero, then
             truncate emails at this length and append a line
             indicating how many more lines were discarded).
 
-        diffopts (list of strings)
+        maxlinelength (int or None)
 
-            The options that should be passed to 'git diff' for the
-            summary email.  The value should be a list of strings
-            representing words to be passed to the command.
+            The maximum length of any single line in the email body.
+            Longer lines are truncated at that length with ' [...]'
+            appended.
+
+        strict_utf8 (bool)
+
+            If this field is set to True, then the email body text is
+            expected to be UTF-8.  Any invalid characters are
+            converted to U+FFFD, the Unicode replacement character
+            (encoded as UTF-8, of course).
 
     """
 
@@ -1230,6 +1254,8 @@ class Environment(object):
 
         self.announce_show_shortlog = False
         self.maxlines = None
+        self.maxlinelength = 500
+        self.strict_utf8 = True
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
 
         self._values = None
@@ -1289,8 +1315,18 @@ class Environment(object):
         lines is an iterable over the lines that would go into the
         email body.  Filter it (e.g., limit the number of lines, the
         line length, character set, etc.), returning another iterable.
-        By default, if self.maxlines is specified, limit the size of
-        the email bodies to approximately that number of lines."""
+        By default, handle self.maxlines, self.maxlinelength, and
+        self.strict_utf8 as described above."""
+
+        if self.strict_utf8:
+            lines = (line.decode('utf-8', 'replace') for line in lines)
+            # Limit the line length in Unicode-space to avoid
+            # splitting characters:
+            if self.maxlinelength:
+                lines = limit_linelength(lines, self.maxlinelength)
+            lines = (line.encode('utf-8', 'replace') for line in lines)
+        elif self.maxlinelength:
+            lines = limit_linelength(lines, self.maxlinelength)
 
         if self.maxlines:
             lines = limit_lines(lines, self.maxlines)
@@ -1351,6 +1387,14 @@ class ConfigEnvironment(Environment):
         maxlines = self.config.get('emailmaxlines', default=None)
         if maxlines is not None:
             self.maxlines = int(maxlines)
+
+        maxlinelength = self.config.get('emailmaxlinelength', default=None)
+        if maxlinelength is not None:
+            self.maxlinelength = int(maxlinelength)
+
+        strict_utf8 = self.config.get_bool('emailstrictutf8', default=None)
+        if strict_utf8 is not None:
+            self.strict_utf8 = strict_utf8
 
         diffopts = self.config.get('diffopts', None)
         if diffopts is not None:
