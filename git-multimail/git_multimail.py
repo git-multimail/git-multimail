@@ -568,7 +568,11 @@ class Revision(Change):
         """Show this revision."""
 
         return read_lines(
-            ['git', 'show', '--find-copies', '--stat', '--patch', self.rev.sha1],
+            [
+                'git', 'log', '--find-renames', '--find-copies',
+                 '--stat', '--patch', '--cc',
+                '-1', self.rev.sha1,
+                ],
             keepends=True,
             )
 
