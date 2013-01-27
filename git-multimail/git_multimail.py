@@ -495,19 +495,20 @@ class Change(object):
 
         raise NotImplementedError()
 
-    def generate_email(self, push, maxlines=None):
+    def generate_email(self, push, body_filter=None):
         """Generate an email describing this change.
 
         Iterate over the lines (including the header lines) of an
-        email describing this change.  If maxlines is set, then limit
-        the body of the email to approximately that many lines."""
+        email describing this change.  If body_filter is not None,
+        then use it to filter the lines that are intended for the
+        email body."""
 
         for line in self.generate_email_header():
             yield line
 
         body = self.generate_email_body(push)
-        if maxlines:
-            body = limit_lines(body, maxlines)
+        if body_filter is not None:
+            body = body_filter(body)
         for line in body:
             yield line
 
@@ -1282,6 +1283,20 @@ class Environment(object):
 
         raise NotImplementedError()
 
+    def filter_body(self, lines):
+        """Filter the lines intended for an email body.
+
+        lines is an iterable over the lines that would go into the
+        email body.  Filter it (e.g., limit the number of lines, the
+        line length, character set, etc.), returning another iterable.
+        By default, if self.maxlines is specified, limit the size of
+        the email bodies to approximately that number of lines."""
+
+        if self.maxlines:
+            lines = limit_lines(lines, self.maxlines)
+
+        return lines
+
 
 class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
@@ -1592,14 +1607,14 @@ class Push(object):
         cmd = ['git', 'rev-list', '--stdin'] + old_revs
         return read_lines(cmd, input=self._new_rev_exclusion_spec)
 
-    def send_emails(self, mailer, maxlines=None):
+    def send_emails(self, mailer, body_filter=None):
         """Use send all of the notification emails needed for this push.
 
         Use send all of the notification emails (including reference
         change emails and commit emails) needed for this push.  Send
-        the emails using mailer.  If maxlines is specified, limit the
-        size of the email bodies to approximately that number of
-        lines."""
+        the emails using mailer.  If body_filter is not None, then use
+        it to filter the lines that are intended for the email
+        body."""
 
         # The sha1s of commits that were introduced by this push.
         # They will be removed from this set as they are processed, to
@@ -1616,7 +1631,7 @@ class Push(object):
                     )
             else:
                 sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
-                mailer.send(change.generate_email(self, maxlines))
+                mailer.send(change.generate_email(self, body_filter))
 
             sha1s = []
             for sha1 in reversed(list(self.get_new_commits(change))):
@@ -1626,7 +1641,7 @@ class Push(object):
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num+1, tot=len(sha1s))
                 if rev.recipients:
-                    mailer.send(rev.generate_email(self, maxlines))
+                    mailer.send(rev.generate_email(self, body_filter))
 
         # Consistency check:
         if unhandled_sha1s:
@@ -1645,7 +1660,7 @@ def run_as_post_receive_hook(environment, mailer):
             ReferenceChange.create(environment, oldrev, newrev, refname)
             )
     push = Push(changes)
-    push.send_emails(mailer, maxlines=environment.maxlines)
+    push.send_emails(mailer, body_filter=environment.filter_body)
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
@@ -1658,7 +1673,7 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
             ),
         ]
     push = Push(changes)
-    push.send_emails(mailer, maxlines=environment.maxlines)
+    push.send_emails(mailer, body_filter=environment.filter_body)
 
 
 KNOWN_ENVIRONMENTS = {
