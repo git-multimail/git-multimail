@@ -578,7 +578,7 @@ class Revision(Change):
 
         return read_lines(
             [
-                'git', 'log', '--find-renames', '--find-copies',
+                'git', 'log', '-C',
                  '--stat', '--patch', '--cc',
                 '-1', self.rev.sha1,
                 ],
