@@ -1,16 +1,22 @@
 #! /usr/bin/env python2
 
 import sys
+import os
 from setuptools import setup
 
 assert 0x02040000 <= sys.hexversion < 0x03000000, \
        "Install Python 2, version 2.4 or greater"
 
 
+def read_readme():
+    return open(os.path.join('git-multimail', 'README')).read()
+
+
 setup(
     name='git-multimail',
     version='0.9.0',
     description='Send notification emails for git pushes',
+    long_description=read_readme(),
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: No Input/Output (Daemon)',
