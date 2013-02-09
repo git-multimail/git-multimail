@@ -1,8 +1,10 @@
 			   git-multimail
 			   =============
 
-git-multimail is a Python script/module that sends notification emails
-for pushes to a git repository.
+git-multimail is a tool for sending notification emails on pushes to a
+git repository.  It includes a Python module called git_multimail.py,
+which can either be used as a hook script directly or can be imported
+as a Python module into another script.
 
 git-multimail is derived from the old
 contrib/hooks/post-receive-email, and is mostly compatible with that
