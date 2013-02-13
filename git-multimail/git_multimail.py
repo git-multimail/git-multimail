@@ -1382,7 +1382,7 @@ class ConfigEnvironment(Environment):
         if emailprefix and emailprefix.strip():
             self.emailprefix = emailprefix.strip() + ' '
         else:
-            self.emailprefix = '[%s]' % (self.repo_shortname,)
+            self.emailprefix = '[%s] ' % (self.repo_shortname,)
 
         maxlines = self.config.get('emailmaxlines', default=None)
         if maxlines is not None:
