@@ -52,8 +52,14 @@ import bisect
 import subprocess
 import email.utils
 import optparse
-from email.utils import getaddresses
-from email.utils import formataddr
+
+try:
+    from email.utils import getaddresses
+    from email.utils import formataddr
+except ImportError:
+    # Prior to Python 2.5, the email module used different names:
+    from email.Utils import getaddresses
+    from email.Utils import formataddr
 
 
 DEBUG = False
