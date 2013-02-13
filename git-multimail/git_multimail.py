@@ -1133,7 +1133,7 @@ class OutputMailer(Mailer):
 try:
     GIT_DIR = read_output(['git', 'rev-parse', '--git-dir'])
 except CommandError:
-    sys.stderr.write('fatal: post-receive: not in a git working copy\n')
+    sys.stderr.write('fatal: git_multimail: not in a git working copy\n')
     sys.exit(1)
 
 
