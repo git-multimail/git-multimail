@@ -59,6 +59,37 @@ By default, for each push received by the repository, git-multimail:
    information about the tag and optionally a shortlog describing the
    changes since the previous tag.
 
+
+Requirements
+------------
+
+* Python 2.x, version 2.4 or later.  No non-standard Python modules
+  are required.  git-multimail does *not* currently work with Python
+  3.x.
+
+  The example scripts invoke Python using the following shebang line
+  (following PEP 394 [1]):
+
+      #! /usr/bin/env python2
+
+  If your system's Python2 interpreter is not in your PATH or is not
+  called "python2", you can change the lines accordingly.  Or you can
+  invoke the Python interpreter explicitly, for example via a tiny
+  shell script like
+
+      #! /bin/sh
+      /usr/local/bin/python /path/to/git_multimail.py "$@"
+
+* The "git" command must be in your PATH.  git-multimail is known to
+  work with Git version 1.8 or later, though it probably works with
+  other non-ancient Git versions too.  Please report any problems that
+  you experience.
+
+* To send emails using the default configuration, a standard sendmail
+  program must be located at '/usr/sbin/sendmail' and configured
+  correctly to send emails.
+
+
 Invocation
 ----------
 
@@ -73,7 +104,7 @@ For use on pre-v1.5.1 git servers, git_multimail.py can also work as
 an "update" hook, taking its arguments on the command line.  To use
 this script in this manner, link or copy it to $GIT_DIR/hooks/update.
 Please note that the script is not completely reliable in this mode
-[1].
+[2].
 
 Alternatively, git_multimail.py can be imported as a Python module
 into your own Python post-receive script.  This method is a bit more
@@ -263,7 +294,7 @@ for two kinds of environments:
 * GenericEnvironment: a stand-alone git repository.
 
 * GitoliteEnvironment: a git repository that is managed by gitolite
-  [2].  For such repositories, the identity of the pusher is read from
+  [3].  For such repositories, the identity of the pusher is read from
   environment variable $GL_USER, and the name of the repository is
   read from $GL_REPO (if it is not overridden by
   multimailhook.reponame).
@@ -286,10 +317,12 @@ usually inherit from one of the provided Environment classes.
 Footnotes
 ---------
 
-[1] Because of the way information is passed to update hooks, the
+[1] http://www.python.org/dev/peps/pep-0394/
+
+[2] Because of the way information is passed to update hooks, the
     script's method of determining whether a commit has already been
     seen does not work when it is used as an "update" script.  In
     particular, no notification email will be generated for a new
     commit that is added to multiple references in the same push.
 
-[2] https://github.com/sitaramc/gitolite
+[3] https://github.com/sitaramc/gitolite
