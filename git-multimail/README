@@ -226,6 +226,13 @@ multimailhook.envelopeSender
     If set then pass this value to sendmail via the -f option to set
     the envelope sender address.
 
+multimailhook.from
+
+    If set then use this value in the From: field of generated emails.
+    If unset, then the user's configuration will be used (user.name
+    and user.email). If user.email is unset too, then
+    multimailhook.envelopeSender is used.
+
 multimailhook.administrator
 
     The name and/or email address of the administrator of the git
