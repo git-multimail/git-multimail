@@ -579,7 +579,7 @@ class Revision(Change):
         return read_lines(
             [
                 'git', 'log', '-C',
-                 '--stat', '--patch', '--cc',
+                 '--stat', '-p', '--cc',
                 '-1', self.rev.sha1,
                 ],
             keepends=True,
