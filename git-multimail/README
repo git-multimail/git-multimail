@@ -55,6 +55,9 @@ By default, reference change emails have their "Reply-To" field set to
 the person who pushed the change, and commit emails have their
 "Reply-To" field set to the author of the commit.
 
+3. Output one "announce" mail for each new annotated tag, including
+   information about the tag and optionally a shortlog describing the
+   changes since the previous tag.
 
 Invocation
 ----------
