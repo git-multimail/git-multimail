@@ -690,6 +690,8 @@ class ReferenceChange(Change):
         self.rev = rev
         self.msgid = email.utils.make_msgid()
         self.diffopts = environment.diffopts
+        self.logopts = environment.logopts
+        self.showlog = environment.refchange_showlog
 
     def _compute_values(self):
         values = Change._compute_values(self)
@@ -734,6 +736,19 @@ class ReferenceChange(Change):
     def generate_email_footer(self):
         return self.expand_lines(FOOTER_TEMPLATE)
 
+    def generate_revision_change_log(self, new_commits_list):
+        if self.showlog:
+            yield '\n'
+            yield 'Detailed log of new commits:\n\n'
+            for line in read_lines(
+                    ['git', 'log', '--no-walk']
+                    + self.logopts
+                    + new_commits_list
+                    + ['--'],
+                    keepends=True,
+                ):
+                yield line
+
     def generate_revision_change_summary(self, push):
         """Generate a summary of the revisions added/removed by this change."""
 
@@ -759,6 +774,8 @@ class ReferenceChange(Change):
                         )
                 yield '\n'
                 for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
+                    yield line
+                for line in self.generate_revision_change_log([r.rev.sha1 for r in new_revisions]):
                     yield line
             else:
                 for line in self.expand_lines(NO_NEW_REVISIONS_TEMPLATE):
@@ -788,9 +805,10 @@ class ReferenceChange(Change):
                     ))
 
             if adds:
-                new_commits = CommitSet(push.get_new_commits(self))
+                new_commits_list = push.get_new_commits(self)
             else:
-                new_commits = CommitSet([])
+                new_commits_list = []
+            new_commits = CommitSet(new_commits_list)
 
             if discards:
                 discarded_commits = CommitSet(push.get_discarded_commits(self))
@@ -836,6 +854,8 @@ class ReferenceChange(Change):
 
             if new_commits:
                 for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=len(new_commits)):
+                    yield line
+                for line in self.generate_revision_change_log(new_commits_list):
                     yield line
             else:
                 for line in self.expand_lines(NO_NEW_REVISIONS_TEMPLATE):
@@ -1206,11 +1226,21 @@ class Environment(object):
 
             True iff announce emails should include a shortlog.
 
+        refchange_showlog (bool)
+
+            True iff refchanges emails should include a detailed log.
+
         diffopts (list of strings)
 
             The options that should be passed to 'git diff' for the
             summary email.  The value should be a list of strings
             representing words to be passed to the command.
+
+        logopts (list of strings)
+
+            Analogous to diffopts, but contains options passed to
+            'git log' when generating the detailed log for a set of
+            commits (see refchange_showlog)
 
     Additionally, the default implementation of filter_body() expects
     the following:
@@ -1263,6 +1293,8 @@ class Environment(object):
         self.maxlinelength = 500
         self.strict_utf8 = True
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
+        self.logopts = []
+        self.refchange_showlog = False
 
         self._values = None
 
@@ -1378,6 +1410,9 @@ class ConfigEnvironment(Environment):
         self.announce_show_shortlog = self.config.get_bool(
             'announceshortlog', default=self.announce_show_shortlog
             )
+        self.refchange_showlog = self.config.get_bool(
+            'refchangeshowlog', default=self.refchange_showlog
+            )
         self.sender = self.config.get('envelopesender', default=None)
         self.administrator = (
             self.config.get('administrator')
@@ -1405,6 +1440,10 @@ class ConfigEnvironment(Environment):
         diffopts = self.config.get('diffopts', None)
         if diffopts is not None:
             self.diffopts = diffopts.split()
+
+        logopts = self.config.get('logopts', None)
+        if logopts is not None:
+            self.logopts = logopts.split()
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
