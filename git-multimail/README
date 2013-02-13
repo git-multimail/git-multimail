@@ -19,10 +19,10 @@ GPLv2 (see the COPYING file for details).
 By default, for each push received by the repository, git-multimail:
 
 1. Outputs one email summarizing each reference that was changed.
-   These "reference change" emails describe the nature of the change
-   (e.g., was the reference created, deleted, fast-forwarded, etc.)
-   and include one-line summaries of the commits that were added to
-   the reference.
+   These "reference change" (called "refchange" below) emails describe
+   the nature of the change (e.g., was the reference created, deleted,
+   fast-forwarded, etc.) and include one-line summaries of the commits
+   that were added to the reference.
 
 2. Outputs one email for each new commit that was introduced by the
    reference change.  These "commit" emails include a list of the
