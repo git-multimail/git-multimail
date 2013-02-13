@@ -1096,7 +1096,16 @@ class SendMailer(Mailer):
         cmd = ['/usr/sbin/sendmail', '-t']
         if self.envelopesender:
             cmd.extend(['-f', self.envelopesender])
-        p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        try:
+            p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        except OSError, e:
+            sys.stderr.write(
+                '*** Cannot execute command: %s\n' % string.join(cmd)
+                + '*** %s\n' % str(e)
+                + '*** Try setting multimailhook.mailer to "smtp"\n'
+                '*** to send emails without using the sendmail command.\n'
+                )
+            sys.exit(1)
         try:
             p.stdin.writelines(lines)
         except:
