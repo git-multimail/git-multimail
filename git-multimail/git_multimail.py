@@ -75,7 +75,7 @@ To: %(recipients)s
 Subject: %(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd
 Content-Type: text/plain; charset=utf-8
 Message-ID: %(msgid)s
-From: %(sender)s
+From: %(fromaddr)s
 Reply-To: %(pusher_email)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -189,7 +189,7 @@ REVISION_HEADER_TEMPLATE = """\
 To: %(recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 Content-Type: text/plain; charset=utf-8
-From: %(sender)s
+From: %(fromaddr)s
 Reply-To: %(author)s
 In-Reply-To: %(reply_to_msgid)s
 X-Git-Repo: %(repo_shortname)s
@@ -1294,6 +1294,7 @@ class Environment(object):
         'sender',
         'pusher',
         'pusher_email',
+        'fromaddr'
         ]
 
     def __init__(self):
@@ -1428,6 +1429,17 @@ class ConfigEnvironment(Environment):
             'announceshortlog', default=self.announce_show_shortlog
             )
         self.sender = self.config.get('envelopesender', default=None)
+
+        # value to be used in the "From:" field of generated emails.
+        self.fromaddr = self.config.get('from', default=None)
+        if self.fromaddr is None:
+            config = Config('user')
+            fromname = config.get('name')
+            fromemail = config.get('email')
+            if fromemail:
+                self.fromaddr = formataddr([fromname, fromemail])
+        if self.fromaddr is None:
+            self.fromaddr = self.sender
 
         self.administrator = (
             self.config.get('administrator')
@@ -1824,7 +1836,7 @@ def main(args):
             mailer = OutputMailer(sys.stdout)
         elif mailer == 'smtp':
             smtpserver = config.get('smtpserver', default='localhost')
-            mailer = SMTPMailer(environment.sender, smtpserver)
+            mailer = SMTPMailer(environment.sender or environment.fromaddr, smtpserver)
         elif mailer == 'sendmail':
             mailer = SendMailer(environment.sender)
         else:
