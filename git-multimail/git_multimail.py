@@ -52,6 +52,7 @@ import bisect
 import subprocess
 import email.utils
 import optparse
+import string
 from email.utils import getaddresses
 from email.utils import formataddr
 
@@ -1091,7 +1092,7 @@ class SendMailer(Mailer):
     def __init__(self, envelopesender=None):
         self.envelopesender = envelopesender
 
-    def send(self, lines):
+    def send(self, lines, to_addrs):
         cmd = ['/usr/sbin/sendmail', '-t']
         if self.envelopesender:
             cmd.extend(['-f', self.envelopesender])
@@ -1111,6 +1112,30 @@ class SendMailer(Mailer):
             if retcode:
                 raise CommandError(cmd, retcode)
 
+class SMTPMailer(Mailer):
+    """Send emails using Python's smtplib."""
+
+    def __init__(self, envelopesender, smtpserver):
+        if not envelopesender:
+            sys.stderr.write('fatal: git_multimail: cannot use SMTPMailer without a sender address.\n'
+                             'please set either multimailhook.envelopeSender or user.email\n')
+            sys.exit(1)
+        self.envelopesender = envelopesender
+        self.smtpserver = smtpserver
+
+    def send(self, lines, to_addrs):
+        import smtplib
+        try:
+            s = smtplib.SMTP(self.smtpserver)
+            msg = string.join(lines, '')
+            s.sendmail(self.envelopesender, to_addrs, msg)
+        except Exception, e:
+            sys.stderr.write('*** Error sending email***\n')
+            sys.stderr.write('*** %s\n' % str(e))
+            s.quit()
+            sys.exit(1)
+        s.quit()
+
 
 class OutputMailer(Mailer):
     """Write emails to an output stream, bracketed by lines of '=' characters.
@@ -1122,7 +1147,7 @@ class OutputMailer(Mailer):
     def __init__(self, f):
         self.f = f
 
-    def send(self, lines):
+    def send(self, lines, to_addrs):
         self.f.write(self.SEPARATOR)
         self.f.writelines(lines)
         self.f.write(self.SEPARATOR)
@@ -1373,6 +1398,9 @@ class ConfigEnvironment(Environment):
             'announceshortlog', default=self.announce_show_shortlog
             )
         self.sender = self.config.get('envelopesender', default=None)
+        self.smtpserver = self.config.get('smtpserver', default='localhost')
+        self.mailer = self.config.get('mailer', default='sendmail')
+
         self.administrator = (
             self.config.get('administrator')
             or self.administrator
@@ -1675,7 +1703,7 @@ class Push(object):
                     )
             else:
                 sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
-                mailer.send(change.generate_email(self, body_filter))
+                mailer.send(change.generate_email(self, body_filter), change.recipients)
 
             sha1s = []
             for sha1 in reversed(list(self.get_new_commits(change))):
@@ -1685,7 +1713,7 @@ class Push(object):
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num+1, tot=len(sha1s))
                 if rev.recipients:
-                    mailer.send(rev.generate_email(self, body_filter))
+                    mailer.send(rev.generate_email(self, body_filter), rev.recipients)
 
         # Consistency check:
         if unhandled_sha1s:
@@ -1764,7 +1792,9 @@ def main(args):
 
         if options.stdout:
             mailer = OutputMailer(sys.stdout)
-        else:
+        elif environment.mailer == 'smtp':
+            mailer = SMTPMailer(environment.sender, environment.smtpserver)
+        elif environment.mailer == 'sendmail':
             mailer = SendMailer(environment.sender)
 
         # Dual mode: if arguments were specified on the command line, run
