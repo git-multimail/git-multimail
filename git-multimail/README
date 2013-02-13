@@ -19,10 +19,10 @@ GPLv2 (see the COPYING file for details).
 By default, for each push received by the repository, git-multimail:
 
 1. Outputs one email summarizing each reference that was changed.
-   These "reference change" emails describe the nature of the change
-   (e.g., was the reference created, deleted, fast-forwarded, etc.)
-   and include one-line summaries of the commits that were added to
-   the reference.
+   These "reference change" (called "refchange" below) emails describe
+   the nature of the change (e.g., was the reference created, deleted,
+   fast-forwarded, etc.) and include one-line summaries of the commits
+   that were added to the reference.
 
 2. Outputs one email for each new commit that was introduced by the
    reference change.  These "commit" emails include a list of the
@@ -55,6 +55,9 @@ By default, reference change emails have their "Reply-To" field set to
 the person who pushed the change, and commit emails have their
 "Reply-To" field set to the author of the commit.
 
+3. Output one "announce" mail for each new annotated tag, including
+   information about the tag and optionally a shortlog describing the
+   changes since the previous tag.
 
 Invocation
 ----------
@@ -120,7 +123,7 @@ multimailhook.environment
     "gitolite" if the environment contains variables $GL_USER and
     $GL_REPO; otherwise "generic".
 
-multimailhook.reponame
+multimailhook.repoName
 
     A short name of this git repository, to be used in various places
     in the notification email text.  Default is to derive this value
@@ -136,7 +139,7 @@ multimailhook.mailinglist
     settings can be used to configure specific address lists for
     specific types of notification email.
 
-multimailhook.refchangelist
+multimailhook.refchangeList
 
     The list of email addresses to which summary emails about
     reference changes should be sent, as RFC 2822 email addresses
@@ -145,7 +148,7 @@ multimailhook.refchangelist
     Set this value to the empty string to prevent reference change
     emails from being sent.
 
-multimailhook.announcelist
+multimailhook.announceList
 
     The list of email addresses to which emails about new annotated
     tags should be sent, as RFC 2822 email addresses separated by
@@ -153,7 +156,7 @@ multimailhook.announcelist
     multimailhook.mailinglist.  Set this value to the empty string to
     prevent annotated tag announcement emails from being sent.
 
-multimailhook.commitlist
+multimailhook.commitList
 
     The list of email addresses to which emails about individual new
     commits should be sent, as RFC 2822 email addresses separated by
@@ -162,7 +165,7 @@ multimailhook.commitlist
     empty string to prevent notification emails about individual
     commits from being sent.
 
-multimailhook.announceshortlog
+multimailhook.announceShortlog
 
     If this option is set to true, then emails about changes to
     annotated tags include a shortlog of changes since the previous
@@ -172,7 +175,7 @@ multimailhook.announceshortlog
     not so straightforward, then the shortlog might be confusing
     rather than useful.  Default is false.
 
-multimailhook.envelopesender
+multimailhook.envelopeSender
 
     If set then pass this value to sendmail via the -f option to set
     the envelope sender address.
@@ -183,21 +186,21 @@ multimailhook.administrator
     repository; used in FOOTER_TEMPLATE.  Default is
     multimailhook.envelopesender.
 
-multimailhook.emailprefix
+multimailhook.emailPrefix
 
     All emails have this string prepended to their subjects, to aid
     email filtering (though using the X-Git-* email headers, if
     possible, is probably more robust).  Default is the short name of
     the repository in square brackets; e.g., "[myrepo]".
 
-multimailhook.emailmaxlines
+multimailhook.emailMaxLines
 
     The maximum number of lines that should be included in the
     generated email body. If not specified, there is no limit.  Lines
     beyond the limit are suppressed and counted, and a final line is
     added indicating the number of suppressed lines.
 
-multimailhook.emailmaxlinelength
+multimailhook.emailMaxLineLength
 
     The maximum length of a line in the email body.  Lines longer than
     this limit are truncated to this length with a trailing " [...]"
@@ -207,21 +210,21 @@ multimailhook.emailmaxlinelength
     lines, the diffs are probably unreadable anyway.  To disable line
     truncation, set this option to 0.
 
-multimailhook.emailstrictutf8
+multimailhook.emailStrictUTF8
 
     If this boolean option is set to "true", then the main part of the
     email body is forced to be valid UTF-8.  Any characters that are
     not valid UTF-8 are converted to the Unicode replacement
     character, U+FFFD.  The default is "true".
 
-multimailhook.diffopts
+multimailhook.diffOpts
 
     Alternate options for the git diff-tree invocation that summarizes
     changes in ReferenceChange emails.  Default is "--stat --summary
     --find-copies-harder". Add -p to those options to include a
     unified diff of changes in addition to the usual summary output.
 
-multimailhook.emaildomain
+multimailhook.emailDomain
 
     Domain name appended to the username of the person doing the push
     to convert it into an email address (via "%s@%s" % (username,
