@@ -1846,7 +1846,7 @@ KNOWN_ENVIRONMENTS = {
 def main(args):
     parser = optparse.OptionParser(
         description=__doc__,
-        usage='%prog [OPTIONS]',
+        usage='%prog [OPTIONS]\n   or: %prog [OPTIONS] REFNAME OLDREV NEWREV',
         )
 
     parser.add_option(
@@ -1900,7 +1900,7 @@ def main(args):
         # like an update hook; otherwise, run as a post-receive hook.
         if args:
             if len(args) != 3:
-                parser.error('Need zero or three arguments')
+                parser.error('Need zero or three non-option arguments')
             (refname, oldrev, newrev) = args
             run_as_update_hook(environment, mailer, refname, oldrev, newrev)
         else:
