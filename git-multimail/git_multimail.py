@@ -50,14 +50,15 @@ import os
 import re
 import bisect
 import subprocess
-import email.utils
 import optparse
 
 try:
+    from email.utils import make_msgid
     from email.utils import getaddresses
     from email.utils import formataddr
 except ImportError:
     # Prior to Python 2.5, the email module used different names:
+    from email.Utils import make_msgid
     from email.Utils import getaddresses
     from email.Utils import formataddr
 
@@ -688,7 +689,7 @@ class ReferenceChange(Change):
         self.old = old
         self.new = new
         self.rev = rev
-        self.msgid = email.utils.make_msgid()
+        self.msgid = make_msgid()
         self.diffopts = environment.diffopts
 
     def _compute_values(self):
