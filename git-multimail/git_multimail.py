@@ -1774,7 +1774,9 @@ KNOWN_ENVIRONMENTS = {
 def main(args):
     parser = optparse.OptionParser(
         description=__doc__,
-        usage='%prog [OPTIONS]\n   or: %prog [OPTIONS] REFNAME OLDREV NEWREV',
+        usage='%prog [OPTIONS]\n'
+        '   or: %prog [OPTIONS] REFNAME OLDREV NEWREV\n'
+        '   or: %prog [OPTIONS] --reflog REFNAME',
         )
 
     parser.add_option(
@@ -1788,6 +1790,10 @@ def main(args):
     parser.add_option(
         '--stdout', action='store_true', default=False,
         help='Output emails to stdout rather than sending them.',
+        )
+    parser.add_option(
+        '--reflog', action='store_true', default=False,
+        help='Use the reflog to find the difference between old and new revision.',
         )
     parser.add_option(
         '--recipients', action='store', default=None,
@@ -1815,9 +1821,16 @@ def main(args):
         # Dual mode: if arguments were specified on the command line, run
         # like an update hook; otherwise, run as a post-receive hook.
         if args:
-            if len(args) != 3:
-                parser.error('Need zero or three non-option arguments')
-            (refname, oldrev, newrev) = args
+            if options.reflog:
+                if len(args) != 1:
+                    parser.error('--reflog option is only usable with one (and only one) argument')
+                refname = args[0]
+                oldrev = refname + '@{1}'
+                newrev = refname
+            else:
+                if len(args) != 3:
+                    parser.error('Need zero or three non-option arguments')
+                (refname, oldrev, newrev) = args
             run_as_update_hook(environment, mailer, refname, oldrev, newrev)
         else:
             run_as_post_receive_hook(environment, mailer)
