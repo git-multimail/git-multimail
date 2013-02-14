@@ -1296,6 +1296,7 @@ class Environment(object):
         self.announce_show_shortlog = False
         self.maxlines = None
         self.maxlinelength = 500
+        self.maxpatchnb = 500
         self.strict_utf8 = True
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
@@ -1437,6 +1438,10 @@ class ConfigEnvironment(Environment):
         maxlinelength = self.config.get('emailmaxlinelength', default=None)
         if maxlinelength is not None:
             self.maxlinelength = int(maxlinelength)
+
+        maxpatchnb = self.config.get('maxpatchnb', default=None)
+        if maxpatchnb is not None:
+            self.maxpatchnb = int(maxpatchnb)
 
         strict_utf8 = self.config.get_bool('emailstrictutf8', default=None)
         if strict_utf8 is not None:
@@ -1732,6 +1737,16 @@ class Push(object):
                 if sha1 in unhandled_sha1s:
                     sha1s.append(sha1)
                     unhandled_sha1s.remove(sha1)
+
+            maxnb = change.environment.maxpatchnb
+            if maxnb and len(sha1s) > maxnb:
+                sys.stderr.write(
+                    '*** Too many new commits (%d), not sending emails.\n' % len(sha1s)
+                    + '*** Try setting multimailhook.maxPatchNb to a greater value\n'
+                    + '*** Currently, multimailhook.maxPatchNb=%d\n' % maxnb
+                    )
+                return
+
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num+1, tot=len(sha1s))
                 if rev.recipients:

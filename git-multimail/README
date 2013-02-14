@@ -249,6 +249,13 @@ multimailhook.emailMaxLineLength
     lines, the diffs are probably unreadable anyway.  To disable line
     truncation, set this option to 0.
 
+multimailhook.maxPatchNb
+
+    The maximum number of commit email to send for a given change.
+    When the number of patches is larger that this value, only the
+    summary refchange email is sent. This can avoid accidental
+    mailbombing.  The default is 500.
+
 multimailhook.emailStrictUTF8
 
     If this boolean option is set to "true", then the main part of the
