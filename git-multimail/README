@@ -81,9 +81,8 @@ Requirements
       /usr/local/bin/python /path/to/git_multimail.py "$@"
 
 * The "git" command must be in your PATH.  git-multimail is known to
-  work with Git version 1.8 or later, though it probably works with
-  other non-ancient Git versions too.  Please report any problems that
-  you experience.
+  work with Git versions back to 1.7.1.  (Earlier versions have not
+  been tested; if you do so, please report your results.)
 
 * To send emails using the default configuration, a standard sendmail
   program must be located at '/usr/sbin/sendmail' and configured
