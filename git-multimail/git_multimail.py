@@ -51,6 +51,7 @@ import re
 import bisect
 import subprocess
 import email.utils
+import shlex
 import optparse
 
 try:
@@ -1439,11 +1440,11 @@ class ConfigEnvironment(Environment):
 
         diffopts = self.config.get('diffopts', None)
         if diffopts is not None:
-            self.diffopts = diffopts.split()
+            self.diffopts = shlex.split(diffopts)
 
         logopts = self.config.get('logopts', None)
         if logopts is not None:
-            self.logopts = logopts.split()
+            self.logopts = shlex.split(logopts)
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
