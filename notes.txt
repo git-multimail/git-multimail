@@ -68,8 +68,3 @@ Ideas for the future
 
 * When a reference is created, show the branch(es) from which it
   appears to sprout.
-
-* Perhaps add an option to send emails to an arbitrary SMTP server
-  using Python's smtplib rather than by using /usr/sbin/sendmail.
-
-

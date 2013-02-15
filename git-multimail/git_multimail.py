@@ -51,6 +51,7 @@ import re
 import bisect
 import subprocess
 import optparse
+import smtplib
 
 try:
     from email.utils import make_msgid
@@ -75,8 +76,8 @@ To: %(recipients)s
 Subject: %(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd
 Content-Type: text/plain; charset=utf-8
 Message-ID: %(msgid)s
-From: %(sender)s
-Reply-To: %(pusher_email)s
+From: %(fromaddr)s
+Reply-To: %(reply_to_refchange)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
@@ -189,8 +190,8 @@ REVISION_HEADER_TEMPLATE = """\
 To: %(recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 Content-Type: text/plain; charset=utf-8
-From: %(sender)s
-Reply-To: %(author)s
+From: %(fromaddr)s
+Reply-To: %(reply_to_commit)s
 In-Reply-To: %(reply_to_msgid)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -457,6 +458,48 @@ class Change(object):
             values.update(extra_values)
         return values
 
+    def set_reply_to(self, values, key, default):
+        """Compute the address to be used in the Reply-To: field.
+
+        This sets values[key] to the adress to be used, or unset it if
+        no Reply-To: should be generated. This function replaces the
+        special values "author", "pusher" and "none" by the
+        corresponding actual values (see documentation for
+        multimailhook.replyToCommit and
+        multimailhook.replyToRefchange). default is the strategy to
+        use values[key] is unset prior to calling the function.
+        """
+
+        if not key in values:
+            reply_to = default
+        else:
+            reply_to = values[key]
+
+        # be case-insensitive
+        reply_to = reply_to.lower()
+
+        if reply_to == 'author':
+            if 'author' in values:
+                reply_to = values['author']
+            else:
+                sys.stderr.write('Warning: no author email found,'
+                                 ' cannot set Reply-To:\n')
+                reply_to = None
+        elif reply_to == 'pusher':
+            if 'pusher_email' in values:
+                reply_to = values['pusher_email']
+            else:
+                sys.stderr.write('Warning: no pusher email found,'
+                                 ' cannot set Reply-To:\n')
+                reply_to = None
+        elif reply_to == 'none':
+            reply_to = None
+
+        if reply_to:
+            values[key] = reply_to
+        elif key in values:
+            del values[key]
+
     def expand(self, template, **extra_values):
         """Expand template.
 
@@ -572,6 +615,7 @@ class Revision(Change):
         except UnknownUserError:
             pass
 
+        self.set_reply_to(values, 'reply_to_commit', 'author')
         return values
 
     def get_author(self):
@@ -710,7 +754,17 @@ class ReferenceChange(Change):
             values['oldrev_type'] = self.old.type
         if self.new:
             values['newrev_type'] = self.new.type
+
+        self.set_reply_to(values, 'reply_to_refchange', 'pusher')
         return values
+
+    def should_be_skipped(self):
+        if self.refname in self.environment.skiprefs:
+            return True
+        onlyrefs = self.environment.onlyrefs
+        if onlyrefs and self.refname not in onlyrefs:
+            return True
+        return False
 
     def generate_email_header(self):
         return self.expand_lines(HEADER_TEMPLATE)
@@ -1082,12 +1136,16 @@ class OtherReferenceChange(ReferenceChange):
 class Mailer(object):
     """An object that can send emails."""
 
-    def send(self, lines):
+    def send(self, lines, to_addrs):
         """Send an email consisting of lines.
 
         lines must be an iterable over the lines constituting the
-        header and body of the email.  The recipients will be read
-        from the email header."""
+        header and body of the email.  to_addrs is a list of recients
+        addresses (can be needed even if lines already contains a
+        "To:" field).  It can be either a string (comma-separated list
+        of emails) or a Python list of individual emails.
+
+        """
 
         raise NotImplementedError()
 
@@ -1098,11 +1156,20 @@ class SendMailer(Mailer):
     def __init__(self, envelopesender=None):
         self.envelopesender = envelopesender
 
-    def send(self, lines):
+    def send(self, lines, to_addrs):
         cmd = ['/usr/sbin/sendmail', '-t']
         if self.envelopesender:
             cmd.extend(['-f', self.envelopesender])
-        p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        try:
+            p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        except OSError, e:
+            sys.stderr.write(
+                '*** Cannot execute command: %s\n' % ' '.join(cmd)
+                + '*** %s\n' % str(e)
+                + '*** Try setting multimailhook.mailer to "smtp"\n'
+                '*** to send emails without using the sendmail command.\n'
+                )
+            sys.exit(1)
         try:
             p.stdin.writelines(lines)
         except:
@@ -1118,6 +1185,40 @@ class SendMailer(Mailer):
             if retcode:
                 raise CommandError(cmd, retcode)
 
+class SMTPMailer(Mailer):
+    """Send emails using Python's smtplib."""
+
+    def __init__(self, envelopesender, smtpserver):
+        if not envelopesender:
+            sys.stderr.write('fatal: git_multimail: cannot use SMTPMailer without a sender address.\n'
+                             'please set either multimailhook.envelopeSender or user.email\n')
+            sys.exit(1)
+        self.envelopesender = envelopesender
+        self.smtpserver = smtpserver
+        try:
+            self.smtp = smtplib.SMTP(self.smtpserver)
+        except Exception, e:
+            sys.stderr.write('*** Error establishing SMTP connection to %s***\n' % self.smtpserver)
+            sys.stderr.write('*** %s\n' % str(e))
+            sys.exit(1)
+
+    def __del__(self):
+        self.smtp.quit()
+
+    def send(self, lines, to_addrs):
+        try:
+            s = smtplib.SMTP(self.smtpserver)
+            msg = ''.join(lines)
+            # turn comma-separated list into Python list if needed.
+            if isinstance(to_addrs, basestring):
+                to_addrs = [email for (name, email) in getaddresses([to_addrs])]
+            self.smtp.sendmail(self.envelopesender, to_addrs, msg)
+        except Exception, e:
+            sys.stderr.write('*** Error sending email***\n')
+            sys.stderr.write('*** %s\n' % str(e))
+            self.smtp.quit()
+            sys.exit(1)
+
 
 class OutputMailer(Mailer):
     """Write emails to an output stream, bracketed by lines of '=' characters.
@@ -1129,7 +1230,7 @@ class OutputMailer(Mailer):
     def __init__(self, f):
         self.f = f
 
-    def send(self, lines):
+    def send(self, lines, to_addrs):
         self.f.write(self.SEPARATOR)
         self.f.writelines(lines)
         self.f.write(self.SEPARATOR)
@@ -1213,6 +1314,24 @@ class Environment(object):
             summary email.  The value should be a list of strings
             representing words to be passed to the command.
 
+        onlyrefs (list of strings)
+        skiprefs (list of strings)
+
+            These two options specify references for which no email
+            should be sent. If the refname considered is in skiprefs,
+            or if onlyrefs is non-empty and does not contain the
+            refname, then the reference is not considered for
+            email-sending.
+
+        reply_to_refchange (string)
+        reply_to_commit (string)
+
+            Addresses to use in the Reply-To: field of emails:
+            reply_to_refchange is used for refchange emails. If unset,
+                the pusher's email will be used instead.
+            reply_to_commit is used for individual commit emails. If
+                unset, the author's email will be used instead.
+
     Additionally, the default implementation of filter_body() expects
     the following:
 
@@ -1246,6 +1365,9 @@ class Environment(object):
         'sender',
         'pusher',
         'pusher_email',
+        'fromaddr',
+        'reply_to_refchange',
+        'reply_to_commit'
         ]
 
     def __init__(self):
@@ -1264,6 +1386,10 @@ class Environment(object):
         self.maxlinelength = 500
         self.strict_utf8 = True
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
+        self.onlyrefs = []
+        self.skiprefs = []
+        self.reply_to_refchange = None
+        self.reply_to_commit = None
 
         self._values = None
 
@@ -1380,6 +1506,18 @@ class ConfigEnvironment(Environment):
             'announceshortlog', default=self.announce_show_shortlog
             )
         self.sender = self.config.get('envelopesender', default=None)
+
+        # value to be used in the "From:" field of generated emails.
+        self.fromaddr = self.config.get('from', default=None)
+        if self.fromaddr is None:
+            config = Config('user')
+            fromname = config.get('name')
+            fromemail = config.get('email')
+            if fromemail:
+                self.fromaddr = formataddr([fromname, fromemail])
+        if self.fromaddr is None:
+            self.fromaddr = self.sender
+
         self.administrator = (
             self.config.get('administrator')
             or self.administrator
@@ -1406,6 +1544,13 @@ class ConfigEnvironment(Environment):
         diffopts = self.config.get('diffopts', None)
         if diffopts is not None:
             self.diffopts = diffopts.split()
+
+        self.skiprefs = self.config.get('skipRefs').split()
+        self.onlyrefs = self.config.get('onlyRefs').split()
+
+        reply_to = self.config.get('replyTo', default=None)
+        self.reply_to_commit = self.config.get('replyToCommit', default=reply_to)
+        self.reply_to_refchange = self.config.get('replyToRefchange', default=reply_to)
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
@@ -1672,7 +1817,13 @@ class Push(object):
         # guarantee that one (and only one) email is generated for
         # each new commit.
         unhandled_sha1s = set(self.get_new_commits())
+        refs_skipped = False
         for change in self.changes:
+            if change.should_be_skipped():
+                sys.stderr.write('No notification email for ref %s.\n' % (change.refname,))
+                refs_skipped = True
+                continue
+
             # Check if we've got anyone to send to
             if not change.recipients:
                 sys.stderr.write(
@@ -1682,7 +1833,7 @@ class Push(object):
                     )
             else:
                 sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
-                mailer.send(change.generate_email(self, body_filter))
+                mailer.send(change.generate_email(self, body_filter), change.recipients)
 
             sha1s = []
             for sha1 in reversed(list(self.get_new_commits(change))):
@@ -1692,15 +1843,20 @@ class Push(object):
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num+1, tot=len(sha1s))
                 if rev.recipients:
-                    mailer.send(rev.generate_email(self, body_filter))
+                    mailer.send(rev.generate_email(self, body_filter), rev.recipients)
 
         # Consistency check:
         if unhandled_sha1s:
-            sys.stderr.write(
-                'ERROR: No emails were sent for the following new commits:\n'
-                '    %s\n'
-                % ('\n    '.join(sorted(unhandled_sha1s)),)
-                )
+            if refs_skipped:
+                # Detailed list would annoy the user
+                sys.stderr.write('Warning: No emails were sent for some commits'
+                                 ' (see skipped refs above).\n')
+            else:
+                sys.stderr.write(
+                    'ERROR: No emails were sent for the following new commits:\n'
+                    '    %s\n'
+                    % ('\n    '.join(sorted(unhandled_sha1s)),)
+                    )
 
 
 def run_as_post_receive_hook(environment, mailer):
@@ -1769,10 +1925,22 @@ def main(args):
     try:
         environment = KNOWN_ENVIRONMENTS[env](config, recipients=options.recipients)
 
+        mailer = config.get('mailer', default='sendmail')
+
         if options.stdout:
             mailer = OutputMailer(sys.stdout)
-        else:
+        elif mailer == 'smtp':
+            smtpserver = config.get('smtpserver', default='localhost')
+            mailer = SMTPMailer(environment.sender or environment.fromaddr, smtpserver)
+        elif mailer == 'sendmail':
             mailer = SendMailer(environment.sender)
+        else:
+            sys.stderr.write(
+                'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
+                + 'please use one of "smtp" or "sendmail".\n'
+                )
+            sys.exit(1)
+
 
         # Dual mode: if arguments were specified on the command line, run
         # like an update hook; otherwise, run as a post-receive hook.
