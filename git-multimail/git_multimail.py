@@ -712,6 +712,14 @@ class ReferenceChange(Change):
             values['newrev_type'] = self.new.type
         return values
 
+    def should_be_skipped(self):
+        if self.refname in self.environment.skiprefs:
+            return True
+        onlyrefs = self.environment.onlyrefs
+        if onlyrefs and self.refname not in onlyrefs:
+            return True
+        return False
+
     def generate_email_header(self):
         return self.expand_lines(HEADER_TEMPLATE)
 
@@ -1213,6 +1221,15 @@ class Environment(object):
             summary email.  The value should be a list of strings
             representing words to be passed to the command.
 
+        onlyrefs (list of strings)
+        skiprefs (list of strings)
+
+            These two options specify references for which no email
+            should be sent. If the refname considered is in skiprefs,
+            or if onlyrefs is non-empty and does not contain the
+            refname, then the reference is not considered for
+            email-sending.
+
     Additionally, the default implementation of filter_body() expects
     the following:
 
@@ -1264,6 +1281,8 @@ class Environment(object):
         self.maxlinelength = 500
         self.strict_utf8 = True
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
+        self.onlyrefs = []
+        self.skiprefs = []
 
         self._values = None
 
@@ -1406,6 +1425,9 @@ class ConfigEnvironment(Environment):
         diffopts = self.config.get('diffopts', None)
         if diffopts is not None:
             self.diffopts = diffopts.split()
+
+        self.skiprefs = self.config.get('skipRefs').split()
+        self.onlyrefs = self.config.get('onlyRefs').split()
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
@@ -1672,7 +1694,13 @@ class Push(object):
         # guarantee that one (and only one) email is generated for
         # each new commit.
         unhandled_sha1s = set(self.get_new_commits())
+        refs_skipped = False
         for change in self.changes:
+            if change.should_be_skipped():
+                sys.stderr.write('No notification email for ref %s.\n' % (change.refname,))
+                refs_skipped = True
+                continue
+
             # Check if we've got anyone to send to
             if not change.recipients:
                 sys.stderr.write(
@@ -1696,11 +1724,16 @@ class Push(object):
 
         # Consistency check:
         if unhandled_sha1s:
-            sys.stderr.write(
-                'ERROR: No emails were sent for the following new commits:\n'
-                '    %s\n'
-                % ('\n    '.join(sorted(unhandled_sha1s)),)
-                )
+            if refs_skipped:
+                # Detailed list would annoy the user
+                sys.stderr.write('Warning: No emails were sent for some commits'
+                                 ' (see skipped refs above).\n')
+            else:
+                sys.stderr.write(
+                    'ERROR: No emails were sent for the following new commits:\n'
+                    '    %s\n'
+                    % ('\n    '.join(sorted(unhandled_sha1s)),)
+                    )
 
 
 def run_as_post_receive_hook(environment, mailer):

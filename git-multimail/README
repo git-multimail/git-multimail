@@ -261,6 +261,24 @@ multimailhook.emailDomain
     emaildomain)).  More complicated schemes can be implemented by
     overriding Environment.username_to_email().
 
+multimailhook.skipRefs
+multimailhook.onlyRefs
+
+    List of reference names to skip or to restrict to when sending
+    emails.  A reference is skept if its name appears in skipRefs, or
+    if onlyRefs is non-empty and doesn't contain it.  Both variables
+    apply to full reference names (refs/heads/some-branch, not just
+    some-branch).  For example, to send emails only for changes on
+    branches "master" and "maint", use:
+
+      [multimailhook]
+          onlyRefs = refs/heads/master refs/heads/maint
+
+   To send emails for all changes, except in branch "devel", use:
+
+      [multimailhook]
+          onlyRefs = refs/heads/devel
+
 
 Email filtering
 ---------------
