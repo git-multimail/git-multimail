@@ -262,13 +262,21 @@ multimailhook.diffOpts
     changes in ReferenceChange emails.  Default is "--stat --summary
     --find-copies-harder". Add -p to those options to include a
     unified diff of changes in addition to the usual summary output.
+    Shell quoting is allowed, see multimailhook.logOpts for details.
 
 multimailhook.logOpts
 
     Alternate options for the optional git log invocation that
     summarizes changes in ReferenceChange emails.  For example, adding
     --graph will show the graph of revisions, -p will show the
-    complete diff, etc.  Default is empty.
+    complete diff, etc.  Shell quoting is allowed, but comes on top of
+    Git's quoting mechanism which removes double-quotes by default.
+    So, for example, specifying a log format can be done using:
+
+      [multimailhook]
+          logopts = "--pretty=format:\"%h %aN <%aE>%n%s%n%n%b%n\" --stat"
+
+    Default is empty.
 
 multimailhook.emailDomain
 
