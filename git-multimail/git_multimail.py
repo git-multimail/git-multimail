@@ -53,6 +53,7 @@ import subprocess
 import shlex
 import optparse
 import smtplib
+from fnmatch import fnmatchcase
 
 try:
     from email.utils import make_msgid
@@ -813,6 +814,19 @@ class ReferenceChange(Change):
             }[self.change_type]
         return self.expand(template)
 
+    def should_be_skipped(self):
+        for to_skip in self.environment.skiprefs:
+            if fnmatchcase(self.refname, to_skip):
+                return True
+        onlyrefs = self.environment.onlyrefs
+        if onlyrefs:
+            is_in_onlyref = False
+            for only_ref in onlyrefs:
+                if fnmatchcase(self.refname, only_ref):
+                    is_in_onlyref = True
+            return not is_in_onlyref
+        return False
+
     def generate_email_header(self):
         for line in self.expand_header_lines(
             REFCHANGE_HEADER_TEMPLATE, subject=self.get_subject(),
@@ -1414,6 +1428,15 @@ class Environment(object):
             reply_to_refchange is used for refchange emails;
             reply_to_commit is used for individual commit emails.
 
+        onlyrefs (list of strings)
+        skiprefs (list of strings)
+
+            These two options specify references for which no email
+            should be sent. If the refname considered is in skiprefs,
+            or if onlyrefs is non-empty and does not contain the
+            refname, then the reference is not considered for
+            email-sending.
+
     Additionally, the default implementation of filter_body() expects
     the following:
 
@@ -1471,6 +1494,8 @@ class Environment(object):
         self.refchange_showlog = False
         self.reply_to_refchange = 'pusher'
         self.reply_to_commit = 'author'
+        self.onlyrefs = []
+        self.skiprefs = []
 
         self._values = None
 
@@ -1650,6 +1675,13 @@ class ConfigEnvironment(Environment):
         reply_to_refchange = self.config.get('replyToRefchange', default=reply_to)
         if reply_to_refchange is not None:
             self.reply_to_refchange = reply_to_refchange
+
+        self.skiprefs = []
+        for l in self.config.get_all('skipRefs'):
+            self.skiprefs.extend(l.split())
+        self.onlyrefs = []
+        for l in self.config.get_all('onlyRefs'):
+            self.onlyrefs.extend(l.split())
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
@@ -1916,7 +1948,13 @@ class Push(object):
         # guarantee that one (and only one) email is generated for
         # each new commit.
         unhandled_sha1s = set(self.get_new_commits())
+        refs_skipped = False
         for change in self.changes:
+            if change.should_be_skipped():
+                sys.stderr.write('No notification email for ref %s.\n' % (change.refname,))
+                refs_skipped = True
+                continue
+
             # Check if we've got anyone to send to
             if not change.recipients:
                 sys.stderr.write(
@@ -1950,11 +1988,16 @@ class Push(object):
 
         # Consistency check:
         if unhandled_sha1s:
-            sys.stderr.write(
-                'ERROR: No emails were sent for the following new commits:\n'
-                '    %s\n'
-                % ('\n    '.join(sorted(unhandled_sha1s)),)
-                )
+            if refs_skipped:
+                # Detailed list would annoy the user
+                sys.stderr.write('Warning: No emails were sent for some commits'
+                                 ' (see skipped refs above).\n')
+            else:
+                sys.stderr.write(
+                    'ERROR: No emails were sent for the following new commits:\n'
+                    '    %s\n'
+                    % ('\n    '.join(sorted(unhandled_sha1s)),)
+                    )
 
 
 def run_as_post_receive_hook(environment, mailer):
