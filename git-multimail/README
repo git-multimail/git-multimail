@@ -86,7 +86,8 @@ Requirements
 
 * To send emails using the default configuration, a standard sendmail
   program must be located at '/usr/sbin/sendmail' and configured
-  correctly to send emails.
+  correctly to send emails. If this is not the case, see the
+  multimailhook.mailer configuration variable below.
 
 
 Invocation
@@ -205,10 +206,32 @@ multimailhook.announceShortlog
     not so straightforward, then the shortlog might be confusing
     rather than useful.  Default is false.
 
+multimailhook.mailer
+
+    This option changes the way emails are send. Accepted values are:
+
+    - sendmail (the default): use the command /usr/sbin/sendmail.
+
+    - smtp: use Python's smtplib. This is useful when the sendmail
+      command is not available on the system. The SMTP server to use
+      is configured by multimailhook.smtpServer.
+
+multimailhook.smtpServer
+
+    SMTP server to use when multimailhook.mailer is set to 'smtp'.
+    Default is 'localhost'.
+
 multimailhook.envelopeSender
 
     If set then pass this value to sendmail via the -f option to set
     the envelope sender address.
+
+multimailhook.from
+
+    If set then use this value in the From: field of generated emails.
+    If unset, then the user's configuration will be used (user.name
+    and user.email). If user.email is unset too, then
+    multimailhook.envelopeSender is used.
 
 multimailhook.administrator
 
