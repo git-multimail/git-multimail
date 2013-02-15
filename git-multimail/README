@@ -312,6 +312,28 @@ multimailhook.emailDomain
     emaildomain)).  More complicated schemes can be implemented by
     overriding Environment.username_to_email().
 
+multimailhook.replyTo
+multimailhook.replyToCommit
+multimailhook.replyToRefchange
+
+    Addresses to use in the Reply-To: field for commit emails
+    (replyToCommit) and refchange emails (replyToRefchange).
+    multimailhook.replyTo is used as default when replyToCommit or
+    replyToRefchange is not set. The value for these variables can be
+    either:
+
+    - An email address, which will be used directly
+
+    - The value "pusher", in which case the pusher's address (if
+      available) will be used. This is the default for refchange
+      emails.
+
+    - The value "author" (meaningfull only for replyToCommit), in
+      which case the commit author's address will be used.
+
+    - The value "none", in which case the Reply-To: field will be
+      omitted.
+
 
 Email filtering
 ---------------
