@@ -77,7 +77,7 @@ Subject: %(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd
 Content-Type: text/plain; charset=utf-8
 Message-ID: %(msgid)s
 From: %(fromaddr)s
-Reply-To: %(pusher_email)s
+Reply-To: %(reply_to_refchange)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
@@ -191,7 +191,7 @@ To: %(recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 Content-Type: text/plain; charset=utf-8
 From: %(fromaddr)s
-Reply-To: %(author)s
+Reply-To: %(reply_to_commit)s
 In-Reply-To: %(reply_to_msgid)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -458,6 +458,48 @@ class Change(object):
             values.update(extra_values)
         return values
 
+    def set_reply_to(self, values, key, default):
+        """Compute the address to be used in the Reply-To: field.
+
+        This sets values[key] to the adress to be used, or unset it if
+        no Reply-To: should be generated. This function replaces the
+        special values "author", "pusher" and "none" by the
+        corresponding actual values (see documentation for
+        multimailhook.replyToCommit and
+        multimailhook.replyToRefchange). default is the strategy to
+        use values[key] is unset prior to calling the function.
+        """
+
+        if not key in values:
+            reply_to = default
+        else:
+            reply_to = values[key]
+
+        # be case-insensitive
+        reply_to = reply_to.lower()
+
+        if reply_to == 'author':
+            if 'author' in values:
+                reply_to = values['author']
+            else:
+                sys.stderr.write('Warning: no author email found,'
+                                 ' cannot set Reply-To:\n')
+                reply_to = None
+        elif reply_to == 'pusher':
+            if 'pusher_email' in values:
+                reply_to = values['pusher_email']
+            else:
+                sys.stderr.write('Warning: no pusher email found,'
+                                 ' cannot set Reply-To:\n')
+                reply_to = None
+        elif reply_to == 'none':
+            reply_to = None
+
+        if reply_to:
+            values[key] = reply_to
+        elif key in values:
+            del values[key]
+
     def expand(self, template, **extra_values):
         """Expand template.
 
@@ -573,6 +615,7 @@ class Revision(Change):
         except UnknownUserError:
             pass
 
+        self.set_reply_to(values, 'reply_to_commit', 'author')
         return values
 
     def get_author(self):
@@ -711,6 +754,8 @@ class ReferenceChange(Change):
             values['oldrev_type'] = self.old.type
         if self.new:
             values['newrev_type'] = self.new.type
+
+        self.set_reply_to(values, 'reply_to_refchange', 'pusher')
         return values
 
     def should_be_skipped(self):
@@ -1278,6 +1323,15 @@ class Environment(object):
             refname, then the reference is not considered for
             email-sending.
 
+        reply_to_refchange (string)
+        reply_to_commit (string)
+
+            Addresses to use in the Reply-To: field of emails:
+            reply_to_refchange is used for refchange emails. If unset,
+                the pusher's email will be used instead.
+            reply_to_commit is used for individual commit emails. If
+                unset, the author's email will be used instead.
+
     Additionally, the default implementation of filter_body() expects
     the following:
 
@@ -1311,7 +1365,9 @@ class Environment(object):
         'sender',
         'pusher',
         'pusher_email',
-        'fromaddr'
+        'fromaddr',
+        'reply_to_refchange',
+        'reply_to_commit'
         ]
 
     def __init__(self):
@@ -1332,6 +1388,8 @@ class Environment(object):
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.onlyrefs = []
         self.skiprefs = []
+        self.reply_to_refchange = None
+        self.reply_to_commit = None
 
         self._values = None
 
@@ -1489,6 +1547,10 @@ class ConfigEnvironment(Environment):
 
         self.skiprefs = self.config.get('skipRefs').split()
         self.onlyrefs = self.config.get('onlyRefs').split()
+
+        reply_to = self.config.get('replyTo', default=None)
+        self.reply_to_commit = self.config.get('replyToCommit', default=reply_to)
+        self.reply_to_refchange = self.config.get('replyToRefchange', default=reply_to)
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
