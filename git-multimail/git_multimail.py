@@ -52,6 +52,7 @@ import bisect
 import subprocess
 import shlex
 import optparse
+import smtplib
 
 try:
     from email.utils import make_msgid
@@ -76,7 +77,7 @@ To: %(recipients)s
 Subject: %(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd
 Content-Type: text/plain; charset=utf-8
 Message-ID: %(msgid)s
-From: %(sender)s
+From: %(fromaddr)s
 Reply-To: %(pusher_email)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -190,7 +191,7 @@ REVISION_HEADER_TEMPLATE = """\
 To: %(recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 Content-Type: text/plain; charset=utf-8
-From: %(sender)s
+From: %(fromaddr)s
 Reply-To: %(author)s
 In-Reply-To: %(reply_to_msgid)s
 X-Git-Repo: %(repo_shortname)s
@@ -1103,12 +1104,17 @@ class OtherReferenceChange(ReferenceChange):
 class Mailer(object):
     """An object that can send emails."""
 
-    def send(self, lines):
+    def send(self, lines, to_addrs):
         """Send an email consisting of lines.
 
         lines must be an iterable over the lines constituting the
-        header and body of the email.  The recipients will be read
-        from the email header."""
+        header and body of the email.  to_addrs is a list of recipient
+        addresses (can be needed even if lines already contains a
+        "To:" field).  It can be either a string (comma-separated list
+        of email addresses) or a Python list of individual email
+        addresses.
+
+        """
 
         raise NotImplementedError()
 
@@ -1119,11 +1125,20 @@ class SendMailer(Mailer):
     def __init__(self, envelopesender=None):
         self.envelopesender = envelopesender
 
-    def send(self, lines):
+    def send(self, lines, to_addrs):
         cmd = ['/usr/sbin/sendmail', '-t']
         if self.envelopesender:
             cmd.extend(['-f', self.envelopesender])
-        p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        try:
+            p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        except OSError, e:
+            sys.stderr.write(
+                '*** Cannot execute command: %s\n' % ' '.join(cmd)
+                + '*** %s\n' % str(e)
+                + '*** Try setting multimailhook.mailer to "smtp"\n'
+                '*** to send emails without using the sendmail command.\n'
+                )
+            sys.exit(1)
         try:
             p.stdin.writelines(lines)
         except:
@@ -1139,6 +1154,42 @@ class SendMailer(Mailer):
             if retcode:
                 raise CommandError(cmd, retcode)
 
+class SMTPMailer(Mailer):
+    """Send emails using Python's smtplib."""
+
+    def __init__(self, envelopesender, smtpserver):
+        if not envelopesender:
+            sys.stderr.write(
+                'fatal: git_multimail: cannot use SMTPMailer without a sender address.\n'
+                'please set either multimailhook.envelopeSender or user.email\n'
+                )
+            sys.exit(1)
+        self.envelopesender = envelopesender
+        self.smtpserver = smtpserver
+        try:
+            self.smtp = smtplib.SMTP(self.smtpserver)
+        except Exception, e:
+            sys.stderr.write('*** Error establishing SMTP connection to %s***\n' % self.smtpserver)
+            sys.stderr.write('*** %s\n' % str(e))
+            sys.exit(1)
+
+    def __del__(self):
+        self.smtp.quit()
+
+    def send(self, lines, to_addrs):
+        try:
+            s = smtplib.SMTP(self.smtpserver)
+            msg = ''.join(lines)
+            # turn comma-separated list into Python list if needed.
+            if isinstance(to_addrs, basestring):
+                to_addrs = [email for (name, email) in getaddresses([to_addrs])]
+            self.smtp.sendmail(self.envelopesender, to_addrs, msg)
+        except Exception, e:
+            sys.stderr.write('*** Error sending email***\n')
+            sys.stderr.write('*** %s\n' % str(e))
+            self.smtp.quit()
+            sys.exit(1)
+
 
 class OutputMailer(Mailer):
     """Write emails to an output stream, bracketed by lines of '=' characters.
@@ -1150,7 +1201,7 @@ class OutputMailer(Mailer):
     def __init__(self, f):
         self.f = f
 
-    def send(self, lines):
+    def send(self, lines, to_addrs):
         self.f.write(self.SEPARATOR)
         self.f.writelines(lines)
         self.f.write(self.SEPARATOR)
@@ -1214,7 +1265,13 @@ class Environment(object):
 
         sender
 
-            The 'From' email address.
+            The 'From' email address used in the email envelope.
+
+        fromaddr
+
+            The 'From' email address used in the email 'From:'
+            headers.  (May be a full RFC 2822 email address like 'Joe
+            User <user@example.com>'.)
 
         administrator
 
@@ -1277,6 +1334,7 @@ class Environment(object):
         'sender',
         'pusher',
         'pusher_email',
+        'fromaddr'
         ]
 
     def __init__(self):
@@ -1416,6 +1474,18 @@ class ConfigEnvironment(Environment):
             'refchangeshowlog', default=self.refchange_showlog
             )
         self.sender = self.config.get('envelopesender', default=None)
+
+        # value to be used in the "From:" field of generated emails.
+        self.fromaddr = self.config.get('from', default=None)
+        if self.fromaddr is None:
+            config = Config('user')
+            fromname = config.get('name')
+            fromemail = config.get('email')
+            if fromemail:
+                self.fromaddr = formataddr([fromname, fromemail])
+        if self.fromaddr is None:
+            self.fromaddr = self.sender
+
         self.administrator = (
             self.config.get('administrator')
             or self.administrator
@@ -1722,7 +1792,7 @@ class Push(object):
                     )
             else:
                 sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
-                mailer.send(change.generate_email(self, body_filter))
+                mailer.send(change.generate_email(self, body_filter), change.recipients)
 
             sha1s = []
             for sha1 in reversed(list(self.get_new_commits(change))):
@@ -1732,7 +1802,7 @@ class Push(object):
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num+1, tot=len(sha1s))
                 if rev.recipients:
-                    mailer.send(rev.generate_email(self, body_filter))
+                    mailer.send(rev.generate_email(self, body_filter), rev.recipients)
 
         # Consistency check:
         if unhandled_sha1s:
@@ -1809,10 +1879,22 @@ def main(args):
     try:
         environment = KNOWN_ENVIRONMENTS[env](config, recipients=options.recipients)
 
+        mailer = config.get('mailer', default='sendmail')
+
         if options.stdout:
             mailer = OutputMailer(sys.stdout)
-        else:
+        elif mailer == 'smtp':
+            smtpserver = config.get('smtpserver', default='localhost')
+            mailer = SMTPMailer(environment.sender or environment.fromaddr, smtpserver)
+        elif mailer == 'sendmail':
             mailer = SendMailer(environment.sender)
+        else:
+            sys.stderr.write(
+                'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
+                + 'please use one of "smtp" or "sendmail".\n'
+                )
+            sys.exit(1)
+
 
         # Dual mode: if arguments were specified on the command line, run
         # like an update hook; otherwise, run as a post-receive hook.
