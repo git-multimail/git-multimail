@@ -95,6 +95,62 @@ def erase_values(config, names):
                     )
 
 
+def is_section_empty(section, local):
+    """Return True iff the specified configuration section is empty.
+
+    Iff local is True, use the --local option when invoking 'git
+    config'."""
+
+    if local:
+        local_option = ['--local']
+    else:
+        local_option = []
+
+    try:
+        read_output(
+            ['git', 'config']
+            + local_option
+            + ['--get-regexp', '^%s\.' % (section,)]
+            )
+    except CommandError, e:
+        if e.retcode == 1:
+            # This means that no settings were found.
+            return True
+        else:
+            raise
+    else:
+        return False
+
+
+def remove_section_if_empty(section):
+    """If the specified configuration section is empty, delete it."""
+
+    try:
+        empty = is_section_empty(section, local=True)
+    except CommandError:
+        # Older versions of git do not support the --local option, so
+        # if the first attempt fails, try without --local.
+        try:
+            empty = is_section_empty(section, local=False)
+        except CommandError:
+            sys.stderr.write(
+                '\nINFO: If configuration section "%s.*" is empty, you might want '
+                'to delete it.\n\n'
+                % (section,)
+                )
+            return
+
+    if empty:
+        sys.stderr.write('...removing section "%s.*"\n' % (section,))
+        read_output(['git', 'config', '--remove-section', section])
+    else:
+        sys.stderr.write(
+            '\nINFO: Configuration section "%s.*" still has contents.  '
+            'It will not be deleted.\n\n'
+            % (section,)
+            )
+
+
 def migrate_config(strict=False, retain=False, overwrite=False):
     old = Config('hooks')
     new = Config('multimailhook')
@@ -164,22 +220,7 @@ def migrate_config(strict=False, retain=False, overwrite=False):
 
     if not retain:
         erase_values(old, OLD_NAMES)
-
-        # If the old section is empty, delete it:
-        try:
-            read_output(['git', 'config', '--local', '--get-regexp', '^%s\.' % (old.section,)])
-        except CommandError, e:
-            if e.retcode == 1:
-                sys.stderr.write('...removing section "%s.*"\n' % (old.section,))
-                read_output(['git', 'config', '--remove-section', old.section])
-            else:
-                raise
-        else:
-            sys.stderr.write(
-                '\nINFO: Configuration section "%s.*" still has contents.  '
-                'It will not be deleted.\n\n'
-                % (old.section,)
-                )
+        remove_section_if_empty(old.section)
 
     sys.stderr.write(INFO)
     for name in NEW_NAMES:
