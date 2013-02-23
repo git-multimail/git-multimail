@@ -371,23 +371,6 @@ def limit_linelength(lines, max_linelength):
         yield line
 
 
-def encode_header_maybe(line):
-    """If line is a mail header (Name: value) whose value contains
-    non-ascii characters, encode the value."""
-    splitted = line.split(':', 1)
-    if len(splitted) == 2:
-        (name, value) = splitted
-        try:
-            value.decode('ascii')
-            return line
-        except UnicodeDecodeError:
-            # This is a header and it's non-ascii => encode it
-            value = value.rstrip('\n\r')
-            return name + ': ' + Header(value, 'utf-8').encode() + '\n'
-    else:
-        return line
-
-
 class CommitSet(object):
     """A (constant) set of object names.
 
@@ -502,13 +485,16 @@ class Change(object):
     def expand_header_lines(self, template, **extra_values):
         """Break template into lines and expand each line as an RFC 2822 header.
 
-        Silently skip lines that contain references to unknown
-        variables."""
+        Encode values and split up lines that are too long.  Silently
+        skip lines that contain references to unknown variables."""
 
         values = self.get_values(**extra_values)
         for line in template.splitlines(True):
+            (name, value) = line.split(':', 1)
+            value = value.rstrip('\n\r')
+
             try:
-                yield line % values
+                value = value % values
             except KeyError, e:
                 if DEBUG:
                     sys.stderr.write(
@@ -516,6 +502,13 @@ class Change(object):
                         '    %s'
                         % (e.args[0], line,)
                         )
+            else:
+                try:
+                    h = Header(value, header_name=name)
+                except UnicodeDecodeError:
+                    h = Header(value, header_name=name, charset='utf-8', errors='replace')
+                for splitline in ('%s: %s\n' % (name, h.encode(),)).splitlines(True):
+                    yield splitline
 
     def generate_email_header(self):
         """Generate the RFC 2822 email headers for this Change, a line at a time.
@@ -557,7 +550,7 @@ class Change(object):
         email body."""
 
         for line in self.generate_email_header():
-            yield encode_header_maybe(line)
+            yield line
         yield '\n'
         for line in self.generate_email_intro():
             yield line
