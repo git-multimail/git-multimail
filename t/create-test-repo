@@ -24,6 +24,7 @@ git config multimailhook.commitlist 'Commit List <commitlist@example.com>'
 
 git config multimailhook.announceshortlog 'true'
 git config multimailhook.envelopesender 'Sender <sender@example.com>'
+git config multimailhook.from 'From <from@example.com>'
 git config multimailhook.administrator 'Administrator <administrator@example.com>'
 
 git config multimailhook.emailprefix '*test-repo*'
