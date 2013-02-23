@@ -72,7 +72,7 @@ LOGBEGIN = '- Log --------------------------------------------------------------
 LOGEND = '-----------------------------------------------------------------------\n'
 
 
-HEADER_TEMPLATE = """\
+REFCHANGE_HEADER_TEMPLATE = """\
 To: %(recipients)s
 Subject: %(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd
 Content-Type: text/plain; charset=utf-8
@@ -717,7 +717,7 @@ class ReferenceChange(Change):
         return values
 
     def generate_email_header(self):
-        return self.expand_lines(HEADER_TEMPLATE)
+        return self.expand_lines(REFCHANGE_HEADER_TEMPLATE)
 
     def generate_email_body(self, push):
         """Call the appropriate body-generation routine.
