@@ -492,10 +492,16 @@ class Change(object):
                         )
 
     def generate_email_header(self):
-        """Generate the email header for this Change, a line at a time.
+        """Generate the RFC 2822 email headers for this Change, a line at a time.
 
-        The header should include the RFC 2822 email header, a blank
-        line, plus any standard boilerplate to be included at the top
+        The output should not include the trailing blank line."""
+
+        raise NotImplementedError()
+
+    def generate_email_intro(self):
+        """Generate the email intro for this Change, a line at a time.
+
+        The output will be used as the standard boilerplate at the top
         of the email body."""
 
         raise NotImplementedError()
@@ -525,6 +531,9 @@ class Change(object):
         email body."""
 
         for line in self.generate_email_header():
+            yield line
+        yield '\n'
+        for line in self.generate_email_intro():
             yield line
 
         body = self.generate_email_body(push)
@@ -586,7 +595,8 @@ class Revision(Change):
     def generate_email_header(self):
         for line in self.expand_lines(REVISION_HEADER_TEMPLATE):
             yield line
-        yield '\n'
+
+    def generate_email_intro(self):
         for line in self.expand_lines(REVISION_INTRO_TEMPLATE):
             yield line
 
@@ -727,7 +737,8 @@ class ReferenceChange(Change):
     def generate_email_header(self):
         for line in self.expand_lines(REFCHANGE_HEADER_TEMPLATE):
             yield line
-        yield '\n'
+
+    def generate_email_intro(self):
         for line in self.expand_lines(REFCHANGE_INTRO_TEMPLATE):
             yield line
 
