@@ -474,7 +474,14 @@ class Change(object):
         return template % self.get_values(**extra_values)
 
     def expand_lines(self, template, **extra_values):
-        """Break template into lines and expand each line.
+        """Break template into lines and expand each line."""
+
+        values = self.get_values(**extra_values)
+        for line in template.splitlines(True):
+            yield line % values
+
+    def expand_header_lines(self, template, **extra_values):
+        """Break template into lines and expand each line as an RFC 2822 header.
 
         Silently skip lines that contain references to unknown
         variables."""
@@ -593,7 +600,7 @@ class Revision(Change):
         return read_output(['git', 'log', '--max-count=1', '--format=%aN <%aE>', self.rev.sha1])
 
     def generate_email_header(self):
-        for line in self.expand_lines(REVISION_HEADER_TEMPLATE):
+        for line in self.expand_header_lines(REVISION_HEADER_TEMPLATE):
             yield line
 
     def generate_email_intro(self):
@@ -735,7 +742,7 @@ class ReferenceChange(Change):
         return values
 
     def generate_email_header(self):
-        for line in self.expand_lines(REFCHANGE_HEADER_TEMPLATE):
+        for line in self.expand_header_lines(REFCHANGE_HEADER_TEMPLATE):
             yield line
 
     def generate_email_intro(self):
