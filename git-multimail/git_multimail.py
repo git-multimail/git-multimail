@@ -1178,7 +1178,6 @@ class SMTPMailer(Mailer):
 
     def send(self, lines, to_addrs):
         try:
-            s = smtplib.SMTP(self.smtpserver)
             msg = ''.join(lines)
             # turn comma-separated list into Python list if needed.
             if isinstance(to_addrs, basestring):
