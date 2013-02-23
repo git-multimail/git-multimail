@@ -58,11 +58,13 @@ try:
     from email.utils import make_msgid
     from email.utils import getaddresses
     from email.utils import formataddr
+    from email.header import Header
 except ImportError:
     # Prior to Python 2.5, the email module used different names:
     from email.Utils import make_msgid
     from email.Utils import getaddresses
     from email.Utils import formataddr
+    from email.Header import Header
 
 
 DEBUG = False
@@ -369,6 +371,23 @@ def limit_linelength(lines, max_linelength):
         yield line
 
 
+def encode_header_maybe(line):
+    """If line is a mail header (Name: value) whose value contains
+    non-ascii characters, encode the value."""
+    splitted = line.split(':', 1)
+    if len(splitted) == 2:
+        (name, value) = splitted
+        try:
+            value.decode('ascii')
+            return line
+        except UnicodeDecodeError:
+            # This is a header and it's non-ascii => encode it
+            value = value.rstrip('\n\r')
+            return name + ': ' + Header(value, 'utf-8').encode() + '\n'
+    else:
+        return line
+
+
 class CommitSet(object):
     """A (constant) set of object names.
 
@@ -538,7 +557,7 @@ class Change(object):
         email body."""
 
         for line in self.generate_email_header():
-            yield line
+            yield encode_header_maybe(line)
         yield '\n'
         for line in self.generate_email_intro():
             yield line
