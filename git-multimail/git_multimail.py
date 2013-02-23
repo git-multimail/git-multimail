@@ -85,7 +85,9 @@ X-Git-Reftype: %(refname_type)s
 X-Git-Oldrev: %(oldrev)s
 X-Git-Newrev: %(newrev)s
 Auto-Submitted: auto-generated
+"""
 
+REFCHANGE_INTRO_TEMPLATE = """\
 This is an automated email from the git hooks/post-receive script.
 
 %(pusher)s pushed a change to %(refname_type)s %(short_refname)s
@@ -199,7 +201,9 @@ X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
 X-Git-Rev: %(rev)s
 Auto-Submitted: auto-generated
+"""
 
+REVISION_INTRO_TEMPLATE = """\
 This is an automated email from the git hooks/post-receive script.
 
 %(pusher)s pushed a commit to %(refname_type)s %(short_refname)s
@@ -580,7 +584,11 @@ class Revision(Change):
         return read_output(['git', 'log', '--max-count=1', '--format=%aN <%aE>', self.rev.sha1])
 
     def generate_email_header(self):
-        return self.expand_lines(REVISION_HEADER_TEMPLATE)
+        for line in self.expand_lines(REVISION_HEADER_TEMPLATE):
+            yield line
+        yield '\n'
+        for line in self.expand_lines(REVISION_INTRO_TEMPLATE):
+            yield line
 
     def generate_email_body(self, push):
         """Show this revision."""
@@ -717,7 +725,11 @@ class ReferenceChange(Change):
         return values
 
     def generate_email_header(self):
-        return self.expand_lines(REFCHANGE_HEADER_TEMPLATE)
+        for line in self.expand_lines(REFCHANGE_HEADER_TEMPLATE):
+            yield line
+        yield '\n'
+        for line in self.expand_lines(REFCHANGE_INTRO_TEMPLATE):
+            yield line
 
     def generate_email_body(self, push):
         """Call the appropriate body-generation routine.
