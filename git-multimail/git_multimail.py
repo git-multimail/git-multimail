@@ -1482,8 +1482,8 @@ class ConfigEnvironment(Environment):
             fromemail = config.get('email')
             if fromemail:
                 self.fromaddr = formataddr([fromname, fromemail])
-        if self.fromaddr is None:
-            self.fromaddr = self.sender
+            else:
+                self.fromaddr = self.sender
 
         self.administrator = (
             self.config.get('administrator')
