@@ -225,6 +225,11 @@ class ConfigurationException(Exception):
     pass
 
 
+def read_git_output(args, input=None, keepends=False, **kw):
+    """Read the output of Git command"""
+    return read_output(['git'] + args, input=input, keepends=keepends, **kw)
+
+
 def read_output(cmd, input=None, keepends=False, **kw):
     if input:
         stdin = subprocess.PIPE
@@ -242,12 +247,12 @@ def read_output(cmd, input=None, keepends=False, **kw):
     return out
 
 
-def read_lines(cmd, keepends=False, **kw):
-    """Return the lines output by command.
+def read_git_lines(args, keepends=False, **kw):
+    """Return the lines output by Git command.
 
     Return as single lines, with newlines stripped off."""
 
-    return read_output(cmd, keepends=True, **kw).splitlines(keepends)
+    return read_git_output(args, keepends=True, **kw).splitlines(keepends)
 
 
 class Config(object):
@@ -264,8 +269,8 @@ class Config(object):
 
     def get(self, name, default=''):
         try:
-            values = self._split(read_output(
-                    ['git', 'config', '--get', '--null', '%s.%s' % (self.section, name)],
+            values = self._split(read_git_output(
+                    ['config', '--get', '--null', '%s.%s' % (self.section, name)],
                     keepends=True,
                     ))
             assert len(values) == 1
@@ -275,8 +280,8 @@ class Config(object):
 
     def get_bool(self, name, default=None):
         try:
-            value = read_output(
-                ['git', 'config', '--get', '--bool', '%s.%s' % (self.section, name)]
+            value = read_git_output(
+                ['config', '--get', '--bool', '%s.%s' % (self.section, name)]
                 )
         except CommandError:
             return default
@@ -289,8 +294,8 @@ class Config(object):
         is unset."""
 
         try:
-            return self._split(read_output(
-                ['git', 'config', '--get-all', '--null', '%s.%s' % (self.section, name)],
+            return self._split(read_git_output(
+                ['config', '--get-all', '--null', '%s.%s' % (self.section, name)],
                 keepends=True,
                 ))
         except CommandError, e:
@@ -312,17 +317,17 @@ class Config(object):
         return ', '.join(line.strip() for line in lines)
 
     def set(self, name, value):
-        read_output(['git', 'config', '%s.%s' % (self.section, name), value])
+        read_git_output(['config', '%s.%s' % (self.section, name), value])
 
     def add(self, name, value):
-        read_output(['git', 'config', '--add', '%s.%s' % (self.section, name), value])
+        read_git_output(['config', '--add', '%s.%s' % (self.section, name), value])
 
     def has_key(self, name):
         return self.get_all(name, default=None) is not None
 
     def unset_all(self, name):
         try:
-            read_output(['git', 'config', '--unset-all', '%s.%s' % (self.section, name)])
+            read_git_output(['config', '--unset-all', '%s.%s' % (self.section, name)])
         except CommandError, e:
             if e.retcode == 5:
                 # The name doesn't exist, which is what we wanted anyway...
@@ -343,9 +348,9 @@ def read_log_oneline(*log_args):
     log" as revision selectors."""
 
     cmd = [
-        'git', 'log', '--abbrev=10', '--format=%h %s',
+        'log', '--abbrev=10', '--format=%h %s',
         ] + list(log_args) + ['--']
-    return read_lines(cmd)
+    return read_git_lines(cmd)
 
 
 def limit_lines(lines, max_lines):
@@ -358,6 +363,7 @@ def limit_lines(lines, max_lines):
 
 
 def limit_linelength(lines, max_linelength):
+    sys.stderr.write("limit_linglength %d \n" % max_linelength)
     for line in lines:
         # Don't forget that lines always include a trailing newline.
         if len(line) > max_linelength + 1:
@@ -391,14 +397,14 @@ class GitObject(object):
             self.sha1 = self.type = self.commit = None
         else:
             self.sha1 = sha1
-            self.type = type or read_output(['git', 'cat-file', '-t', self.sha1])
+            self.type = type or read_git_output(['cat-file', '-t', self.sha1])
 
             if self.type == 'commit':
                 self.commit = self
             elif self.type == 'tag':
                 try:
                     self.commit = GitObject(
-                        read_output(['git', 'rev-parse', '--verify', '%s^0' % (self.sha1,)]),
+                        read_git_output(['rev-parse', '--verify', '%s^0' % (self.sha1,)]),
                         type='commit',
                         )
                 except CommandError:
@@ -406,7 +412,7 @@ class GitObject(object):
             else:
                 self.commit = None
 
-        self.short = read_output(['git', 'rev-parse', '--short=10', sha1])
+        self.short = read_git_output(['rev-parse', '--short=10', sha1])
 
     def __eq__(self, other):
         return isinstance(other, GitObject) and self.sha1 == other.sha1
@@ -551,8 +557,8 @@ class Revision(Change):
 
         # First line of commit message:
         try:
-            oneline = read_output(
-                ['git', 'log', '--format=%s', '--max-count=1', self.rev.sha1]
+            oneline = read_git_output(
+                ['log', '--format=%s', '--max-count=1', self.rev.sha1]
                 )
         except CommandError:
             oneline = self.rev.sha1
@@ -577,7 +583,7 @@ class Revision(Change):
         return values
 
     def get_author(self):
-        return read_output(['git', 'log', '--max-count=1', '--format=%aN <%aE>', self.rev.sha1])
+        return read_git_output(['log', '--max-count=1', '--format=%aN <%aE>', self.rev.sha1])
 
     def generate_email_header(self):
         return self.expand_lines(REVISION_HEADER_TEMPLATE)
@@ -585,9 +591,9 @@ class Revision(Change):
     def generate_email_body(self, push):
         """Show this revision."""
 
-        return read_lines(
+        return read_git_lines(
             [
-                'git', 'log', '-C',
+                'log', '-C',
                  '--stat', '-p', '--cc',
                 '-1', self.rev.sha1,
                 ],
@@ -743,8 +749,8 @@ class ReferenceChange(Change):
         if self.showlog:
             yield '\n'
             yield 'Detailed log of new commits:\n\n'
-            for line in read_lines(
-                    ['git', 'log', '--no-walk']
+            for line in read_git_lines(
+                    ['log', '--no-walk']
                     + self.logopts
                     + new_commits_list
                     + ['--'],
@@ -873,8 +879,8 @@ class ReferenceChange(Change):
             # previous revisions in the case of non-fast-forward updates.
             yield '\n'
             yield 'Summary of changes:\n'
-            for line in read_lines(
-                ['git', 'diff-tree']
+            for line in read_git_lines(
+                ['diff-tree']
                 + self.diffopts
                 + ['%s..%s' % (self.old.commit, self.new.commit,)],
                 keepends=True,
@@ -967,8 +973,8 @@ class AnnotatedTagChange(ReferenceChange):
 
         # Use git for-each-ref to pull out the individual fields from
         # the tag
-        [tagobject, tagtype, tagger, tagged] = read_lines(
-            ['git', 'for-each-ref', '--format=%s' % (self.ANNOTATED_TAG_FORMAT,), self.refname],
+        [tagobject, tagtype, tagger, tagged] = read_git_lines(
+            ['for-each-ref', '--format=%s' % (self.ANNOTATED_TAG_FORMAT,), self.refname],
             )
 
         yield '   tagging  %s (%s)\n' % (tagobject, tagtype)
@@ -977,14 +983,14 @@ class AnnotatedTagChange(ReferenceChange):
             # release, and so we calculate which tag this tag is
             # replacing
             try:
-                prevtag = read_output(['git', 'describe', '--abbrev=0', '%s^' % (self.new,)])
+                prevtag = read_git_output(['describe', '--abbrev=0', '%s^' % (self.new,)])
             except CommandError:
                 prevtag = None
             if prevtag:
                 yield '  replaces  %s\n' % (prevtag,)
         else:
             prevtag = None
-            yield '    length  %s bytes\n' % (read_output(['git', 'cat-file', '-s', tagobject]),)
+            yield '    length  %s bytes\n' % (read_git_output(['cat-file', '-s', tagobject]),)
 
         yield ' tagged by  %s\n' % (tagger,)
         yield '        on  %s\n' % (tagged,)
@@ -993,7 +999,7 @@ class AnnotatedTagChange(ReferenceChange):
         # Show the content of the tag message; this might contain a
         # change log or release notes so is worth displaying.
         yield LOGBEGIN
-        contents = list(read_lines(['git', 'cat-file', 'tag', self.new.sha1], keepends=True))
+        contents = list(read_git_lines(['cat-file', 'tag', self.new.sha1], keepends=True))
         contents = contents[contents.index('\n') + 1:]
         if contents and contents[-1][-1:] != '\n':
             contents.append('\n')
@@ -1006,18 +1012,18 @@ class AnnotatedTagChange(ReferenceChange):
             yield '\n'
             if prevtag:
                 # Show changes since the previous release
-                revlist = read_output(
-                    ['git', 'rev-list', '--pretty=short', '%s..%s' % (prevtag, self.new,)],
+                revlist = read_git_output(
+                    ['rev-list', '--pretty=short', '%s..%s' % (prevtag, self.new,)],
                     keepends=True,
                     )
             else:
                 # No previous tag, show all the changes since time
                 # began
-                revlist = read_output(
-                    ['git', 'rev-list', '--pretty=short', '%s' % (self.new,)],
+                revlist = read_git_output(
+                    ['rev-list', '--pretty=short', '%s' % (self.new,)],
                     keepends=True,
                     )
-            for line in read_lines(['git', 'shortlog'], input=revlist, keepends=True):
+            for line in read_git_lines(['shortlog'], input=revlist, keepends=True):
                 yield line
 
         yield LOGEND
@@ -1209,7 +1215,7 @@ class OutputMailer(Mailer):
 # Set GIT_DIR either from the working directory, or based on the
 # GIT_DIR environment variable:
 try:
-    GIT_DIR = read_output(['git', 'rev-parse', '--git-dir'])
+    GIT_DIR = read_git_output(['rev-parse', '--git-dir'])
 except CommandError:
     sys.stderr.write('fatal: git_multimail: not in a git working copy\n')
     sys.exit(1)
@@ -1350,6 +1356,7 @@ class Environment(object):
         self.announce_show_shortlog = False
         self.maxlines = None
         self.maxlinelength = 500
+        self.maxcommitemails = 500
         self.strict_utf8 = True
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
@@ -1504,6 +1511,16 @@ class ConfigEnvironment(Environment):
         if maxlinelength is not None:
             self.maxlinelength = int(maxlinelength)
 
+        maxcommitemails = self.config.get('maxcommitemails', default=None)
+        if maxcommitemails is not None:
+            try:
+                self.maxcommitemails = int(maxcommitemails)
+            except ValueError:
+                sys.stderr.write(
+                    '*** Malformed value for multimailhook.maxCommitEmails: %s\n' % maxcommitemails
+                    + '*** Expected a number.  Disabling commit emails limitation.\n'
+                    )
+
         strict_utf8 = self.config.get_bool('emailstrictutf8', default=None)
         if strict_utf8 is not None:
             self.strict_utf8 = strict_utf8
@@ -1568,11 +1585,11 @@ class GenericEnvironment(ConfigEnvironment):
             )
 
     def _compute_repo_shortname(self):
-        if read_output(['git', 'rev-parse', '--is-bare-repository']) == 'true':
+        if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
             path = GIT_DIR
         else:
             try:
-                path = read_output(['git', 'rev-parse', '--show-toplevel'])
+                path = read_git_output(['rev-parse', '--show-toplevel'])
             except CommandError:
                 return 'unknown repository'
 
@@ -1705,7 +1722,7 @@ class Push(object):
         # The GitObjects referred to by all references in this
         # repository *except* updated_refs:
         all_refs = set()
-        for line in read_lines(['git', 'for-each-ref']):
+        for line in read_git_lines(['for-each-ref']):
             (sha1, type, name) = line.split()
             if name not in updated_refs:
                 all_refs.add(GitObject(sha1, type))
@@ -1749,8 +1766,8 @@ class Push(object):
         else:
             new_revs = [reference_change.new.commit.sha1]
 
-        cmd = ['git', 'rev-list', '--stdin'] + new_revs
-        return read_lines(cmd, input=self._old_rev_exclusion_spec)
+        cmd = ['rev-list', '--stdin'] + new_revs
+        return read_git_lines(cmd, input=self._old_rev_exclusion_spec)
 
     def get_discarded_commits(self, reference_change):
         """Return a list of commits discarded by this push.
@@ -1764,8 +1781,8 @@ class Push(object):
         else:
             old_revs = [reference_change.old.commit.sha1]
 
-        cmd = ['git', 'rev-list', '--stdin'] + old_revs
-        return read_lines(cmd, input=self._new_rev_exclusion_spec)
+        cmd = ['rev-list', '--stdin'] + old_revs
+        return read_git_lines(cmd, input=self._new_rev_exclusion_spec)
 
     def send_emails(self, mailer, body_filter=None):
         """Use send all of the notification emails needed for this push.
@@ -1798,6 +1815,16 @@ class Push(object):
                 if sha1 in unhandled_sha1s:
                     sha1s.append(sha1)
                     unhandled_sha1s.remove(sha1)
+
+            max_emails = change.environment.maxcommitemails
+            if max_emails and len(sha1s) > max_emails:
+                sys.stderr.write(
+                    '*** Too many new commits (%d), not sending commit emails.\n' % len(sha1s)
+                    + '*** Try setting multimailhook.maxCommitEmails to a greater value\n'
+                    + '*** Currently, multimailhook.maxCommitEmails=%d\n' % max_emails
+                    )
+                return
+
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num+1, tot=len(sha1s))
                 if rev.recipients:
@@ -1827,8 +1854,8 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
     changes = [
         ReferenceChange.create(
             environment,
-            read_output(['git', 'rev-parse', '--verify', oldrev]),
-            read_output(['git', 'rev-parse', '--verify', newrev]),
+            read_git_output(['rev-parse', '--verify', oldrev]),
+            read_git_output(['rev-parse', '--verify', newrev]),
             refname,
             ),
         ]
@@ -1845,7 +1872,7 @@ KNOWN_ENVIRONMENTS = {
 def main(args):
     parser = optparse.OptionParser(
         description=__doc__,
-        usage='%prog [OPTIONS]',
+        usage='%prog [OPTIONS]\n   or: %prog [OPTIONS] REFNAME OLDREV NEWREV',
         )
 
     parser.add_option(
@@ -1899,7 +1926,7 @@ def main(args):
         # like an update hook; otherwise, run as a post-receive hook.
         if args:
             if len(args) != 3:
-                parser.error('Need zero or three arguments')
+                parser.error('Need zero or three non-option arguments')
             (refname, oldrev, newrev) = args
             run_as_update_hook(environment, mailer, refname, oldrev, newrev)
         else:
