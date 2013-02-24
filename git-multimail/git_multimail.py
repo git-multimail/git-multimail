@@ -1348,11 +1348,12 @@ class Environment(object):
         reply_to_refchange (string)
         reply_to_commit (string)
 
-            Addresses to use in the Reply-To: field of emails:
-            reply_to_refchange is used for refchange emails. If unset,
-                the pusher's email will be used instead.
-            reply_to_commit is used for individual commit emails. If
-                unset, the author's email will be used instead.
+            Addresses to use in the Reply-To: field of emails.  These
+            can be email addresses or take the special values
+            'pusher', 'author' (for reply_to_commit), or 'none' as
+            explained in the documentation for multimailhook.replyTo.
+            reply_to_refchange is used for refchange emails;
+            reply_to_commit is used for individual commit emails.
 
     Additionally, the default implementation of filter_body() expects
     the following:
