@@ -78,7 +78,7 @@ Subject: %(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd
 Content-Type: text/plain; charset=utf-8
 Message-ID: %(msgid)s
 From: %(fromaddr)s
-Reply-To: %(reply_to_refchange)s
+Reply-To: %(reply_to)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
@@ -192,7 +192,7 @@ To: %(recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 Content-Type: text/plain; charset=utf-8
 From: %(fromaddr)s
-Reply-To: %(reply_to_commit)s
+Reply-To: %(reply_to)s
 In-Reply-To: %(reply_to_msgid)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -459,47 +459,35 @@ class Change(object):
             values.update(extra_values)
         return values
 
-    def set_reply_to(self, values, key, default):
-        """Compute the address to be used in the Reply-To: field.
+    def set_reply_to(self, values, reply_to):
+        """Set the address to be used in the Reply-To: field.
 
-        This sets values[key] to the adress to be used, or unset it if
-        no Reply-To: should be generated. This function replaces the
-        special values "author", "pusher" and "none" by the
-        corresponding actual values (see documentation for
-        multimailhook.replyToCommit and
-        multimailhook.replyToRefchange). default is the strategy to
-        use values[key] is unset prior to calling the function.
-        """
+        Set values['reply_to'] to the address to be used, or leave it
+        unset it if no Reply-To: header should be generated.  Use the
+        value from the reply_to argument, but translate the special
+        values 'author', 'pusher', and 'none' to the corresponding
+        actual values (see the documentation for
+        multimailhook.replyTo)."""
 
-        if not key in values:
-            reply_to = default
+        key = 'reply_to'
+        if reply_to.lower() == 'author':
+            try:
+                values[key] = values['author']
+            except KeyError:
+                sys.stderr.write(
+                    'Warning: no author email found; cannot set Reply-To:\n'
+                    )
+        elif reply_to.lower() == 'pusher':
+            try:
+                values[key] = values['pusher_email']
+            except KeyError:
+                sys.stderr.write(
+                    'Warning: no pusher email found, cannot set Reply-To:\n'
+                    )
+        elif reply_to.lower() == 'none':
+            pass
         else:
-            reply_to = values[key]
-
-        # be case-insensitive
-        reply_to = reply_to.lower()
-
-        if reply_to == 'author':
-            if 'author' in values:
-                reply_to = values['author']
-            else:
-                sys.stderr.write('Warning: no author email found,'
-                                 ' cannot set Reply-To:\n')
-                reply_to = None
-        elif reply_to == 'pusher':
-            if 'pusher_email' in values:
-                reply_to = values['pusher_email']
-            else:
-                sys.stderr.write('Warning: no pusher email found,'
-                                 ' cannot set Reply-To:\n')
-                reply_to = None
-        elif reply_to == 'none':
-            reply_to = None
-
-        if reply_to:
             values[key] = reply_to
-        elif key in values:
-            del values[key]
 
     def expand(self, template, **extra_values):
         """Expand template.
@@ -616,7 +604,7 @@ class Revision(Change):
         except UnknownUserError:
             pass
 
-        self.set_reply_to(values, 'reply_to_commit', 'author')
+        self.set_reply_to(values, self.environment.reply_to_commit)
         return values
 
     def get_author(self):
@@ -758,7 +746,7 @@ class ReferenceChange(Change):
         if self.new:
             values['newrev_type'] = self.new.type
 
-        self.set_reply_to(values, 'reply_to_refchange', 'pusher')
+        self.set_reply_to(values, self.environment.reply_to_refchange)
         return values
 
     def generate_email_header(self):
@@ -1389,8 +1377,6 @@ class Environment(object):
         'pusher',
         'pusher_email',
         'fromaddr',
-        'reply_to_refchange',
-        'reply_to_commit'
         ]
 
     def __init__(self):
