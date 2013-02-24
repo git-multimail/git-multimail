@@ -74,7 +74,9 @@ LOGBEGIN = '- Log --------------------------------------------------------------
 LOGEND = '-----------------------------------------------------------------------\n'
 
 
-REFCHANGE_SUBJECT_TEMPLATE = '%(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd'
+REF_CREATED_SUBJECT_TEMPLATE = '%(emailprefix)s%(refname_type)s %(short_refname)s created'
+REF_UPDATED_SUBJECT_TEMPLATE = '%(emailprefix)s%(refname_type)s %(short_refname)s updated'
+REF_DELETED_SUBJECT_TEMPLATE = '%(emailprefix)s%(refname_type)s %(short_refname)s deleted'
 
 REFCHANGE_HEADER_TEMPLATE = """\
 To: %(recipients)s
@@ -756,7 +758,12 @@ class ReferenceChange(Change):
         return values
 
     def get_subject(self):
-        return self.expand(REFCHANGE_SUBJECT_TEMPLATE)
+        template = {
+            'create' : REF_CREATED_SUBJECT_TEMPLATE,
+            'update' : REF_UPDATED_SUBJECT_TEMPLATE,
+            'delete' : REF_DELETED_SUBJECT_TEMPLATE,
+            }[self.change_type]
+        return self.expand(template)
 
     def generate_email_header(self):
         for line in self.expand_header_lines(
