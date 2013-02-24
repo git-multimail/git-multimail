@@ -74,9 +74,11 @@ LOGBEGIN = '- Log --------------------------------------------------------------
 LOGEND = '-----------------------------------------------------------------------\n'
 
 
+REFCHANGE_SUBJECT_TEMPLATE = '%(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd'
+
 REFCHANGE_HEADER_TEMPLATE = """\
 To: %(recipients)s
-Subject: %(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd
+Subject: %(subject)s
 Content-Type: text/plain; charset=utf-8
 Message-ID: %(msgid)s
 From: %(fromaddr)s
@@ -753,8 +755,13 @@ class ReferenceChange(Change):
             values['newrev_type'] = self.new.type
         return values
 
+    def get_subject(self):
+        return self.expand(REFCHANGE_SUBJECT_TEMPLATE)
+
     def generate_email_header(self):
-        for line in self.expand_header_lines(REFCHANGE_HEADER_TEMPLATE):
+        for line in self.expand_header_lines(
+            REFCHANGE_HEADER_TEMPLATE, subject=self.get_subject(),
+            ):
             yield line
 
     def generate_email_intro(self):
