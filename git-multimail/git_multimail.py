@@ -1357,6 +1357,7 @@ class Environment(object):
         self.announce_show_shortlog = False
         self.maxlines = None
         self.maxlinelength = 500
+        self.maxcommitemails = 500
         self.strict_utf8 = True
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
@@ -1510,6 +1511,16 @@ class ConfigEnvironment(Environment):
         maxlinelength = self.config.get('emailmaxlinelength', default=None)
         if maxlinelength is not None:
             self.maxlinelength = int(maxlinelength)
+
+        maxcommitemails = self.config.get('maxcommitemails', default=None)
+        if maxcommitemails is not None:
+            try:
+                self.maxcommitemails = int(maxcommitemails)
+            except ValueError:
+                sys.stderr.write(
+                    '*** Malformed value for multimailhook.maxCommitEmails: %s\n' % maxcommitemails
+                    + '*** Expected a number.  Ignoring.\n'
+                    )
 
         strict_utf8 = self.config.get_bool('emailstrictutf8', default=None)
         if strict_utf8 is not None:
@@ -1805,6 +1816,16 @@ class Push(object):
                 if sha1 in unhandled_sha1s:
                     sha1s.append(sha1)
                     unhandled_sha1s.remove(sha1)
+
+            max_emails = change.environment.maxcommitemails
+            if max_emails and len(sha1s) > max_emails:
+                sys.stderr.write(
+                    '*** Too many new commits (%d), not sending commit emails.\n' % len(sha1s)
+                    + '*** Try setting multimailhook.maxCommitEmails to a greater value\n'
+                    + '*** Currently, multimailhook.maxCommitEmails=%d\n' % max_emails
+                    )
+                return
+
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num+1, tot=len(sha1s))
                 if rev.recipients:
