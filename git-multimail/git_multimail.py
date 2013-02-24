@@ -74,9 +74,18 @@ LOGBEGIN = '- Log --------------------------------------------------------------
 LOGEND = '-----------------------------------------------------------------------\n'
 
 
-REF_CREATED_SUBJECT_TEMPLATE = '%(emailprefix)s%(refname_type)s %(short_refname)s created'
-REF_UPDATED_SUBJECT_TEMPLATE = '%(emailprefix)s%(refname_type)s %(short_refname)s updated'
-REF_DELETED_SUBJECT_TEMPLATE = '%(emailprefix)s%(refname_type)s %(short_refname)s deleted'
+REF_CREATED_SUBJECT_TEMPLATE = (
+    '%(emailprefix)s%(refname_type)s %(short_refname)s created'
+    ' (now %(newrev_short)s)'
+    )
+REF_UPDATED_SUBJECT_TEMPLATE = (
+    '%(emailprefix)s%(refname_type)s %(short_refname)s updated'
+    ' (%(oldrev_short)s -> %(newrev_short)s)'
+    )
+REF_DELETED_SUBJECT_TEMPLATE = (
+    '%(emailprefix)s%(refname_type)s %(short_refname)s deleted'
+    ' (was %(oldrev_short)s)'
+    )
 
 REFCHANGE_HEADER_TEMPLATE = """\
 To: %(recipients)s
