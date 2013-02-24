@@ -68,3 +68,7 @@ Ideas for the future
 
 * When a reference is created, show the branch(es) from which it
   appears to sprout.
+
+* If the maxcommitemails limit causes revision emails to be
+  suppressed, note that fact in the refchange email and/or via a
+  special email to the commitList threaded to the refchange email.
