@@ -1411,8 +1411,8 @@ class Environment(object):
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
         self.refchange_showlog = False
-        self.reply_to_refchange = None
-        self.reply_to_commit = None
+        self.reply_to_refchange = 'pusher'
+        self.reply_to_commit = 'author'
 
         self._values = None
 
@@ -1576,8 +1576,12 @@ class ConfigEnvironment(Environment):
             self.logopts = shlex.split(logopts)
 
         reply_to = self.config.get('replyTo', default=None)
-        self.reply_to_commit = self.config.get('replyToCommit', default=reply_to)
-        self.reply_to_refchange = self.config.get('replyToRefchange', default=reply_to)
+        reply_to_commit = self.config.get('replyToCommit', default=reply_to)
+        if reply_to_commit is not None:
+            self.reply_to_commit = reply_to_commit
+        reply_to_refchange = self.config.get('replyToRefchange', default=reply_to)
+        if reply_to_refchange is not None:
+            self.reply_to_refchange = reply_to_refchange
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
