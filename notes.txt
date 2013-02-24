@@ -68,3 +68,7 @@ Ideas for the future
 
 * When a reference is created, show the branch(es) from which it
   appears to sprout.
+
+* Output to stdout the refchange-style summary list of commits as
+  feedback for the pusher.  This might help the pusher notice if s/he
+  accidentally pushed more commits than intended.
