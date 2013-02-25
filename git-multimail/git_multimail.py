@@ -58,11 +58,13 @@ try:
     from email.utils import make_msgid
     from email.utils import getaddresses
     from email.utils import formataddr
+    from email.header import Header
 except ImportError:
     # Prior to Python 2.5, the email module used different names:
     from email.Utils import make_msgid
     from email.Utils import getaddresses
     from email.Utils import formataddr
+    from email.Header import Header
 
 
 DEBUG = False
@@ -72,7 +74,7 @@ LOGBEGIN = '- Log --------------------------------------------------------------
 LOGEND = '-----------------------------------------------------------------------\n'
 
 
-HEADER_TEMPLATE = """\
+REFCHANGE_HEADER_TEMPLATE = """\
 To: %(recipients)s
 Subject: %(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd
 Content-Type: text/plain; charset=utf-8
@@ -85,7 +87,9 @@ X-Git-Reftype: %(refname_type)s
 X-Git-Oldrev: %(oldrev)s
 X-Git-Newrev: %(newrev)s
 Auto-Submitted: auto-generated
+"""
 
+REFCHANGE_INTRO_TEMPLATE = """\
 This is an automated email from the git hooks/post-receive script.
 
 %(pusher)s pushed a change to %(refname_type)s %(short_refname)s
@@ -199,7 +203,9 @@ X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
 X-Git-Rev: %(rev)s
 Auto-Submitted: auto-generated
+"""
 
+REVISION_INTRO_TEMPLATE = """\
 This is an automated email from the git hooks/post-receive script.
 
 %(pusher)s pushed a commit to %(refname_type)s %(short_refname)s
@@ -476,15 +482,25 @@ class Change(object):
         return template % self.get_values(**extra_values)
 
     def expand_lines(self, template, **extra_values):
-        """Break template into lines and expand each line.
-
-        Silently skip lines that contain references to unknown
-        variables."""
+        """Break template into lines and expand each line."""
 
         values = self.get_values(**extra_values)
         for line in template.splitlines(True):
+            yield line % values
+
+    def expand_header_lines(self, template, **extra_values):
+        """Break template into lines and expand each line as an RFC 2822 header.
+
+        Encode values and split up lines that are too long.  Silently
+        skip lines that contain references to unknown variables."""
+
+        values = self.get_values(**extra_values)
+        for line in template.splitlines(True):
+            (name, value) = line.split(':', 1)
+            value = value.rstrip('\n\r')
+
             try:
-                yield line % values
+                value = value % values
             except KeyError, e:
                 if DEBUG:
                     sys.stderr.write(
@@ -492,12 +508,25 @@ class Change(object):
                         '    %s'
                         % (e.args[0], line,)
                         )
+            else:
+                try:
+                    h = Header(value, header_name=name)
+                except UnicodeDecodeError:
+                    h = Header(value, header_name=name, charset='utf-8', errors='replace')
+                for splitline in ('%s: %s\n' % (name, h.encode(),)).splitlines(True):
+                    yield splitline
 
     def generate_email_header(self):
-        """Generate the email header for this Change, a line at a time.
+        """Generate the RFC 2822 email headers for this Change, a line at a time.
 
-        The header should include the RFC 2822 email header, a blank
-        line, plus any standard boilerplate to be included at the top
+        The output should not include the trailing blank line."""
+
+        raise NotImplementedError()
+
+    def generate_email_intro(self):
+        """Generate the email intro for this Change, a line at a time.
+
+        The output will be used as the standard boilerplate at the top
         of the email body."""
 
         raise NotImplementedError()
@@ -527,6 +556,9 @@ class Change(object):
         email body."""
 
         for line in self.generate_email_header():
+            yield line
+        yield '\n'
+        for line in self.generate_email_intro():
             yield line
 
         body = self.generate_email_body(push)
@@ -586,7 +618,12 @@ class Revision(Change):
         return read_git_output(['log', '--max-count=1', '--format=%aN <%aE>', self.rev.sha1])
 
     def generate_email_header(self):
-        return self.expand_lines(REVISION_HEADER_TEMPLATE)
+        for line in self.expand_header_lines(REVISION_HEADER_TEMPLATE):
+            yield line
+
+    def generate_email_intro(self):
+        for line in self.expand_lines(REVISION_INTRO_TEMPLATE):
+            yield line
 
     def generate_email_body(self, push):
         """Show this revision."""
@@ -723,7 +760,12 @@ class ReferenceChange(Change):
         return values
 
     def generate_email_header(self):
-        return self.expand_lines(HEADER_TEMPLATE)
+        for line in self.expand_header_lines(REFCHANGE_HEADER_TEMPLATE):
+            yield line
+
+    def generate_email_intro(self):
+        for line in self.expand_lines(REFCHANGE_INTRO_TEMPLATE):
+            yield line
 
     def generate_email_body(self, push):
         """Call the appropriate body-generation routine.
