@@ -361,16 +361,19 @@ class Config(object):
             self.add(name, formataddr(pair))
 
 
-def read_log_oneline(*log_args):
-    """Generate a one-line summary for each revision requested.
+def generate_summaries(*log_args):
+    """Generate a brief summary for each revision requested.
 
-    The arguments are strings that will be passed directly to "git
-    log" as revision selectors."""
+    log_args are strings that will be passed directly to "git log" as
+    revision selectors.  Iterate over (sha1_short, subject) for each
+    commit specified by log_args (subject is the first line of the
+    commit message as a string without EOLs)."""
 
     cmd = [
         'log', '--abbrev=10', '--format=%h %s',
         ] + list(log_args) + ['--']
-    return read_git_lines(cmd)
+    for line in read_git_lines(cmd):
+        yield tuple(line.split(' ', 1))
 
 
 def limit_lines(lines, max_lines):
@@ -843,9 +846,8 @@ class ReferenceChange(Change):
                 yield self.expand('This %(refname_type)s includes the following new commits:\n')
                 yield '\n'
                 for r in new_revisions:
-                    yield '       new  %s\n' % (
-                        iter(read_log_oneline('--max-count=1', r.rev.sha1)).next(),
-                        )
+                    (sha1, subject) = iter(generate_summaries('--max-count=1', r.rev.sha1)).next()
+                    yield '       new  %s %s\n' % (sha1, subject,)
                 yield '\n'
                 for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
                     yield line
@@ -866,7 +868,7 @@ class ReferenceChange(Change):
             # have already had notification emails; we want such
             # revisions in the summary even though we will not send
             # new notification emails for them.
-            adds = list(read_log_oneline(
+            adds = list(generate_summaries(
                     '--topo-order', '--reverse', '%s..%s'
                     % (self.old.commit, self.new.commit,)
                     ))
@@ -874,7 +876,7 @@ class ReferenceChange(Change):
             # List of the revisions that were removed from the branch
             # by this update.  This will be empty except for
             # non-fast-forward updates.
-            discards = list(read_log_oneline(
+            discards = list(generate_summaries(
                     '%s..%s' % (self.new.commit, self.old.commit,)
                     ))
 
@@ -890,39 +892,38 @@ class ReferenceChange(Change):
                 discarded_commits = CommitSet([])
 
             if discards and adds:
-                for line in discards:
-                    if line.split(' ', 1)[0] in discarded_commits:
-                        yield '  discards  %s\n' % (line,)
+                for (sha1, subject) in discards:
+                    if sha1 in discarded_commits:
+                        yield '  discards  %s %s\n' % (sha1, subject,)
                     else:
-                        yield '     omits  %s\n' % (line,)
-                for line in adds:
-                    if line.split(' ', 1)[0] in new_commits:
-                        yield '       new  %s\n' % (line,)
+                        yield '     omits  %s %s\n' % (sha1, subject,)
+                for (sha1, subject) in adds:
+                    if sha1 in new_commits:
+                        yield '       new  %s %s\n' % (sha1, subject,)
                     else:
-                        yield '      adds  %s\n' % (line,)
+                        yield '      adds  %s %s\n' % (sha1, subject,)
                 yield '\n'
                 for line in self.expand_lines(NON_FF_TEMPLATE):
                     yield line
 
             elif discards:
-                for line in discards:
-                    if line.split(' ', 1)[0] in discarded_commits:
-                        yield '  discards  %s\n' % (line,)
+                for (sha1, subject) in discards:
+                    if sha1 in discarded_commits:
+                        yield '  discards  %s %s\n' % (sha1, subject,)
                     else:
-                        yield '     omits  %s\n' % (line,)
+                        yield '     omits  %s %s\n' % (sha1, subject,)
                 yield '\n'
                 for line in self.expand_lines(REWIND_ONLY_TEMPLATE):
                     yield line
 
             elif adds:
-                yield '      from  %s\n' % (
-                    iter(read_log_oneline('--max-count=1', self.old.sha1)).next(),
-                    )
-                for line in adds:
-                    if line.split(' ', 1)[0] in new_commits:
-                        yield '       new  %s\n' % (line,)
+                (sha1, subject) = iter(generate_summaries('--max-count=1', self.old.sha1)).next()
+                yield '      from  %s %s\n' % (sha1, subject,)
+                for (sha1, subject) in adds:
+                    if sha1 in new_commits:
+                        yield '       new  %s %s\n' % (sha1, subject,)
                     else:
-                        yield '      adds  %s\n' % (line,)
+                        yield '      adds  %s %s\n' % (sha1, subject,)
 
             yield '\n'
 
@@ -968,9 +969,8 @@ class ReferenceChange(Change):
                     yield line
                 yield '\n'
                 for r in discarded_revisions:
-                    yield '  discards  %s\n' % (
-                        iter(read_log_oneline('--max-count=1', r.rev.sha1)).next(),
-                        )
+                    (sha1, subject) = iter(generate_summaries('--max-count=1', r.rev.sha1)).next()
+                    yield '  discards  %s %s\n' % (sha1, subject,)
             else:
                 for line in self.expand_lines(NO_DISCARDED_REVISIONS_TEMPLATE):
                     yield line
@@ -983,9 +983,8 @@ class ReferenceChange(Change):
         """Called for the creation of a reference."""
 
         # This is a new reference and so oldrev is not valid
-        yield '        at  %s\n' % (
-            iter(read_log_oneline('--max-count=1', self.new.sha1)).next(),
-            )
+        (sha1, subject) = iter(generate_summaries('--max-count=1', self.new.sha1)).next()
+        yield '        at  %s %s\n' % (sha1, subject,)
         yield '\n'
 
     def generate_update_summary(self, push):
@@ -996,9 +995,8 @@ class ReferenceChange(Change):
     def generate_delete_summary(self, push):
         """Called for the deletion of any type of reference."""
 
-        yield '       was  %s\n' % (
-            iter(read_log_oneline('--max-count=1', self.old.sha1)).next(),
-            )
+        (sha1, subject) = iter(generate_summaries('--max-count=1', self.old.sha1)).next()
+        yield '       was  %s %s\n' % (sha1, subject,)
         yield '\n'
 
 
