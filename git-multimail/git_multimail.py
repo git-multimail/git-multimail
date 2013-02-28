@@ -74,9 +74,22 @@ LOGBEGIN = '- Log --------------------------------------------------------------
 LOGEND = '-----------------------------------------------------------------------\n'
 
 
+REF_CREATED_SUBJECT_TEMPLATE = (
+    '%(emailprefix)s%(refname_type)s %(short_refname)s created'
+    ' (now %(newrev_short)s)'
+    )
+REF_UPDATED_SUBJECT_TEMPLATE = (
+    '%(emailprefix)s%(refname_type)s %(short_refname)s updated'
+    ' (%(oldrev_short)s -> %(newrev_short)s)'
+    )
+REF_DELETED_SUBJECT_TEMPLATE = (
+    '%(emailprefix)s%(refname_type)s %(short_refname)s deleted'
+    ' (was %(oldrev_short)s)'
+    )
+
 REFCHANGE_HEADER_TEMPLATE = """\
 To: %(recipients)s
-Subject: %(emailprefix)s%(refname_type)s %(short_refname)s %(change_type)sd
+Subject: %(subject)s
 Content-Type: text/plain; charset=utf-8
 Message-ID: %(msgid)s
 From: %(fromaddr)s
@@ -759,8 +772,18 @@ class ReferenceChange(Change):
             values['newrev_type'] = self.new.type
         return values
 
+    def get_subject(self):
+        template = {
+            'create' : REF_CREATED_SUBJECT_TEMPLATE,
+            'update' : REF_UPDATED_SUBJECT_TEMPLATE,
+            'delete' : REF_DELETED_SUBJECT_TEMPLATE,
+            }[self.change_type]
+        return self.expand(template)
+
     def generate_email_header(self):
-        for line in self.expand_header_lines(REFCHANGE_HEADER_TEMPLATE):
+        for line in self.expand_header_lines(
+            REFCHANGE_HEADER_TEMPLATE, subject=self.get_subject(),
+            ):
             yield line
 
     def generate_email_intro(self):
