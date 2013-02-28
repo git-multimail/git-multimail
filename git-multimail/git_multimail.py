@@ -449,7 +449,7 @@ class GitObject(object):
         if not self.sha1:
             raise ValueError('Empty commit has no summary')
 
-        return iter(generate_summaries('--max-count=1', self.sha1)).next()
+        return iter(generate_summaries('--no-walk', self.sha1)).next()
 
     def __eq__(self, other):
         return isinstance(other, GitObject) and self.sha1 == other.sha1
@@ -621,7 +621,7 @@ class Revision(Change):
         # First line of commit message:
         try:
             oneline = read_git_output(
-                ['log', '--format=%s', '--max-count=1', self.rev.sha1]
+                ['log', '--format=%s', '--no-walk', self.rev.sha1]
                 )
         except CommandError:
             oneline = self.rev.sha1
@@ -646,7 +646,7 @@ class Revision(Change):
         return values
 
     def get_author(self):
-        return read_git_output(['log', '--max-count=1', '--format=%aN <%aE>', self.rev.sha1])
+        return read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
 
     def generate_email_header(self):
         for line in self.expand_header_lines(REVISION_HEADER_TEMPLATE):
