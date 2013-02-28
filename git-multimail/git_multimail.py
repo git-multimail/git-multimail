@@ -197,6 +197,13 @@ TAG_DELETED_TEMPLATE = """\
 """
 
 
+# The template used in summary tables.  It looks best if this uses the
+# same alignment as TAG_CREATED_TEMPLATE and TAG_UPDATED_TEMPLATE.
+BRIEF_SUMMARY_TEMPLATE = """\
+%(action)10s  %(rev_short)s %(text)s
+"""
+
+
 NON_COMMIT_UPDATE_TEMPLATE = """\
 This is an unusual reference change because the reference did not
 refer to a commit either before or after the change.  We do not know
@@ -855,7 +862,9 @@ class ReferenceChange(Change):
                 yield '\n'
                 for r in new_revisions:
                     (sha1, subject) = r.rev.get_summary()
-                    yield '       new  %s %s\n' % (sha1, subject,)
+                    yield r.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action='new', text=subject,
+                        )
                 yield '\n'
                 for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
                     yield line
@@ -902,14 +911,22 @@ class ReferenceChange(Change):
             if discards and adds:
                 for (sha1, subject) in discards:
                     if sha1 in discarded_commits:
-                        yield '  discards  %s %s\n' % (sha1, subject,)
+                        action = 'discards'
                     else:
-                        yield '     omits  %s %s\n' % (sha1, subject,)
+                        action = 'omits'
+                    yield self.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action=action,
+                        rev_short=sha1, text=subject,
+                        )
                 for (sha1, subject) in adds:
                     if sha1 in new_commits:
-                        yield '       new  %s %s\n' % (sha1, subject,)
+                        action = 'new'
                     else:
-                        yield '      adds  %s %s\n' % (sha1, subject,)
+                        action = 'adds'
+                    yield self.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action=action,
+                        rev_short=sha1, text=subject,
+                        )
                 yield '\n'
                 for line in self.expand_lines(NON_FF_TEMPLATE):
                     yield line
@@ -917,21 +934,32 @@ class ReferenceChange(Change):
             elif discards:
                 for (sha1, subject) in discards:
                     if sha1 in discarded_commits:
-                        yield '  discards  %s %s\n' % (sha1, subject,)
+                        action = 'discards'
                     else:
-                        yield '     omits  %s %s\n' % (sha1, subject,)
+                        action = 'omits'
+                    yield self.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action=action,
+                        rev_short=sha1, text=subject,
+                        )
                 yield '\n'
                 for line in self.expand_lines(REWIND_ONLY_TEMPLATE):
                     yield line
 
             elif adds:
                 (sha1, subject) = self.old.get_summary()
-                yield '      from  %s %s\n' % (sha1, subject,)
+                yield self.expand(
+                    BRIEF_SUMMARY_TEMPLATE, action='from',
+                    rev_short=sha1, text=subject,
+                    )
                 for (sha1, subject) in adds:
                     if sha1 in new_commits:
-                        yield '       new  %s %s\n' % (sha1, subject,)
+                        action = 'new'
                     else:
-                        yield '      adds  %s %s\n' % (sha1, subject,)
+                        action = 'adds'
+                    yield self.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action=action,
+                        rev_short=sha1, text=subject,
+                        )
 
             yield '\n'
 
@@ -978,7 +1006,9 @@ class ReferenceChange(Change):
                 yield '\n'
                 for r in discarded_revisions:
                     (sha1, subject) = r.rev.get_summary()
-                    yield '  discards  %s %s\n' % (sha1, subject,)
+                    yield r.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action='discards', text=subject,
+                        )
             else:
                 for line in self.expand_lines(NO_DISCARDED_REVISIONS_TEMPLATE):
                     yield line
@@ -992,7 +1022,10 @@ class ReferenceChange(Change):
 
         # This is a new reference and so oldrev is not valid
         (sha1, subject) = self.new.get_summary()
-        yield '        at  %s %s\n' % (sha1, subject,)
+        yield self.expand(
+            BRIEF_SUMMARY_TEMPLATE, action='at',
+            rev_short=sha1, text=subject,
+            )
         yield '\n'
 
     def generate_update_summary(self, push):
@@ -1004,7 +1037,10 @@ class ReferenceChange(Change):
         """Called for the deletion of any type of reference."""
 
         (sha1, subject) = self.old.get_summary()
-        yield '       was  %s %s\n' % (sha1, subject,)
+        yield self.expand(
+            BRIEF_SUMMARY_TEMPLATE, action='was',
+            rev_short=sha1, text=subject,
+            )
         yield '\n'
 
 
@@ -1048,7 +1084,10 @@ class AnnotatedTagChange(ReferenceChange):
             ['for-each-ref', '--format=%s' % (self.ANNOTATED_TAG_FORMAT,), self.refname],
             )
 
-        yield '   tagging  %s (%s)\n' % (tagobject, tagtype)
+        yield self.expand(
+            BRIEF_SUMMARY_TEMPLATE, action='tagging',
+            rev_short=tagobject, text='(%s)' % (tagtype,),
+            )
         if tagtype == 'commit':
             # If the tagged object is a commit, then we assume this is a
             # release, and so we calculate which tag this tag is
