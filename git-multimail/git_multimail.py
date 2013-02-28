@@ -436,6 +436,14 @@ class GitObject(object):
 
         self.short = read_git_output(['rev-parse', '--short=10', sha1])
 
+    def get_summary(self):
+        """Return (sha1_short, subject) for this commit."""
+
+        if not self.sha1:
+            raise ValueError('Empty commit has no summary')
+
+        return iter(generate_summaries('--max-count=1', self.sha1)).next()
+
     def __eq__(self, other):
         return isinstance(other, GitObject) and self.sha1 == other.sha1
 
@@ -846,7 +854,7 @@ class ReferenceChange(Change):
                 yield self.expand('This %(refname_type)s includes the following new commits:\n')
                 yield '\n'
                 for r in new_revisions:
-                    (sha1, subject) = iter(generate_summaries('--max-count=1', r.rev.sha1)).next()
+                    (sha1, subject) = r.rev.get_summary()
                     yield '       new  %s %s\n' % (sha1, subject,)
                 yield '\n'
                 for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
@@ -917,7 +925,7 @@ class ReferenceChange(Change):
                     yield line
 
             elif adds:
-                (sha1, subject) = iter(generate_summaries('--max-count=1', self.old.sha1)).next()
+                (sha1, subject) = self.old.get_summary()
                 yield '      from  %s %s\n' % (sha1, subject,)
                 for (sha1, subject) in adds:
                     if sha1 in new_commits:
@@ -969,7 +977,7 @@ class ReferenceChange(Change):
                     yield line
                 yield '\n'
                 for r in discarded_revisions:
-                    (sha1, subject) = iter(generate_summaries('--max-count=1', r.rev.sha1)).next()
+                    (sha1, subject) = r.rev.get_summary()
                     yield '  discards  %s %s\n' % (sha1, subject,)
             else:
                 for line in self.expand_lines(NO_DISCARDED_REVISIONS_TEMPLATE):
@@ -983,7 +991,7 @@ class ReferenceChange(Change):
         """Called for the creation of a reference."""
 
         # This is a new reference and so oldrev is not valid
-        (sha1, subject) = iter(generate_summaries('--max-count=1', self.new.sha1)).next()
+        (sha1, subject) = self.new.get_summary()
         yield '        at  %s %s\n' % (sha1, subject,)
         yield '\n'
 
@@ -995,7 +1003,7 @@ class ReferenceChange(Change):
     def generate_delete_summary(self, push):
         """Called for the deletion of any type of reference."""
 
-        (sha1, subject) = iter(generate_summaries('--max-count=1', self.old.sha1)).next()
+        (sha1, subject) = self.old.get_summary()
         yield '       was  %s %s\n' % (sha1, subject,)
         yield '\n'
 
