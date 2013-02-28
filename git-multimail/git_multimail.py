@@ -93,7 +93,7 @@ Subject: %(subject)s
 Content-Type: text/plain; charset=utf-8
 Message-ID: %(msgid)s
 From: %(fromaddr)s
-Reply-To: %(pusher_email)s
+Reply-To: %(reply_to)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
@@ -209,7 +209,7 @@ To: %(recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 Content-Type: text/plain; charset=utf-8
 From: %(fromaddr)s
-Reply-To: %(author)s
+Reply-To: %(reply_to)s
 In-Reply-To: %(reply_to_msgid)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -484,6 +484,36 @@ class Change(object):
             values.update(extra_values)
         return values
 
+    def set_reply_to(self, values, reply_to):
+        """Set the address to be used in the Reply-To: field.
+
+        Set values['reply_to'] to the address to be used, or leave it
+        unset it if no Reply-To: header should be generated.  Use the
+        value from the reply_to argument, but translate the special
+        values 'author', 'pusher', and 'none' to the corresponding
+        actual values (see the documentation for
+        multimailhook.replyTo)."""
+
+        key = 'reply_to'
+        if reply_to.lower() == 'author':
+            try:
+                values[key] = values['author']
+            except KeyError:
+                sys.stderr.write(
+                    'Warning: no author email found; cannot set Reply-To:\n'
+                    )
+        elif reply_to.lower() == 'pusher':
+            try:
+                values[key] = values['pusher_email']
+            except KeyError:
+                sys.stderr.write(
+                    'Warning: no pusher email found, cannot set Reply-To:\n'
+                    )
+        elif reply_to.lower() == 'none':
+            pass
+        else:
+            values[key] = reply_to
+
     def expand(self, template, **extra_values):
         """Expand template.
 
@@ -625,6 +655,7 @@ class Revision(Change):
         except UnknownUserError:
             pass
 
+        self.set_reply_to(values, self.environment.reply_to_commit)
         return values
 
     def get_author(self):
@@ -770,6 +801,8 @@ class ReferenceChange(Change):
             values['oldrev_type'] = self.old.type
         if self.new:
             values['newrev_type'] = self.new.type
+
+        self.set_reply_to(values, self.environment.reply_to_refchange)
         return values
 
     def get_subject(self):
@@ -1371,6 +1404,16 @@ class Environment(object):
             'git log' when generating the detailed log for a set of
             commits (see refchange_showlog)
 
+        reply_to_refchange (string)
+        reply_to_commit (string)
+
+            Addresses to use in the Reply-To: field of emails.  These
+            can be email addresses or take the special values
+            'pusher', 'author' (for reply_to_commit), or 'none' as
+            explained in the documentation for multimailhook.replyTo.
+            reply_to_refchange is used for refchange emails;
+            reply_to_commit is used for individual commit emails.
+
     Additionally, the default implementation of filter_body() expects
     the following:
 
@@ -1404,7 +1447,7 @@ class Environment(object):
         'sender',
         'pusher',
         'pusher_email',
-        'fromaddr'
+        'fromaddr',
         ]
 
     def __init__(self):
@@ -1426,6 +1469,8 @@ class Environment(object):
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
         self.refchange_showlog = False
+        self.reply_to_refchange = 'pusher'
+        self.reply_to_commit = 'author'
 
         self._values = None
 
@@ -1597,6 +1642,14 @@ class ConfigEnvironment(Environment):
         logopts = self.config.get('logopts', None)
         if logopts is not None:
             self.logopts = shlex.split(logopts)
+
+        reply_to = self.config.get('replyTo', default=None)
+        reply_to_commit = self.config.get('replyToCommit', default=reply_to)
+        if reply_to_commit is not None:
+            self.reply_to_commit = reply_to_commit
+        reply_to_refchange = self.config.get('replyToRefchange', default=reply_to)
+        if reply_to_refchange is not None:
+            self.reply_to_refchange = reply_to_refchange
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
