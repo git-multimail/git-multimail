@@ -179,15 +179,15 @@ been added to this reference.
 
 
 TAG_CREATED_TEMPLATE = """\
-        at  %(newrev_short)s (%(newrev_type)s)
+        at  %(newrev_short)-9s (%(newrev_type)s)
 """
 
 
 TAG_UPDATED_TEMPLATE = """\
 *** WARNING: tag %(short_refname)s was modified! ***
 
-      from  %(oldrev_short)s (%(oldrev_type)s)
-        to  %(newrev_short)s (%(newrev_type)s)
+      from  %(oldrev_short)-9s (%(oldrev_type)s)
+        to  %(newrev_short)-9s (%(newrev_type)s)
 """
 
 
@@ -200,7 +200,7 @@ TAG_DELETED_TEMPLATE = """\
 # The template used in summary tables.  It looks best if this uses the
 # same alignment as TAG_CREATED_TEMPLATE and TAG_UPDATED_TEMPLATE.
 BRIEF_SUMMARY_TEMPLATE = """\
-%(action)10s  %(rev_short)s %(text)s
+%(action)10s  %(rev_short)-9s %(text)s
 """
 
 
