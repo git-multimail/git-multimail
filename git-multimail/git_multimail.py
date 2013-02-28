@@ -370,7 +370,7 @@ def generate_summaries(*log_args):
     commit message as a string without EOLs)."""
 
     cmd = [
-        'log', '--abbrev=10', '--format=%h %s',
+        'log', '--abbrev', '--format=%h %s',
         ] + list(log_args) + ['--']
     for line in read_git_lines(cmd):
         yield tuple(line.split(' ', 1))
@@ -434,7 +434,7 @@ class GitObject(object):
             else:
                 self.commit = None
 
-        self.short = read_git_output(['rev-parse', '--short=10', sha1])
+        self.short = read_git_output(['rev-parse', '--short', sha1])
 
     def get_summary(self):
         """Return (sha1_short, subject) for this commit."""
