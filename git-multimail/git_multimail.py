@@ -1677,10 +1677,10 @@ class ConfigEnvironment(Environment):
             self.reply_to_refchange = reply_to_refchange
 
         self.skiprefs = []
-        for l in self.config.get_all('skipRefs'):
+        for l in self.config.get_all('skipRefs') or []:
             self.skiprefs.extend(l.split())
         self.onlyrefs = []
-        for l in self.config.get_all('onlyRefs'):
+        for l in self.config.get_all('onlyRefs') or []:
             self.onlyrefs.extend(l.split())
 
     def _get_recipients(self, *names):
