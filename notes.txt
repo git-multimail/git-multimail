@@ -38,6 +38,15 @@ git-multimail-v2
 Ideas for the future
 ====================
 
+* Allow branch-specific configuration.
+
+* Add a "Date:" field to emails, and ensure that the dates are
+  monotonic (e.g., by incrementing the date by 1s for each email) to
+  help mail clients thread the messages in the right order (apparently
+  "git send-email" does this).
+
+  Suggested by: Matthieu Moy <Matthieu.Moy@grenoble-inp.fr>
+
 * Support LDAP, for example by adding an LDAP environment:
 
   * Use LDAP to convert pusher usernames to email addresses.
@@ -66,6 +75,15 @@ Ideas for the future
   the same commit (e.g., describe them all in a single email rather
   than one email per tag).
 
+* If a single commit is pushed, emit it as a single email (not
+  refchanged + commit).
+
+  Suggested by: Ævar Arnfjörð Bjarmason <avarab@gmail.com>
+
+* Allow people to subscribe to changes only to particular files.
+
+  Suggested by: Ævar Arnfjörð Bjarmason <avarab@gmail.com>
+
 * When a reference is created, show the branch(es) from which it
   appears to sprout.
 
@@ -76,3 +94,14 @@ Ideas for the future
 * If the maxcommitemails limit causes revision emails to be
   suppressed, note that fact in the refchange email and/or via a
   special email to the commitList threaded to the refchange email.
+
+* Maybe create GitObjects in more places (but beware of performance
+  impact!).  Maybe define a GitCommit class (derived from GitObject)
+  that also holds its subject.  Maybe make a GitCommit able to expand
+  a template.
+
+* Maybe use a weakref in GitObject to avoid creating a reference loop.
+
+* Use "git cat-file --batch" or "--batch-check" (if it has been in git
+  long enough) to reduce the number of times that Git has to be
+  executed.
