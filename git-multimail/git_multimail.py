@@ -179,21 +179,28 @@ been added to this reference.
 
 
 TAG_CREATED_TEMPLATE = """\
-        at  %(newrev_short)s (%(newrev_type)s)
+        at  %(newrev_short)-9s (%(newrev_type)s)
 """
 
 
 TAG_UPDATED_TEMPLATE = """\
 *** WARNING: tag %(short_refname)s was modified! ***
 
-      from  %(oldrev_short)s (%(oldrev_type)s)
-        to  %(newrev_short)s (%(newrev_type)s)
+      from  %(oldrev_short)-9s (%(oldrev_type)s)
+        to  %(newrev_short)-9s (%(newrev_type)s)
 """
 
 
 TAG_DELETED_TEMPLATE = """\
 *** WARNING: tag %(short_refname)s was deleted! ***
 
+"""
+
+
+# The template used in summary tables.  It looks best if this uses the
+# same alignment as TAG_CREATED_TEMPLATE and TAG_UPDATED_TEMPLATE.
+BRIEF_SUMMARY_TEMPLATE = """\
+%(action)10s  %(rev_short)-9s %(text)s
 """
 
 
@@ -361,16 +368,19 @@ class Config(object):
             self.add(name, formataddr(pair))
 
 
-def read_log_oneline(*log_args):
-    """Generate a one-line summary for each revision requested.
+def generate_summaries(*log_args):
+    """Generate a brief summary for each revision requested.
 
-    The arguments are strings that will be passed directly to "git
-    log" as revision selectors."""
+    log_args are strings that will be passed directly to "git log" as
+    revision selectors.  Iterate over (sha1_short, subject) for each
+    commit specified by log_args (subject is the first line of the
+    commit message as a string without EOLs)."""
 
     cmd = [
-        'log', '--abbrev=10', '--format=%h %s',
+        'log', '--abbrev', '--format=%h %s',
         ] + list(log_args) + ['--']
-    return read_git_lines(cmd)
+    for line in read_git_lines(cmd):
+        yield tuple(line.split(' ', 1))
 
 
 def limit_lines(lines, max_lines):
@@ -431,7 +441,15 @@ class GitObject(object):
             else:
                 self.commit = None
 
-        self.short = read_git_output(['rev-parse', '--short=10', sha1])
+        self.short = read_git_output(['rev-parse', '--short', sha1])
+
+    def get_summary(self):
+        """Return (sha1_short, subject) for this commit."""
+
+        if not self.sha1:
+            raise ValueError('Empty commit has no summary')
+
+        return iter(generate_summaries('--no-walk', self.sha1)).next()
 
     def __eq__(self, other):
         return isinstance(other, GitObject) and self.sha1 == other.sha1
@@ -633,7 +651,7 @@ class Revision(Change):
         # First line of commit message:
         try:
             oneline = read_git_output(
-                ['log', '--format=%s', '--max-count=1', self.rev.sha1]
+                ['log', '--format=%s', '--no-walk', self.rev.sha1]
                 )
         except CommandError:
             oneline = self.rev.sha1
@@ -659,7 +677,7 @@ class Revision(Change):
         return values
 
     def get_author(self):
-        return read_git_output(['log', '--max-count=1', '--format=%aN <%aE>', self.rev.sha1])
+        return read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
 
     def generate_email_header(self):
         for line in self.expand_header_lines(REVISION_HEADER_TEMPLATE):
@@ -876,8 +894,9 @@ class ReferenceChange(Change):
                 yield self.expand('This %(refname_type)s includes the following new commits:\n')
                 yield '\n'
                 for r in new_revisions:
-                    yield '       new  %s\n' % (
-                        iter(read_log_oneline('--max-count=1', r.rev.sha1)).next(),
+                    (sha1, subject) = r.rev.get_summary()
+                    yield r.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action='new', text=subject,
                         )
                 yield '\n'
                 for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
@@ -899,7 +918,7 @@ class ReferenceChange(Change):
             # have already had notification emails; we want such
             # revisions in the summary even though we will not send
             # new notification emails for them.
-            adds = list(read_log_oneline(
+            adds = list(generate_summaries(
                     '--topo-order', '--reverse', '%s..%s'
                     % (self.old.commit, self.new.commit,)
                     ))
@@ -907,7 +926,7 @@ class ReferenceChange(Change):
             # List of the revisions that were removed from the branch
             # by this update.  This will be empty except for
             # non-fast-forward updates.
-            discards = list(read_log_oneline(
+            discards = list(generate_summaries(
                     '%s..%s' % (self.new.commit, self.old.commit,)
                     ))
 
@@ -923,39 +942,57 @@ class ReferenceChange(Change):
                 discarded_commits = CommitSet([])
 
             if discards and adds:
-                for line in discards:
-                    if line.split(' ', 1)[0] in discarded_commits:
-                        yield '  discards  %s\n' % (line,)
+                for (sha1, subject) in discards:
+                    if sha1 in discarded_commits:
+                        action = 'discards'
                     else:
-                        yield '     omits  %s\n' % (line,)
-                for line in adds:
-                    if line.split(' ', 1)[0] in new_commits:
-                        yield '       new  %s\n' % (line,)
+                        action = 'omits'
+                    yield self.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action=action,
+                        rev_short=sha1, text=subject,
+                        )
+                for (sha1, subject) in adds:
+                    if sha1 in new_commits:
+                        action = 'new'
                     else:
-                        yield '      adds  %s\n' % (line,)
+                        action = 'adds'
+                    yield self.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action=action,
+                        rev_short=sha1, text=subject,
+                        )
                 yield '\n'
                 for line in self.expand_lines(NON_FF_TEMPLATE):
                     yield line
 
             elif discards:
-                for line in discards:
-                    if line.split(' ', 1)[0] in discarded_commits:
-                        yield '  discards  %s\n' % (line,)
+                for (sha1, subject) in discards:
+                    if sha1 in discarded_commits:
+                        action = 'discards'
                     else:
-                        yield '     omits  %s\n' % (line,)
+                        action = 'omits'
+                    yield self.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action=action,
+                        rev_short=sha1, text=subject,
+                        )
                 yield '\n'
                 for line in self.expand_lines(REWIND_ONLY_TEMPLATE):
                     yield line
 
             elif adds:
-                yield '      from  %s\n' % (
-                    iter(read_log_oneline('--max-count=1', self.old.sha1)).next(),
+                (sha1, subject) = self.old.get_summary()
+                yield self.expand(
+                    BRIEF_SUMMARY_TEMPLATE, action='from',
+                    rev_short=sha1, text=subject,
                     )
-                for line in adds:
-                    if line.split(' ', 1)[0] in new_commits:
-                        yield '       new  %s\n' % (line,)
+                for (sha1, subject) in adds:
+                    if sha1 in new_commits:
+                        action = 'new'
                     else:
-                        yield '      adds  %s\n' % (line,)
+                        action = 'adds'
+                    yield self.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action=action,
+                        rev_short=sha1, text=subject,
+                        )
 
             yield '\n'
 
@@ -1001,8 +1038,9 @@ class ReferenceChange(Change):
                     yield line
                 yield '\n'
                 for r in discarded_revisions:
-                    yield '  discards  %s\n' % (
-                        iter(read_log_oneline('--max-count=1', r.rev.sha1)).next(),
+                    (sha1, subject) = r.rev.get_summary()
+                    yield r.expand(
+                        BRIEF_SUMMARY_TEMPLATE, action='discards', text=subject,
                         )
             else:
                 for line in self.expand_lines(NO_DISCARDED_REVISIONS_TEMPLATE):
@@ -1016,8 +1054,10 @@ class ReferenceChange(Change):
         """Called for the creation of a reference."""
 
         # This is a new reference and so oldrev is not valid
-        yield '        at  %s\n' % (
-            iter(read_log_oneline('--max-count=1', self.new.sha1)).next(),
+        (sha1, subject) = self.new.get_summary()
+        yield self.expand(
+            BRIEF_SUMMARY_TEMPLATE, action='at',
+            rev_short=sha1, text=subject,
             )
         yield '\n'
 
@@ -1029,8 +1069,10 @@ class ReferenceChange(Change):
     def generate_delete_summary(self, push):
         """Called for the deletion of any type of reference."""
 
-        yield '       was  %s\n' % (
-            iter(read_log_oneline('--max-count=1', self.old.sha1)).next(),
+        (sha1, subject) = self.old.get_summary()
+        yield self.expand(
+            BRIEF_SUMMARY_TEMPLATE, action='was',
+            rev_short=sha1, text=subject,
             )
         yield '\n'
 
@@ -1075,7 +1117,10 @@ class AnnotatedTagChange(ReferenceChange):
             ['for-each-ref', '--format=%s' % (self.ANNOTATED_TAG_FORMAT,), self.refname],
             )
 
-        yield '   tagging  %s (%s)\n' % (tagobject, tagtype)
+        yield self.expand(
+            BRIEF_SUMMARY_TEMPLATE, action='tagging',
+            rev_short=tagobject, text='(%s)' % (tagtype,),
+            )
         if tagtype == 'commit':
             # If the tagged object is a commit, then we assume this is a
             # release, and so we calculate which tag this tag is
