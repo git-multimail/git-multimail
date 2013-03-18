@@ -318,7 +318,8 @@ multimailhook.emailDomain
     Domain name appended to the username of the person doing the push
     to convert it into an email address (via "%s@%s" % (username,
     emaildomain)).  More complicated schemes can be implemented by
-    overriding Environment.username_to_email().
+    overriding Environment and setting self.pusher_email in its
+    constructor.
 
 multimailhook.replyTo
 multimailhook.replyToCommit
