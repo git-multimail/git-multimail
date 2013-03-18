@@ -344,6 +344,29 @@ multimailhook.replyToRefchange
     - The value "none", in which case the Reply-To: field will be
       omitted.
 
+multimailhook.skipRefs
+multimailhook.onlyRefs
+
+    List of reference names glob patterns to skip or to restrict
+    to when sending emails.  A reference is skept if its name matches
+    one of the patterns in skipRefs, or if onlyRefs is non-empty and
+    contain no pattern matching it.  Both variables apply to full
+    reference names (refs/heads/some-branch, not just some-branch).
+    For example, to send emails only for changes on branches "master"
+    and "maint", use:
+
+      [multimailhook]
+          onlyRefs = refs/heads/master refs/heads/maint
+
+   To send emails for all changes, except in branch whose name start
+   with "devel-", use:
+
+      [multimailhook]
+          onlyRefs = refs/heads/devel-*
+
+   The syntax of each glob pattern is the one of Python's fnmatch
+   module.
+
 
 Email filtering
 ---------------
