@@ -1519,6 +1519,13 @@ class Environment(object):
 
         self._values = None
 
+    def get_repo_path(self):
+        if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
+            path = GIT_DIR
+        else:
+            path = read_git_output(['rev-parse', '--show-toplevel'])
+        return os.path.abspath(path)
+
     def get_values(self):
         """Return a dictionary {keyword : expansion} for this Environment.
 
@@ -1601,7 +1608,13 @@ class ConfigEnvironment(Environment):
         self.config = config
 
         # If there is a config setting, it overrides the constructor parameter:
-        self.repo_shortname = self.config.get('reponame', default=repo_shortname)
+        if self.config.get('userepopath', default=False):
+            try:
+                self.repo_shortname = self.get_repo_path()
+            except CommandError:
+                return 'unknown repository'
+        else:
+            self.repo_shortname = self.config.get('reponame', default=repo_shortname)
 
         self.recipients = recipients
         self.emaildomain = self.config.get('emaildomain')
@@ -1748,15 +1761,12 @@ class GenericEnvironment(ConfigEnvironment):
             )
 
     def _compute_repo_shortname(self):
-        if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
-            path = GIT_DIR
-        else:
-            try:
-                path = read_git_output(['rev-parse', '--show-toplevel'])
-            except CommandError:
-                return 'unknown repository'
+        try:
+            path = self.get_repo_path()
+        except CommandError:
+            return 'unknown repository'
 
-        basename = os.path.basename(os.path.abspath(path))
+        basename = os.path.basename(path)
         m = self.REPO_NAME_RE.match(basename)
         if m:
             return m.group('name')

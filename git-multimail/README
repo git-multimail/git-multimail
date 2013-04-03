@@ -161,6 +161,11 @@ multimailhook.repoName
     from the repository path, or to use $GL_REPO for gitolite
     repositories.
 
+multimailhook.useRepoPath
+
+    If set to true, then use the absolute path to the repository
+    instead of its name.
+
 multimailhook.mailinglist
 
     The list of email addresses to which notification emails should be
