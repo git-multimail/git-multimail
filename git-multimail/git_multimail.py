@@ -1761,15 +1761,7 @@ class GenericEnvironment(ConfigEnvironment):
             )
 
     def _compute_repo_shortname(self):
-        if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
-            path = GIT_DIR
-        else:
-            try:
-                path = read_git_output(['rev-parse', '--show-toplevel'])
-            except CommandError:
-                return 'unknown repository'
-
-        basename = os.path.basename(os.path.abspath(path))
+        basename = os.path.basename(os.path.abspath(self.repo_path))
         m = self.REPO_NAME_RE.match(basename)
         if m:
             return m.group('name')
