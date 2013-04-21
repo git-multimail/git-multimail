@@ -74,6 +74,13 @@ LOGBEGIN = '- Log --------------------------------------------------------------
 LOGEND = '-----------------------------------------------------------------------\n'
 
 
+# It is assumed in many places that the encoding is uniformly UTF-8,
+# so changing these constants is unsupported.  But define them here
+# anyway, to make it easier to find (at least most of) the places
+# where the encoding is important.
+(ENCODING, CHARSET) = ('UTF-8', 'utf-8')
+
+
 REF_CREATED_SUBJECT_TEMPLATE = (
     '%(emailprefix)s%(refname_type)s %(short_refname)s created'
     ' (now %(newrev_short)s)'
@@ -90,7 +97,9 @@ REF_DELETED_SUBJECT_TEMPLATE = (
 REFCHANGE_HEADER_TEMPLATE = """\
 To: %(recipients)s
 Subject: %(subject)s
-Content-Type: text/plain; charset=utf-8
+MIME-Version: 1.0
+Content-Type: text/plain; charset=%(charset)s
+Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
@@ -214,7 +223,9 @@ how to provide full information about this reference change.
 REVISION_HEADER_TEMPLATE = """\
 To: %(recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
-Content-Type: text/plain; charset=utf-8
+MIME-Version: 1.0
+Content-Type: text/plain; charset=%(charset)s
+Content-Transfer-Encoding: 8bit
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
 In-Reply-To: %(reply_to_msgid)s
@@ -254,7 +265,10 @@ class ConfigurationException(Exception):
 def read_git_output(args, input=None, keepends=False, **kw):
     """Read the output of a Git command."""
 
-    return read_output(['git'] + args, input=input, keepends=keepends, **kw)
+    return read_output(
+        ['git', '-c', 'i18n.logoutputencoding=%s' % (ENCODING,)] + args,
+        input=input, keepends=keepends, **kw
+        )
 
 
 def read_output(cmd, input=None, keepends=False, **kw):
@@ -573,7 +587,7 @@ class Change(object):
                 try:
                     h = Header(value, header_name=name)
                 except UnicodeDecodeError:
-                    h = Header(value, header_name=name, charset='utf-8', errors='replace')
+                    h = Header(value, header_name=name, charset=CHARSET, errors='replace')
                 for splitline in ('%s: %s\n' % (name, h.encode(),)).splitlines(True):
                     yield splitline
 
@@ -1498,6 +1512,7 @@ class Environment(object):
         'pusher_email',
         'fromaddr',
         'repo_path',
+        'charset',
         ]
 
     def __init__(self):
@@ -1522,6 +1537,7 @@ class Environment(object):
         self.reply_to_refchange = 'pusher'
         self.reply_to_commit = 'author'
         self.repo_path = self.get_repo_path()
+        self.charset = CHARSET
 
         self._values = None
 
@@ -1591,12 +1607,12 @@ class Environment(object):
         self.strict_utf8 as described above."""
 
         if self.strict_utf8:
-            lines = (line.decode('utf-8', 'replace') for line in lines)
+            lines = (line.decode(ENCODING, 'replace') for line in lines)
             # Limit the line length in Unicode-space to avoid
             # splitting characters:
             if self.maxlinelength:
                 lines = limit_linelength(lines, self.maxlinelength)
-            lines = (line.encode('utf-8', 'replace') for line in lines)
+            lines = (line.encode(ENCODING, 'replace') for line in lines)
         elif self.maxlinelength:
             lines = limit_linelength(lines, self.maxlinelength)
 
