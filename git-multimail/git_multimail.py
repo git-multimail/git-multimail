@@ -265,7 +265,10 @@ class ConfigurationException(Exception):
 def read_git_output(args, input=None, keepends=False, **kw):
     """Read the output of a Git command."""
 
-    return read_output(['git'] + args, input=input, keepends=keepends, **kw)
+    return read_output(
+        ['git', '-c', 'i18n.logoutputencoding=%s' % (ENCODING,)] + args,
+        input=input, keepends=keepends, **kw
+        )
 
 
 def read_output(cmd, input=None, keepends=False, **kw):
