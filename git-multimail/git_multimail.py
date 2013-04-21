@@ -1521,11 +1521,11 @@ class Environment(object):
         self.refchange_showlog = False
         self.reply_to_refchange = 'pusher'
         self.reply_to_commit = 'author'
-        self.repo_path = self.get_repo_path()
+        self.repo_path = self.compute_repo_path()
 
         self._values = None
 
-    def get_repo_path(self):
+    def compute_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
             path = GIT_DIR
         else:
@@ -1761,7 +1761,9 @@ class GenericEnvironment(ConfigEnvironment):
             )
 
     def _compute_repo_shortname(self):
-        basename = os.path.basename(os.path.abspath(self.repo_path))
+        # We have to call compute_repo_path() here because
+        # self.repo_path is not yet initialized:
+        basename = os.path.basename(os.path.abspath(self.compute_repo_path()))
         m = self.REPO_NAME_RE.match(basename)
         if m:
             return m.group('name')
