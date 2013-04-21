@@ -90,7 +90,9 @@ REF_DELETED_SUBJECT_TEMPLATE = (
 REFCHANGE_HEADER_TEMPLATE = """\
 To: %(recipients)s
 Subject: %(subject)s
+MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
@@ -214,7 +216,9 @@ how to provide full information about this reference change.
 REVISION_HEADER_TEMPLATE = """\
 To: %(recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
+MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
 In-Reply-To: %(reply_to_msgid)s
