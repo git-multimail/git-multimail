@@ -185,6 +185,7 @@ Content-Type: text/plain; charset=utf-8
 From: %(sender)s
 Reply-To: %(author)s
 In-Reply-To: %(reply_to_msgid)s
+References: %(reply_to_msgid)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
