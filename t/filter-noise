@@ -4,5 +4,5 @@
 # the next.
 
 sed -E \
-    -e 's/^(In-Reply-To|Message-ID): <.*>$/\1: <...>/'
+    -e 's/^(In-Reply-To|Message-ID|References): <.*>$/\1: <...>/'
 
