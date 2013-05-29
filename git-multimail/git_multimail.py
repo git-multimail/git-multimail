@@ -1909,9 +1909,13 @@ class Push(object):
         # The GitObjects referred to by all references in this
         # repository *except* updated_refs:
         all_refs = set()
-        for line in read_git_lines(['for-each-ref']):
-            (sha1, type, name) = line.split()
-            if name not in updated_refs:
+        fmt = (
+            '%(objectname) %(objecttype) %(refname)\n'
+            '%(*objectname) %(*objecttype) %(refname)'
+            )
+        for line in read_git_lines(['for-each-ref', '--format=%s' % (fmt,)]):
+            (sha1, type, name) = line.split(' ', 2)
+            if sha1 and type == 'commit' and name not in updated_refs:
                 all_refs.add(GitObject(sha1, type))
 
         return all_refs
