@@ -229,6 +229,7 @@ Content-Transfer-Encoding: 8bit
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
 In-Reply-To: %(reply_to_msgid)s
+References: %(reply_to_msgid)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
