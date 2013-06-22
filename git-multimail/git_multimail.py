@@ -1516,7 +1516,7 @@ class Environment(object):
         'charset',
         ]
 
-    def __init__(self):
+    def __init__(self, osenv, config):
         self.administrator = 'the administrator of this repository'
         self.emailprefix = ''
 
@@ -1626,8 +1626,8 @@ class Environment(object):
 class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
 
-    def __init__(self, config, repo_shortname, pusher, recipients=None):
-        Environment.__init__(self)
+    def __init__(self, osenv, config, repo_shortname, pusher, recipients=None):
+        Environment.__init__(self, osenv, config)
         self.config = config
 
         # If there is a config setting, it overrides the constructor parameter:
@@ -1770,11 +1770,11 @@ class ConfigEnvironment(Environment):
 class GenericEnvironment(ConfigEnvironment):
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)?$')
 
-    def __init__(self, config, recipients=None):
+    def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
-            self, config,
+            self, osenv, config,
             repo_shortname=self._compute_repo_shortname(),
-            pusher=os.environ.get('USER', 'unknown user'),
+            pusher=osenv.get('USER', 'unknown user'),
             recipients=recipients,
             )
 
@@ -1790,11 +1790,11 @@ class GenericEnvironment(ConfigEnvironment):
 
 
 class GitoliteEnvironment(ConfigEnvironment):
-    def __init__(self, config, recipients=None):
+    def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
-            self, config,
-            repo_shortname=os.environ.get('GL_REPO', 'unknown repository'),
-            pusher=os.environ.get('GL_USER', 'unknown user'),
+            self, osenv, config,
+            repo_shortname=osenv.get('GL_REPO', 'unknown repository'),
+            pusher=osenv.get('GL_USER', 'unknown user'),
             recipients=recipients,
             )
 
@@ -2098,7 +2098,9 @@ def main(args):
             env = 'generic'
 
     try:
-        environment = KNOWN_ENVIRONMENTS[env](config, recipients=options.recipients)
+        environment = KNOWN_ENVIRONMENTS[env](
+            os.environ, config, recipients=options.recipients,
+            )
 
         mailer = config.get('mailer', default='sendmail')
 
