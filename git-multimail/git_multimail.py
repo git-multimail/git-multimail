@@ -1542,6 +1542,9 @@ class Environment(object):
         'charset',
         ]
 
+    COMPUTED_KEYS = [
+        ]
+
     def __init__(self, osenv, config):
         self.administrator = 'the administrator of this repository'
         self.emailprefix = ''
@@ -1587,10 +1590,17 @@ class Environment(object):
 
         if self._values is None:
             values = {}
+
             for key in self.VALUE_KEYS:
                 value = getattr(self, key, None)
                 if value is not None:
                     values[key] = value
+
+            for key in self.COMPUTED_KEYS:
+                value = getattr(self, 'get_%s' % (key,))()
+                if value is not None:
+                    values[key] = value
+
             self._values = values
 
         return self._values.copy()
