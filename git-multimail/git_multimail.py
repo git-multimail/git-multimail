@@ -2086,6 +2086,13 @@ def main(args):
         '--recipients', action='store', default=None,
         help='Set list of email recipients for all types of emails.',
         )
+    parser.add_option(
+        '--show-env', action='store_true', default=False,
+        help=(
+            'Write to stderr the values determined for the environment '
+            '(intended for debugging purposes).'
+            ),
+        )
 
     (options, args) = parser.parse_args(args)
 
@@ -2101,6 +2108,12 @@ def main(args):
         environment = KNOWN_ENVIRONMENTS[env](
             os.environ, config, recipients=options.recipients,
             )
+
+        if options.show_env:
+            sys.stderr.write('Environment values:\n')
+            for (k,v) in sorted(environment.get_values().items()):
+                sys.stderr.write('    %s : %r\n' % (k,v))
+            sys.stderr.write('\n')
 
         mailer = config.get('mailer', default='sendmail')
 
