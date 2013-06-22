@@ -298,8 +298,20 @@ def read_git_lines(args, keepends=False, **kw):
 
 
 class Config(object):
-    def __init__(self, section):
+    def __init__(self, section, git_config=None):
+        """Represent a section of the git configuration.
+
+        If git_config is specified, it is passed to "git config" in
+        the GIT_CONFIG environment variable, meaning that "git config"
+        will read the specified path rather than the Git default
+        config paths."""
+
         self.section = section
+        if git_config:
+            self.env = os.environ.copy()
+            self.env['GIT_CONFIG'] = git_config
+        else:
+            self.env = None
 
     @staticmethod
     def _split(s):
@@ -313,7 +325,7 @@ class Config(object):
         try:
             values = self._split(read_git_output(
                     ['config', '--get', '--null', '%s.%s' % (self.section, name)],
-                    keepends=True,
+                    env=self.env, keepends=True,
                     ))
             assert len(values) == 1
             return values[0]
@@ -323,7 +335,8 @@ class Config(object):
     def get_bool(self, name, default=None):
         try:
             value = read_git_output(
-                ['config', '--get', '--bool', '%s.%s' % (self.section, name)]
+                ['config', '--get', '--bool', '%s.%s' % (self.section, name)],
+                env=self.env,
                 )
         except CommandError:
             return default
@@ -338,7 +351,7 @@ class Config(object):
         try:
             return self._split(read_git_output(
                 ['config', '--get-all', '--null', '%s.%s' % (self.section, name)],
-                keepends=True,
+                env=self.env, keepends=True,
                 ))
         except CommandError, e:
             if e.retcode == 1:
@@ -359,17 +372,26 @@ class Config(object):
         return ', '.join(line.strip() for line in lines)
 
     def set(self, name, value):
-        read_git_output(['config', '%s.%s' % (self.section, name), value])
+        read_git_output(
+            ['config', '%s.%s' % (self.section, name), value],
+            env=self.env,
+            )
 
     def add(self, name, value):
-        read_git_output(['config', '--add', '%s.%s' % (self.section, name), value])
+        read_git_output(
+            ['config', '--add', '%s.%s' % (self.section, name), value],
+            env=self.env,
+            )
 
     def has_key(self, name):
         return self.get_all(name, default=None) is not None
 
     def unset_all(self, name):
         try:
-            read_git_output(['config', '--unset-all', '%s.%s' % (self.section, name)])
+            read_git_output(
+                ['config', '--unset-all', '%s.%s' % (self.section, name)],
+                env=self.env,
+                )
         except CommandError, e:
             if e.retcode == 5:
                 # The name doesn't exist, which is what we wanted anyway...
