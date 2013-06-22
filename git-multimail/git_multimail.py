@@ -1392,13 +1392,17 @@ class OutputMailer(Mailer):
         self.f.write(self.SEPARATOR)
 
 
-# Set GIT_DIR either from the working directory, or based on the
-# GIT_DIR environment variable:
-try:
-    GIT_DIR = read_git_output(['rev-parse', '--git-dir'])
-except CommandError:
-    sys.stderr.write('fatal: git_multimail: not in a git working copy\n')
-    sys.exit(1)
+def get_git_dir():
+    """Determine GIT_DIR.
+
+    Determine GIT_DIR either from the GIT_DIR environment variable or
+    from the working directory, using Git's usual rules."""
+
+    try:
+        return read_git_output(['rev-parse', '--git-dir'])
+    except CommandError:
+        sys.stderr.write('fatal: git_multimail: not in a git working copy\n')
+        sys.exit(1)
 
 
 class UnknownUserError(Exception):
@@ -1542,8 +1546,9 @@ class Environment(object):
         self.administrator = 'the administrator of this repository'
         self.emailprefix = ''
 
+        git_dir = get_git_dir()
         try:
-            self.projectdesc = open(os.path.join(GIT_DIR, 'description')).readline().strip()
+            self.projectdesc = open(os.path.join(git_dir, 'description')).readline().strip()
             if not self.projectdesc or self.projectdesc.startswith('Unnamed repository'):
                 self.projectdesc = 'UNNAMED PROJECT'
         except IOError:
@@ -1566,7 +1571,7 @@ class Environment(object):
 
     def compute_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
-            path = GIT_DIR
+            path = get_git_dir()
         else:
             path = read_git_output(['rev-parse', '--show-toplevel'])
         return os.path.abspath(path)
