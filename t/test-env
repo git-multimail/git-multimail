@@ -111,7 +111,7 @@ class GenericEnvTest(EnvTest):
             )
 
     def create_environment(self):
-        return GenericEnvironment(self.osenv, self.config)
+        return GenericEnvironment(osenv=self.osenv, config=self.config)
 
 
 class GitoliteEnvTest(EnvTest):
@@ -129,7 +129,7 @@ class GitoliteEnvTest(EnvTest):
             )
 
     def create_environment(self):
-        return GitoliteEnvironment(self.osenv, self.config)
+        return GitoliteEnvironment(osenv=self.osenv, config=self.config)
 
 
 class ProjectDescTest(GenericEnvTest):

@@ -55,8 +55,8 @@ import git_multimail
 config = git_multimail.Config('multimailhook')
 
 # Select the type of environment:
-environment = git_multimail.GenericEnvironment(os.environ, config)
-#environment = git_multimail.GitoliteEnvironment(os.environ, config)
+environment = git_multimail.GenericEnvironment(config=config)
+#environment = git_multimail.GitoliteEnvironment(config=config)
 
 # Choose the method of sending emails.  OutputMailer is intended only
 # for testing; it writes the emails to the specified file stream.

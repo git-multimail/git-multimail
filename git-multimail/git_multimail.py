@@ -1549,7 +1549,8 @@ class Environment(object):
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
 
-    def __init__(self, osenv, config):
+    def __init__(self, osenv=None):
+        self.osenv = osenv or os.environ
         self.announce_show_shortlog = False
         self.maxlines = None
         self.maxlinelength = 500
@@ -1572,6 +1573,12 @@ class Environment(object):
             return m.group('name')
         else:
             return basename
+
+    def get_pusher(self):
+        raise NotImplementedError()
+
+    def get_pusher_email(self):
+        return None
 
     def get_administrator(self):
         return 'the administrator of this repository'
@@ -1677,32 +1684,17 @@ class Environment(object):
         return lines
 
 
-class ConfigEnvironment(Environment):
+class ConfigEnvironmentMixin(Environment):
     """An Environment that reads most of its information from "git config"."""
 
-    def __init__(self, osenv, config, recipients=None):
-        Environment.__init__(self, osenv, config)
-        self.osenv = osenv
+    def __init__(self, config, **kw):
+        super(ConfigEnvironmentMixin, self).__init__(**kw)
         self.config = config
 
-        self.recipients = recipients
-        self.emaildomain = self.config.get('emaildomain')
-
-        # The recipients for various types of notification emails, as
-        # RFC 2822 email addresses separated by commas (or the empty
-        # string if no recipients are configured).  Although there is
-        # a mechanism to choose the recipient lists based on on the
-        # actual *contents* of the change being reported, we only
-        # choose based on the *type* of the change.  Therefore we can
-        # compute them once and for all:
-        self._refchange_recipients = self._get_recipients('refchangelist', 'mailinglist')
-        self._announce_recipients = self._get_recipients(
-            'announcelist', 'refchangelist', 'mailinglist'
-            )
-        self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
         self.announce_show_shortlog = self.config.get_bool(
             'announceshortlog', default=self.announce_show_shortlog
             )
+
         self.refchange_showlog = self.config.get_bool(
             'refchangeshowlog', default=self.refchange_showlog
             )
@@ -1749,13 +1741,13 @@ class ConfigEnvironment(Environment):
         return (
             self.config.get('administrator')
             or self.get_sender()
-            or super(ConfigEnvironment, self).get_administrator()
+            or super(ConfigEnvironmentMixin, self).get_administrator()
             )
 
     def get_repo_shortname(self):
         return (
             self.config.get('reponame', default=None)
-            or super(ConfigEnvironment, self).get_repo_shortname()
+            or super(ConfigEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_emailprefix(self):
@@ -1781,14 +1773,44 @@ class ConfigEnvironment(Environment):
             else:
                 return self.get_sender()
 
+
+class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):
+    """Deduce pusher_email from pusher by appending an emaildomain."""
+
+    def __init__(self, **kw):
+        super(PusherDomainEnvironmentMixin, self).__init__(**kw)
+        self.__emaildomain = self.config.get('emaildomain')
+
     def get_pusher_email(self):
-        if self.emaildomain:
+        if self.__emaildomain:
             # Derive the pusher's full email address in the default way:
-            return '%s@%s' % (self.get_pusher(), self.emaildomain)
+            return '%s@%s' % (self.get_pusher(), self.__emaildomain)
         else:
-            # We can't derive the pusher's email address, so set
-            # pusher_email to None.
-            return None
+            return super(PusherDomainEnvironmentMixin, self).get_pusher_email()
+
+
+class ConfigRecipientsEnvironmentMixin(ConfigEnvironmentMixin):
+    """Determine recipients statically based on config."""
+
+    def __init__(self, **kw):
+        super(ConfigRecipientsEnvironmentMixin, self).__init__(**kw)
+
+        # The recipients for various types of notification emails, as
+        # RFC 2822 email addresses separated by commas (or the empty
+        # string if no recipients are configured).  Although there is
+        # a mechanism to choose the recipient lists based on on the
+        # actual *contents* of the change being reported, we only
+        # choose based on the *type* of the change.  Therefore we can
+        # compute them once and for all:
+        self.__refchange_recipients = self._get_recipients(
+            'refchangelist', 'mailinglist',
+            )
+        self.__announce_recipients = self._get_recipients(
+            'announcelist', 'refchangelist', 'mailinglist',
+            )
+        self.__revision_recipients = self._get_recipients(
+            'commitlist', 'mailinglist',
+            )
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
@@ -1801,9 +1823,6 @@ class ConfigEnvironment(Environment):
         addresses separated by commas.  If no configuration could be
         found, raise a ConfigurationException."""
 
-        if self.recipients is not None:
-            # The constructor argument (if any) trumps all others.
-            return self.recipients
         for name in names:
             retval = self.config.get_recipients(name)
             if retval is not None:
@@ -1821,45 +1840,75 @@ class ConfigEnvironment(Environment):
             )
 
     def get_refchange_recipients(self, refchange):
-        return self._refchange_recipients
+        return self.__refchange_recipients
 
     def get_announce_recipients(self, annotated_tag_change):
-        return self._announce_recipients
+        return self.__announce_recipients
 
     def get_revision_recipients(self, revision):
-        return self._revision_recipients
+        return self.__revision_recipients
 
 
-class GenericEnvironment(ConfigEnvironment):
-    def __init__(self, osenv, config, recipients=None):
-        ConfigEnvironment.__init__(
-            self, osenv, config,
-            recipients=recipients,
-            )
+class GenericEnvironmentMixin(Environment):
+    def __init__(self, **kw):
+        super(GenericEnvironmentMixin, self).__init__(**kw)
 
     def get_pusher(self):
         return self.osenv.get('USER', 'unknown user')
 
 
-class GitoliteEnvironment(ConfigEnvironment):
-    def __init__(self, osenv, config, recipients=None):
-        ConfigEnvironment.__init__(
-            self, osenv, config,
-            recipients=recipients,
-            )
+class GenericEnvironment(
+    ConfigRecipientsEnvironmentMixin,
+    PusherDomainEnvironmentMixin,
+    ConfigEnvironmentMixin,
+    GenericEnvironmentMixin,
+    Environment,
+    ):
+    pass
+
+
+class GitoliteEnvironmentMixin(Environment):
+    def __init__(self, **kw):
+        super(GitoliteEnvironmentMixin, self).__init__(**kw)
 
     def get_repo_shortname(self):
-        # If there is a config setting, it overrides the GL_REPO
-        # environment variable.  We cannot call the super method
-        # directly, because it has a fallback based on the path name
-        # which is *not* as good as $GL_REPO.
+        # The gitolite environment variable $GL_REPO is a pretty good
+        # repo_shortname (though it's probably not as good as a value
+        # the user might have explicitly put in his config).
         return (
-            self.config.get('reponame', default=None)
-            or self.osenv.get('GL_REPO')
+            self.osenv.get('GL_REPO', None)
+            or super(GitoliteEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_pusher(self):
         return self.osenv.get('GL_USER', 'unknown user')
+
+
+class GitoliteEnvironment(
+    ConfigRecipientsEnvironmentMixin,
+    PusherDomainEnvironmentMixin,
+    ConfigEnvironmentMixin,
+    GitoliteEnvironmentMixin,
+    Environment,
+    ):
+    pass
+
+
+class HardcodedRecipientsEnvironmentMixin(Environment):
+    """A mixin that allows all recipients to be set explicitly."""
+
+    def __init__(self, recipients, **kw):
+        super(HardcodedRecipientsEnvironmentMixin, self).__init__(**kw)
+        self.__recipients = recipients
+
+    def get_refchange_recipients(self, refchange):
+        return self.__recipients
+
+    def get_announce_recipients(self, annotated_tag_change):
+        return self.__recipients
+
+    def get_revision_recipients(self, revision):
+        return self.__recipients
 
 
 class Push(object):
@@ -2122,8 +2171,16 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
 
 
 KNOWN_ENVIRONMENTS = {
-    'generic' : GenericEnvironment,
-    'gitolite' : GitoliteEnvironment,
+    'generic' : [
+        PusherDomainEnvironmentMixin,
+        ConfigEnvironmentMixin,
+        GenericEnvironmentMixin,
+        ],
+    'gitolite' : [
+        PusherDomainEnvironmentMixin,
+        ConfigEnvironmentMixin,
+        GitoliteEnvironmentMixin,
+        ],
     }
 
 
@@ -2168,9 +2225,23 @@ def main(args):
             env = 'generic'
 
     try:
-        environment = KNOWN_ENVIRONMENTS[env](
-            os.environ, config, recipients=options.recipients,
+        environment_mixins = KNOWN_ENVIRONMENTS[env]
+        environment_kw = {
+            'config' : config,
+            }
+
+        if options.recipients:
+            environment_mixins.insert(0, HardcodedRecipientsEnvironmentMixin)
+            environment_kw['recipients'] = options.recipients
+        else:
+            environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
+
+        environment_klass = type(
+            'EffectiveEnvironment',
+            tuple(environment_mixins) + (Environment,),
+            {},
             )
+        environment = environment_klass(**environment_kw)
 
         if options.show_env:
             sys.stderr.write('Environment values:\n')
