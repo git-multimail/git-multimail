@@ -1429,9 +1429,9 @@ class Environment(object):
             Return a short name for the repository, for display
             purposes.
 
-        repo_path
+        get_repo_path()
 
-            Absolute path to the Git repository.
+            Return the absolute path to the Git repository.
 
         get_emailprefix()
 
@@ -1534,7 +1534,6 @@ class Environment(object):
     """
 
     VALUE_KEYS = [
-        'repo_path',
         'charset',
         ]
 
@@ -1545,6 +1544,7 @@ class Environment(object):
         'projectdesc',
         'pusher',
         'pusher_email',
+        'repo_path',
         'repo_shortname',
         'sender',
         ]
@@ -1562,7 +1562,6 @@ class Environment(object):
         self.refchange_showlog = False
         self.reply_to_refchange = 'pusher'
         self.reply_to_commit = 'author'
-        self.repo_path = self.compute_repo_path()
         self.charset = CHARSET
 
         self._values = None
@@ -1570,7 +1569,7 @@ class Environment(object):
     def get_repo_shortname(self):
         """Use the last part of the repo path, with ".git" stripped off if present."""
 
-        basename = os.path.basename(os.path.abspath(self.compute_repo_path()))
+        basename = os.path.basename(os.path.abspath(self.get_repo_path()))
         m = self.REPO_NAME_RE.match(basename)
         if m:
             return m.group('name')
@@ -1594,7 +1593,7 @@ class Environment(object):
 
         return 'UNNAMED PROJECT'
 
-    def compute_repo_path(self):
+    def get_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
             path = get_git_dir()
         else:
