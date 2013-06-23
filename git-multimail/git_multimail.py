@@ -1691,21 +1691,10 @@ class ConfigEnvironmentMixin(Environment):
         super(ConfigEnvironmentMixin, self).__init__(**kw)
         self.config = config
 
-        # The recipients for various types of notification emails, as
-        # RFC 2822 email addresses separated by commas (or the empty
-        # string if no recipients are configured).  Although there is
-        # a mechanism to choose the recipient lists based on on the
-        # actual *contents* of the change being reported, we only
-        # choose based on the *type* of the change.  Therefore we can
-        # compute them once and for all:
-        self._refchange_recipients = self._get_recipients('refchangelist', 'mailinglist')
-        self._announce_recipients = self._get_recipients(
-            'announcelist', 'refchangelist', 'mailinglist'
-            )
-        self._revision_recipients = self._get_recipients('commitlist', 'mailinglist')
         self.announce_show_shortlog = self.config.get_bool(
             'announceshortlog', default=self.announce_show_shortlog
             )
+
         self.refchange_showlog = self.config.get_bool(
             'refchangeshowlog', default=self.refchange_showlog
             )
@@ -1784,6 +1773,45 @@ class ConfigEnvironmentMixin(Environment):
             else:
                 return self.get_sender()
 
+
+class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):
+    """Deduce pusher_email from pusher by appending an emaildomain."""
+
+    def __init__(self, **kw):
+        super(PusherDomainEnvironmentMixin, self).__init__(**kw)
+        self.__emaildomain = self.config.get('emaildomain')
+
+    def get_pusher_email(self):
+        if self.__emaildomain:
+            # Derive the pusher's full email address in the default way:
+            return '%s@%s' % (self.get_pusher(), self.__emaildomain)
+        else:
+            return super(PusherDomainEnvironmentMixin, self).get_pusher_email()
+
+
+class ConfigRecipientsEnvironmentMixin(ConfigEnvironmentMixin):
+    """Determine recipients statically based on config."""
+
+    def __init__(self, **kw):
+        super(ConfigRecipientsEnvironmentMixin, self).__init__(**kw)
+
+        # The recipients for various types of notification emails, as
+        # RFC 2822 email addresses separated by commas (or the empty
+        # string if no recipients are configured).  Although there is
+        # a mechanism to choose the recipient lists based on on the
+        # actual *contents* of the change being reported, we only
+        # choose based on the *type* of the change.  Therefore we can
+        # compute them once and for all:
+        self.__refchange_recipients = self._get_recipients(
+            'refchangelist', 'mailinglist',
+            )
+        self.__announce_recipients = self._get_recipients(
+            'announcelist', 'refchangelist', 'mailinglist',
+            )
+        self.__revision_recipients = self._get_recipients(
+            'commitlist', 'mailinglist',
+            )
+
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
 
@@ -1812,28 +1840,13 @@ class ConfigEnvironmentMixin(Environment):
             )
 
     def get_refchange_recipients(self, refchange):
-        return self._refchange_recipients
+        return self.__refchange_recipients
 
     def get_announce_recipients(self, annotated_tag_change):
-        return self._announce_recipients
+        return self.__announce_recipients
 
     def get_revision_recipients(self, revision):
-        return self._revision_recipients
-
-
-class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):
-    """Deduce pusher_email from pusher by appending an emaildomain."""
-
-    def __init__(self, **kw):
-        super(PusherDomainEnvironmentMixin, self).__init__(**kw)
-        self.__emaildomain = self.config.get('emaildomain')
-
-    def get_pusher_email(self):
-        if self.__emaildomain:
-            # Derive the pusher's full email address in the default way:
-            return '%s@%s' % (self.get_pusher(), self.__emaildomain)
-        else:
-            return super(PusherDomainEnvironmentMixin, self).get_pusher_email()
+        return self.__revision_recipients
 
 
 class GenericEnvironmentMixin(Environment):
@@ -1845,8 +1858,11 @@ class GenericEnvironmentMixin(Environment):
 
 
 class GenericEnvironment(
-    PusherDomainEnvironmentMixin, ConfigEnvironmentMixin,
-    GenericEnvironmentMixin, Environment
+    ConfigRecipientsEnvironmentMixin,
+    PusherDomainEnvironmentMixin,
+    ConfigEnvironmentMixin,
+    GenericEnvironmentMixin,
+    Environment,
     ):
     pass
 
@@ -1869,8 +1885,11 @@ class GitoliteEnvironmentMixin(Environment):
 
 
 class GitoliteEnvironment(
-    PusherDomainEnvironmentMixin, ConfigEnvironmentMixin,
-    GitoliteEnvironmentMixin, Environment
+    ConfigRecipientsEnvironmentMixin,
+    PusherDomainEnvironmentMixin,
+    ConfigEnvironmentMixin,
+    GitoliteEnvironmentMixin,
+    Environment,
     ):
     pass
 
