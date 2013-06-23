@@ -1421,58 +1421,63 @@ class Environment(object):
 
     * what users want to be informed about various types of changes.
 
-    An Environment object is expected to have the following attributes:
+    An Environment object is expected to have the following methods:
 
-        repo_shortname
+        get_repo_shortname()
 
-            A short name for the repository, for display purposes.
+            Return a short name for the repository, for display
+            purposes.
 
-        repo_path
+        get_repo_path()
 
-            Absolute path to the Git repository.
+            Return the absolute path to the Git repository.
 
-        emailprefix
+        get_emailprefix()
 
-            A string that will be prefixed to every email's subject.
+            Return a string that will be prefixed to every email's
+            subject.
 
-        projectdesc
+        get_projectdesc()
 
-            A one-line description of the project.
+            Return a one-line description of the project.
 
-        pusher
+        get_pusher()
 
-            The username of the person who pushed the changes.  If
+            Return the username of the person who pushed the changes.
             This value is used in the email body to indicate who
             pushed the change.
 
-        pusher_email (may be None)
+        get_pusher_email() (may return None)
 
-            The email address of the person who pushed the changes.
-            The value should be a single RFC 2822 email address as a
-            string; e.g., "Joe User <user@example.com>" if available,
-            otherwise "user@example.com".  If set, the value is used
-            as the Reply-To address for refchange emails.  If it is
-            impossible to determine the pusher's email, this attribute
-            should be set to None (in which case no Reply-To header
-            will be output).
+            Return the email address of the person who pushed the
+            changes.  The value should be a single RFC 2822 email
+            address as a string; e.g., "Joe User <user@example.com>"
+            if available, otherwise "user@example.com".  If set, the
+            value is used as the Reply-To address for refchange
+            emails.  If it is impossible to determine the pusher's
+            email, this attribute should be set to None (in which case
+            no Reply-To header will be output).
 
-        sender
+        get_sender()
 
-            The 'From' email address used in the email envelope.
+            Return the address to be used as the 'From' email address
+            in the email envelope.
 
-        fromaddr
+        get_fromaddr()
 
-            The 'From' email address used in the email 'From:'
+            Return the 'From' email address used in the email 'From:'
             headers.  (May be a full RFC 2822 email address like 'Joe
             User <user@example.com>'.)
 
-        administrator
+        get_administrator()
 
-            The name and/or email of the repository administrator.
-            This value is used in the footer as the person to whom
-            requests to be removed from the notification list should
-            be sent.  Ideally, it should include a valid email
-            address.
+            Return the name and/or email of the repository
+            administrator.  This value is used in the footer as the
+            person to whom requests to be removed from the
+            notification list should be sent.  Ideally, it should
+            include a valid email address.
+
+    They should also define the following attributes:
 
         announce_show_shortlog (bool)
 
@@ -1529,31 +1534,22 @@ class Environment(object):
 
     """
 
-    VALUE_KEYS = [
-        'repo_shortname',
-        'projectdesc',
+    COMPUTED_KEYS = [
         'administrator',
+        'charset',
         'emailprefix',
-        'sender',
+        'fromaddr',
+        'projectdesc',
         'pusher',
         'pusher_email',
-        'fromaddr',
         'repo_path',
-        'charset',
+        'repo_shortname',
+        'sender',
         ]
 
+    REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
+
     def __init__(self, osenv, config):
-        self.administrator = 'the administrator of this repository'
-        self.emailprefix = ''
-
-        git_dir = get_git_dir()
-        try:
-            self.projectdesc = open(os.path.join(git_dir, 'description')).readline().strip()
-            if not self.projectdesc or self.projectdesc.startswith('Unnamed repository'):
-                self.projectdesc = 'UNNAMED PROJECT'
-        except IOError:
-            self.projectdesc = 'UNNAMED PROJECT'
-
         self.announce_show_shortlog = False
         self.maxlines = None
         self.maxlinelength = 500
@@ -1564,33 +1560,64 @@ class Environment(object):
         self.refchange_showlog = False
         self.reply_to_refchange = 'pusher'
         self.reply_to_commit = 'author'
-        self.repo_path = self.compute_repo_path()
-        self.charset = CHARSET
 
         self._values = None
 
-    def compute_repo_path(self):
+    def get_repo_shortname(self):
+        """Use the last part of the repo path, with ".git" stripped off if present."""
+
+        basename = os.path.basename(os.path.abspath(self.get_repo_path()))
+        m = self.REPO_NAME_RE.match(basename)
+        if m:
+            return m.group('name')
+        else:
+            return basename
+
+    def get_administrator(self):
+        return 'the administrator of this repository'
+
+    def get_emailprefix(self):
+        return ''
+
+    def get_projectdesc(self):
+        git_dir = get_git_dir()
+        try:
+            projectdesc = open(os.path.join(git_dir, 'description')).readline().strip()
+            if projectdesc and not projectdesc.startswith('Unnamed repository'):
+                return projectdesc
+        except IOError:
+            pass
+
+        return 'UNNAMED PROJECT'
+
+    def get_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
             path = get_git_dir()
         else:
             path = read_git_output(['rev-parse', '--show-toplevel'])
         return os.path.abspath(path)
 
+    def get_charset(self):
+        return CHARSET
+
     def get_values(self):
         """Return a dictionary {keyword : expansion} for this Environment.
 
         This method is called by Change._compute_values().  The keys
         in the returned dictionary are available to be used in any of
-        the templates.  The dictionary is created by reading from self
-        the attributes named in VALUE_KEYS that are set and not None.
+        the templates.  The dictionary is created by calling
+        self.get_NAME() for each of the attributes named in
+        COMPUTED_KEYS and recording those that do not return None.
         The return value is always a new dictionary."""
 
         if self._values is None:
             values = {}
-            for key in self.VALUE_KEYS:
-                value = getattr(self, key, None)
+
+            for key in self.COMPUTED_KEYS:
+                value = getattr(self, 'get_%s' % (key,))()
                 if value is not None:
                     values[key] = value
+
             self._values = values
 
         return self._values.copy()
@@ -1653,25 +1680,13 @@ class Environment(object):
 class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
 
-    def __init__(self, osenv, config, repo_shortname, pusher, recipients=None):
+    def __init__(self, osenv, config, recipients=None):
         Environment.__init__(self, osenv, config)
+        self.osenv = osenv
         self.config = config
-
-        # If there is a config setting, it overrides the constructor parameter:
-        self.repo_shortname = self.config.get('reponame', default=repo_shortname)
 
         self.recipients = recipients
         self.emaildomain = self.config.get('emaildomain')
-
-        if self.emaildomain:
-            # Derive the pusher's full email address, and use it for
-            # both pusher and pusher_email.
-            self.pusher = self.pusher_email = '%s@%s' % (pusher, self.emaildomain)
-        else:
-            # We can't derive the pusher's email address, so use the
-            # naked username as pusher and set pusher_email to None.
-            self.pusher = pusher
-            self.pusher_email = None
 
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
@@ -1691,30 +1706,6 @@ class ConfigEnvironment(Environment):
         self.refchange_showlog = self.config.get_bool(
             'refchangeshowlog', default=self.refchange_showlog
             )
-        self.sender = self.config.get('envelopesender', default=None)
-
-        # value to be used in the "From:" field of generated emails.
-        self.fromaddr = self.config.get('from', default=None)
-        if self.fromaddr is None:
-            config = Config('user')
-            fromname = config.get('name')
-            fromemail = config.get('email')
-            if fromemail:
-                self.fromaddr = formataddr([fromname, fromemail])
-            else:
-                self.fromaddr = self.sender
-
-        self.administrator = (
-            self.config.get('administrator')
-            or self.sender
-            or self.administrator
-            )
-
-        emailprefix = self.config.get('emailprefix', default=None)
-        if emailprefix and emailprefix.strip():
-            self.emailprefix = emailprefix.strip() + ' '
-        else:
-            self.emailprefix = '[%s] ' % (self.repo_shortname,)
 
         maxlines = self.config.get('emailmaxlines', default=None)
         if maxlines is not None:
@@ -1753,6 +1744,51 @@ class ConfigEnvironment(Environment):
         reply_to_refchange = self.config.get('replyToRefchange', default=reply_to)
         if reply_to_refchange is not None:
             self.reply_to_refchange = reply_to_refchange
+
+    def get_administrator(self):
+        return (
+            self.config.get('administrator')
+            or self.get_sender()
+            or super(ConfigEnvironment, self).get_administrator()
+            )
+
+    def get_repo_shortname(self):
+        return (
+            self.config.get('reponame', default=None)
+            or super(ConfigEnvironment, self).get_repo_shortname()
+            )
+
+    def get_emailprefix(self):
+        emailprefix = self.config.get('emailprefix', default=None)
+        if emailprefix and emailprefix.strip():
+            return emailprefix.strip() + ' '
+        else:
+            return '[%s] ' % (self.get_repo_shortname(),)
+
+    def get_sender(self):
+        return self.config.get('envelopesender', default=None)
+
+    def get_fromaddr(self):
+        fromaddr = self.config.get('from', default=None)
+        if fromaddr:
+            return fromaddr
+        else:
+            config = Config('user')
+            fromname = config.get('name')
+            fromemail = config.get('email')
+            if fromemail:
+                return formataddr([fromname, fromemail])
+            else:
+                return self.get_sender()
+
+    def get_pusher_email(self):
+        if self.emaildomain:
+            # Derive the pusher's full email address in the default way:
+            return '%s@%s' % (self.get_pusher(), self.emaildomain)
+        else:
+            # We can't derive the pusher's email address, so set
+            # pusher_email to None.
+            return None
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
@@ -1795,35 +1831,35 @@ class ConfigEnvironment(Environment):
 
 
 class GenericEnvironment(ConfigEnvironment):
-    REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)?$')
-
     def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
             self, osenv, config,
-            repo_shortname=self._compute_repo_shortname(),
-            pusher=osenv.get('USER', 'unknown user'),
             recipients=recipients,
             )
 
-    def _compute_repo_shortname(self):
-        # We have to call compute_repo_path() here because
-        # self.repo_path is not yet initialized:
-        basename = os.path.basename(os.path.abspath(self.compute_repo_path()))
-        m = self.REPO_NAME_RE.match(basename)
-        if m:
-            return m.group('name')
-        else:
-            return 'unknown repository'
+    def get_pusher(self):
+        return self.osenv.get('USER', 'unknown user')
 
 
 class GitoliteEnvironment(ConfigEnvironment):
     def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
             self, osenv, config,
-            repo_shortname=osenv.get('GL_REPO', 'unknown repository'),
-            pusher=osenv.get('GL_USER', 'unknown user'),
             recipients=recipients,
             )
+
+    def get_repo_shortname(self):
+        # If there is a config setting, it overrides the GL_REPO
+        # environment variable.  We cannot call the super method
+        # directly, because it has a fallback based on the path name
+        # which is *not* as good as $GL_REPO.
+        return (
+            self.config.get('reponame', default=None)
+            or self.osenv.get('GL_REPO')
+            )
+
+    def get_pusher(self):
+        return self.osenv.get('GL_USER', 'unknown user')
 
 
 class Push(object):
@@ -2148,9 +2184,12 @@ def main(args):
             mailer = OutputMailer(sys.stdout)
         elif mailer == 'smtp':
             smtpserver = config.get('smtpserver', default='localhost')
-            mailer = SMTPMailer(environment.sender or environment.fromaddr, smtpserver)
+            mailer = SMTPMailer(
+                environment.get_sender() or environment.get_fromaddr(),
+                smtpserver,
+                )
         elif mailer == 'sendmail':
-            mailer = SendMailer(environment.sender)
+            mailer = SendMailer(environment.get_sender())
         else:
             sys.stderr.write(
                 'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
