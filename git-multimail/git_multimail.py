@@ -1464,9 +1464,9 @@ class Environment(object):
             Return the address to be used as the 'From' email address
             in the email envelope.
 
-        fromaddr
+        get_fromaddr()
 
-            The 'From' email address used in the email 'From:'
+            Return the 'From' email address used in the email 'From:'
             headers.  (May be a full RFC 2822 email address like 'Joe
             User <user@example.com>'.)
 
@@ -1536,7 +1536,6 @@ class Environment(object):
     VALUE_KEYS = [
         'pusher',
         'pusher_email',
-        'fromaddr',
         'repo_path',
         'charset',
         ]
@@ -1544,6 +1543,7 @@ class Environment(object):
     COMPUTED_KEYS = [
         'administrator',
         'emailprefix',
+        'fromaddr',
         'projectdesc',
         'repo_shortname',
         'sender',
@@ -1722,17 +1722,6 @@ class ConfigEnvironment(Environment):
             'refchangeshowlog', default=self.refchange_showlog
             )
 
-        # value to be used in the "From:" field of generated emails.
-        self.fromaddr = self.config.get('from', default=None)
-        if self.fromaddr is None:
-            config = Config('user')
-            fromname = config.get('name')
-            fromemail = config.get('email')
-            if fromemail:
-                self.fromaddr = formataddr([fromname, fromemail])
-            else:
-                self.fromaddr = self.get_sender()
-
         maxlines = self.config.get('emailmaxlines', default=None)
         if maxlines is not None:
             self.maxlines = int(maxlines)
@@ -1793,6 +1782,19 @@ class ConfigEnvironment(Environment):
 
     def get_sender(self):
         return self.config.get('envelopesender', default=None)
+
+    def get_fromaddr(self):
+        fromaddr = self.config.get('from', default=None)
+        if fromaddr:
+            return fromaddr
+        else:
+            config = Config('user')
+            fromname = config.get('name')
+            fromemail = config.get('email')
+            if fromemail:
+                return formataddr([fromname, fromemail])
+            else:
+                return self.get_sender()
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
@@ -2184,7 +2186,10 @@ def main(args):
             mailer = OutputMailer(sys.stdout)
         elif mailer == 'smtp':
             smtpserver = config.get('smtpserver', default='localhost')
-            mailer = SMTPMailer(environment.get_sender() or environment.fromaddr, smtpserver)
+            mailer = SMTPMailer(
+                environment.get_sender() or environment.get_fromaddr(),
+                smtpserver,
+                )
         elif mailer == 'sendmail':
             mailer = SendMailer(environment.get_sender())
         else:
