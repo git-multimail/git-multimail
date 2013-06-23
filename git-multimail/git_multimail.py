@@ -1437,9 +1437,9 @@ class Environment(object):
 
             A string that will be prefixed to every email's subject.
 
-        projectdesc
+        get_projectdesc()
 
-            A one-line description of the project.
+            Return a one-line description of the project.
 
         pusher
 
@@ -1532,7 +1532,6 @@ class Environment(object):
     """
 
     VALUE_KEYS = [
-        'projectdesc',
         'emailprefix',
         'sender',
         'pusher',
@@ -1545,20 +1544,13 @@ class Environment(object):
     COMPUTED_KEYS = [
         'repo_shortname',
         'administrator',
+        'projectdesc',
         ]
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
 
     def __init__(self, osenv, config):
         self.emailprefix = ''
-
-        git_dir = get_git_dir()
-        try:
-            self.projectdesc = open(os.path.join(git_dir, 'description')).readline().strip()
-            if not self.projectdesc or self.projectdesc.startswith('Unnamed repository'):
-                self.projectdesc = 'UNNAMED PROJECT'
-        except IOError:
-            self.projectdesc = 'UNNAMED PROJECT'
 
         self.announce_show_shortlog = False
         self.maxlines = None
@@ -1587,6 +1579,17 @@ class Environment(object):
 
     def get_administrator(self):
         return 'the administrator of this repository'
+
+    def get_projectdesc(self):
+        git_dir = get_git_dir()
+        try:
+            projectdesc = open(os.path.join(git_dir, 'description')).readline().strip()
+            if projectdesc and not projectdesc.startswith('Unnamed repository'):
+                return projectdesc
+        except IOError:
+            pass
+
+        return 'UNNAMED PROJECT'
 
     def compute_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
