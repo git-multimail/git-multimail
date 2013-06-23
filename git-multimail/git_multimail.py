@@ -1680,8 +1680,8 @@ class Environment(object):
 class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
 
-    def __init__(self, osenv, config, recipients=None):
-        super(ConfigEnvironment, self).__init__(osenv, config)
+    def __init__(self, osenv, config, recipients=None, **kw):
+        super(ConfigEnvironment, self).__init__(osenv, config, **kw)
         self.osenv = osenv
         self.config = config
 
@@ -1831,20 +1831,16 @@ class ConfigEnvironment(Environment):
 
 
 class GenericEnvironment(ConfigEnvironment):
-    def __init__(self, osenv, config, recipients=None):
-        super(GenericEnvironment, self).__init__(
-            osenv, config, recipients=recipients,
-            )
+    def __init__(self, osenv, config, **kw):
+        super(GenericEnvironment, self).__init__(osenv, config, **kw)
 
     def get_pusher(self):
         return self.osenv.get('USER', 'unknown user')
 
 
 class GitoliteEnvironment(ConfigEnvironment):
-    def __init__(self, osenv, config, recipients=None):
-        super(GitoliteEnvironment, self).__init__(
-            osenv, config, recipients=recipients,
-            )
+    def __init__(self, osenv, config, **kw):
+        super(GitoliteEnvironment, self).__init__(osenv, config, **kw)
 
     def get_repo_shortname(self):
         # If there is a config setting, it overrides the GL_REPO
