@@ -245,7 +245,8 @@ multimailhook.administrator
 
     The name and/or email address of the administrator of the git
     repository; used in FOOTER_TEMPLATE.  Default is
-    multimailhook.envelopesender.
+    multimailhook.envelopesender if it is set; otherwise a generic
+    string is used.
 
 multimailhook.emailPrefix
 
