@@ -1547,6 +1547,8 @@ class Environment(object):
         'administrator',
         ]
 
+    REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
+
     def __init__(self, osenv, config):
         self.emailprefix = ''
 
@@ -1572,6 +1574,16 @@ class Environment(object):
         self.charset = CHARSET
 
         self._values = None
+
+    def get_repo_shortname(self):
+        """Use the last part of the repo path, with ".git" stripped off if present."""
+
+        basename = os.path.basename(os.path.abspath(self.compute_repo_path()))
+        m = self.REPO_NAME_RE.match(basename)
+        if m:
+            return m.group('name')
+        else:
+            return basename
 
     def get_administrator(self):
         return 'the administrator of this repository'
@@ -1768,7 +1780,10 @@ class ConfigEnvironment(Environment):
             )
 
     def get_repo_shortname(self):
-        return self.config.get('reponame', default=None)
+        return (
+            self.config.get('reponame', default=None)
+            or super(ConfigEnvironment, self).get_repo_shortname()
+            )
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
@@ -1811,28 +1826,12 @@ class ConfigEnvironment(Environment):
 
 
 class GenericEnvironment(ConfigEnvironment):
-    REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)?$')
-
     def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
             self, osenv, config,
             pusher=osenv.get('USER', 'unknown user'),
             recipients=recipients,
             )
-
-    def get_repo_shortname(self):
-        # If there is a config setting, it overrides the constructor
-        # parameter.
-        retval = super(GenericEnvironment, self).get_repo_shortname()
-        if retval:
-            return retval
-        else:
-            basename = os.path.basename(os.path.abspath(self.compute_repo_path()))
-            m = self.REPO_NAME_RE.match(basename)
-            if m:
-                return m.group('name')
-            else:
-                return 'unknown repository'
 
 
 class GitoliteEnvironment(ConfigEnvironment):
@@ -1844,13 +1843,14 @@ class GitoliteEnvironment(ConfigEnvironment):
             )
 
     def get_repo_shortname(self):
-        # If there is a config setting, it overrides the constructor
-        # parameter.
-        retval = super(GitoliteEnvironment, self).get_repo_shortname()
-        if retval:
-            return retval
-        else:
-            return self.osenv.get('GL_REPO', 'unknown repository')
+        # If there is a config setting, it overrides the GL_REPO
+        # environment variable.  We cannot call the super method
+        # directly, because it has a fallback based on the path name
+        # which is *not* as good as $GL_REPO.
+        return (
+            self.config.get('reponame', default=None)
+            or self.osenv.get('GL_REPO')
+            )
 
 
 class Push(object):
