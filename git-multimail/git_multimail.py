@@ -1442,22 +1442,22 @@ class Environment(object):
 
             Return a one-line description of the project.
 
-        pusher
+        get_pusher()
 
-            The username of the person who pushed the changes.  If
+            Return the username of the person who pushed the changes.
             This value is used in the email body to indicate who
             pushed the change.
 
-        pusher_email (may be None)
+        get_pusher_email() (may return None)
 
-            The email address of the person who pushed the changes.
-            The value should be a single RFC 2822 email address as a
-            string; e.g., "Joe User <user@example.com>" if available,
-            otherwise "user@example.com".  If set, the value is used
-            as the Reply-To address for refchange emails.  If it is
-            impossible to determine the pusher's email, this attribute
-            should be set to None (in which case no Reply-To header
-            will be output).
+            Return the email address of the person who pushed the
+            changes.  The value should be a single RFC 2822 email
+            address as a string; e.g., "Joe User <user@example.com>"
+            if available, otherwise "user@example.com".  If set, the
+            value is used as the Reply-To address for refchange
+            emails.  If it is impossible to determine the pusher's
+            email, this attribute should be set to None (in which case
+            no Reply-To header will be output).
 
         get_sender()
 
@@ -1534,8 +1534,6 @@ class Environment(object):
     """
 
     VALUE_KEYS = [
-        'pusher',
-        'pusher_email',
         'repo_path',
         'charset',
         ]
@@ -1545,6 +1543,8 @@ class Environment(object):
         'emailprefix',
         'fromaddr',
         'projectdesc',
+        'pusher',
+        'pusher_email',
         'repo_shortname',
         'sender',
         ]
@@ -1685,22 +1685,13 @@ class Environment(object):
 class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
 
-    def __init__(self, osenv, config, pusher, recipients=None):
+    def __init__(self, osenv, config, recipients=None):
         Environment.__init__(self, osenv, config)
         self.osenv = osenv
         self.config = config
 
         self.recipients = recipients
         self.emaildomain = self.config.get('emaildomain')
-
-        self.pusher = pusher
-        if self.emaildomain:
-            # Derive the pusher's full email address in the default way:
-            self.pusher_email = '%s@%s' % (pusher, self.emaildomain)
-        else:
-            # We can't derive the pusher's email address, so set
-            # pusher_email to None:
-            self.pusher_email = None
 
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
@@ -1795,6 +1786,15 @@ class ConfigEnvironment(Environment):
             else:
                 return self.get_sender()
 
+    def get_pusher_email(self):
+        if self.emaildomain:
+            # Derive the pusher's full email address in the default way:
+            return '%s@%s' % (self.get_pusher(), self.emaildomain)
+        else:
+            # We can't derive the pusher's email address, so set
+            # pusher_email to None.
+            return None
+
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
 
@@ -1839,16 +1839,17 @@ class GenericEnvironment(ConfigEnvironment):
     def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
             self, osenv, config,
-            pusher=osenv.get('USER', 'unknown user'),
             recipients=recipients,
             )
+
+    def get_pusher(self):
+        return self.osenv.get('USER', 'unknown user')
 
 
 class GitoliteEnvironment(ConfigEnvironment):
     def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
             self, osenv, config,
-            pusher=osenv.get('GL_USER', 'unknown user'),
             recipients=recipients,
             )
 
@@ -1861,6 +1862,9 @@ class GitoliteEnvironment(ConfigEnvironment):
             self.config.get('reponame', default=None)
             or self.osenv.get('GL_REPO')
             )
+
+    def get_pusher(self):
+        return self.osenv.get('GL_USER', 'unknown user')
 
 
 class Push(object):
