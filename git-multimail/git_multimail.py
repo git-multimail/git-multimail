@@ -1681,7 +1681,7 @@ class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
 
     def __init__(self, osenv, config, recipients=None):
-        Environment.__init__(self, osenv, config)
+        super(ConfigEnvironment, self).__init__(osenv, config)
         self.osenv = osenv
         self.config = config
 
@@ -1832,9 +1832,8 @@ class ConfigEnvironment(Environment):
 
 class GenericEnvironment(ConfigEnvironment):
     def __init__(self, osenv, config, recipients=None):
-        ConfigEnvironment.__init__(
-            self, osenv, config,
-            recipients=recipients,
+        super(GenericEnvironment, self).__init__(
+            osenv, config, recipients=recipients,
             )
 
     def get_pusher(self):
@@ -1843,9 +1842,8 @@ class GenericEnvironment(ConfigEnvironment):
 
 class GitoliteEnvironment(ConfigEnvironment):
     def __init__(self, osenv, config, recipients=None):
-        ConfigEnvironment.__init__(
-            self, osenv, config,
-            recipients=recipients,
+        super(GitoliteEnvironment, self).__init__(
+            osenv, config, recipients=recipients,
             )
 
     def get_repo_shortname(self):
