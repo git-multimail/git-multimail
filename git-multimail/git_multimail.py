@@ -2172,13 +2172,11 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
 
 KNOWN_ENVIRONMENTS = {
     'generic' : [
-        ConfigRecipientsEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigEnvironmentMixin,
         GenericEnvironmentMixin,
         ],
     'gitolite' : [
-        ConfigRecipientsEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigEnvironmentMixin,
         GitoliteEnvironmentMixin,
@@ -2235,6 +2233,8 @@ def main(args):
         if options.recipients:
             environment_mixins.insert(0, HardcodedRecipientsEnvironmentMixin)
             environment_kw['recipients'] = options.recipients
+        else:
+            environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
 
         environment_klass = type(
             'EffectiveEnvironment',
