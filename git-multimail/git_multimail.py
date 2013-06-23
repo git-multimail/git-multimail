@@ -1421,7 +1421,8 @@ class Environment(object):
 
     * what users want to be informed about various types of changes.
 
-    An Environment object is expected to have the following attributes:
+    An Environment object is expected to have the following attributes
+    and methods:
 
         repo_shortname
 
@@ -1466,13 +1467,13 @@ class Environment(object):
             headers.  (May be a full RFC 2822 email address like 'Joe
             User <user@example.com>'.)
 
-        administrator
+        get_administrator()
 
-            The name and/or email of the repository administrator.
-            This value is used in the footer as the person to whom
-            requests to be removed from the notification list should
-            be sent.  Ideally, it should include a valid email
-            address.
+            Return the name and/or email of the repository
+            administrator.  This value is used in the footer as the
+            person to whom requests to be removed from the
+            notification list should be sent.  Ideally, it should
+            include a valid email address.
 
         announce_show_shortlog (bool)
 
@@ -1532,7 +1533,6 @@ class Environment(object):
     VALUE_KEYS = [
         'repo_shortname',
         'projectdesc',
-        'administrator',
         'emailprefix',
         'sender',
         'pusher',
@@ -1543,10 +1543,10 @@ class Environment(object):
         ]
 
     COMPUTED_KEYS = [
+        'administrator',
         ]
 
     def __init__(self, osenv, config):
-        self.administrator = 'the administrator of this repository'
         self.emailprefix = ''
 
         git_dir = get_git_dir()
@@ -1571,6 +1571,9 @@ class Environment(object):
         self.charset = CHARSET
 
         self._values = None
+
+    def get_administrator(self):
+        return 'the administrator of this repository'
 
     def compute_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
@@ -1714,12 +1717,6 @@ class ConfigEnvironment(Environment):
             else:
                 self.fromaddr = self.sender
 
-        self.administrator = (
-            self.config.get('administrator')
-            or self.sender
-            or self.administrator
-            )
-
         emailprefix = self.config.get('emailprefix', default=None)
         if emailprefix and emailprefix.strip():
             self.emailprefix = emailprefix.strip() + ' '
@@ -1763,6 +1760,13 @@ class ConfigEnvironment(Environment):
         reply_to_refchange = self.config.get('replyToRefchange', default=reply_to)
         if reply_to_refchange is not None:
             self.reply_to_refchange = reply_to_refchange
+
+    def get_administrator(self):
+        return (
+            self.config.get('administrator')
+            or self.sender
+            or super(ConfigEnvironment, self).get_administrator()
+            )
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
