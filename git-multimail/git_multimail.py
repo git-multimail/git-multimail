@@ -1679,6 +1679,7 @@ class ConfigEnvironment(Environment):
 
         self.administrator = (
             self.config.get('administrator')
+            or self.sender
             or self.administrator
             )
 
