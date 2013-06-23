@@ -298,8 +298,20 @@ def read_git_lines(args, keepends=False, **kw):
 
 
 class Config(object):
-    def __init__(self, section):
+    def __init__(self, section, git_config=None):
+        """Represent a section of the git configuration.
+
+        If git_config is specified, it is passed to "git config" in
+        the GIT_CONFIG environment variable, meaning that "git config"
+        will read the specified path rather than the Git default
+        config paths."""
+
         self.section = section
+        if git_config:
+            self.env = os.environ.copy()
+            self.env['GIT_CONFIG'] = git_config
+        else:
+            self.env = None
 
     @staticmethod
     def _split(s):
@@ -313,7 +325,7 @@ class Config(object):
         try:
             values = self._split(read_git_output(
                     ['config', '--get', '--null', '%s.%s' % (self.section, name)],
-                    keepends=True,
+                    env=self.env, keepends=True,
                     ))
             assert len(values) == 1
             return values[0]
@@ -323,7 +335,8 @@ class Config(object):
     def get_bool(self, name, default=None):
         try:
             value = read_git_output(
-                ['config', '--get', '--bool', '%s.%s' % (self.section, name)]
+                ['config', '--get', '--bool', '%s.%s' % (self.section, name)],
+                env=self.env,
                 )
         except CommandError:
             return default
@@ -338,7 +351,7 @@ class Config(object):
         try:
             return self._split(read_git_output(
                 ['config', '--get-all', '--null', '%s.%s' % (self.section, name)],
-                keepends=True,
+                env=self.env, keepends=True,
                 ))
         except CommandError, e:
             if e.retcode == 1:
@@ -359,17 +372,26 @@ class Config(object):
         return ', '.join(line.strip() for line in lines)
 
     def set(self, name, value):
-        read_git_output(['config', '%s.%s' % (self.section, name), value])
+        read_git_output(
+            ['config', '%s.%s' % (self.section, name), value],
+            env=self.env,
+            )
 
     def add(self, name, value):
-        read_git_output(['config', '--add', '%s.%s' % (self.section, name), value])
+        read_git_output(
+            ['config', '--add', '%s.%s' % (self.section, name), value],
+            env=self.env,
+            )
 
     def has_key(self, name):
         return self.get_all(name, default=None) is not None
 
     def unset_all(self, name):
         try:
-            read_git_output(['config', '--unset-all', '%s.%s' % (self.section, name)])
+            read_git_output(
+                ['config', '--unset-all', '%s.%s' % (self.section, name)],
+                env=self.env,
+                )
         except CommandError, e:
             if e.retcode == 5:
                 # The name doesn't exist, which is what we wanted anyway...
@@ -1370,13 +1392,17 @@ class OutputMailer(Mailer):
         self.f.write(self.SEPARATOR)
 
 
-# Set GIT_DIR either from the working directory, or based on the
-# GIT_DIR environment variable:
-try:
-    GIT_DIR = read_git_output(['rev-parse', '--git-dir'])
-except CommandError:
-    sys.stderr.write('fatal: git_multimail: not in a git working copy\n')
-    sys.exit(1)
+def get_git_dir():
+    """Determine GIT_DIR.
+
+    Determine GIT_DIR either from the GIT_DIR environment variable or
+    from the working directory, using Git's usual rules."""
+
+    try:
+        return read_git_output(['rev-parse', '--git-dir'])
+    except CommandError:
+        sys.stderr.write('fatal: git_multimail: not in a git working copy\n')
+        sys.exit(1)
 
 
 class UnknownUserError(Exception):
@@ -1516,12 +1542,13 @@ class Environment(object):
         'charset',
         ]
 
-    def __init__(self):
+    def __init__(self, osenv, config):
         self.administrator = 'the administrator of this repository'
         self.emailprefix = ''
 
+        git_dir = get_git_dir()
         try:
-            self.projectdesc = open(os.path.join(GIT_DIR, 'description')).readline().strip()
+            self.projectdesc = open(os.path.join(git_dir, 'description')).readline().strip()
             if not self.projectdesc or self.projectdesc.startswith('Unnamed repository'):
                 self.projectdesc = 'UNNAMED PROJECT'
         except IOError:
@@ -1544,7 +1571,7 @@ class Environment(object):
 
     def compute_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
-            path = GIT_DIR
+            path = get_git_dir()
         else:
             path = read_git_output(['rev-parse', '--show-toplevel'])
         return os.path.abspath(path)
@@ -1626,8 +1653,8 @@ class Environment(object):
 class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
 
-    def __init__(self, config, repo_shortname, pusher, recipients=None):
-        Environment.__init__(self)
+    def __init__(self, osenv, config, repo_shortname, pusher, recipients=None):
+        Environment.__init__(self, osenv, config)
         self.config = config
 
         # If there is a config setting, it overrides the constructor parameter:
@@ -1770,11 +1797,11 @@ class ConfigEnvironment(Environment):
 class GenericEnvironment(ConfigEnvironment):
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)?$')
 
-    def __init__(self, config, recipients=None):
+    def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
-            self, config,
+            self, osenv, config,
             repo_shortname=self._compute_repo_shortname(),
-            pusher=os.environ.get('USER', 'unknown user'),
+            pusher=osenv.get('USER', 'unknown user'),
             recipients=recipients,
             )
 
@@ -1790,11 +1817,11 @@ class GenericEnvironment(ConfigEnvironment):
 
 
 class GitoliteEnvironment(ConfigEnvironment):
-    def __init__(self, config, recipients=None):
+    def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
-            self, config,
-            repo_shortname=os.environ.get('GL_REPO', 'unknown repository'),
-            pusher=os.environ.get('GL_USER', 'unknown user'),
+            self, osenv, config,
+            repo_shortname=osenv.get('GL_REPO', 'unknown repository'),
+            pusher=osenv.get('GL_USER', 'unknown user'),
             recipients=recipients,
             )
 
@@ -2086,6 +2113,13 @@ def main(args):
         '--recipients', action='store', default=None,
         help='Set list of email recipients for all types of emails.',
         )
+    parser.add_option(
+        '--show-env', action='store_true', default=False,
+        help=(
+            'Write to stderr the values determined for the environment '
+            '(intended for debugging purposes).'
+            ),
+        )
 
     (options, args) = parser.parse_args(args)
 
@@ -2098,7 +2132,15 @@ def main(args):
             env = 'generic'
 
     try:
-        environment = KNOWN_ENVIRONMENTS[env](config, recipients=options.recipients)
+        environment = KNOWN_ENVIRONMENTS[env](
+            os.environ, config, recipients=options.recipients,
+            )
+
+        if options.show_env:
+            sys.stderr.write('Environment values:\n')
+            for (k,v) in sorted(environment.get_values().items()):
+                sys.stderr.write('    %s : %r\n' % (k,v))
+            sys.stderr.write('\n')
 
         mailer = config.get('mailer', default='sendmail')
 

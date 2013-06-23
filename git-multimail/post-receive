@@ -28,6 +28,7 @@ script's behavior could be changed or customized.
 """
 
 import sys
+import os
 
 # If necessary, add the path to the directory containing
 # git_multimail.py to the Python path as follows.  (This is not
@@ -54,8 +55,8 @@ import git_multimail
 config = git_multimail.Config('multimailhook')
 
 # Select the type of environment:
-environment = git_multimail.GenericEnvironment(config)
-#environment = git_multimail.GitoliteEnvironment(config)
+environment = git_multimail.GenericEnvironment(os.environ, config)
+#environment = git_multimail.GitoliteEnvironment(os.environ, config)
 
 # Choose the method of sending emails.  OutputMailer is intended only
 # for testing; it writes the emails to the specified file stream.
