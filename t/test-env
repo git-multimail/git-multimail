@@ -254,7 +254,7 @@ def suite():
                 'Test "pusher" setting',
                 extra_config={'emaildomain' : EMAILDOMAIN},
                 tests={
-                        'pusher' : '%s@%s' % (test.PUSHER, EMAILDOMAIN),
+                        'pusher' : test.PUSHER,
                         'pusher_email' : '%s@%s' % (test.PUSHER, EMAILDOMAIN),
                         },
                 ),

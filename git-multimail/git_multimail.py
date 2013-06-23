@@ -1693,14 +1693,13 @@ class ConfigEnvironment(Environment):
         self.recipients = recipients
         self.emaildomain = self.config.get('emaildomain')
 
+        self.pusher = pusher
         if self.emaildomain:
-            # Derive the pusher's full email address, and use it for
-            # both pusher and pusher_email.
-            self.pusher = self.pusher_email = '%s@%s' % (pusher, self.emaildomain)
+            # Derive the pusher's full email address in the default way:
+            self.pusher_email = '%s@%s' % (pusher, self.emaildomain)
         else:
-            # We can't derive the pusher's email address, so use the
-            # naked username as pusher and set pusher_email to None.
-            self.pusher = pusher
+            # We can't derive the pusher's email address, so set
+            # pusher_email to None:
             self.pusher_email = None
 
         # The recipients for various types of notification emails, as
