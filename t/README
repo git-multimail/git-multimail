@@ -1,5 +1,17 @@
 Aids to testing git-multimail.
 
+This directory contains some scripts that can be used to help test
+git-multimail.  The tests are not very complete and not very
+automated, but they do catch many errors.
+
+It is likely that the test scripts only work correctly on Linux/Unix,
+and it is quite possible that they require a newer version of Python
+than does the git-multimail script itself.
+
+
+Test scripts
+============
+
 create-test-repo:
 
     Create a test repository "test-repo.git" that can be used for
@@ -13,4 +25,37 @@ test-emails:
     repository, writing to stdout the emails that would normally be
     sent for those pushes.  There's as yet no automated check of the
     output; you still have to eyeball it.
+
+filter-noise:
+
+    Filters from the test-emails output many strings that vary
+    unpredictably from one test run to another.
+
+test-env:
+
+    Runs through various configuration scenarios for
+    GenericEnvironment and GitoliteEnvironment and verifies that the
+    environments have set the correct values for the
+    template-expansion parameters.
+
+
+Guidelines
+==========
+
+For an approximate test that you haven't broken anything, first check
+out a "good" version of the software and run
+
+    $ t/test-emails | t/filter-noise >$TMP/test-emails-good.out
+
+Then, after you have made your changes, compare the new output to the
+old output:
+
+    $ t/test-emails | t/filter-noise | diff -u $TMP/test-emails-good.out -
+
+Any differences should be investigated.
+
+Also check that your changes haven't broken the environment classes:
+
+    $ t/test-env
+
 
