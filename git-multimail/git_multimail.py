@@ -1534,11 +1534,11 @@ class Environment(object):
     """
 
     VALUE_KEYS = [
-        'charset',
         ]
 
     COMPUTED_KEYS = [
         'administrator',
+        'charset',
         'emailprefix',
         'fromaddr',
         'projectdesc',
@@ -1562,7 +1562,6 @@ class Environment(object):
         self.refchange_showlog = False
         self.reply_to_refchange = 'pusher'
         self.reply_to_commit = 'author'
-        self.charset = CHARSET
 
         self._values = None
 
@@ -1599,6 +1598,9 @@ class Environment(object):
         else:
             path = read_git_output(['rev-parse', '--show-toplevel'])
         return os.path.abspath(path)
+
+    def get_charset(self):
+        return CHARSET
 
     def get_values(self):
         """Return a dictionary {keyword : expansion} for this Environment.
