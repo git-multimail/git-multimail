@@ -1691,8 +1691,6 @@ class ConfigEnvironmentMixin(Environment):
         super(ConfigEnvironmentMixin, self).__init__(**kw)
         self.config = config
 
-        self.emaildomain = self.config.get('emaildomain')
-
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
         # string if no recipients are configured).  Although there is
@@ -1786,15 +1784,6 @@ class ConfigEnvironmentMixin(Environment):
             else:
                 return self.get_sender()
 
-    def get_pusher_email(self):
-        if self.emaildomain:
-            # Derive the pusher's full email address in the default way:
-            return '%s@%s' % (self.get_pusher(), self.emaildomain)
-        else:
-            # We can't derive the pusher's email address, so set
-            # pusher_email to None.
-            return super(ConfigEnvironmentMixin, self).get_pusher_email()
-
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
 
@@ -1832,6 +1821,21 @@ class ConfigEnvironmentMixin(Environment):
         return self._revision_recipients
 
 
+class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):
+    """Deduce pusher_email from pusher by appending an emaildomain."""
+
+    def __init__(self, **kw):
+        super(PusherDomainEnvironmentMixin, self).__init__(**kw)
+        self.__emaildomain = self.config.get('emaildomain')
+
+    def get_pusher_email(self):
+        if self.__emaildomain:
+            # Derive the pusher's full email address in the default way:
+            return '%s@%s' % (self.get_pusher(), self.__emaildomain)
+        else:
+            return super(PusherDomainEnvironmentMixin, self).get_pusher_email()
+
+
 class GenericEnvironmentMixin(Environment):
     def __init__(self, **kw):
         super(GenericEnvironmentMixin, self).__init__(**kw)
@@ -1840,7 +1844,10 @@ class GenericEnvironmentMixin(Environment):
         return self.osenv.get('USER', 'unknown user')
 
 
-class GenericEnvironment(ConfigEnvironmentMixin, GenericEnvironmentMixin, Environment):
+class GenericEnvironment(
+    PusherDomainEnvironmentMixin, ConfigEnvironmentMixin,
+    GenericEnvironmentMixin, Environment
+    ):
     pass
 
 
@@ -1861,7 +1868,10 @@ class GitoliteEnvironmentMixin(Environment):
         return self.osenv.get('GL_USER', 'unknown user')
 
 
-class GitoliteEnvironment(ConfigEnvironmentMixin, GitoliteEnvironmentMixin, Environment):
+class GitoliteEnvironment(
+    PusherDomainEnvironmentMixin, ConfigEnvironmentMixin,
+    GitoliteEnvironmentMixin, Environment
+    ):
     pass
 
 
