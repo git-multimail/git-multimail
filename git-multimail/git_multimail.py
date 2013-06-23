@@ -1459,9 +1459,10 @@ class Environment(object):
             should be set to None (in which case no Reply-To header
             will be output).
 
-        sender
+        get_sender()
 
-            The 'From' email address used in the email envelope.
+            Return the address to be used as the 'From' email address
+            in the email envelope.
 
         fromaddr
 
@@ -1533,7 +1534,6 @@ class Environment(object):
     """
 
     VALUE_KEYS = [
-        'sender',
         'pusher',
         'pusher_email',
         'fromaddr',
@@ -1542,10 +1542,11 @@ class Environment(object):
         ]
 
     COMPUTED_KEYS = [
-        'repo_shortname',
-        'emailprefix',
         'administrator',
+        'emailprefix',
         'projectdesc',
+        'repo_shortname',
+        'sender',
         ]
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -1720,7 +1721,6 @@ class ConfigEnvironment(Environment):
         self.refchange_showlog = self.config.get_bool(
             'refchangeshowlog', default=self.refchange_showlog
             )
-        self.sender = self.config.get('envelopesender', default=None)
 
         # value to be used in the "From:" field of generated emails.
         self.fromaddr = self.config.get('from', default=None)
@@ -1731,7 +1731,7 @@ class ConfigEnvironment(Environment):
             if fromemail:
                 self.fromaddr = formataddr([fromname, fromemail])
             else:
-                self.fromaddr = self.sender
+                self.fromaddr = self.get_sender()
 
         maxlines = self.config.get('emailmaxlines', default=None)
         if maxlines is not None:
@@ -1774,7 +1774,7 @@ class ConfigEnvironment(Environment):
     def get_administrator(self):
         return (
             self.config.get('administrator')
-            or self.sender
+            or self.get_sender()
             or super(ConfigEnvironment, self).get_administrator()
             )
 
@@ -1790,6 +1790,9 @@ class ConfigEnvironment(Environment):
             return emailprefix.strip() + ' '
         else:
             return '[%s] ' % (self.get_repo_shortname(),)
+
+    def get_sender(self):
+        return self.config.get('envelopesender', default=None)
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
@@ -2181,9 +2184,9 @@ def main(args):
             mailer = OutputMailer(sys.stdout)
         elif mailer == 'smtp':
             smtpserver = config.get('smtpserver', default='localhost')
-            mailer = SMTPMailer(environment.sender or environment.fromaddr, smtpserver)
+            mailer = SMTPMailer(environment.get_sender() or environment.fromaddr, smtpserver)
         elif mailer == 'sendmail':
-            mailer = SendMailer(environment.sender)
+            mailer = SendMailer(environment.get_sender())
         else:
             sys.stderr.write(
                 'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
