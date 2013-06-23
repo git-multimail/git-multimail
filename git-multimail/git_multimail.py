@@ -2171,8 +2171,18 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
 
 
 KNOWN_ENVIRONMENTS = {
-    'generic' : GenericEnvironment,
-    'gitolite' : GitoliteEnvironment,
+    'generic' : [
+        ConfigRecipientsEnvironmentMixin,
+        PusherDomainEnvironmentMixin,
+        ConfigEnvironmentMixin,
+        GenericEnvironmentMixin,
+        ],
+    'gitolite' : [
+        ConfigRecipientsEnvironmentMixin,
+        PusherDomainEnvironmentMixin,
+        ConfigEnvironmentMixin,
+        GitoliteEnvironmentMixin,
+        ],
     }
 
 
@@ -2217,7 +2227,7 @@ def main(args):
             env = 'generic'
 
     try:
-        environment_mixins = [KNOWN_ENVIRONMENTS[env]]
+        environment_mixins = KNOWN_ENVIRONMENTS[env]
         environment_kw = {
             'config' : config,
             }
