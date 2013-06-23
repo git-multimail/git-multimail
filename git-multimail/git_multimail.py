@@ -1549,7 +1549,8 @@ class Environment(object):
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
 
-    def __init__(self, osenv, config):
+    def __init__(self, osenv=None):
+        self.osenv = osenv or os.environ
         self.announce_show_shortlog = False
         self.maxlines = None
         self.maxlinelength = 500
@@ -1680,9 +1681,8 @@ class Environment(object):
 class ConfigEnvironmentMixin(Environment):
     """An Environment that reads most of its information from "git config"."""
 
-    def __init__(self, osenv, config, **kw):
-        super(ConfigEnvironmentMixin, self).__init__(osenv, config, **kw)
-        self.osenv = osenv
+    def __init__(self, config, **kw):
+        super(ConfigEnvironmentMixin, self).__init__(**kw)
         self.config = config
 
         self.emaildomain = self.config.get('emaildomain')
@@ -1827,8 +1827,8 @@ class ConfigEnvironmentMixin(Environment):
 
 
 class GenericEnvironmentMixin(Environment):
-    def __init__(self, osenv, config, **kw):
-        super(GenericEnvironmentMixin, self).__init__(osenv, config, **kw)
+    def __init__(self, **kw):
+        super(GenericEnvironmentMixin, self).__init__(**kw)
 
     def get_pusher(self):
         return self.osenv.get('USER', 'unknown user')
@@ -1839,8 +1839,8 @@ class GenericEnvironment(ConfigEnvironmentMixin, GenericEnvironmentMixin, Enviro
 
 
 class GitoliteEnvironmentMixin(Environment):
-    def __init__(self, osenv, config, **kw):
-        super(GitoliteEnvironmentMixin, self).__init__(osenv, config, **kw)
+    def __init__(self, **kw):
+        super(GitoliteEnvironmentMixin, self).__init__(**kw)
 
     def get_repo_shortname(self):
         # The gitolite environment variable $GL_REPO is a pretty good
@@ -1862,8 +1862,8 @@ class GitoliteEnvironment(ConfigEnvironmentMixin, GitoliteEnvironmentMixin, Envi
 class HardcodedRecipientsEnvironmentMixin(Environment):
     """A mixin that allows all recipients to be set explicitly."""
 
-    def __init__(self, osenv, config, recipients, **kw):
-        super(HardcodedRecipientsEnvironmentMixin, self).__init__(osenv, config, **kw)
+    def __init__(self, recipients, **kw):
+        super(HardcodedRecipientsEnvironmentMixin, self).__init__(**kw)
         self.__recipients = recipients
 
     def get_refchange_recipients(self, refchange):
@@ -2183,7 +2183,9 @@ def main(args):
 
     try:
         environment_mixins = [KNOWN_ENVIRONMENTS[env]]
-        environment_kw = {}
+        environment_kw = {
+            'config' : config,
+            }
 
         if options.recipients:
             environment_mixins.insert(0, HardcodedRecipientsEnvironmentMixin)
@@ -2194,7 +2196,7 @@ def main(args):
             tuple(environment_mixins) + (Environment,),
             {},
             )
-        environment = environment_klass(os.environ, config, **environment_kw)
+        environment = environment_klass(**environment_kw)
 
         if options.show_env:
             sys.stderr.write('Environment values:\n')
