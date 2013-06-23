@@ -1421,8 +1421,7 @@ class Environment(object):
 
     * what users want to be informed about various types of changes.
 
-    An Environment object is expected to have the following attributes
-    and methods:
+    An Environment object is expected to have the following methods:
 
         get_repo_shortname()
 
@@ -1478,6 +1477,8 @@ class Environment(object):
             notification list should be sent.  Ideally, it should
             include a valid email address.
 
+    They should also define the following attributes:
+
         announce_show_shortlog (bool)
 
             True iff announce emails should include a shortlog.
@@ -1532,9 +1533,6 @@ class Environment(object):
             (encoded as UTF-8, of course).
 
     """
-
-    VALUE_KEYS = [
-        ]
 
     COMPUTED_KEYS = [
         'administrator',
@@ -1607,17 +1605,13 @@ class Environment(object):
 
         This method is called by Change._compute_values().  The keys
         in the returned dictionary are available to be used in any of
-        the templates.  The dictionary is created by reading from self
-        the attributes named in VALUE_KEYS that are set and not None.
+        the templates.  The dictionary is created by calling
+        self.get_NAME() for each of the attributes named in
+        COMPUTED_KEYS and recording those that do not return None.
         The return value is always a new dictionary."""
 
         if self._values is None:
             values = {}
-
-            for key in self.VALUE_KEYS:
-                value = getattr(self, key, None)
-                if value is not None:
-                    values[key] = value
 
             for key in self.COMPUTED_KEYS:
                 value = getattr(self, 'get_%s' % (key,))()
