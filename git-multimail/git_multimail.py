@@ -1680,12 +1680,11 @@ class Environment(object):
 class ConfigEnvironmentMixin(Environment):
     """An Environment that reads most of its information from "git config"."""
 
-    def __init__(self, osenv, config, recipients=None, **kw):
+    def __init__(self, osenv, config, **kw):
         super(ConfigEnvironmentMixin, self).__init__(osenv, config, **kw)
         self.osenv = osenv
         self.config = config
 
-        self.recipients = recipients
         self.emaildomain = self.config.get('emaildomain')
 
         # The recipients for various types of notification emails, as
@@ -1801,9 +1800,6 @@ class ConfigEnvironmentMixin(Environment):
         addresses separated by commas.  If no configuration could be
         found, raise a ConfigurationException."""
 
-        if self.recipients is not None:
-            # The constructor argument (if any) trumps all others.
-            return self.recipients
         for name in names:
             retval = self.config.get_recipients(name)
             if retval is not None:
@@ -1861,6 +1857,23 @@ class GitoliteEnvironmentMixin(Environment):
 
 class GitoliteEnvironment(ConfigEnvironmentMixin, GitoliteEnvironmentMixin, Environment):
     pass
+
+
+class HardcodedRecipientsEnvironmentMixin(Environment):
+    """A mixin that allows all recipients to be set explicitly."""
+
+    def __init__(self, osenv, config, recipients, **kw):
+        super(HardcodedRecipientsEnvironmentMixin, self).__init__(osenv, config, **kw)
+        self.__recipients = recipients
+
+    def get_refchange_recipients(self, refchange):
+        return self.__recipients
+
+    def get_announce_recipients(self, annotated_tag_change):
+        return self.__recipients
+
+    def get_revision_recipients(self, revision):
+        return self.__recipients
 
 
 class Push(object):
@@ -2169,9 +2182,19 @@ def main(args):
             env = 'generic'
 
     try:
-        environment = KNOWN_ENVIRONMENTS[env](
-            os.environ, config, recipients=options.recipients,
+        environment_mixins = [KNOWN_ENVIRONMENTS[env]]
+        environment_kw = {}
+
+        if options.recipients:
+            environment_mixins.insert(0, HardcodedRecipientsEnvironmentMixin)
+            environment_kw['recipients'] = options.recipients
+
+        environment_klass = type(
+            'EffectiveEnvironment',
+            tuple(environment_mixins) + (Environment,),
+            {},
             )
+        environment = environment_klass(os.environ, config, **environment_kw)
 
         if options.show_env:
             sys.stderr.write('Environment values:\n')
