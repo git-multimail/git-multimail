@@ -1677,11 +1677,11 @@ class Environment(object):
         return lines
 
 
-class ConfigEnvironment(Environment):
+class ConfigEnvironmentMixin(Environment):
     """An Environment that reads most of its information from "git config"."""
 
     def __init__(self, osenv, config, recipients=None, **kw):
-        super(ConfigEnvironment, self).__init__(osenv, config, **kw)
+        super(ConfigEnvironmentMixin, self).__init__(osenv, config, **kw)
         self.osenv = osenv
         self.config = config
 
@@ -1749,13 +1749,13 @@ class ConfigEnvironment(Environment):
         return (
             self.config.get('administrator')
             or self.get_sender()
-            or super(ConfigEnvironment, self).get_administrator()
+            or super(ConfigEnvironmentMixin, self).get_administrator()
             )
 
     def get_repo_shortname(self):
         return (
             self.config.get('reponame', default=None)
-            or super(ConfigEnvironment, self).get_repo_shortname()
+            or super(ConfigEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_emailprefix(self):
@@ -1830,17 +1830,21 @@ class ConfigEnvironment(Environment):
         return self._revision_recipients
 
 
-class GenericEnvironment(ConfigEnvironment):
+class GenericEnvironmentMixin(Environment):
     def __init__(self, osenv, config, **kw):
-        super(GenericEnvironment, self).__init__(osenv, config, **kw)
+        super(GenericEnvironmentMixin, self).__init__(osenv, config, **kw)
 
     def get_pusher(self):
         return self.osenv.get('USER', 'unknown user')
 
 
-class GitoliteEnvironment(ConfigEnvironment):
+class GenericEnvironment(GenericEnvironmentMixin, ConfigEnvironmentMixin, Environment):
+    pass
+
+
+class GitoliteEnvironmentMixin(Environment):
     def __init__(self, osenv, config, **kw):
-        super(GitoliteEnvironment, self).__init__(osenv, config, **kw)
+        super(GitoliteEnvironmentMixin, self).__init__(osenv, config, **kw)
 
     def get_repo_shortname(self):
         # If there is a config setting, it overrides the GL_REPO
@@ -1854,6 +1858,10 @@ class GitoliteEnvironment(ConfigEnvironment):
 
     def get_pusher(self):
         return self.osenv.get('GL_USER', 'unknown user')
+
+
+class GitoliteEnvironment(GitoliteEnvironmentMixin, ConfigEnvironmentMixin, Environment):
+    pass
 
 
 class Push(object):
