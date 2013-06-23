@@ -1574,6 +1574,12 @@ class Environment(object):
         else:
             return basename
 
+    def get_pusher(self):
+        raise NotImplementedError()
+
+    def get_pusher_email(self):
+        return None
+
     def get_administrator(self):
         return 'the administrator of this repository'
 
@@ -1787,7 +1793,7 @@ class ConfigEnvironmentMixin(Environment):
         else:
             # We can't derive the pusher's email address, so set
             # pusher_email to None.
-            return None
+            return super(ConfigEnvironmentMixin, self).get_pusher_email()
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
