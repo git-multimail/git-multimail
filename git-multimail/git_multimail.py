@@ -1424,9 +1424,10 @@ class Environment(object):
     An Environment object is expected to have the following attributes
     and methods:
 
-        repo_shortname
+        get_repo_shortname()
 
-            A short name for the repository, for display purposes.
+            Return a short name for the repository, for display
+            purposes.
 
         repo_path
 
@@ -1531,7 +1532,6 @@ class Environment(object):
     """
 
     VALUE_KEYS = [
-        'repo_shortname',
         'projectdesc',
         'emailprefix',
         'sender',
@@ -1543,6 +1543,7 @@ class Environment(object):
         ]
 
     COMPUTED_KEYS = [
+        'repo_shortname',
         'administrator',
         ]
 
@@ -1666,12 +1667,10 @@ class Environment(object):
 class ConfigEnvironment(Environment):
     """An Environment that reads most of its information from "git config"."""
 
-    def __init__(self, osenv, config, repo_shortname, pusher, recipients=None):
+    def __init__(self, osenv, config, pusher, recipients=None):
         Environment.__init__(self, osenv, config)
+        self.osenv = osenv
         self.config = config
-
-        # If there is a config setting, it overrides the constructor parameter:
-        self.repo_shortname = self.config.get('reponame', default=repo_shortname)
 
         self.recipients = recipients
         self.emaildomain = self.config.get('emaildomain')
@@ -1721,7 +1720,7 @@ class ConfigEnvironment(Environment):
         if emailprefix and emailprefix.strip():
             self.emailprefix = emailprefix.strip() + ' '
         else:
-            self.emailprefix = '[%s] ' % (self.repo_shortname,)
+            self.emailprefix = '[%s] ' % (self.get_repo_shortname(),)
 
         maxlines = self.config.get('emailmaxlines', default=None)
         if maxlines is not None:
@@ -1767,6 +1766,9 @@ class ConfigEnvironment(Environment):
             or self.sender
             or super(ConfigEnvironment, self).get_administrator()
             )
+
+    def get_repo_shortname(self):
+        return self.config.get('reponame', default=None)
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
@@ -1814,30 +1816,41 @@ class GenericEnvironment(ConfigEnvironment):
     def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
             self, osenv, config,
-            repo_shortname=self._compute_repo_shortname(),
             pusher=osenv.get('USER', 'unknown user'),
             recipients=recipients,
             )
 
-    def _compute_repo_shortname(self):
-        # We have to call compute_repo_path() here because
-        # self.repo_path is not yet initialized:
-        basename = os.path.basename(os.path.abspath(self.compute_repo_path()))
-        m = self.REPO_NAME_RE.match(basename)
-        if m:
-            return m.group('name')
+    def get_repo_shortname(self):
+        # If there is a config setting, it overrides the constructor
+        # parameter.
+        retval = super(GenericEnvironment, self).get_repo_shortname()
+        if retval:
+            return retval
         else:
-            return 'unknown repository'
+            basename = os.path.basename(os.path.abspath(self.compute_repo_path()))
+            m = self.REPO_NAME_RE.match(basename)
+            if m:
+                return m.group('name')
+            else:
+                return 'unknown repository'
 
 
 class GitoliteEnvironment(ConfigEnvironment):
     def __init__(self, osenv, config, recipients=None):
         ConfigEnvironment.__init__(
             self, osenv, config,
-            repo_shortname=osenv.get('GL_REPO', 'unknown repository'),
             pusher=osenv.get('GL_USER', 'unknown user'),
             recipients=recipients,
             )
+
+    def get_repo_shortname(self):
+        # If there is a config setting, it overrides the constructor
+        # parameter.
+        retval = super(GitoliteEnvironment, self).get_repo_shortname()
+        if retval:
+            return retval
+        else:
+            return self.osenv.get('GL_REPO', 'unknown repository')
 
 
 class Push(object):
