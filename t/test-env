@@ -1,0 +1,273 @@
+#! /usr/bin/python2
+
+import sys
+import os
+import shutil
+import subprocess
+import contextlib
+import unittest
+
+TEST_DIR = os.path.abspath(os.path.dirname(sys.argv[0]))
+PROJ_DIR = os.path.dirname(TEST_DIR)
+REPO = os.path.join(TEST_DIR, 'env-repo.git')
+
+sys.path.insert(0, os.path.join(PROJ_DIR, 'git-multimail'))
+
+import git_multimail
+from git_multimail import Config
+from git_multimail import GenericEnvironment
+from git_multimail import GitoliteEnvironment
+
+
+class EnvTest(unittest.TestCase):
+    def __init__(
+        self,
+        description,
+        user_config=None,
+        extra_config=None, extra_osenv=None,
+        tests=None,
+        ):
+        unittest.TestCase.__init__(self)
+        self.description = description
+        self.user_config = user_config
+        self.extra_config = extra_config
+        if extra_osenv:
+            self.osenv = os.environ.copy()
+            self.osenv.update(extra_osenv)
+        else:
+            self.osenv = os.environ
+        self.tests = tests
+
+    def shortDescription(self):
+        return self.description
+
+    def setUp(self):
+        self.old_dir = os.getcwd()
+        if os.path.isdir(REPO):
+            shutil.rmtree(REPO)
+        subprocess.check_call(
+            ['git', 'init', '--bare', REPO],
+            stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT,
+            )
+        os.chdir(REPO)
+        user_config = Config('user')
+        if self.user_config is None:
+            user_config.set('name', 'Joe User')
+            user_config.set('email', 'user@example.com')
+        else:
+            for (name, value) in self.user_config.items():
+                user_config.set(name, value)
+
+        self.config = Config('multimailhook')
+        self.add_to_config(mailinglist='Mailing List <mailinglist@example.com>')
+        if self.extra_config:
+            self.add_to_config(**self.extra_config)
+
+    def add_to_config(self, **extra_config):
+        for (name, value) in extra_config.items():
+            if value is None:
+                self.config.unset_all(name)
+            else:
+                self.config.set(name, value)
+
+    def create_environment(self):
+        raise NotImplementedError()
+
+    def check_environment(self, environment):
+        values = environment.get_values()
+        for (name, value) in self.tests.items():
+            if value is None:
+                if name in values:
+                    self.fail(
+                        'value for %s should not be set; is %r'
+                        % (name, values[name],)
+                        )
+            else:
+                self.assertEquals(
+                    values[name], value,
+                    'value for %s: %r != %r' % (name, values[name], value,)
+                    )
+
+    def runTest(self):
+        self.check_environment(self.create_environment())
+
+    def tearDown(self):
+        os.chdir(self.old_dir)
+        shutil.rmtree(REPO)
+
+
+class GenericEnvTest(EnvTest):
+    PUSHER = 'fakeuser'
+    REPONAME = 'env-repo'
+
+    def __init__(self, description, user_config=None, extra_config=None, tests=None):
+        EnvTest.__init__(
+            self,
+            description,
+            user_config=user_config,
+            extra_config=extra_config,
+            extra_osenv=dict(USER=self.PUSHER),
+            tests=tests,
+            )
+
+    def create_environment(self):
+        return GenericEnvironment(self.osenv, self.config)
+
+
+class GitoliteEnvTest(EnvTest):
+    PUSHER = 'gluser'
+    REPONAME = 'gitolite-repo'
+
+    def __init__(self, description, user_config=None, extra_config=None, tests=None):
+        EnvTest.__init__(
+            self,
+            description,
+            user_config=user_config,
+            extra_config=extra_config,
+            extra_osenv=dict(GL_USER=self.PUSHER, GL_REPO=self.REPONAME),
+            tests=tests,
+            )
+
+    def create_environment(self):
+        return GitoliteEnvironment(self.osenv, self.config)
+
+
+class ProjectDescTest(GenericEnvTest):
+    PROJECTDESC = (
+        'A test repository\n'
+        'More text that should not be used\n'
+        )
+
+    def __init__(self):
+        GenericEnvTest.__init__(
+            self,
+            'Test reading project description',
+            tests={'projectdesc' : self.PROJECTDESC.splitlines(False)[0]},
+            )
+
+    def setUp(self):
+        GenericEnvTest.setUp(self)
+        open(os.path.join(REPO, 'description'), 'w').write(self.PROJECTDESC)
+
+
+GENERIC_ENVIRONMENT = dict(
+    repo_shortname=GenericEnvTest.REPONAME,
+    emailprefix='[%s] ' % (GenericEnvTest.REPONAME,),
+    pusher=GenericEnvTest.PUSHER,
+    pusher_email=None,
+    administrator='the administrator of this repository',
+    charset='utf-8',
+    fromaddr='Joe User <user@example.com>',
+    projectdesc='UNNAMED PROJECT',
+    repo_path=REPO,
+    )
+GITOLITE_ENVIRONMENT = GENERIC_ENVIRONMENT.copy()
+GITOLITE_ENVIRONMENT.update(
+    repo_shortname=GitoliteEnvTest.REPONAME,
+    emailprefix='[%s] ' % (GitoliteEnvTest.REPONAME,),
+    pusher=GitoliteEnvTest.PUSHER,
+    )
+
+FROM = 'From Fellow <from@example.com>'
+ADMIN = 'Admin Guy <admin@example.com>'
+ENVELOPE = 'Flat Stanley <stanley@example.com>'
+REPONAME = 'little-test-repo'
+EMAILPREFIX = '[%s]' % (REPONAME,)
+EMAILDOMAIN = 'git.example.com'
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(GenericEnvTest('basic generic test', tests=GENERIC_ENVIRONMENT))
+    suite.addTest(GitoliteEnvTest('basic gitolite test', tests=GITOLITE_ENVIRONMENT))
+
+    for test in [GenericEnvTest, GitoliteEnvTest]:
+        suite.addTests([
+            # Tests of value of "repo_shortname" and "emailprefix":
+            test(
+                'Test "repo_shortname" and "emailprefix" settings',
+                extra_config={'reponame' : REPONAME},
+                tests={
+                        'repo_shortname' : REPONAME,
+                        'emailprefix' : EMAILPREFIX + ' ',
+                        },
+                ),
+            test(
+                'Test setting "emailprefix" explicitly',
+                extra_config={'emailprefix' : EMAILPREFIX},
+                tests={
+                        'emailprefix' : EMAILPREFIX + ' ',
+                        },
+                ),
+            test(
+                'Test "emailprefix" spaces are correct',
+                extra_config={'emailprefix' : EMAILPREFIX + ' '},
+                tests={
+                        'emailprefix' : EMAILPREFIX + ' ',
+                        },
+                ),
+
+            # Tests of value of "fromaddr":
+            test(
+                'Test "from" setting',
+                extra_config={'from' : FROM},
+                tests={'fromaddr' : FROM},
+                ),
+            test(
+                'Test that "from" defaults to user settings',
+                user_config=dict(name='User', email='user@example.com'),
+                extra_config={'envelopesender' : ENVELOPE},
+                tests={'fromaddr' : 'User <user@example.com>'},
+                ),
+            test(
+                'Test that "from" defaults to user email',
+                user_config=dict(email='user@example.com'),
+                extra_config={'envelopesender' : ENVELOPE},
+                tests={'fromaddr' : 'user@example.com'},
+                ),
+            test(
+                'Test that "from" defaults to "envelopesender"',
+                user_config=dict(name='User'),
+                extra_config={'envelopesender' : ENVELOPE},
+                tests={'fromaddr' : ENVELOPE},
+                ),
+            test(
+                'Test no "from" source',
+                user_config=dict(name='User'),
+                tests={'fromaddr' : None},
+                ),
+
+            # Tests of value of "administrator":
+            test(
+                'Test "administrator" setting',
+                extra_config={'administrator' : ADMIN},
+                tests={'administrator' : ADMIN},
+                ),
+            test(
+                'Test that "administrator" defaults to "envelopesender"',
+                extra_config={'envelopesender' : ENVELOPE},
+                tests={'administrator' : ENVELOPE},
+                ),
+
+            # Tests of value of "pusher":
+            test(
+                'Test "pusher" setting',
+                extra_config={'emaildomain' : EMAILDOMAIN},
+                tests={
+                        'pusher' : '%s@%s' % (test.PUSHER, EMAILDOMAIN),
+                        'pusher_email' : '%s@%s' % (test.PUSHER, EMAILDOMAIN),
+                        },
+                ),
+            ])
+
+    suite.addTest(ProjectDescTest())
+
+    return suite
+
+
+if __name__ == '__main__':
+    os.environ['HOME'] = TEST_DIR
+    os.environ['XDG_CONFIG_HOME'] = TEST_DIR
+    os.environ['GIT_CONFIG_NOSYSTEM'] = '1'
+    unittest.TextTestRunner().run(suite())
+
