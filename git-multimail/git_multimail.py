@@ -1433,9 +1433,10 @@ class Environment(object):
 
             Absolute path to the Git repository.
 
-        emailprefix
+        get_emailprefix()
 
-            A string that will be prefixed to every email's subject.
+            Return a string that will be prefixed to every email's
+            subject.
 
         get_projectdesc()
 
@@ -1532,7 +1533,6 @@ class Environment(object):
     """
 
     VALUE_KEYS = [
-        'emailprefix',
         'sender',
         'pusher',
         'pusher_email',
@@ -1543,6 +1543,7 @@ class Environment(object):
 
     COMPUTED_KEYS = [
         'repo_shortname',
+        'emailprefix',
         'administrator',
         'projectdesc',
         ]
@@ -1550,8 +1551,6 @@ class Environment(object):
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
 
     def __init__(self, osenv, config):
-        self.emailprefix = ''
-
         self.announce_show_shortlog = False
         self.maxlines = None
         self.maxlinelength = 500
@@ -1579,6 +1578,9 @@ class Environment(object):
 
     def get_administrator(self):
         return 'the administrator of this repository'
+
+    def get_emailprefix(self):
+        return ''
 
     def get_projectdesc(self):
         git_dir = get_git_dir()
@@ -1731,12 +1733,6 @@ class ConfigEnvironment(Environment):
             else:
                 self.fromaddr = self.sender
 
-        emailprefix = self.config.get('emailprefix', default=None)
-        if emailprefix and emailprefix.strip():
-            self.emailprefix = emailprefix.strip() + ' '
-        else:
-            self.emailprefix = '[%s] ' % (self.get_repo_shortname(),)
-
         maxlines = self.config.get('emailmaxlines', default=None)
         if maxlines is not None:
             self.maxlines = int(maxlines)
@@ -1787,6 +1783,13 @@ class ConfigEnvironment(Environment):
             self.config.get('reponame', default=None)
             or super(ConfigEnvironment, self).get_repo_shortname()
             )
+
+    def get_emailprefix(self):
+        emailprefix = self.config.get('emailprefix', default=None)
+        if emailprefix and emailprefix.strip():
+            return emailprefix.strip() + ' '
+        else:
+            return '[%s] ' % (self.get_repo_shortname(),)
 
     def _get_recipients(self, *names):
         """Return the recipients for a particular type of message.
