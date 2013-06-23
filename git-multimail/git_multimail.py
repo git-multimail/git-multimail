@@ -1838,7 +1838,7 @@ class GenericEnvironmentMixin(Environment):
         return self.osenv.get('USER', 'unknown user')
 
 
-class GenericEnvironment(GenericEnvironmentMixin, ConfigEnvironmentMixin, Environment):
+class GenericEnvironment(ConfigEnvironmentMixin, GenericEnvironmentMixin, Environment):
     pass
 
 
@@ -1847,20 +1847,19 @@ class GitoliteEnvironmentMixin(Environment):
         super(GitoliteEnvironmentMixin, self).__init__(osenv, config, **kw)
 
     def get_repo_shortname(self):
-        # If there is a config setting, it overrides the GL_REPO
-        # environment variable.  We cannot call the super method
-        # directly, because it has a fallback based on the path name
-        # which is *not* as good as $GL_REPO.
+        # The gitolite environment variable $GL_REPO is a pretty good
+        # repo_shortname (though it's probably not as good as a value
+        # the user might have explicitly put in his config).
         return (
-            self.config.get('reponame', default=None)
-            or self.osenv.get('GL_REPO')
+            self.osenv.get('GL_REPO', None)
+            or super(GitoliteEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_pusher(self):
         return self.osenv.get('GL_USER', 'unknown user')
 
 
-class GitoliteEnvironment(GitoliteEnvironmentMixin, ConfigEnvironmentMixin, Environment):
+class GitoliteEnvironment(ConfigEnvironmentMixin, GitoliteEnvironmentMixin, Environment):
     pass
 
 
