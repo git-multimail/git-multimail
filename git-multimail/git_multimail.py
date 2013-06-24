@@ -1516,22 +1516,6 @@ class Environment(object):
             reply_to_refchange is used for refchange emails;
             reply_to_commit is used for individual commit emails.
 
-    Additionally, the default implementation of filter_body() expects
-    the following:
-
-        maxlinelength (int or None)
-
-            The maximum length of any single line in the email body.
-            Longer lines are truncated at that length with ' [...]'
-            appended.
-
-        strict_utf8 (bool)
-
-            If this field is set to True, then the email body text is
-            expected to be UTF-8.  Any invalid characters are
-            converted to U+FFFD, the Unicode replacement character
-            (encoded as UTF-8, of course).
-
     """
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -1539,9 +1523,7 @@ class Environment(object):
     def __init__(self, osenv=None):
         self.osenv = osenv or os.environ
         self.announce_show_shortlog = False
-        self.maxlinelength = 500
         self.maxcommitemails = 500
-        self.strict_utf8 = True
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
         self.refchange_showlog = False
@@ -1652,18 +1634,8 @@ class Environment(object):
         lines is an iterable over the lines that would go into the
         email body.  Filter it (e.g., limit the number of lines, the
         line length, character set, etc.), returning another iterable.
-        By default, handle self.maxlinelength and self.strict_utf8 as
-        described above."""
-
-        if self.strict_utf8:
-            lines = (line.decode(ENCODING, 'replace') for line in lines)
-            # Limit the line length in Unicode-space to avoid
-            # splitting characters:
-            if self.maxlinelength:
-                lines = limit_linelength(lines, self.maxlinelength)
-            lines = (line.encode(ENCODING, 'replace') for line in lines)
-        elif self.maxlinelength:
-            lines = limit_linelength(lines, self.maxlinelength)
+        See FilterLinesEnvironmentMixin and MaxlinesEnvironmentMixin
+        for classes implementing this functionality."""
 
         return lines
 
@@ -1683,10 +1655,6 @@ class ConfigEnvironmentMixin(Environment):
             'refchangeshowlog', default=self.refchange_showlog
             )
 
-        maxlinelength = self.config.get('emailmaxlinelength', default=None)
-        if maxlinelength is not None:
-            self.maxlinelength = int(maxlinelength)
-
         maxcommitemails = self.config.get('maxcommitemails', default=None)
         if maxcommitemails is not None:
             try:
@@ -1696,10 +1664,6 @@ class ConfigEnvironmentMixin(Environment):
                     '*** Malformed value for multimailhook.maxCommitEmails: %s\n' % maxcommitemails
                     + '*** Expected a number.  Ignoring.\n'
                     )
-
-        strict_utf8 = self.config.get_bool('emailstrictutf8', default=None)
-        if strict_utf8 is not None:
-            self.strict_utf8 = strict_utf8
 
         diffopts = self.config.get('diffopts', None)
         if diffopts is not None:
@@ -1752,6 +1716,63 @@ class ConfigEnvironmentMixin(Environment):
                 return formataddr([fromname, fromemail])
             else:
                 return self.get_sender()
+
+
+class FilterLinesEnvironmentMixin(Environment):
+    """Handle encoding and maximum line length of body lines.
+
+        emailmaxlinelength (int or None)
+
+            The maximum length of any single line in the email body.
+            Longer lines are truncated at that length with ' [...]'
+            appended.
+
+        strict_utf8 (bool)
+
+            If this field is set to True, then the email body text is
+            expected to be UTF-8.  Any invalid characters are
+            converted to U+FFFD, the Unicode replacement character
+            (encoded as UTF-8, of course).
+
+    """
+
+    def __init__(self, strict_utf8=True, emailmaxlinelength=500, **kw):
+        super(FilterLinesEnvironmentMixin, self).__init__(**kw)
+        self.__strict_utf8 = strict_utf8
+        self.__emailmaxlinelength = emailmaxlinelength
+
+    def filter_body(self, lines):
+        if self.__strict_utf8:
+            lines = (line.decode(ENCODING, 'replace') for line in lines)
+            # Limit the line length in Unicode-space to avoid
+            # splitting characters:
+            if self.__emailmaxlinelength:
+                lines = limit_linelength(lines, self.__emailmaxlinelength)
+            lines = (line.encode(ENCODING, 'replace') for line in lines)
+        elif self.__emailmaxlinelength:
+            lines = limit_linelength(lines, self.__emailmaxlinelength)
+
+        return lines
+
+
+class ConfigFilterLinesEnvironmentMixin(
+    ConfigEnvironmentMixin,
+    FilterLinesEnvironmentMixin,
+    ):
+    """Handle encoding and maximum line length based on config."""
+
+    def __init__(self, config, **kw):
+        strict_utf8 = config.get_bool('emailstrictutf8', default=None)
+        if strict_utf8 is not None:
+            kw['strict_utf8'] = strict_utf8
+
+        emailmaxlinelength = config.get('emailmaxlinelength', default=None)
+        if emailmaxlinelength is not None:
+            kw['emailmaxlinelength'] = int(emailmaxlinelength)
+
+        super(ConfigFilterLinesEnvironmentMixin, self).__init__(
+            config=config, **kw
+            )
 
 
 class MaxlinesEnvironmentMixin(Environment):
@@ -1915,6 +1936,7 @@ class GenericEnvironmentMixin(Environment):
 class GenericEnvironment(
     ProjectdescEnvironmentMixin,
     ConfigMaxlinesEnvironmentMixin,
+    ConfigFilterLinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
     ConfigEnvironmentMixin,
@@ -1941,6 +1963,7 @@ class GitoliteEnvironmentMixin(Environment):
 class GitoliteEnvironment(
     ProjectdescEnvironmentMixin,
     ConfigMaxlinesEnvironmentMixin,
+    ConfigFilterLinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
     ConfigEnvironmentMixin,
@@ -2236,6 +2259,7 @@ KNOWN_ENVIRONMENTS = {
     'generic' : [
         ProjectdescEnvironmentMixin,
         ConfigMaxlinesEnvironmentMixin,
+        ConfigFilterLinesEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigEnvironmentMixin,
         GenericEnvironmentMixin,
@@ -2243,6 +2267,7 @@ KNOWN_ENVIRONMENTS = {
     'gitolite' : [
         ProjectdescEnvironmentMixin,
         ConfigMaxlinesEnvironmentMixin,
+        ConfigFilterLinesEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigEnvironmentMixin,
         GitoliteEnvironmentMixin,
