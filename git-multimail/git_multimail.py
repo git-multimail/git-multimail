@@ -2232,6 +2232,41 @@ KNOWN_ENVIRONMENTS = {
     }
 
 
+def choose_environment(config, osenv=None, env=None, recipients=None):
+    if not osenv:
+        osenv = os.environ
+
+    if not env:
+        env = config.get('environment', None)
+
+    if not env:
+        if 'GL_USER' in osenv and 'GL_REPO' in osenv:
+            env = 'gitolite'
+        else:
+            env = 'generic'
+
+    environment_mixins = KNOWN_ENVIRONMENTS[env]
+    environment_kw = {
+        'osenv' : osenv,
+        'config' : config,
+        }
+
+    if recipients:
+        environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
+        environment_kw['refchange_recipients'] = recipients
+        environment_kw['announce_recipients'] = recipients
+        environment_kw['revision_recipients'] = recipients
+    else:
+        environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
+
+    environment_klass = type(
+        'EffectiveEnvironment',
+        tuple(environment_mixins) + (Environment,),
+        {},
+        )
+    return environment_klass(**environment_kw)
+
+
 def main(args):
     parser = optparse.OptionParser(
         description=__doc__,
@@ -2265,33 +2300,13 @@ def main(args):
     (options, args) = parser.parse_args(args)
 
     config = Config('multimailhook')
-    env = options.environment or config.get('environment', default=None)
-    if not env:
-        if 'GL_USER' in os.environ and 'GL_REPO' in os.environ:
-            env = 'gitolite'
-        else:
-            env = 'generic'
 
     try:
-        environment_mixins = KNOWN_ENVIRONMENTS[env]
-        environment_kw = {
-            'config' : config,
-            }
-
-        if options.recipients:
-            environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
-            environment_kw['refchange_recipients'] = options.recipients
-            environment_kw['announce_recipients'] = options.recipients
-            environment_kw['revision_recipients'] = options.recipients
-        else:
-            environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
-
-        environment_klass = type(
-            'EffectiveEnvironment',
-            tuple(environment_mixins) + (Environment,),
-            {},
+        environment = choose_environment(
+            config, osenv=os.environ,
+            env=options.environment,
+            recipients=options.recipients,
             )
-        environment = environment_klass(**environment_kw)
 
         if options.show_env:
             sys.stderr.write('Environment values:\n')
