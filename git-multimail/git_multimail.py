@@ -1784,11 +1784,15 @@ class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):
             return super(PusherDomainEnvironmentMixin, self).get_pusher_email()
 
 
-class ConfigRecipientsEnvironmentMixin(ConfigEnvironmentMixin):
-    """Determine recipients statically based on config."""
+class StaticRecipientsEnvironmentMixin(Environment):
+    """Set recipients statically based on constructor parameters."""
 
-    def __init__(self, **kw):
-        super(ConfigRecipientsEnvironmentMixin, self).__init__(**kw)
+    def __init__(
+        self,
+        refchange_recipients, announce_recipients, revision_recipients,
+        **kw
+        ):
+        super(StaticRecipientsEnvironmentMixin, self).__init__(**kw)
 
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
@@ -1797,17 +1801,47 @@ class ConfigRecipientsEnvironmentMixin(ConfigEnvironmentMixin):
         # actual *contents* of the change being reported, we only
         # choose based on the *type* of the change.  Therefore we can
         # compute them once and for all:
-        self.__refchange_recipients = self._get_recipients(
-            'refchangelist', 'mailinglist',
-            )
-        self.__announce_recipients = self._get_recipients(
-            'announcelist', 'refchangelist', 'mailinglist',
-            )
-        self.__revision_recipients = self._get_recipients(
-            'commitlist', 'mailinglist',
+        self.__refchange_recipients = refchange_recipients
+        self.__announce_recipients = announce_recipients
+        self.__revision_recipients = revision_recipients
+
+    def get_refchange_recipients(self, refchange):
+        return self.__refchange_recipients
+
+    def get_announce_recipients(self, annotated_tag_change):
+        return self.__announce_recipients
+
+    def get_revision_recipients(self, revision):
+        return self.__revision_recipients
+
+
+# This class need to inherit from ConfigEnvironmentMixin to make sure
+# that "config" is still in the constructor arguments.  However, it
+# cannot use self.config when computing the constructor arguments
+# because the ConfigEnvironmentMixin constructor hasn't run yet when
+# this Mixin's constructor runs.
+class ConfigRecipientsEnvironmentMixin(
+    ConfigEnvironmentMixin,
+    StaticRecipientsEnvironmentMixin
+    ):
+    """Determine recipients statically based on config."""
+
+    def __init__(self, config, **kw):
+        super(ConfigRecipientsEnvironmentMixin, self).__init__(
+            config=config,
+            refchange_recipients=self._get_recipients(
+                config, 'refchangelist', 'mailinglist',
+                ),
+            announce_recipients=self._get_recipients(
+                config, 'announcelist', 'refchangelist', 'mailinglist',
+                ),
+            revision_recipients=self._get_recipients(
+                config, 'commitlist', 'mailinglist',
+                ),
+            **kw
             )
 
-    def _get_recipients(self, *names):
+    def _get_recipients(self, config, *names):
         """Return the recipients for a particular type of message.
 
         Return the list of email addresses to which a particular type
@@ -1819,29 +1853,20 @@ class ConfigRecipientsEnvironmentMixin(ConfigEnvironmentMixin):
         found, raise a ConfigurationException."""
 
         for name in names:
-            retval = self.config.get_recipients(name)
+            retval = config.get_recipients(name)
             if retval is not None:
                 return retval
         if len(names) == 1:
-            hint = 'Please set "%s.%s"' % (self.config.section, name)
+            hint = 'Please set "%s.%s"' % (config.section, name)
         else:
             hint = (
                 'Please set one of the following:\n    "%s"'
-                % ('"\n    "'.join('%s.%s' % (self.config.section, name) for name in names))
+                % ('"\n    "'.join('%s.%s' % (config.section, name) for name in names))
                 )
 
         raise ConfigurationException(
             'The list of recipients for %s is not configured.\n%s' % (names[0], hint)
             )
-
-    def get_refchange_recipients(self, refchange):
-        return self.__refchange_recipients
-
-    def get_announce_recipients(self, annotated_tag_change):
-        return self.__announce_recipients
-
-    def get_revision_recipients(self, revision):
-        return self.__revision_recipients
 
 
 class ProjectdescEnvironmentMixin(Environment):
@@ -1907,23 +1932,6 @@ class GitoliteEnvironment(
     Environment,
     ):
     pass
-
-
-class HardcodedRecipientsEnvironmentMixin(Environment):
-    """A mixin that allows all recipients to be set explicitly."""
-
-    def __init__(self, recipients, **kw):
-        super(HardcodedRecipientsEnvironmentMixin, self).__init__(**kw)
-        self.__recipients = recipients
-
-    def get_refchange_recipients(self, refchange):
-        return self.__recipients
-
-    def get_announce_recipients(self, annotated_tag_change):
-        return self.__recipients
-
-    def get_revision_recipients(self, revision):
-        return self.__recipients
 
 
 class Push(object):
@@ -2271,8 +2279,10 @@ def main(args):
             }
 
         if options.recipients:
-            environment_mixins.insert(0, HardcodedRecipientsEnvironmentMixin)
-            environment_kw['recipients'] = options.recipients
+            environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
+            environment_kw['refchange_recipients'] = options.recipients
+            environment_kw['announce_recipients'] = options.recipients
+            environment_kw['revision_recipients'] = options.recipients
         else:
             environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
 
