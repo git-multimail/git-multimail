@@ -1519,13 +1519,6 @@ class Environment(object):
     Additionally, the default implementation of filter_body() expects
     the following:
 
-        maxlines (int or None)
-
-            The maximum number of lines that should be included in an
-            email.  If this value is set and is not None or zero, then
-            truncate emails at this length and append a line
-            indicating how many more lines were discarded).
-
         maxlinelength (int or None)
 
             The maximum length of any single line in the email body.
@@ -1546,7 +1539,6 @@ class Environment(object):
     def __init__(self, osenv=None):
         self.osenv = osenv or os.environ
         self.announce_show_shortlog = False
-        self.maxlines = None
         self.maxlinelength = 500
         self.maxcommitemails = 500
         self.strict_utf8 = True
@@ -1660,8 +1652,8 @@ class Environment(object):
         lines is an iterable over the lines that would go into the
         email body.  Filter it (e.g., limit the number of lines, the
         line length, character set, etc.), returning another iterable.
-        By default, handle self.maxlines, self.maxlinelength, and
-        self.strict_utf8 as described above."""
+        By default, handle self.maxlinelength and self.strict_utf8 as
+        described above."""
 
         if self.strict_utf8:
             lines = (line.decode(ENCODING, 'replace') for line in lines)
@@ -1672,9 +1664,6 @@ class Environment(object):
             lines = (line.encode(ENCODING, 'replace') for line in lines)
         elif self.maxlinelength:
             lines = limit_linelength(lines, self.maxlinelength)
-
-        if self.maxlines:
-            lines = limit_lines(lines, self.maxlines)
 
         return lines
 
@@ -1693,10 +1682,6 @@ class ConfigEnvironmentMixin(Environment):
         self.refchange_showlog = self.config.get_bool(
             'refchangeshowlog', default=self.refchange_showlog
             )
-
-        maxlines = self.config.get('emailmaxlines', default=None)
-        if maxlines is not None:
-            self.maxlines = int(maxlines)
 
         maxlinelength = self.config.get('emailmaxlinelength', default=None)
         if maxlinelength is not None:
@@ -1767,6 +1752,35 @@ class ConfigEnvironmentMixin(Environment):
                 return formataddr([fromname, fromemail])
             else:
                 return self.get_sender()
+
+
+class MaxlinesEnvironmentMixin(Environment):
+    """Limit the email body to a specified number of lines."""
+
+    def __init__(self, emailmaxlines, **kw):
+        super(MaxlinesEnvironmentMixin, self).__init__(**kw)
+        self.__emailmaxlines = emailmaxlines
+
+    def filter_body(self, lines):
+        lines = super(MaxlinesEnvironmentMixin, self).filter_body(lines)
+        if self.__emailmaxlines:
+            lines = limit_lines(lines, self.__emailmaxlines)
+        return lines
+
+
+class ConfigMaxlinesEnvironmentMixin(
+    ConfigEnvironmentMixin,
+    MaxlinesEnvironmentMixin,
+    ):
+    """Limit the email body to the number of lines specified in config."""
+
+    def __init__(self, config, **kw):
+        emailmaxlines = int(config.get('emailmaxlines', default='0'))
+        super(ConfigMaxlinesEnvironmentMixin, self).__init__(
+            config=config,
+            emailmaxlines=emailmaxlines,
+            **kw
+            )
 
 
 class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):
@@ -1900,6 +1914,7 @@ class GenericEnvironmentMixin(Environment):
 
 class GenericEnvironment(
     ProjectdescEnvironmentMixin,
+    ConfigMaxlinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
     ConfigEnvironmentMixin,
@@ -1925,6 +1940,7 @@ class GitoliteEnvironmentMixin(Environment):
 
 class GitoliteEnvironment(
     ProjectdescEnvironmentMixin,
+    ConfigMaxlinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
     ConfigEnvironmentMixin,
@@ -2219,12 +2235,14 @@ def choose_mailer(config, environment):
 KNOWN_ENVIRONMENTS = {
     'generic' : [
         ProjectdescEnvironmentMixin,
+        ConfigMaxlinesEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigEnvironmentMixin,
         GenericEnvironmentMixin,
         ],
     'gitolite' : [
         ProjectdescEnvironmentMixin,
+        ConfigMaxlinesEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigEnvironmentMixin,
         GitoliteEnvironmentMixin,
