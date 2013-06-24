@@ -1641,21 +1641,37 @@ class Environment(object):
 
 
 class ConfigEnvironmentMixin(Environment):
-    """An Environment that reads most of its information from "git config"."""
+    """A mixin that sets self.config to its constructor's config argument.
+
+    This class's constructor consumes the "config" argument.
+
+    Mixins that need to inspect the config should inherit from this
+    class (1) to make sure that "config" is still in the constructor
+    arguments with its own constructor runs and/or (2) to be sure that
+    self.config is set after construction."""
 
     def __init__(self, config, **kw):
         super(ConfigEnvironmentMixin, self).__init__(**kw)
         self.config = config
 
-        self.announce_show_shortlog = self.config.get_bool(
+
+class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
+    """An Environment that reads most of its information from "git config"."""
+
+    def __init__(self, config, **kw):
+        super(ConfigOptionsEnvironmentMixin, self).__init__(
+            config=config, **kw
+            )
+
+        self.announce_show_shortlog = config.get_bool(
             'announceshortlog', default=self.announce_show_shortlog
             )
 
-        self.refchange_showlog = self.config.get_bool(
+        self.refchange_showlog = config.get_bool(
             'refchangeshowlog', default=self.refchange_showlog
             )
 
-        maxcommitemails = self.config.get('maxcommitemails', default=None)
+        maxcommitemails = config.get('maxcommitemails', default=None)
         if maxcommitemails is not None:
             try:
                 self.maxcommitemails = int(maxcommitemails)
@@ -1665,19 +1681,19 @@ class ConfigEnvironmentMixin(Environment):
                     + '*** Expected a number.  Ignoring.\n'
                     )
 
-        diffopts = self.config.get('diffopts', None)
+        diffopts = config.get('diffopts', None)
         if diffopts is not None:
             self.diffopts = shlex.split(diffopts)
 
-        logopts = self.config.get('logopts', None)
+        logopts = config.get('logopts', None)
         if logopts is not None:
             self.logopts = shlex.split(logopts)
 
-        reply_to = self.config.get('replyTo', default=None)
-        reply_to_commit = self.config.get('replyToCommit', default=reply_to)
+        reply_to = config.get('replyTo', default=None)
+        reply_to_commit = config.get('replyToCommit', default=reply_to)
         if reply_to_commit is not None:
             self.reply_to_commit = reply_to_commit
-        reply_to_refchange = self.config.get('replyToRefchange', default=reply_to)
+        reply_to_refchange = config.get('replyToRefchange', default=reply_to)
         if reply_to_refchange is not None:
             self.reply_to_refchange = reply_to_refchange
 
@@ -1685,13 +1701,13 @@ class ConfigEnvironmentMixin(Environment):
         return (
             self.config.get('administrator')
             or self.get_sender()
-            or super(ConfigEnvironmentMixin, self).get_administrator()
+            or super(ConfigOptionsEnvironmentMixin, self).get_administrator()
             )
 
     def get_repo_shortname(self):
         return (
             self.config.get('reponame', default=None)
-            or super(ConfigEnvironmentMixin, self).get_repo_shortname()
+            or super(ConfigOptionsEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_emailprefix(self):
@@ -1850,11 +1866,6 @@ class StaticRecipientsEnvironmentMixin(Environment):
         return self.__revision_recipients
 
 
-# This class need to inherit from ConfigEnvironmentMixin to make sure
-# that "config" is still in the constructor arguments.  However, it
-# cannot use self.config when computing the constructor arguments
-# because the ConfigEnvironmentMixin constructor hasn't run yet when
-# this Mixin's constructor runs.
 class ConfigRecipientsEnvironmentMixin(
     ConfigEnvironmentMixin,
     StaticRecipientsEnvironmentMixin
@@ -1939,7 +1950,7 @@ class GenericEnvironment(
     ConfigFilterLinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
-    ConfigEnvironmentMixin,
+    ConfigOptionsEnvironmentMixin,
     GenericEnvironmentMixin,
     Environment,
     ):
@@ -1966,7 +1977,7 @@ class GitoliteEnvironment(
     ConfigFilterLinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
-    ConfigEnvironmentMixin,
+    ConfigOptionsEnvironmentMixin,
     GitoliteEnvironmentMixin,
     Environment,
     ):
@@ -2261,7 +2272,7 @@ KNOWN_ENVIRONMENTS = {
         ConfigMaxlinesEnvironmentMixin,
         ConfigFilterLinesEnvironmentMixin,
         PusherDomainEnvironmentMixin,
-        ConfigEnvironmentMixin,
+        ConfigOptionsEnvironmentMixin,
         GenericEnvironmentMixin,
         ],
     'gitolite' : [
@@ -2269,7 +2280,7 @@ KNOWN_ENVIRONMENTS = {
         ConfigMaxlinesEnvironmentMixin,
         ConfigFilterLinesEnvironmentMixin,
         PusherDomainEnvironmentMixin,
-        ConfigEnvironmentMixin,
+        ConfigOptionsEnvironmentMixin,
         GitoliteEnvironmentMixin,
         ],
     }
