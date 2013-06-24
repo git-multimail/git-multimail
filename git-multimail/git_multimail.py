@@ -1861,9 +1861,6 @@ class ConfigRecipientsEnvironmentMixin(ConfigEnvironmentMixin):
 
 
 class GenericEnvironmentMixin(Environment):
-    def __init__(self, **kw):
-        super(GenericEnvironmentMixin, self).__init__(**kw)
-
     def get_pusher(self):
         return self.osenv.get('USER', 'unknown user')
 
@@ -1879,9 +1876,6 @@ class GenericEnvironment(
 
 
 class GitoliteEnvironmentMixin(Environment):
-    def __init__(self, **kw):
-        super(GitoliteEnvironmentMixin, self).__init__(**kw)
-
     def get_repo_shortname(self):
         # The gitolite environment variable $GL_REPO is a pretty good
         # repo_shortname (though it's probably not as good as a value
