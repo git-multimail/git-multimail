@@ -1545,19 +1545,6 @@ class Environment(object):
 
     """
 
-    COMPUTED_KEYS = [
-        'administrator',
-        'charset',
-        'emailprefix',
-        'fromaddr',
-        'projectdesc',
-        'pusher',
-        'pusher_email',
-        'repo_path',
-        'repo_shortname',
-        'sender',
-        ]
-
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
 
     def __init__(self, osenv=None):
@@ -1572,6 +1559,19 @@ class Environment(object):
         self.refchange_showlog = False
         self.reply_to_refchange = 'pusher'
         self.reply_to_commit = 'author'
+
+        self.COMPUTED_KEYS = [
+            'administrator',
+            'charset',
+            'emailprefix',
+            'fromaddr',
+            'projectdesc',
+            'pusher',
+            'pusher_email',
+            'repo_path',
+            'repo_shortname',
+            'sender',
+            ]
 
         self._values = None
 
