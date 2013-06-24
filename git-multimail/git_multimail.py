@@ -1448,10 +1448,6 @@ class Environment(object):
             Return a string that will be prefixed to every email's
             subject.
 
-        get_projectdesc()
-
-            Return a one-line description of the project.
-
         get_pusher()
 
             Return the username of the person who pushed the changes.
@@ -1565,7 +1561,6 @@ class Environment(object):
             'charset',
             'emailprefix',
             'fromaddr',
-            'projectdesc',
             'pusher',
             'pusher_email',
             'repo_path',
@@ -1596,17 +1591,6 @@ class Environment(object):
 
     def get_emailprefix(self):
         return ''
-
-    def get_projectdesc(self):
-        git_dir = get_git_dir()
-        try:
-            projectdesc = open(os.path.join(git_dir, 'description')).readline().strip()
-            if projectdesc and not projectdesc.startswith('Unnamed repository'):
-                return projectdesc
-        except IOError:
-            pass
-
-        return 'UNNAMED PROJECT'
 
     def get_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
@@ -1860,12 +1844,37 @@ class ConfigRecipientsEnvironmentMixin(ConfigEnvironmentMixin):
         return self.__revision_recipients
 
 
+class ProjectdescEnvironmentMixin(Environment):
+    """Make a "projectdesc" value available for templates.
+
+    By default, it is set to the first line of $GIT_DIR/description
+    (if that file is present and appears to be set meaningfully)."""
+
+    def __init__(self, **kw):
+        super(ProjectdescEnvironmentMixin, self).__init__(**kw)
+        self.COMPUTED_KEYS += ['projectdesc']
+
+    def get_projectdesc(self):
+        """Return a one-line descripition of the project."""
+
+        git_dir = get_git_dir()
+        try:
+            projectdesc = open(os.path.join(git_dir, 'description')).readline().strip()
+            if projectdesc and not projectdesc.startswith('Unnamed repository'):
+                return projectdesc
+        except IOError:
+            pass
+
+        return 'UNNAMED PROJECT'
+
+
 class GenericEnvironmentMixin(Environment):
     def get_pusher(self):
         return self.osenv.get('USER', 'unknown user')
 
 
 class GenericEnvironment(
+    ProjectdescEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
     ConfigEnvironmentMixin,
@@ -1890,6 +1899,7 @@ class GitoliteEnvironmentMixin(Environment):
 
 
 class GitoliteEnvironment(
+    ProjectdescEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
     ConfigEnvironmentMixin,
@@ -2200,11 +2210,13 @@ def choose_mailer(config, environment):
 
 KNOWN_ENVIRONMENTS = {
     'generic' : [
+        ProjectdescEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigEnvironmentMixin,
         GenericEnvironmentMixin,
         ],
     'gitolite' : [
+        ProjectdescEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigEnvironmentMixin,
         GitoliteEnvironmentMixin,
