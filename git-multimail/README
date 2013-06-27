@@ -564,5 +564,6 @@ Footnotes
     seen does not work when it is used as an "update" script.  In
     particular, no notification email will be generated for a new
     commit that is added to multiple references in the same push.
+    A workaround is to use --force-send to force sending the emails.
 
 [3] https://github.com/sitaramc/gitolite
