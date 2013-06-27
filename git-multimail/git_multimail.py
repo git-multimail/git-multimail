@@ -404,6 +404,25 @@ class Config(object):
         for pair in getaddresses([value]):
             self.add(name, formataddr(pair))
 
+    def get_mailer(self, environment):
+        mailer = self.get('mailer', default='sendmail')
+
+        if mailer == 'smtp':
+            smtpserver = self.get('smtpserver', default='localhost')
+            mailer = SMTPMailer(
+                environment.get_sender() or environment.get_fromaddr(),
+                smtpserver,
+                )
+        elif mailer == 'sendmail':
+            mailer = SendMailer(environment.get_sender())
+        else:
+            sys.stderr.write(
+                'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
+                + 'please use one of "smtp" or "sendmail".\n'
+                )
+            sys.exit(1)
+        return mailer
+
 
 def generate_summaries(*log_args):
     """Generate a brief summary for each revision requested.
@@ -2249,25 +2268,10 @@ def main(args):
                 sys.stderr.write('    %s : %r\n' % (k,v))
             sys.stderr.write('\n')
 
-        mailer = config.get('mailer', default='sendmail')
-
         if options.stdout:
             mailer = OutputMailer(sys.stdout)
-        elif mailer == 'smtp':
-            smtpserver = config.get('smtpserver', default='localhost')
-            mailer = SMTPMailer(
-                environment.get_sender() or environment.get_fromaddr(),
-                smtpserver,
-                )
-        elif mailer == 'sendmail':
-            mailer = SendMailer(environment.get_sender())
         else:
-            sys.stderr.write(
-                'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
-                + 'please use one of "smtp" or "sendmail".\n'
-                )
-            sys.exit(1)
-
+            mailer = config.get_mailer(environment)
 
         # Dual mode: if arguments were specified on the command line, run
         # like an update hook; otherwise, run as a post-receive hook.
