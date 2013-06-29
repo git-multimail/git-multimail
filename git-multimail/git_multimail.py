@@ -1448,10 +1448,6 @@ class Environment(object):
             Return a string that will be prefixed to every email's
             subject.
 
-        get_projectdesc()
-
-            Return a one-line description of the project.
-
         get_pusher()
 
             Return the username of the person who pushed the changes.
@@ -1520,58 +1516,31 @@ class Environment(object):
             reply_to_refchange is used for refchange emails;
             reply_to_commit is used for individual commit emails.
 
-    Additionally, the default implementation of filter_body() expects
-    the following:
-
-        maxlines (int or None)
-
-            The maximum number of lines that should be included in an
-            email.  If this value is set and is not None or zero, then
-            truncate emails at this length and append a line
-            indicating how many more lines were discarded).
-
-        maxlinelength (int or None)
-
-            The maximum length of any single line in the email body.
-            Longer lines are truncated at that length with ' [...]'
-            appended.
-
-        strict_utf8 (bool)
-
-            If this field is set to True, then the email body text is
-            expected to be UTF-8.  Any invalid characters are
-            converted to U+FFFD, the Unicode replacement character
-            (encoded as UTF-8, of course).
-
     """
-
-    COMPUTED_KEYS = [
-        'administrator',
-        'charset',
-        'emailprefix',
-        'fromaddr',
-        'projectdesc',
-        'pusher',
-        'pusher_email',
-        'repo_path',
-        'repo_shortname',
-        'sender',
-        ]
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
 
     def __init__(self, osenv=None):
         self.osenv = osenv or os.environ
         self.announce_show_shortlog = False
-        self.maxlines = None
-        self.maxlinelength = 500
         self.maxcommitemails = 500
-        self.strict_utf8 = True
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
         self.refchange_showlog = False
         self.reply_to_refchange = 'pusher'
         self.reply_to_commit = 'author'
+
+        self.COMPUTED_KEYS = [
+            'administrator',
+            'charset',
+            'emailprefix',
+            'fromaddr',
+            'pusher',
+            'pusher_email',
+            'repo_path',
+            'repo_shortname',
+            'sender',
+            ]
 
         self._values = None
 
@@ -1596,17 +1565,6 @@ class Environment(object):
 
     def get_emailprefix(self):
         return ''
-
-    def get_projectdesc(self):
-        git_dir = get_git_dir()
-        try:
-            projectdesc = open(os.path.join(git_dir, 'description')).readline().strip()
-            if projectdesc and not projectdesc.startswith('Unnamed repository'):
-                return projectdesc
-        except IOError:
-            pass
-
-        return 'UNNAMED PROJECT'
 
     def get_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
@@ -1676,49 +1634,44 @@ class Environment(object):
         lines is an iterable over the lines that would go into the
         email body.  Filter it (e.g., limit the number of lines, the
         line length, character set, etc.), returning another iterable.
-        By default, handle self.maxlines, self.maxlinelength, and
-        self.strict_utf8 as described above."""
-
-        if self.strict_utf8:
-            lines = (line.decode(ENCODING, 'replace') for line in lines)
-            # Limit the line length in Unicode-space to avoid
-            # splitting characters:
-            if self.maxlinelength:
-                lines = limit_linelength(lines, self.maxlinelength)
-            lines = (line.encode(ENCODING, 'replace') for line in lines)
-        elif self.maxlinelength:
-            lines = limit_linelength(lines, self.maxlinelength)
-
-        if self.maxlines:
-            lines = limit_lines(lines, self.maxlines)
+        See FilterLinesEnvironmentMixin and MaxlinesEnvironmentMixin
+        for classes implementing this functionality."""
 
         return lines
 
 
 class ConfigEnvironmentMixin(Environment):
-    """An Environment that reads most of its information from "git config"."""
+    """A mixin that sets self.config to its constructor's config argument.
+
+    This class's constructor consumes the "config" argument.
+
+    Mixins that need to inspect the config should inherit from this
+    class (1) to make sure that "config" is still in the constructor
+    arguments with its own constructor runs and/or (2) to be sure that
+    self.config is set after construction."""
 
     def __init__(self, config, **kw):
         super(ConfigEnvironmentMixin, self).__init__(**kw)
         self.config = config
 
-        self.announce_show_shortlog = self.config.get_bool(
+
+class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
+    """An Environment that reads most of its information from "git config"."""
+
+    def __init__(self, config, **kw):
+        super(ConfigOptionsEnvironmentMixin, self).__init__(
+            config=config, **kw
+            )
+
+        self.announce_show_shortlog = config.get_bool(
             'announceshortlog', default=self.announce_show_shortlog
             )
 
-        self.refchange_showlog = self.config.get_bool(
+        self.refchange_showlog = config.get_bool(
             'refchangeshowlog', default=self.refchange_showlog
             )
 
-        maxlines = self.config.get('emailmaxlines', default=None)
-        if maxlines is not None:
-            self.maxlines = int(maxlines)
-
-        maxlinelength = self.config.get('emailmaxlinelength', default=None)
-        if maxlinelength is not None:
-            self.maxlinelength = int(maxlinelength)
-
-        maxcommitemails = self.config.get('maxcommitemails', default=None)
+        maxcommitemails = config.get('maxcommitemails', default=None)
         if maxcommitemails is not None:
             try:
                 self.maxcommitemails = int(maxcommitemails)
@@ -1728,23 +1681,19 @@ class ConfigEnvironmentMixin(Environment):
                     + '*** Expected a number.  Ignoring.\n'
                     )
 
-        strict_utf8 = self.config.get_bool('emailstrictutf8', default=None)
-        if strict_utf8 is not None:
-            self.strict_utf8 = strict_utf8
-
-        diffopts = self.config.get('diffopts', None)
+        diffopts = config.get('diffopts', None)
         if diffopts is not None:
             self.diffopts = shlex.split(diffopts)
 
-        logopts = self.config.get('logopts', None)
+        logopts = config.get('logopts', None)
         if logopts is not None:
             self.logopts = shlex.split(logopts)
 
-        reply_to = self.config.get('replyTo', default=None)
-        reply_to_commit = self.config.get('replyToCommit', default=reply_to)
+        reply_to = config.get('replyTo', default=None)
+        reply_to_commit = config.get('replyToCommit', default=reply_to)
         if reply_to_commit is not None:
             self.reply_to_commit = reply_to_commit
-        reply_to_refchange = self.config.get('replyToRefchange', default=reply_to)
+        reply_to_refchange = config.get('replyToRefchange', default=reply_to)
         if reply_to_refchange is not None:
             self.reply_to_refchange = reply_to_refchange
 
@@ -1752,13 +1701,13 @@ class ConfigEnvironmentMixin(Environment):
         return (
             self.config.get('administrator')
             or self.get_sender()
-            or super(ConfigEnvironmentMixin, self).get_administrator()
+            or super(ConfigOptionsEnvironmentMixin, self).get_administrator()
             )
 
     def get_repo_shortname(self):
         return (
             self.config.get('reponame', default=None)
-            or super(ConfigEnvironmentMixin, self).get_repo_shortname()
+            or super(ConfigOptionsEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_emailprefix(self):
@@ -1785,6 +1734,92 @@ class ConfigEnvironmentMixin(Environment):
                 return self.get_sender()
 
 
+class FilterLinesEnvironmentMixin(Environment):
+    """Handle encoding and maximum line length of body lines.
+
+        emailmaxlinelength (int or None)
+
+            The maximum length of any single line in the email body.
+            Longer lines are truncated at that length with ' [...]'
+            appended.
+
+        strict_utf8 (bool)
+
+            If this field is set to True, then the email body text is
+            expected to be UTF-8.  Any invalid characters are
+            converted to U+FFFD, the Unicode replacement character
+            (encoded as UTF-8, of course).
+
+    """
+
+    def __init__(self, strict_utf8=True, emailmaxlinelength=500, **kw):
+        super(FilterLinesEnvironmentMixin, self).__init__(**kw)
+        self.__strict_utf8 = strict_utf8
+        self.__emailmaxlinelength = emailmaxlinelength
+
+    def filter_body(self, lines):
+        if self.__strict_utf8:
+            lines = (line.decode(ENCODING, 'replace') for line in lines)
+            # Limit the line length in Unicode-space to avoid
+            # splitting characters:
+            if self.__emailmaxlinelength:
+                lines = limit_linelength(lines, self.__emailmaxlinelength)
+            lines = (line.encode(ENCODING, 'replace') for line in lines)
+        elif self.__emailmaxlinelength:
+            lines = limit_linelength(lines, self.__emailmaxlinelength)
+
+        return lines
+
+
+class ConfigFilterLinesEnvironmentMixin(
+    ConfigEnvironmentMixin,
+    FilterLinesEnvironmentMixin,
+    ):
+    """Handle encoding and maximum line length based on config."""
+
+    def __init__(self, config, **kw):
+        strict_utf8 = config.get_bool('emailstrictutf8', default=None)
+        if strict_utf8 is not None:
+            kw['strict_utf8'] = strict_utf8
+
+        emailmaxlinelength = config.get('emailmaxlinelength', default=None)
+        if emailmaxlinelength is not None:
+            kw['emailmaxlinelength'] = int(emailmaxlinelength)
+
+        super(ConfigFilterLinesEnvironmentMixin, self).__init__(
+            config=config, **kw
+            )
+
+
+class MaxlinesEnvironmentMixin(Environment):
+    """Limit the email body to a specified number of lines."""
+
+    def __init__(self, emailmaxlines, **kw):
+        super(MaxlinesEnvironmentMixin, self).__init__(**kw)
+        self.__emailmaxlines = emailmaxlines
+
+    def filter_body(self, lines):
+        lines = super(MaxlinesEnvironmentMixin, self).filter_body(lines)
+        if self.__emailmaxlines:
+            lines = limit_lines(lines, self.__emailmaxlines)
+        return lines
+
+
+class ConfigMaxlinesEnvironmentMixin(
+    ConfigEnvironmentMixin,
+    MaxlinesEnvironmentMixin,
+    ):
+    """Limit the email body to the number of lines specified in config."""
+
+    def __init__(self, config, **kw):
+        emailmaxlines = int(config.get('emailmaxlines', default='0'))
+        super(ConfigMaxlinesEnvironmentMixin, self).__init__(
+            config=config,
+            emailmaxlines=emailmaxlines,
+            **kw
+            )
+
+
 class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):
     """Deduce pusher_email from pusher by appending an emaildomain."""
 
@@ -1800,11 +1835,15 @@ class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):
             return super(PusherDomainEnvironmentMixin, self).get_pusher_email()
 
 
-class ConfigRecipientsEnvironmentMixin(ConfigEnvironmentMixin):
-    """Determine recipients statically based on config."""
+class StaticRecipientsEnvironmentMixin(Environment):
+    """Set recipients statically based on constructor parameters."""
 
-    def __init__(self, **kw):
-        super(ConfigRecipientsEnvironmentMixin, self).__init__(**kw)
+    def __init__(
+        self,
+        refchange_recipients, announce_recipients, revision_recipients,
+        **kw
+        ):
+        super(StaticRecipientsEnvironmentMixin, self).__init__(**kw)
 
         # The recipients for various types of notification emails, as
         # RFC 2822 email addresses separated by commas (or the empty
@@ -1813,42 +1852,9 @@ class ConfigRecipientsEnvironmentMixin(ConfigEnvironmentMixin):
         # actual *contents* of the change being reported, we only
         # choose based on the *type* of the change.  Therefore we can
         # compute them once and for all:
-        self.__refchange_recipients = self._get_recipients(
-            'refchangelist', 'mailinglist',
-            )
-        self.__announce_recipients = self._get_recipients(
-            'announcelist', 'refchangelist', 'mailinglist',
-            )
-        self.__revision_recipients = self._get_recipients(
-            'commitlist', 'mailinglist',
-            )
-
-    def _get_recipients(self, *names):
-        """Return the recipients for a particular type of message.
-
-        Return the list of email addresses to which a particular type
-        of notification email should be sent, by looking at the config
-        value for "multimailhook.$name" for each of names.  Use the
-        value from the first name that is configured.  The return
-        value is a (possibly empty) string containing RFC 2822 email
-        addresses separated by commas.  If no configuration could be
-        found, raise a ConfigurationException."""
-
-        for name in names:
-            retval = self.config.get_recipients(name)
-            if retval is not None:
-                return retval
-        if len(names) == 1:
-            hint = 'Please set "%s.%s"' % (self.config.section, name)
-        else:
-            hint = (
-                'Please set one of the following:\n    "%s"'
-                % ('"\n    "'.join('%s.%s' % (self.config.section, name) for name in names))
-                )
-
-        raise ConfigurationException(
-            'The list of recipients for %s is not configured.\n%s' % (names[0], hint)
-            )
+        self.__refchange_recipients = refchange_recipients
+        self.__announce_recipients = announce_recipients
+        self.__revision_recipients = revision_recipients
 
     def get_refchange_recipients(self, refchange):
         return self.__refchange_recipients
@@ -1860,18 +1866,91 @@ class ConfigRecipientsEnvironmentMixin(ConfigEnvironmentMixin):
         return self.__revision_recipients
 
 
-class GenericEnvironmentMixin(Environment):
-    def __init__(self, **kw):
-        super(GenericEnvironmentMixin, self).__init__(**kw)
+class ConfigRecipientsEnvironmentMixin(
+    ConfigEnvironmentMixin,
+    StaticRecipientsEnvironmentMixin
+    ):
+    """Determine recipients statically based on config."""
 
+    def __init__(self, config, **kw):
+        super(ConfigRecipientsEnvironmentMixin, self).__init__(
+            config=config,
+            refchange_recipients=self._get_recipients(
+                config, 'refchangelist', 'mailinglist',
+                ),
+            announce_recipients=self._get_recipients(
+                config, 'announcelist', 'refchangelist', 'mailinglist',
+                ),
+            revision_recipients=self._get_recipients(
+                config, 'commitlist', 'mailinglist',
+                ),
+            **kw
+            )
+
+    def _get_recipients(self, config, *names):
+        """Return the recipients for a particular type of message.
+
+        Return the list of email addresses to which a particular type
+        of notification email should be sent, by looking at the config
+        value for "multimailhook.$name" for each of names.  Use the
+        value from the first name that is configured.  The return
+        value is a (possibly empty) string containing RFC 2822 email
+        addresses separated by commas.  If no configuration could be
+        found, raise a ConfigurationException."""
+
+        for name in names:
+            retval = config.get_recipients(name)
+            if retval is not None:
+                return retval
+        if len(names) == 1:
+            hint = 'Please set "%s.%s"' % (config.section, name)
+        else:
+            hint = (
+                'Please set one of the following:\n    "%s"'
+                % ('"\n    "'.join('%s.%s' % (config.section, name) for name in names))
+                )
+
+        raise ConfigurationException(
+            'The list of recipients for %s is not configured.\n%s' % (names[0], hint)
+            )
+
+
+class ProjectdescEnvironmentMixin(Environment):
+    """Make a "projectdesc" value available for templates.
+
+    By default, it is set to the first line of $GIT_DIR/description
+    (if that file is present and appears to be set meaningfully)."""
+
+    def __init__(self, **kw):
+        super(ProjectdescEnvironmentMixin, self).__init__(**kw)
+        self.COMPUTED_KEYS += ['projectdesc']
+
+    def get_projectdesc(self):
+        """Return a one-line descripition of the project."""
+
+        git_dir = get_git_dir()
+        try:
+            projectdesc = open(os.path.join(git_dir, 'description')).readline().strip()
+            if projectdesc and not projectdesc.startswith('Unnamed repository'):
+                return projectdesc
+        except IOError:
+            pass
+
+        return 'UNNAMED PROJECT'
+
+
+class GenericEnvironmentMixin(Environment):
     def get_pusher(self):
         return self.osenv.get('USER', 'unknown user')
 
 
 class GenericEnvironment(
+    ProjectdescEnvironmentMixin,
+    ConfigMaxlinesEnvironmentMixin,
+    ConfigFilterLinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
-    ConfigEnvironmentMixin,
+    ConfigOptionsEnvironmentMixin,
     GenericEnvironmentMixin,
     Environment,
     ):
@@ -1879,9 +1958,6 @@ class GenericEnvironment(
 
 
 class GitoliteEnvironmentMixin(Environment):
-    def __init__(self, **kw):
-        super(GitoliteEnvironmentMixin, self).__init__(**kw)
-
     def get_repo_shortname(self):
         # The gitolite environment variable $GL_REPO is a pretty good
         # repo_shortname (though it's probably not as good as a value
@@ -1896,30 +1972,16 @@ class GitoliteEnvironmentMixin(Environment):
 
 
 class GitoliteEnvironment(
+    ProjectdescEnvironmentMixin,
+    ConfigMaxlinesEnvironmentMixin,
+    ConfigFilterLinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
-    ConfigEnvironmentMixin,
+    ConfigOptionsEnvironmentMixin,
     GitoliteEnvironmentMixin,
     Environment,
     ):
     pass
-
-
-class HardcodedRecipientsEnvironmentMixin(Environment):
-    """A mixin that allows all recipients to be set explicitly."""
-
-    def __init__(self, recipients, **kw):
-        super(HardcodedRecipientsEnvironmentMixin, self).__init__(**kw)
-        self.__recipients = recipients
-
-    def get_refchange_recipients(self, refchange):
-        return self.__recipients
-
-    def get_announce_recipients(self, annotated_tag_change):
-        return self.__recipients
-
-    def get_revision_recipients(self, revision):
-        return self.__recipients
 
 
 class Push(object):
@@ -2206,16 +2268,57 @@ def choose_mailer(config, environment):
 
 KNOWN_ENVIRONMENTS = {
     'generic' : [
+        ProjectdescEnvironmentMixin,
+        ConfigMaxlinesEnvironmentMixin,
+        ConfigFilterLinesEnvironmentMixin,
         PusherDomainEnvironmentMixin,
-        ConfigEnvironmentMixin,
+        ConfigOptionsEnvironmentMixin,
         GenericEnvironmentMixin,
         ],
     'gitolite' : [
+        ProjectdescEnvironmentMixin,
+        ConfigMaxlinesEnvironmentMixin,
+        ConfigFilterLinesEnvironmentMixin,
         PusherDomainEnvironmentMixin,
-        ConfigEnvironmentMixin,
+        ConfigOptionsEnvironmentMixin,
         GitoliteEnvironmentMixin,
         ],
     }
+
+
+def choose_environment(config, osenv=None, env=None, recipients=None):
+    if not osenv:
+        osenv = os.environ
+
+    if not env:
+        env = config.get('environment', None)
+
+    if not env:
+        if 'GL_USER' in osenv and 'GL_REPO' in osenv:
+            env = 'gitolite'
+        else:
+            env = 'generic'
+
+    environment_mixins = KNOWN_ENVIRONMENTS[env]
+    environment_kw = {
+        'osenv' : osenv,
+        'config' : config,
+        }
+
+    if recipients:
+        environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
+        environment_kw['refchange_recipients'] = recipients
+        environment_kw['announce_recipients'] = recipients
+        environment_kw['revision_recipients'] = recipients
+    else:
+        environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
+
+    environment_klass = type(
+        'EffectiveEnvironment',
+        tuple(environment_mixins) + (Environment,),
+        {},
+        )
+    return environment_klass(**environment_kw)
 
 
 def main(args):
@@ -2251,31 +2354,13 @@ def main(args):
     (options, args) = parser.parse_args(args)
 
     config = Config('multimailhook')
-    env = options.environment or config.get('environment', default=None)
-    if not env:
-        if 'GL_USER' in os.environ and 'GL_REPO' in os.environ:
-            env = 'gitolite'
-        else:
-            env = 'generic'
 
     try:
-        environment_mixins = KNOWN_ENVIRONMENTS[env]
-        environment_kw = {
-            'config' : config,
-            }
-
-        if options.recipients:
-            environment_mixins.insert(0, HardcodedRecipientsEnvironmentMixin)
-            environment_kw['recipients'] = options.recipients
-        else:
-            environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
-
-        environment_klass = type(
-            'EffectiveEnvironment',
-            tuple(environment_mixins) + (Environment,),
-            {},
+        environment = choose_environment(
+            config, osenv=os.environ,
+            env=options.environment,
+            recipients=options.recipients,
             )
-        environment = environment_klass(**environment_kw)
 
         if options.show_env:
             sys.stderr.write('Environment values:\n')
