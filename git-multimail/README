@@ -227,7 +227,8 @@ multimailhook.mailer
 multimailhook.smtpServer
 
     SMTP server to use when multimailhook.mailer is set to 'smtp'.
-    Default is 'localhost'.
+    The value can also include a colon and a port number; e.g.,
+    "mail.example.com:25".  Default is 'localhost' using port 25.
 
 multimailhook.envelopeSender
 

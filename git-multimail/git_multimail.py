@@ -2170,6 +2170,26 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
     push.send_emails(mailer, body_filter=environment.filter_body)
 
 
+def choose_mailer(config, environment):
+    mailer = config.get('mailer', default='sendmail')
+
+    if mailer == 'smtp':
+        smtpserver = config.get('smtpserver', default='localhost')
+        mailer = SMTPMailer(
+            envelopesender=(environment.get_sender() or environment.get_fromaddr()),
+            smtpserver=smtpserver,
+            )
+    elif mailer == 'sendmail':
+        mailer = SendMailer(envelopesender=environment.get_sender())
+    else:
+        sys.stderr.write(
+            'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
+            + 'please use one of "smtp" or "sendmail".\n'
+            )
+        sys.exit(1)
+    return mailer
+
+
 KNOWN_ENVIRONMENTS = {
     'generic' : [
         PusherDomainEnvironmentMixin,
@@ -2249,25 +2269,10 @@ def main(args):
                 sys.stderr.write('    %s : %r\n' % (k,v))
             sys.stderr.write('\n')
 
-        mailer = config.get('mailer', default='sendmail')
-
         if options.stdout:
             mailer = OutputMailer(sys.stdout)
-        elif mailer == 'smtp':
-            smtpserver = config.get('smtpserver', default='localhost')
-            mailer = SMTPMailer(
-                environment.get_sender() or environment.get_fromaddr(),
-                smtpserver,
-                )
-        elif mailer == 'sendmail':
-            mailer = SendMailer(environment.get_sender())
         else:
-            sys.stderr.write(
-                'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
-                + 'please use one of "smtp" or "sendmail".\n'
-                )
-            sys.exit(1)
-
+            mailer = choose_mailer(config, environment)
 
         # Dual mode: if arguments were specified on the command line, run
         # like an update hook; otherwise, run as a post-receive hook.
