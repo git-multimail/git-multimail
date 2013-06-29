@@ -59,7 +59,7 @@ environment = git_multimail.GenericEnvironment(config=config)
 #environment = git_multimail.GitoliteEnvironment(config=config)
 
 # Choose the method of sending emails.
-mailer = config.get_mailer(environment)
+mailer = git_multimail.get_mailer(config, environment)
 # You may hardcode the mailer like this:
 #mailer = git_multimail.SendMailer(environment.sender)
 # OutputMailer is intended only for testing; it writes the emails to
