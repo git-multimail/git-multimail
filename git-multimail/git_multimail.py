@@ -2170,7 +2170,7 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
     push.send_emails(mailer, body_filter=environment.filter_body)
 
 
-def get_mailer(config, environment):
+def choose_mailer(config, environment):
     mailer = config.get('mailer', default='sendmail')
 
     if mailer == 'smtp':
@@ -2272,7 +2272,7 @@ def main(args):
         if options.stdout:
             mailer = OutputMailer(sys.stdout)
         else:
-            mailer = get_mailer(config, environment)
+            mailer = choose_mailer(config, environment)
 
         # Dual mode: if arguments were specified on the command line, run
         # like an update hook; otherwise, run as a post-receive hook.
