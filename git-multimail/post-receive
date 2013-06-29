@@ -54,17 +54,36 @@ import git_multimail
 # git-multimail:
 config = git_multimail.Config('multimailhook')
 
+
 # Select the type of environment:
 environment = git_multimail.GenericEnvironment(config=config)
 #environment = git_multimail.GitoliteEnvironment(config=config)
 
-# Choose the method of sending emails.
+
+# Choose the method of sending emails based on the git config:
 mailer = git_multimail.choose_mailer(config, environment)
-# You may hardcode the mailer like this:
-#mailer = git_multimail.SendMailer(environment.sender)
+
+# Alternatively, you may hardcode the mailer using code like one of
+# the following:
+
+# Use "/usr/sbin/sendmail -t" to send emails.  The envelopesender
+# argument is optional:
+#mailer = git_multimail.SendMailer(
+#    envelopesender='git-repo@example.com',
+#    )
+
+# Use Python's smtplib to send emails.  Both arguments are required.
+#mailer = git_multimail.SMTPMailer(
+#    envelopesender='git-repo@example.com',
+#    # The smtpserver argument can also include a port number; e.g.,
+#    #     smtpserver='mail.example.com:25'
+#    smtpserver='mail.example.com',
+#    )
+
 # OutputMailer is intended only for testing; it writes the emails to
 # the specified file stream.
 #mailer = git_multimail.OutputMailer(sys.stdout)
+
 
 # Read changes from stdin and send notification emails:
 git_multimail.run_as_post_receive_hook(environment, mailer)
