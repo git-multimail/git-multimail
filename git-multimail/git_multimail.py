@@ -2176,11 +2176,11 @@ def choose_mailer(config, environment):
     if mailer == 'smtp':
         smtpserver = config.get('smtpserver', default='localhost')
         mailer = SMTPMailer(
-            environment.get_sender() or environment.get_fromaddr(),
-            smtpserver,
+            envelopesender=(environment.get_sender() or environment.get_fromaddr()),
+            smtpserver=smtpserver,
             )
     elif mailer == 'sendmail':
-        mailer = SendMailer(environment.get_sender())
+        mailer = SendMailer(envelopesender=environment.get_sender())
     else:
         sys.stderr.write(
             'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
