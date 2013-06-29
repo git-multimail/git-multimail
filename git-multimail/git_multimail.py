@@ -1308,18 +1308,28 @@ class Mailer(object):
 class SendMailer(Mailer):
     """Send emails using '/usr/sbin/sendmail -t'."""
 
-    def __init__(self, envelopesender=None):
-        self.envelopesender = envelopesender
+    def __init__(self, command=None, envelopesender=None):
+        """Construct a SendMailer instance.
+
+        command should be the command and arguments used to invoke
+        sendmail, as a list of strings.  If an envelopesender is
+        provided, it will also be passed to the command, via '-f
+        envelopesender'."""
+
+        if command:
+            self.command = command[:]
+        else:
+            self.command = ['/usr/sbin/sendmail', '-t']
+
+        if envelopesender:
+            self.command.extend(['-f', envelopesender])
 
     def send(self, lines, to_addrs):
-        cmd = ['/usr/sbin/sendmail', '-t']
-        if self.envelopesender:
-            cmd.extend(['-f', self.envelopesender])
         try:
-            p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+            p = subprocess.Popen(self.command, stdin=subprocess.PIPE)
         except OSError, e:
             sys.stderr.write(
-                '*** Cannot execute command: %s\n' % ' '.join(cmd)
+                '*** Cannot execute command: %s\n' % ' '.join(self.command)
                 + '*** %s\n' % str(e)
                 + '*** Try setting multimailhook.mailer to "smtp"\n'
                 '*** to send emails without using the sendmail command.\n'
@@ -1338,7 +1348,8 @@ class SendMailer(Mailer):
             p.stdin.close()
             retcode = p.wait()
             if retcode:
-                raise CommandError(cmd, retcode)
+                raise CommandError(self.command, retcode)
+
 
 class SMTPMailer(Mailer):
     """Send emails using Python's smtplib."""
@@ -2180,7 +2191,10 @@ def choose_mailer(config, environment):
             smtpserver=smtpserver,
             )
     elif mailer == 'sendmail':
-        mailer = SendMailer(envelopesender=environment.get_sender())
+        command = config.get('sendmailcommand', default=None)
+        if command:
+            command = shlex.split(command)
+        mailer = SendMailer(command=command, envelopesender=environment.get_sender())
     else:
         sys.stderr.write(
             'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer

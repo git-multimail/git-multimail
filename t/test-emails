@@ -14,7 +14,7 @@ test-email() {
     REFNAME="$1"
     OLDREV="$2"
     NEWREV="$3"
-    echo "$OLDREV" "$NEWREV" "$REFNAME" | "$MULTIMAIL" --stdout
+    echo "$OLDREV" "$NEWREV" "$REFNAME" | "$MULTIMAIL"
 }
 
 test-create() {

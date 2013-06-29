@@ -30,6 +30,10 @@ git config multimailhook.administrator 'Administrator <administrator@example.com
 git config multimailhook.emailprefix '*test-repo*'
 git config multimailhook.emaildomain 'example.com'
 
+# Configure a fake sendmail program that just writes to stdout:
+git config multimailhook.mailer "sendmail"
+git config multimailhook.sendmailcommand "$D/fake-sendmail"
+
 # Create some bizarre tags that git-fast-export cannot handle:
 GIT_COMMITTER_DATE="2012-11-22 02:00" \
 git tag recursive-tag refs/tags/tag-annotated \
