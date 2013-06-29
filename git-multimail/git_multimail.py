@@ -2191,7 +2191,10 @@ def choose_mailer(config, environment):
             smtpserver=smtpserver,
             )
     elif mailer == 'sendmail':
-        mailer = SendMailer(envelopesender=environment.get_sender())
+        command = config.get('sendmailcommand', default=None)
+        if command:
+            command = shlex.split(command)
+        mailer = SendMailer(command=command, envelopesender=environment.get_sender())
     else:
         sys.stderr.write(
             'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer

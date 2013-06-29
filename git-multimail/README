@@ -218,11 +218,22 @@ multimailhook.mailer
 
     This option changes the way emails are sent. Accepted values are:
 
-    - sendmail (the default): use the command /usr/sbin/sendmail.
+    - sendmail (the default): use the command /usr/sbin/sendmail (or
+      sendmailCommand, if configured).
 
     - smtp: use Python's smtplib. This is useful when the sendmail
       command is not available on the system. The SMTP server to use
       is configured by multimailhook.smtpServer.
+
+multimailhook.sendmailCommand
+
+    The command used by mailer "sendmail" to send emails.  Shell
+    quoting is allowed in the value of this setting, but remember that
+    Git requires double-quotes to be escaped; e.g.,
+
+      git config multimailhook.sendmailcommand '/usr/sbin/sendmail -t -F \"Git Repo\"'
+
+    Default is '/usr/sbin/sendmail -t'.
 
 multimailhook.smtpServer
 
