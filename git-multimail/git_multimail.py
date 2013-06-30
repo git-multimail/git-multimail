@@ -710,7 +710,7 @@ class Revision(Change):
         except UnknownUserError:
             pass
 
-        self.set_reply_to(values, self.environment.reply_to_commit)
+        self.set_reply_to(values, self.environment.get_reply_to_commit())
         return values
 
     def get_author(self):
@@ -857,7 +857,7 @@ class ReferenceChange(Change):
         if self.new:
             values['newrev_type'] = self.new.type
 
-        self.set_reply_to(values, self.environment.reply_to_refchange)
+        self.set_reply_to(values, self.environment.get_reply_to_refchange())
         return values
 
     def get_subject(self):
@@ -1484,6 +1484,17 @@ class Environment(object):
             notification list should be sent.  Ideally, it should
             include a valid email address.
 
+        get_reply_to_refchange()
+        get_reply_to_commit()
+
+            Addresses to use in the Reply-To: field of emails, as
+            strings.  These can be email addresses or take the special
+            values 'pusher', 'author' (for get_reply_to_commit()), or
+            'none' as explained in the documentation for
+            multimailhook.replyTo.  get_reply_to_refchange() is used
+            for refchange emails; get_reply_to_commit() is used for
+            individual commit emails.
+
     They should also define the following attributes:
 
         announce_show_shortlog (bool)
@@ -1506,16 +1517,6 @@ class Environment(object):
             'git log' when generating the detailed log for a set of
             commits (see refchange_showlog)
 
-        reply_to_refchange (string)
-        reply_to_commit (string)
-
-            Addresses to use in the Reply-To: field of emails.  These
-            can be email addresses or take the special values
-            'pusher', 'author' (for reply_to_commit), or 'none' as
-            explained in the documentation for multimailhook.replyTo.
-            reply_to_refchange is used for refchange emails;
-            reply_to_commit is used for individual commit emails.
-
     """
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -1527,8 +1528,6 @@ class Environment(object):
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
         self.refchange_showlog = False
-        self.reply_to_refchange = 'pusher'
-        self.reply_to_commit = 'author'
 
         self.COMPUTED_KEYS = [
             'administrator',
@@ -1614,6 +1613,9 @@ class Environment(object):
 
         raise NotImplementedError()
 
+    def get_reply_to_refchange(self):
+        return 'pusher'
+
     def get_revision_recipients(self, revision):
         """Return the recipients for messages about revision.
 
@@ -1627,6 +1629,9 @@ class Environment(object):
         files."""
 
         raise NotImplementedError()
+
+    def get_reply_to_commit(self):
+        return 'author'
 
     def filter_body(self, lines):
         """Filter the lines intended for an email body.
@@ -1690,12 +1695,8 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             self.logopts = shlex.split(logopts)
 
         reply_to = config.get('replyTo', default=None)
-        reply_to_commit = config.get('replyToCommit', default=reply_to)
-        if reply_to_commit is not None:
-            self.reply_to_commit = reply_to_commit
-        reply_to_refchange = config.get('replyToRefchange', default=reply_to)
-        if reply_to_refchange is not None:
-            self.reply_to_refchange = reply_to_refchange
+        self.__reply_to_refchange = config.get('replyToRefchange', default=reply_to)
+        self.__reply_to_commit = config.get('replyToCommit', default=reply_to)
 
     def get_administrator(self):
         return (
@@ -1732,6 +1733,18 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
                 return formataddr([fromname, fromemail])
             else:
                 return self.get_sender()
+
+    def get_reply_to_refchange(self):
+        return (
+            self.__reply_to_refchange
+            or super(ConfigOptionsEnvironmentMixin, self).get_reply_to_refchange()
+            )
+
+    def get_reply_to_commit(self):
+        return (
+            self.__reply_to_commit
+            or super(ConfigOptionsEnvironmentMixin, self).get_reply_to_commit()
+            )
 
 
 class FilterLinesEnvironmentMixin(Environment):
