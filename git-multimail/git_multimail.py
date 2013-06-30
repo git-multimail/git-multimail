@@ -680,6 +680,7 @@ class Revision(Change):
         self.refname = self.reference_change.refname
         self.num = num
         self.tot = tot
+        self.author = read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
         self.recipients = self.environment.get_revision_recipients(self)
 
     def _compute_values(self):
@@ -704,17 +705,10 @@ class Revision(Change):
         values['tot'] = self.tot
         values['recipients'] = self.recipients
         values['oneline'] = oneline
-
-        try:
-            values['author'] = self.get_author()
-        except UnknownUserError:
-            pass
+        values['author'] = self.author
 
         self.set_reply_to(values, self.environment.get_reply_to_commit(self))
         return values
-
-    def get_author(self):
-        return read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
 
     def generate_email_header(self):
         for line in self.expand_header_lines(REVISION_HEADER_TEMPLATE):
@@ -1414,10 +1408,6 @@ def get_git_dir():
     except CommandError:
         sys.stderr.write('fatal: git_multimail: not in a git working copy\n')
         sys.exit(1)
-
-
-class UnknownUserError(Exception):
-    pass
 
 
 class Environment(object):
