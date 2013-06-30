@@ -1758,6 +1758,7 @@ class FilterLinesEnvironmentMixin(Environment):
         self.__emailmaxlinelength = emailmaxlinelength
 
     def filter_body(self, lines):
+        lines = super(FilterLinesEnvironmentMixin, self).filter_body(lines)
         if self.__strict_utf8:
             lines = (line.decode(ENCODING, 'replace') for line in lines)
             # Limit the line length in Unicode-space to avoid
