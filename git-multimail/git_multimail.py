@@ -710,7 +710,7 @@ class Revision(Change):
         except UnknownUserError:
             pass
 
-        self.set_reply_to(values, self.environment.get_reply_to_commit())
+        self.set_reply_to(values, self.environment.get_reply_to_commit(self))
         return values
 
     def get_author(self):
@@ -1630,7 +1630,7 @@ class Environment(object):
 
         raise NotImplementedError()
 
-    def get_reply_to_commit(self):
+    def get_reply_to_commit(self, revision):
         return 'author'
 
     def filter_body(self, lines):
@@ -1740,10 +1740,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             or super(ConfigOptionsEnvironmentMixin, self).get_reply_to_refchange(refchange)
             )
 
-    def get_reply_to_commit(self):
+    def get_reply_to_commit(self, revision):
         return (
             self.__reply_to_commit
-            or super(ConfigOptionsEnvironmentMixin, self).get_reply_to_commit()
+            or super(ConfigOptionsEnvironmentMixin, self).get_reply_to_commit(revision)
             )
 
 
