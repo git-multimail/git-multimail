@@ -2268,28 +2268,26 @@ def choose_mailer(config, environment):
 
 
 KNOWN_ENVIRONMENTS = {
-    'generic' : [
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        GenericEnvironmentMixin,
-        ],
-    'gitolite' : [
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        GitoliteEnvironmentMixin,
-        ],
+    'generic' : GenericEnvironmentMixin,
+    'gitolite' : GitoliteEnvironmentMixin,
     }
 
 
 def choose_environment(config, osenv=None, env=None, recipients=None):
     if not osenv:
         osenv = os.environ
+
+    environment_mixins = [
+        ProjectdescEnvironmentMixin,
+        ConfigMaxlinesEnvironmentMixin,
+        ConfigFilterLinesEnvironmentMixin,
+        PusherDomainEnvironmentMixin,
+        ConfigOptionsEnvironmentMixin,
+        ]
+    environment_kw = {
+        'osenv' : osenv,
+        'config' : config,
+        }
 
     if not env:
         env = config.get('environment', None)
@@ -2300,11 +2298,7 @@ def choose_environment(config, osenv=None, env=None, recipients=None):
         else:
             env = 'generic'
 
-    environment_mixins = KNOWN_ENVIRONMENTS[env]
-    environment_kw = {
-        'osenv' : osenv,
-        'config' : config,
-        }
+    environment_mixins.append(KNOWN_ENVIRONMENTS[env])
 
     if recipients:
         environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
