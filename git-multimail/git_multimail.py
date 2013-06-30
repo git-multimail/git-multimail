@@ -857,7 +857,7 @@ class ReferenceChange(Change):
         if self.new:
             values['newrev_type'] = self.new.type
 
-        self.set_reply_to(values, self.environment.get_reply_to_refchange())
+        self.set_reply_to(values, self.environment.get_reply_to_refchange(self))
         return values
 
     def get_subject(self):
@@ -1613,7 +1613,7 @@ class Environment(object):
 
         raise NotImplementedError()
 
-    def get_reply_to_refchange(self):
+    def get_reply_to_refchange(self, refchange):
         return 'pusher'
 
     def get_revision_recipients(self, revision):
@@ -1734,10 +1734,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             else:
                 return self.get_sender()
 
-    def get_reply_to_refchange(self):
+    def get_reply_to_refchange(self, refchange):
         return (
             self.__reply_to_refchange
-            or super(ConfigOptionsEnvironmentMixin, self).get_reply_to_refchange()
+            or super(ConfigOptionsEnvironmentMixin, self).get_reply_to_refchange(refchange)
             )
 
     def get_reply_to_commit(self):
