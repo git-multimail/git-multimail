@@ -539,36 +539,6 @@ class Change(object):
             values.update(extra_values)
         return values
 
-    def set_reply_to(self, values, reply_to):
-        """Set the address to be used in the Reply-To: field.
-
-        Set values['reply_to'] to the address to be used, or leave it
-        unset it if no Reply-To: header should be generated.  Use the
-        value from the reply_to argument, but translate the special
-        values 'author', 'pusher', and 'none' to the corresponding
-        actual values (see the documentation for
-        multimailhook.replyTo)."""
-
-        key = 'reply_to'
-        if reply_to.lower() == 'author':
-            try:
-                values[key] = values['author']
-            except KeyError:
-                sys.stderr.write(
-                    'Warning: no author email found; cannot set Reply-To:\n'
-                    )
-        elif reply_to.lower() == 'pusher':
-            try:
-                values[key] = values['pusher_email']
-            except KeyError:
-                sys.stderr.write(
-                    'Warning: no pusher email found, cannot set Reply-To:\n'
-                    )
-        elif reply_to.lower() == 'none':
-            pass
-        else:
-            values[key] = reply_to
-
     def expand(self, template, **extra_values):
         """Expand template.
 
@@ -680,6 +650,7 @@ class Revision(Change):
         self.refname = self.reference_change.refname
         self.num = num
         self.tot = tot
+        self.author = read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
         self.recipients = self.environment.get_revision_recipients(self)
 
     def _compute_values(self):
@@ -704,17 +675,13 @@ class Revision(Change):
         values['tot'] = self.tot
         values['recipients'] = self.recipients
         values['oneline'] = oneline
+        values['author'] = self.author
 
-        try:
-            values['author'] = self.get_author()
-        except UnknownUserError:
-            pass
+        reply_to = self.environment.get_reply_to_commit(self)
+        if reply_to:
+            values['reply_to'] = reply_to
 
-        self.set_reply_to(values, self.environment.reply_to_commit)
         return values
-
-    def get_author(self):
-        return read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
 
     def generate_email_header(self):
         for line in self.expand_header_lines(REVISION_HEADER_TEMPLATE):
@@ -857,7 +824,10 @@ class ReferenceChange(Change):
         if self.new:
             values['newrev_type'] = self.new.type
 
-        self.set_reply_to(values, self.environment.reply_to_refchange)
+        reply_to = self.environment.get_reply_to_refchange(self)
+        if reply_to:
+            values['reply_to'] = reply_to
+
         return values
 
     def get_subject(self):
@@ -1416,10 +1386,6 @@ def get_git_dir():
         sys.exit(1)
 
 
-class UnknownUserError(Exception):
-    pass
-
-
 class Environment(object):
     """Describes the environment in which the push is occurring.
 
@@ -1484,6 +1450,16 @@ class Environment(object):
             notification list should be sent.  Ideally, it should
             include a valid email address.
 
+        get_reply_to_refchange()
+        get_reply_to_commit()
+
+            Return the address to use in the email "Reply-To" header,
+            as a string.  These can be an RFC 2822 email address, or
+            None to omit the "Reply-To" header.
+            get_reply_to_refchange() is used for refchange emails;
+            get_reply_to_commit() is used for individual commit
+            emails.
+
     They should also define the following attributes:
 
         announce_show_shortlog (bool)
@@ -1506,16 +1482,6 @@ class Environment(object):
             'git log' when generating the detailed log for a set of
             commits (see refchange_showlog)
 
-        reply_to_refchange (string)
-        reply_to_commit (string)
-
-            Addresses to use in the Reply-To: field of emails.  These
-            can be email addresses or take the special values
-            'pusher', 'author' (for reply_to_commit), or 'none' as
-            explained in the documentation for multimailhook.replyTo.
-            reply_to_refchange is used for refchange emails;
-            reply_to_commit is used for individual commit emails.
-
     """
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -1527,8 +1493,6 @@ class Environment(object):
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
         self.refchange_showlog = False
-        self.reply_to_refchange = 'pusher'
-        self.reply_to_commit = 'author'
 
         self.COMPUTED_KEYS = [
             'administrator',
@@ -1614,6 +1578,9 @@ class Environment(object):
 
         raise NotImplementedError()
 
+    def get_reply_to_refchange(self, refchange):
+        return self.get_pusher_email()
+
     def get_revision_recipients(self, revision):
         """Return the recipients for messages about revision.
 
@@ -1627,6 +1594,9 @@ class Environment(object):
         files."""
 
         raise NotImplementedError()
+
+    def get_reply_to_commit(self, revision):
+        return revision.author
 
     def filter_body(self, lines):
         """Filter the lines intended for an email body.
@@ -1690,12 +1660,15 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             self.logopts = shlex.split(logopts)
 
         reply_to = config.get('replyTo', default=None)
-        reply_to_commit = config.get('replyToCommit', default=reply_to)
-        if reply_to_commit is not None:
-            self.reply_to_commit = reply_to_commit
-        reply_to_refchange = config.get('replyToRefchange', default=reply_to)
-        if reply_to_refchange is not None:
-            self.reply_to_refchange = reply_to_refchange
+        self.__reply_to_refchange = config.get('replyToRefchange', default=reply_to)
+        if (
+            self.__reply_to_refchange is not None
+            and self.__reply_to_refchange.lower() == 'author'
+            ):
+            raise ConfigurationException(
+                '"author" is not an allowed setting for replyToRefchange'
+                )
+        self.__reply_to_commit = config.get('replyToCommit', default=reply_to)
 
     def get_administrator(self):
         return (
@@ -1732,6 +1705,28 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
                 return formataddr([fromname, fromemail])
             else:
                 return self.get_sender()
+
+    def get_reply_to_refchange(self, refchange):
+        if self.__reply_to_refchange is None:
+            return super(ConfigOptionsEnvironmentMixin, self).get_reply_to_refchange(refchange)
+        elif self.__reply_to_refchange.lower() == 'pusher':
+            return self.get_pusher_email()
+        elif self.__reply_to_refchange.lower() == 'none':
+            return None
+        else:
+            return self.__reply_to_refchange
+
+    def get_reply_to_commit(self, revision):
+        if self.__reply_to_commit is None:
+            return super(ConfigOptionsEnvironmentMixin, self).get_reply_to_commit(revision)
+        elif self.__reply_to_commit.lower() == 'author':
+            return revision.get_author()
+        elif self.__reply_to_commit.lower() == 'pusher':
+            return self.get_pusher_email()
+        elif self.__reply_to_commit.lower() == 'none':
+            return None
+        else:
+            return self.__reply_to_commit
 
 
 class FilterLinesEnvironmentMixin(Environment):
