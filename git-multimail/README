@@ -221,9 +221,9 @@ multimailhook.mailer
 
     This option changes the way emails are sent.  Accepted values are:
 
-    - sendmail (the default): use the command /usr/sbin/sendmail (or
-      sendmailCommand, if configured).  This mode can be further
-      customized via the following options:
+    - sendmail (the default): use the command /usr/sbin/sendmail or
+      /usr/lib/sendmail (or sendmailCommand, if configured).  This
+      mode can be further customized via the following options:
 
        multimailhook.sendmailCommand
 
@@ -233,7 +233,8 @@ multimailhook.mailer
 
              git config multimailhook.sendmailcommand '/usr/sbin/sendmail -t -F \"Git Repo\"'
 
-           Default is '/usr/sbin/sendmail -t'.
+           Default is '/usr/sbin/sendmail -t' or '/usr/lib/sendmail
+           -t' (depending on which file is present and executable).
 
        multimailhook.envelopeSender
 

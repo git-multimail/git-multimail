@@ -1277,7 +1277,23 @@ class Mailer(object):
 
 
 class SendMailer(Mailer):
-    """Send emails using '/usr/sbin/sendmail -t'."""
+    """Send emails using 'sendmail -t'."""
+
+    SENDMAIL_CANDIDATES = [
+        '/usr/sbin/sendmail',
+        '/usr/lib/sendmail',
+        ]
+
+    @staticmethod
+    def find_sendmail():
+        for path in SendMailer.SENDMAIL_CANDIDATES:
+            if os.access(path, os.X_OK):
+                return path
+        else:
+            raise ConfigurationException(
+                'No sendmail executable found.  '
+                'Try setting multimailhook.sendmailCommand.'
+                )
 
     def __init__(self, command=None, envelopesender=None):
         """Construct a SendMailer instance.
@@ -1290,7 +1306,7 @@ class SendMailer(Mailer):
         if command:
             self.command = command[:]
         else:
-            self.command = ['/usr/sbin/sendmail', '-t']
+            self.command = [self.find_sendmail(), '-t']
 
         if envelopesender:
             self.command.extend(['-f', envelopesender])
