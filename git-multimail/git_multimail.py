@@ -565,9 +565,8 @@ class Change(object):
         skip lines that contain references to unknown variables."""
 
         values = self.get_values(**extra_values)
-        for line in template.splitlines(True):
+        for line in template.splitlines():
             (name, value) = line.split(':', 1)
-            value = value.rstrip('\n\r')
 
             try:
                 value = value % values
@@ -575,7 +574,7 @@ class Change(object):
                 if DEBUG:
                     sys.stderr.write(
                         'Warning: unknown variable %r in the following line; line skipped:\n'
-                        '    %s'
+                        '    %s\n'
                         % (e.args[0], line,)
                         )
             else:
