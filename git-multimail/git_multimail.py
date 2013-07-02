@@ -1399,7 +1399,7 @@ def get_git_dir():
     try:
         return read_git_output(['rev-parse', '--git-dir'])
     except CommandError:
-        sys.stderr.write('fatal: git_multimail: not in a git working copy\n')
+        sys.stderr.write('fatal: git_multimail: not in a git directory\n')
         sys.exit(1)
 
 
