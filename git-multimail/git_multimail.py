@@ -355,6 +355,8 @@ class Config(object):
                 ))
         except CommandError, e:
             if e.retcode == 1:
+                # "the section or key is invalid"; i.e., there is no
+                # value for the specified key.
                 return default
             else:
                 raise
