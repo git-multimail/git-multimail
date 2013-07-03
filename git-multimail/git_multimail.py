@@ -462,23 +462,21 @@ class CommitSet(object):
 class GitObject(object):
     def __init__(self, sha1, type=None):
         if sha1 == ZEROS:
-            self.sha1 = self.type = self.commit = None
-        else:
-            self.sha1 = sha1
-            self.type = type or read_git_output(['cat-file', '-t', self.sha1])
+            self.sha1 = self.type = self.commit_sha1 = self.short = None
+            return
 
-            if self.type == 'commit':
-                self.commit = self
-            elif self.type == 'tag':
-                try:
-                    self.commit = GitObject(
-                        read_git_output(['rev-parse', '--verify', '%s^0' % (self.sha1,)]),
-                        type='commit',
-                        )
-                except CommandError:
-                    self.commit = None
-            else:
-                self.commit = None
+        self.sha1 = sha1
+        self.type = type or read_git_output(['cat-file', '-t', sha1])
+        self.commit_sha1 = None
+
+        if self.type == 'commit':
+            self.commit_sha1 = sha1
+        elif self.type == 'tag':
+            try:
+                self.commit_sha1 = read_git_output(['rev-parse', '--verify', '%s^0' % (sha1,)])
+            except CommandError:
+                # Cannot deref tag to determine commit_sha1
+                pass
 
         self.short = read_git_output(['rev-parse', '--short', sha1])
 
@@ -885,7 +883,7 @@ class ReferenceChange(Change):
     def generate_revision_change_summary(self, push):
         """Generate a summary of the revisions added/removed by this change."""
 
-        if self.new.commit and not self.old.commit:
+        if self.new.commit_sha1 and not self.old.commit_sha1:
             # A new reference was created.  List the new revisions
             # brought by the new reference (i.e., those revisions that
             # were not in the repository before this reference
@@ -915,7 +913,7 @@ class ReferenceChange(Change):
                 for line in self.expand_lines(NO_NEW_REVISIONS_TEMPLATE):
                     yield line
 
-        elif self.new.commit and self.old.commit:
+        elif self.new.commit_sha1 and self.old.commit_sha1:
             # A reference was changed to point at a different commit.
             # List the revisions that were removed and/or added *from
             # that reference* by this reference change, along with a
@@ -928,14 +926,14 @@ class ReferenceChange(Change):
             # new notification emails for them.
             adds = list(generate_summaries(
                     '--topo-order', '--reverse', '%s..%s'
-                    % (self.old.commit, self.new.commit,)
+                    % (self.old.commit_sha1, self.new.commit_sha1,)
                     ))
 
             # List of the revisions that were removed from the branch
             # by this update.  This will be empty except for
             # non-fast-forward updates.
             discards = list(generate_summaries(
-                    '%s..%s' % (self.new.commit, self.old.commit,)
+                    '%s..%s' % (self.new.commit_sha1, self.old.commit_sha1,)
                     ))
 
             if adds:
@@ -1025,12 +1023,12 @@ class ReferenceChange(Change):
             for line in read_git_lines(
                 ['diff-tree']
                 + self.diffopts
-                + ['%s..%s' % (self.old.commit, self.new.commit,)],
+                + ['%s..%s' % (self.old.commit_sha1, self.new.commit_sha1,)],
                 keepends=True,
                 ):
                 yield line
 
-        elif self.old.commit and not self.new.commit:
+        elif self.old.commit_sha1 and not self.new.commit_sha1:
             # A reference was deleted.  List the revisions that were
             # removed from the repository by this reference change.
 
@@ -1054,7 +1052,7 @@ class ReferenceChange(Change):
                 for line in self.expand_lines(NO_DISCARDED_REVISIONS_TEMPLATE):
                     yield line
 
-        elif not self.old.commit and not self.new.commit:
+        elif not self.old.commit_sha1 and not self.new.commit_sha1:
             for line in self.expand_lines(NON_COMMIT_UPDATE_TEMPLATE):
                 yield line
 
@@ -2154,10 +2152,10 @@ class Push(object):
                 for change in self.changes
                 if change.new
                 )
-        elif not reference_change.new.commit:
+        elif not reference_change.new.commit_sha1:
             return []
         else:
-            new_revs = [reference_change.new.commit.sha1]
+            new_revs = [reference_change.new.commit_sha1]
 
         cmd = ['rev-list', '--stdin'] + new_revs
         return read_git_lines(cmd, input=self._old_rev_exclusion_spec)
@@ -2169,10 +2167,10 @@ class Push(object):
         entirely discarded from the repository by the part of this
         push represented by reference_change."""
 
-        if not reference_change.old.commit:
+        if not reference_change.old.commit_sha1:
             return []
         else:
-            old_revs = [reference_change.old.commit.sha1]
+            old_revs = [reference_change.old.commit_sha1]
 
         cmd = ['rev-list', '--stdin'] + old_revs
         return read_git_lines(cmd, input=self._new_rev_exclusion_spec)
