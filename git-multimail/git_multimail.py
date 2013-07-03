@@ -321,7 +321,7 @@ class Config(object):
         assert words[-1] == ''
         return words[:-1]
 
-    def get(self, name, default=''):
+    def get(self, name, default=None):
         try:
             values = self._split(read_git_output(
                     ['config', '--get', '--null', '%s.%s' % (self.section, name)],
@@ -355,6 +355,8 @@ class Config(object):
                 ))
         except CommandError, e:
             if e.retcode == 1:
+                # "the section or key is invalid"; i.e., there is no
+                # value for the specified key.
                 return default
             else:
                 raise
@@ -563,9 +565,8 @@ class Change(object):
         skip lines that contain references to unknown variables."""
 
         values = self.get_values(**extra_values)
-        for line in template.splitlines(True):
+        for line in template.splitlines():
             (name, value) = line.split(':', 1)
-            value = value.rstrip('\n\r')
 
             try:
                 value = value % values
@@ -573,7 +574,7 @@ class Change(object):
                 if DEBUG:
                     sys.stderr.write(
                         'Warning: unknown variable %r in the following line; line skipped:\n'
-                        '    %s'
+                        '    %s\n'
                         % (e.args[0], line,)
                         )
             else:
@@ -1276,7 +1277,23 @@ class Mailer(object):
 
 
 class SendMailer(Mailer):
-    """Send emails using '/usr/sbin/sendmail -t'."""
+    """Send emails using 'sendmail -t'."""
+
+    SENDMAIL_CANDIDATES = [
+        '/usr/sbin/sendmail',
+        '/usr/lib/sendmail',
+        ]
+
+    @staticmethod
+    def find_sendmail():
+        for path in SendMailer.SENDMAIL_CANDIDATES:
+            if os.access(path, os.X_OK):
+                return path
+        else:
+            raise ConfigurationException(
+                'No sendmail executable found.  '
+                'Try setting multimailhook.sendmailCommand.'
+                )
 
     def __init__(self, command=None, envelopesender=None):
         """Construct a SendMailer instance.
@@ -1289,7 +1306,7 @@ class SendMailer(Mailer):
         if command:
             self.command = command[:]
         else:
-            self.command = ['/usr/sbin/sendmail', '-t']
+            self.command = [self.find_sendmail(), '-t']
 
         if envelopesender:
             self.command.extend(['-f', envelopesender])
@@ -1382,7 +1399,7 @@ def get_git_dir():
     try:
         return read_git_output(['rev-parse', '--git-dir'])
     except CommandError:
-        sys.stderr.write('fatal: git_multimail: not in a git working copy\n')
+        sys.stderr.write('fatal: git_multimail: not in a git directory\n')
         sys.exit(1)
 
 
@@ -1641,7 +1658,7 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             'refchangeshowlog', default=self.refchange_showlog
             )
 
-        maxcommitemails = config.get('maxcommitemails', default=None)
+        maxcommitemails = config.get('maxcommitemails')
         if maxcommitemails is not None:
             try:
                 self.maxcommitemails = int(maxcommitemails)
@@ -1651,15 +1668,15 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
                     + '*** Expected a number.  Ignoring.\n'
                     )
 
-        diffopts = config.get('diffopts', None)
+        diffopts = config.get('diffopts')
         if diffopts is not None:
             self.diffopts = shlex.split(diffopts)
 
-        logopts = config.get('logopts', None)
+        logopts = config.get('logopts')
         if logopts is not None:
             self.logopts = shlex.split(logopts)
 
-        reply_to = config.get('replyTo', default=None)
+        reply_to = config.get('replyTo')
         self.__reply_to_refchange = config.get('replyToRefchange', default=reply_to)
         if (
             self.__reply_to_refchange is not None
@@ -1679,28 +1696,28 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
     def get_repo_shortname(self):
         return (
-            self.config.get('reponame', default=None)
+            self.config.get('reponame')
             or super(ConfigOptionsEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_emailprefix(self):
-        emailprefix = self.config.get('emailprefix', default=None)
+        emailprefix = self.config.get('emailprefix')
         if emailprefix and emailprefix.strip():
             return emailprefix.strip() + ' '
         else:
             return '[%s] ' % (self.get_repo_shortname(),)
 
     def get_sender(self):
-        return self.config.get('envelopesender', default=None)
+        return self.config.get('envelopesender')
 
     def get_fromaddr(self):
-        fromaddr = self.config.get('from', default=None)
+        fromaddr = self.config.get('from')
         if fromaddr:
             return fromaddr
         else:
             config = Config('user')
-            fromname = config.get('name')
-            fromemail = config.get('email')
+            fromname = config.get('name', default='')
+            fromemail = config.get('email', default='')
             if fromemail:
                 return formataddr([fromname, fromemail])
             else:
@@ -1778,7 +1795,7 @@ class ConfigFilterLinesEnvironmentMixin(
         if strict_utf8 is not None:
             kw['strict_utf8'] = strict_utf8
 
-        emailmaxlinelength = config.get('emailmaxlinelength', default=None)
+        emailmaxlinelength = config.get('emailmaxlinelength')
         if emailmaxlinelength is not None:
             kw['emailmaxlinelength'] = int(emailmaxlinelength)
 
@@ -2249,7 +2266,7 @@ def choose_mailer(config, environment):
             smtpserver=smtpserver,
             )
     elif mailer == 'sendmail':
-        command = config.get('sendmailcommand', default=None)
+        command = config.get('sendmailcommand')
         if command:
             command = shlex.split(command)
         mailer = SendMailer(command=command, envelopesender=environment.get_sender())
@@ -2285,7 +2302,7 @@ def choose_environment(config, osenv=None, env=None, recipients=None):
         }
 
     if not env:
-        env = config.get('environment', None)
+        env = config.get('environment')
 
     if not env:
         if 'GL_USER' in osenv and 'GL_REPO' in osenv:
