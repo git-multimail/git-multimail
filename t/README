@@ -26,10 +26,10 @@ test-emails:
     sent for those pushes.  There's as yet no automated check of the
     output; you still have to eyeball it.
 
-filter-noise:
+smudge-compare:
 
-    Filters from the test-emails output many strings that vary
-    unpredictably from one test run to another.
+    Smudges the test-emails output to remove output that will vary
+    from one run to the next.
 
 test-env:
 
@@ -42,17 +42,10 @@ test-env:
 Guidelines
 ==========
 
-For an approximate test that you haven't broken anything, first check
-out a "good" version of the software and run
+For an approximate test that you haven't broken anything, run
 
-    $ t/test-emails | t/filter-noise >$TMP/test-emails-good.out
-
-Then, after you have made your changes, compare the new output to the
-old output:
-
-    $ t/test-emails | t/filter-noise | diff -u $TMP/test-emails-good.out -
-
-Any differences should be investigated.
+    $ ./test-emails >/tmp/multimail.new 2>&1
+    $ ./smudge-compare /tmp/multimail.new
 
 Also check that your changes haven't broken the environment classes:
 

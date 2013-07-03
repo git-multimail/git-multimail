@@ -1,0 +1,2921 @@
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master created (now 902dfe1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+        at  902dfe1   a5
+
+This branch includes the following new commits:
+
+       new  50d684a   a2
+       new  012fc78   a3
+       new  ebf40e1   a4
+       new  d245c99   m1
+       new  902dfe1   a5
+
+The 5 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/05: a2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: 50d684ad4a020a5b356c12cde0bbce01014f90d5
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit 50d684ad4a020a5b356c12cde0bbce01014f90d5
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:26:47 2012 +0100
+
+    a2
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index d00491f..0cfbf08 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-1
++2
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/05: a3
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: 012fc788c644eebb6f0dc54489d642dec24878db
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit 012fc788c644eebb6f0dc54489d642dec24878db
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:26:54 2012 +0100
+
+    a3
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 0cfbf08..00750ed 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-2
++3
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 03/05: a4
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:27:31 2012 +0100
+
+    a4
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 00750ed..b8626c4 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-3
++4
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 04/05: m1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: d245c99162aff6fff4879e5d5c17d454766b45db
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit d245c99162aff6fff4879e5d5c17d454766b45db
+Merge: ebf40e1 abb8baa
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:32:27 2012 +0100
+
+    m1
+
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --cc a.txt
+index b8626c4,45d9e0e..63a911f
+--- a/a.txt
++++ b/a.txt
+@@@ -1,1 -1,1 +1,1 @@@
+- 4
+ -f3
+++m1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 05/05: a5
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:32:50 2012 +0100
+
+    a5
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 63a911f..7ed6ff8 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-m1
++5
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master updated (ebf40e1 -> 902dfe1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+      from  ebf40e1   a4
+      adds  f0e9a98   f1
+      adds  c742b15   f2
+      adds  abb8baa   f3
+       new  d245c99   m1
+       new  902dfe1   a5
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: m1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: d245c99162aff6fff4879e5d5c17d454766b45db
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit d245c99162aff6fff4879e5d5c17d454766b45db
+Merge: ebf40e1 abb8baa
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:32:27 2012 +0100
+
+    m1
+
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --cc a.txt
+index b8626c4,45d9e0e..63a911f
+--- a/a.txt
++++ b/a.txt
+@@@ -1,1 -1,1 +1,1 @@@
+- 4
+ -f3
+++m1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: a5
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:32:50 2012 +0100
+
+    a5
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 63a911f..7ed6ff8 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-m1
++5
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master updated (47ef1f8 -> 902dfe1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+     omits  47ef1f8   f5
+     omits  7a9800a   f4
+       new  50d684a   a2
+       new  012fc78   a3
+       new  ebf40e1   a4
+       new  d245c99   m1
+       new  902dfe1   a5
+
+This update added new revisions after undoing existing revisions.
+That is to say, some revisions that were in the old version of the
+branch are not in the new version.  This situation occurs
+when a user --force pushes a change and generates a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O   (47ef1f8)
+            \
+             N -- N -- N   refs/heads/master (902dfe1)
+
+You should already have received notification emails for all of the O
+revisions, and so the following emails describe only the N revisions
+from the common base, B.
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+The 5 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/05: a2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: 50d684ad4a020a5b356c12cde0bbce01014f90d5
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit 50d684ad4a020a5b356c12cde0bbce01014f90d5
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:26:47 2012 +0100
+
+    a2
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index d00491f..0cfbf08 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-1
++2
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/05: a3
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: 012fc788c644eebb6f0dc54489d642dec24878db
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit 012fc788c644eebb6f0dc54489d642dec24878db
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:26:54 2012 +0100
+
+    a3
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 0cfbf08..00750ed 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-2
++3
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 03/05: a4
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:27:31 2012 +0100
+
+    a4
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 00750ed..b8626c4 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-3
++4
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 04/05: m1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: d245c99162aff6fff4879e5d5c17d454766b45db
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit d245c99162aff6fff4879e5d5c17d454766b45db
+Merge: ebf40e1 abb8baa
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:32:27 2012 +0100
+
+    m1
+
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --cc a.txt
+index b8626c4,45d9e0e..63a911f
+--- a/a.txt
++++ b/a.txt
+@@@ -1,1 -1,1 +1,1 @@@
+- 4
+ -f3
+++m1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 05/05: a5
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:32:50 2012 +0100
+
+    a5
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 63a911f..7ed6ff8 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-m1
++5
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master deleted (was 902dfe1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: 0000000000000000000000000000000000000000
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+       was  902dfe1   a5
+
+This change permanently discards the following revisions:
+
+  discards  902dfe1   a5
+  discards  d245c99   m1
+  discards  ebf40e1   a4
+  discards  012fc78   a3
+  discards  50d684a   a2
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master updated (902dfe1 -> ebf40e1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+  discards  902dfe1   a5
+  discards  d245c99   m1
+     omits  abb8baa   f3
+     omits  c742b15   f2
+     omits  f0e9a98   f1
+
+This update removed existing revisions from the reference, leaving the
+reference pointing at a previous point in the repository history.
+
+ * -- * -- N   refs/heads/master (ebf40e1)
+            \
+             O -- O -- O   (902dfe1)
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master updated (902dfe1 -> 47ef1f8)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+  discards  902dfe1   a5
+  discards  d245c99   m1
+  discards  ebf40e1   a4
+  discards  012fc78   a3
+  discards  50d684a   a2
+      adds  7a9800a   f4
+      adds  47ef1f8   f5
+
+This update added new revisions after undoing existing revisions.
+That is to say, some revisions that were in the old version of the
+branch are not in the new version.  This situation occurs
+when a user --force pushes a change and generates a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O   (902dfe1)
+            \
+             N -- N -- N   refs/heads/master (47ef1f8)
+
+You should already have received notification emails for all of the O
+revisions, and so the following emails describe only the N revisions
+from the common base, B.
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master updated (902dfe1 -> d245c99)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: d245c99162aff6fff4879e5d5c17d454766b45db
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+  discards  902dfe1   a5
+
+This update removed existing revisions from the reference, leaving the
+reference pointing at a previous point in the repository history.
+
+ * -- * -- N   refs/heads/master (d245c99)
+            \
+             O -- O -- O   (902dfe1)
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch release updated (88ff896 -> cd65463)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/release
+X-Git-Reftype: branch
+X-Git-Oldrev: 88ff8966d0e43a97b88b249605af4c4b77ba8b8e
+X-Git-Newrev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch release
+in repository test-repo.
+
+      from  88ff896   a1
+      adds  205e528   r1
+      adds  1034ac6   r2
+       new  5f26bd1   r3
+       new  cd65463   r4
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: r3
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/release
+X-Git-Reftype: branch
+X-Git-Rev: 5f26bd17b128b6f251334af774ba502a6f590fca
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch release
+in repository test-repo.
+
+commit 5f26bd17b128b6f251334af774ba502a6f590fca
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:28:37 2012 +0100
+
+    r3
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 9a6c8d1..b6693b6 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-r2
++r3
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: r4
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/release
+X-Git-Reftype: branch
+X-Git-Rev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch release
+in repository test-repo.
+
+commit cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:34:40 2012 +0100
+
+    r4
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index b6693b6..91174ca 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-r3
++r4
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch release updated (cd65463 -> 1034ac6)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/release
+X-Git-Reftype: branch
+X-Git-Oldrev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+X-Git-Newrev: 1034ac6f45124ba093336b47541704f4a7c30dfc
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch release
+in repository test-repo.
+
+  discards  cd65463   r4
+  discards  5f26bd1   r3
+
+This update removed existing revisions from the reference, leaving the
+reference pointing at a previous point in the repository history.
+
+ * -- * -- N   refs/heads/release (1034ac6)
+            \
+             O -- O -- O   (cd65463)
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch feature created (now 47ef1f8)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/feature
+X-Git-Reftype: branch
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch feature
+in repository test-repo.
+
+        at  47ef1f8   f5
+
+This branch includes the following new commits:
+
+       new  7a9800a   f4
+       new  47ef1f8   f5
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: f4
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/feature
+X-Git-Reftype: branch
+X-Git-Rev: 7a9800a4ba059cf9962b8a8d4d823a4e8f2cae2a
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch feature
+in repository test-repo.
+
+commit 7a9800a4ba059cf9962b8a8d4d823a4e8f2cae2a
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:31:44 2012 +0100
+
+    f4
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 45d9e0e..c48ac48 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-f3
++f4
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: f5
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/feature
+X-Git-Reftype: branch
+X-Git-Rev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch feature
+in repository test-repo.
+
+commit 47ef1f8bb115409dc2d7ac878360df3823198d2b
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:33:08 2012 +0100
+
+    f5
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index c48ac48..14c61ec 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-f4
++f5
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch feature updated (c742b15 -> 47ef1f8)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/feature
+X-Git-Reftype: branch
+X-Git-Oldrev: c742b15e5c9cbb174294c1b3efaa959413bf4137
+X-Git-Newrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch feature
+in repository test-repo.
+
+      from  c742b15   f2
+      adds  abb8baa   f3
+       new  7a9800a   f4
+       new  47ef1f8   f5
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: f4
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/feature
+X-Git-Reftype: branch
+X-Git-Rev: 7a9800a4ba059cf9962b8a8d4d823a4e8f2cae2a
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch feature
+in repository test-repo.
+
+commit 7a9800a4ba059cf9962b8a8d4d823a4e8f2cae2a
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:31:44 2012 +0100
+
+    f4
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 45d9e0e..c48ac48 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-f3
++f4
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: f5
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/feature
+X-Git-Reftype: branch
+X-Git-Rev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch feature
+in repository test-repo.
+
+commit 47ef1f8bb115409dc2d7ac878360df3823198d2b
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:33:08 2012 +0100
+
+    f5
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index c48ac48..14c61ec 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-f4
++f5
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch feature updated (47ef1f8 -> c742b15)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/feature
+X-Git-Reftype: branch
+X-Git-Oldrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+X-Git-Newrev: c742b15e5c9cbb174294c1b3efaa959413bf4137
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch feature
+in repository test-repo.
+
+  discards  47ef1f8   f5
+  discards  7a9800a   f4
+     omits  abb8baa   f3
+
+This update removed existing revisions from the reference, leaving the
+reference pointing at a previous point in the repository history.
+
+ * -- * -- N   refs/heads/feature (c742b15)
+            \
+             O -- O -- O   (47ef1f8)
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch feature deleted (was 47ef1f8)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/feature
+X-Git-Reftype: branch
+X-Git-Oldrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+X-Git-Newrev: 0000000000000000000000000000000000000000
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch feature
+in repository test-repo.
+
+       was  47ef1f8   f5
+
+This change permanently discards the following revisions:
+
+  discards  47ef1f8   f5
+  discards  7a9800a   f4
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* tag tag created (now 1034ac6)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag
+X-Git-Reftype: tag
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: 1034ac6f45124ba093336b47541704f4a7c30dfc
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to tag tag
+in repository test-repo.
+
+        at  1034ac6   (commit)
+No new revisions were added by this update.
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* tag tag updated (902dfe1 -> 1034ac6)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag
+X-Git-Reftype: tag
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: 1034ac6f45124ba093336b47541704f4a7c30dfc
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to tag tag
+in repository test-repo.
+
+*** WARNING: tag tag was modified! ***
+
+      from  902dfe1   (commit)
+        to  1034ac6   (commit)
+     omits  902dfe1   a5
+     omits  d245c99   m1
+     omits  abb8baa   f3
+     omits  c742b15   f2
+     omits  f0e9a98   f1
+     omits  ebf40e1   a4
+     omits  012fc78   a3
+     omits  50d684a   a2
+      adds  205e528   r1
+      adds  1034ac6   r2
+
+This update added new revisions after undoing existing revisions.
+That is to say, some revisions that were in the old version of the
+tag are not in the new version.  This situation occurs
+when a user --force pushes a change and generates a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O   (902dfe1)
+            \
+             N -- N -- N   refs/tags/tag (1034ac6)
+
+You should already have received notification emails for all of the O
+revisions, and so the following emails describe only the N revisions
+from the common base, B.
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* tag tag deleted (was 1034ac6)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag
+X-Git-Reftype: tag
+X-Git-Oldrev: 1034ac6f45124ba093336b47541704f4a7c30dfc
+X-Git-Newrev: 0000000000000000000000000000000000000000
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to tag tag
+in repository test-repo.
+
+*** WARNING: tag tag was deleted! ***
+
+       was  1034ac6   r2
+
+The revisions that were on this tag are still contained in
+other references; therefore, this change does not discard any commits
+from the repository.
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag tag-annotated created (now bc4a4a6)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: bc4a4a6920231744413492b4084a96a3cd428ca6
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tag-annotated
+in repository test-repo.
+
+        at  bc4a4a6   (tag)
+   tagging  1034ac6f45124ba093336b47541704f4a7c30dfc (commit)
+ tagged by  Joe User
+        on  Fri Feb 3 09:34:15 2012 +0100
+
+- Log -----------------------------------------------------------------
+This is an annotated tag
+
+Joe User (3):
+      a1
+      r1
+      r2
+
+-----------------------------------------------------------------------
+
+No new revisions were added by this update.
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag tag-annotated updated (902dfe1 -> bc4a4a6)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: bc4a4a6920231744413492b4084a96a3cd428ca6
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tag-annotated
+in repository test-repo.
+
+*** WARNING: tag tag-annotated was modified! ***
+
+      from  902dfe1   (commit)
+        to  bc4a4a6   (tag)
+   tagging  1034ac6f45124ba093336b47541704f4a7c30dfc (commit)
+ tagged by  Joe User
+        on  Fri Feb 3 09:34:15 2012 +0100
+
+- Log -----------------------------------------------------------------
+This is an annotated tag
+
+Joe User (3):
+      a1
+      r1
+      r2
+
+-----------------------------------------------------------------------
+
+     omits  902dfe1   a5
+     omits  d245c99   m1
+     omits  abb8baa   f3
+     omits  c742b15   f2
+     omits  f0e9a98   f1
+     omits  ebf40e1   a4
+     omits  012fc78   a3
+     omits  50d684a   a2
+      adds  205e528   r1
+      adds  1034ac6   r2
+
+This update added new revisions after undoing existing revisions.
+That is to say, some revisions that were in the old version of the
+annotated tag are not in the new version.  This situation occurs
+when a user --force pushes a change and generates a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O   (902dfe1)
+            \
+             N -- N -- N   refs/tags/tag-annotated (bc4a4a6)
+
+You should already have received notification emails for all of the O
+revisions, and so the following emails describe only the N revisions
+from the common base, B.
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag tag-annotated deleted (was bc4a4a6)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: bc4a4a6920231744413492b4084a96a3cd428ca6
+X-Git-Newrev: 0000000000000000000000000000000000000000
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tag-annotated
+in repository test-repo.
+
+*** WARNING: tag tag-annotated was deleted! ***
+
+   tag was  bc4a4a6
+
+The revisions that were on this annotated tag are still contained in
+other references; therefore, this change does not discard any commits
+from the repository.
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag tag-annotated-new-content created (now
+ 3fe4049)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: 3fe4049f738325dcf028a306bcb27a50246fab86
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+        at  3fe4049   (tag)
+   tagging  fe0ff82b4b647afd6aa5f85362f95207639e76b1 (commit)
+ tagged by  Joe User
+        on  Sat Jun 30 13:47:18 2012 +0200
+
+- Log -----------------------------------------------------------------
+This annotated tag adds commits.
+
+Joe User (3):
+      a1
+      t1
+      t2
+
+-----------------------------------------------------------------------
+
+This annotated tag includes the following new commits:
+
+       new  8fe34ad   t1
+       new  fe0ff82   t2
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: t1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Rev: 8fe34ad1d135ff2d216e5b1b98be5817943c9622
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+commit 8fe34ad1d135ff2d216e5b1b98be5817943c9622
+Author: Joe User <user@example.com>
+Date:   Sat Jun 30 13:46:41 2012 +0200
+
+    t1
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index d00491f..795ea43 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-1
++t1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: t2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Rev: fe0ff82b4b647afd6aa5f85362f95207639e76b1
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+commit fe0ff82b4b647afd6aa5f85362f95207639e76b1
+Author: Joe User <user@example.com>
+Date:   Sat Jun 30 13:46:50 2012 +0200
+
+    t2
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 795ea43..9bc7ad0 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-t1
++t2
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag tag-annotated-new-content updated
+ (902dfe1 -> 3fe4049)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: 3fe4049f738325dcf028a306bcb27a50246fab86
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+*** WARNING: tag tag-annotated-new-content was modified! ***
+
+      from  902dfe1   (commit)
+        to  3fe4049   (tag)
+   tagging  fe0ff82b4b647afd6aa5f85362f95207639e76b1 (commit)
+ tagged by  Joe User
+        on  Sat Jun 30 13:47:18 2012 +0200
+
+- Log -----------------------------------------------------------------
+This annotated tag adds commits.
+
+Joe User (3):
+      a1
+      t1
+      t2
+
+-----------------------------------------------------------------------
+
+     omits  902dfe1   a5
+     omits  d245c99   m1
+     omits  abb8baa   f3
+     omits  c742b15   f2
+     omits  f0e9a98   f1
+     omits  ebf40e1   a4
+     omits  012fc78   a3
+     omits  50d684a   a2
+       new  8fe34ad   t1
+       new  fe0ff82   t2
+
+This update added new revisions after undoing existing revisions.
+That is to say, some revisions that were in the old version of the
+annotated tag are not in the new version.  This situation occurs
+when a user --force pushes a change and generates a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O   (902dfe1)
+            \
+             N -- N -- N   refs/tags/tag-annotated-new-content (3fe4049)
+
+You should already have received notification emails for all of the O
+revisions, and so the following emails describe only the N revisions
+from the common base, B.
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: t1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Rev: 8fe34ad1d135ff2d216e5b1b98be5817943c9622
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+commit 8fe34ad1d135ff2d216e5b1b98be5817943c9622
+Author: Joe User <user@example.com>
+Date:   Sat Jun 30 13:46:41 2012 +0200
+
+    t1
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index d00491f..795ea43 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-1
++t1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: t2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Rev: fe0ff82b4b647afd6aa5f85362f95207639e76b1
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+commit fe0ff82b4b647afd6aa5f85362f95207639e76b1
+Author: Joe User <user@example.com>
+Date:   Sat Jun 30 13:46:50 2012 +0200
+
+    t2
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 795ea43..9bc7ad0 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-t1
++t2
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag tag-annotated-new-content deleted (was
+ 3fe4049)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 3fe4049f738325dcf028a306bcb27a50246fab86
+X-Git-Newrev: 0000000000000000000000000000000000000000
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+*** WARNING: tag tag-annotated-new-content was deleted! ***
+
+   tag was  3fe4049
+
+This change permanently discards the following revisions:
+
+  discards  fe0ff82   t2
+  discards  8fe34ad   t1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag tree-tag created (now df5bc27)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tree-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: df5bc274e13996487dbf1738ea2497549e9ece0e
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tree-tag
+in repository test-repo.
+
+        at  df5bc27   (tag)
+   tagging  1ee77c4aadec637071d45755613424514c82c76e (tag)
+    length  157 bytes
+ tagged by  Joe User
+        on  Thu Nov 22 04:00:00 2012 +0530
+
+- Log -----------------------------------------------------------------
+This annotated tag points at a tag that points at a tree.
+-----------------------------------------------------------------------
+
+This is an unusual reference change because the reference did not
+refer to a commit either before or after the change.  We do not know
+how to provide full information about this reference change.
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag tree-tag updated (902dfe1 -> df5bc27)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tree-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: df5bc274e13996487dbf1738ea2497549e9ece0e
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tree-tag
+in repository test-repo.
+
+*** WARNING: tag tree-tag was modified! ***
+
+      from  902dfe1   (commit)
+        to  df5bc27   (tag)
+   tagging  1ee77c4aadec637071d45755613424514c82c76e (tag)
+    length  157 bytes
+ tagged by  Joe User
+        on  Thu Nov 22 04:00:00 2012 +0530
+
+- Log -----------------------------------------------------------------
+This annotated tag points at a tag that points at a tree.
+-----------------------------------------------------------------------
+
+The revisions that were on this annotated tag are still contained in
+other references; therefore, this change does not discard any commits
+from the repository.
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag tree-tag deleted (was df5bc27)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tree-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: df5bc274e13996487dbf1738ea2497549e9ece0e
+X-Git-Newrev: 0000000000000000000000000000000000000000
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tree-tag
+in repository test-repo.
+
+*** WARNING: tag tree-tag was deleted! ***
+
+   tag was  df5bc27
+
+This is an unusual reference change because the reference did not
+refer to a commit either before or after the change.  We do not know
+how to provide full information about this reference change.
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag recursive-tag created (now b56d4b8)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/recursive-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: b56d4b8564a5f3082eb493c9e765d7de3237014e
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag recursive-tag
+in repository test-repo.
+
+        at  b56d4b8   (tag)
+   tagging  bc4a4a6920231744413492b4084a96a3cd428ca6 (tag)
+    length  156 bytes
+ tagged by  Joe User
+        on  Thu Nov 22 02:00:00 2012 +0530
+
+- Log -----------------------------------------------------------------
+This annotated tag points at another annotated tag.
+-----------------------------------------------------------------------
+
+No new revisions were added by this update.
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag recursive-tag updated (902dfe1 -> b56d4b8)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/recursive-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: b56d4b8564a5f3082eb493c9e765d7de3237014e
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag recursive-tag
+in repository test-repo.
+
+*** WARNING: tag recursive-tag was modified! ***
+
+      from  902dfe1   (commit)
+        to  b56d4b8   (tag)
+   tagging  bc4a4a6920231744413492b4084a96a3cd428ca6 (tag)
+    length  156 bytes
+ tagged by  Joe User
+        on  Thu Nov 22 02:00:00 2012 +0530
+
+- Log -----------------------------------------------------------------
+This annotated tag points at another annotated tag.
+-----------------------------------------------------------------------
+
+     omits  902dfe1   a5
+     omits  d245c99   m1
+     omits  abb8baa   f3
+     omits  c742b15   f2
+     omits  f0e9a98   f1
+     omits  ebf40e1   a4
+     omits  012fc78   a3
+     omits  50d684a   a2
+      adds  205e528   r1
+      adds  1034ac6   r2
+
+This update added new revisions after undoing existing revisions.
+That is to say, some revisions that were in the old version of the
+annotated tag are not in the new version.  This situation occurs
+when a user --force pushes a change and generates a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O   (902dfe1)
+            \
+             N -- N -- N   refs/tags/recursive-tag (b56d4b8)
+
+You should already have received notification emails for all of the O
+revisions, and so the following emails describe only the N revisions
+from the common base, B.
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Announce List <announcelist@example.com>
+Subject: *test-repo* annotated tag recursive-tag deleted (was b56d4b8)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/recursive-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: b56d4b8564a5f3082eb493c9e765d7de3237014e
+X-Git-Newrev: 0000000000000000000000000000000000000000
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag recursive-tag
+in repository test-repo.
+
+*** WARNING: tag recursive-tag was deleted! ***
+
+   tag was  b56d4b8
+
+The revisions that were on this annotated tag are still contained in
+other references; therefore, this change does not discard any commits
+from the repository.
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+*** Push-update of tracking branch 'refs/remotes/remote'
+***  - incomplete email generated.
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* reference refs/remotes/remote created (now cf3c5de)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/remotes/remote
+X-Git-Reftype: reference
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: cf3c5decbcf03c567cdcc48f054441943013e121
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to reference refs/remotes/remote
+in repository test-repo.
+
+        at  cf3c5de   x2
+
+This reference includes the following new commits:
+
+       new  25d99c9   x1
+       new  cf3c5de   x2
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: x1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/remotes/remote
+X-Git-Reftype: reference
+X-Git-Rev: 25d99c94a2fa9b1e1888faa63836f910fbfe773e
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to reference refs/remotes/remote
+in repository test-repo.
+
+commit 25d99c94a2fa9b1e1888faa63836f910fbfe773e
+Author: Joe User <user@example.com>
+Date:   Sat Jan 26 07:39:22 2013 +0100
+
+    x1
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index d00491f..9e35a1c 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-1
++x1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: x2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/remotes/remote
+X-Git-Reftype: reference
+X-Git-Rev: cf3c5decbcf03c567cdcc48f054441943013e121
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to reference refs/remotes/remote
+in repository test-repo.
+
+commit cf3c5decbcf03c567cdcc48f054441943013e121
+Author: Joe User <user@example.com>
+Date:   Sat Jan 26 07:39:39 2013 +0100
+
+    x2
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 9e35a1c..d735d34 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-x1
++x2
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+*** Push-update of tracking branch 'refs/remotes/remote'
+***  - incomplete email generated.
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* reference refs/remotes/remote updated (902dfe1 ->
+ cf3c5de)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/remotes/remote
+X-Git-Reftype: reference
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: cf3c5decbcf03c567cdcc48f054441943013e121
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to reference refs/remotes/remote
+in repository test-repo.
+
+     omits  902dfe1   a5
+     omits  d245c99   m1
+     omits  abb8baa   f3
+     omits  c742b15   f2
+     omits  f0e9a98   f1
+     omits  ebf40e1   a4
+     omits  012fc78   a3
+     omits  50d684a   a2
+       new  25d99c9   x1
+       new  cf3c5de   x2
+
+This update added new revisions after undoing existing revisions.
+That is to say, some revisions that were in the old version of the
+reference are not in the new version.  This situation occurs
+when a user --force pushes a change and generates a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O   (902dfe1)
+            \
+             N -- N -- N   refs/remotes/remote (cf3c5de)
+
+You should already have received notification emails for all of the O
+revisions, and so the following emails describe only the N revisions
+from the common base, B.
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: x1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/remotes/remote
+X-Git-Reftype: reference
+X-Git-Rev: 25d99c94a2fa9b1e1888faa63836f910fbfe773e
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to reference refs/remotes/remote
+in repository test-repo.
+
+commit 25d99c94a2fa9b1e1888faa63836f910fbfe773e
+Author: Joe User <user@example.com>
+Date:   Sat Jan 26 07:39:22 2013 +0100
+
+    x1
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index d00491f..9e35a1c 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-1
++x1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: x2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/remotes/remote
+X-Git-Reftype: reference
+X-Git-Rev: cf3c5decbcf03c567cdcc48f054441943013e121
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to reference refs/remotes/remote
+in repository test-repo.
+
+commit cf3c5decbcf03c567cdcc48f054441943013e121
+Author: Joe User <user@example.com>
+Date:   Sat Jan 26 07:39:39 2013 +0100
+
+    x2
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 9e35a1c..d735d34 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-x1
++x2
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+*** Push-update of tracking branch 'refs/remotes/remote'
+***  - incomplete email generated.
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* reference refs/remotes/remote deleted (was cf3c5de)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/remotes/remote
+X-Git-Reftype: reference
+X-Git-Oldrev: cf3c5decbcf03c567cdcc48f054441943013e121
+X-Git-Newrev: 0000000000000000000000000000000000000000
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to reference refs/remotes/remote
+in repository test-repo.
+
+       was  cf3c5de   x2
+
+This change permanently discards the following revisions:
+
+  discards  cf3c5de   x2
+  discards  25d99c9   x1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+*** Push-update of strange reference 'refs/foo/bar'
+***  - incomplete email generated.
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* reference refs/foo/bar created (now ab5a78a)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/foo/bar
+X-Git-Reftype: reference
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: ab5a78a6d6540fc787daee288e2f29804430c7a9
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to reference refs/foo/bar
+in repository test-repo.
+
+        at  ab5a78a   b1
+
+This reference includes the following new commits:
+
+       new  ab5a78a   b1
+
+The 1 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/01: b1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/foo/bar
+X-Git-Reftype: reference
+X-Git-Rev: ab5a78a6d6540fc787daee288e2f29804430c7a9
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to reference refs/foo/bar
+in repository test-repo.
+
+commit ab5a78a6d6540fc787daee288e2f29804430c7a9
+Author: Joe User <user@example.com>
+Date:   Sat Jan 26 07:43:14 2013 +0100
+
+    b1
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index d00491f..c9c6af7 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-1
++b1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+*** Push-update of strange reference 'refs/foo/bar'
+***  - incomplete email generated.
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* reference refs/foo/bar updated (902dfe1 -> ab5a78a)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/foo/bar
+X-Git-Reftype: reference
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: ab5a78a6d6540fc787daee288e2f29804430c7a9
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to reference refs/foo/bar
+in repository test-repo.
+
+     omits  902dfe1   a5
+     omits  d245c99   m1
+     omits  abb8baa   f3
+     omits  c742b15   f2
+     omits  f0e9a98   f1
+     omits  ebf40e1   a4
+     omits  012fc78   a3
+     omits  50d684a   a2
+       new  ab5a78a   b1
+
+This update added new revisions after undoing existing revisions.
+That is to say, some revisions that were in the old version of the
+reference are not in the new version.  This situation occurs
+when a user --force pushes a change and generates a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O   (902dfe1)
+            \
+             N -- N -- N   refs/foo/bar (ab5a78a)
+
+You should already have received notification emails for all of the O
+revisions, and so the following emails describe only the N revisions
+from the common base, B.
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+The 1 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/01: b1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/foo/bar
+X-Git-Reftype: reference
+X-Git-Rev: ab5a78a6d6540fc787daee288e2f29804430c7a9
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to reference refs/foo/bar
+in repository test-repo.
+
+commit ab5a78a6d6540fc787daee288e2f29804430c7a9
+Author: Joe User <user@example.com>
+Date:   Sat Jan 26 07:43:14 2013 +0100
+
+    b1
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index d00491f..c9c6af7 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-1
++b1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+*** Push-update of strange reference 'refs/foo/bar'
+***  - incomplete email generated.
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* reference refs/foo/bar deleted (was ab5a78a)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/foo/bar
+X-Git-Reftype: reference
+X-Git-Oldrev: ab5a78a6d6540fc787daee288e2f29804430c7a9
+X-Git-Newrev: 0000000000000000000000000000000000000000
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to reference refs/foo/bar
+in repository test-repo.
+
+       was  ab5a78a   b1
+
+This change permanently discards the following revisions:
+
+  discards  ab5a78a   b1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master updated (ebf40e1 -> 902dfe1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+      from  ebf40e1   a4
+      adds  f0e9a98   f1
+      adds  c742b15   f2
+      adds  abb8baa   f3
+       new  d245c99   m1
+       new  902dfe1   a5
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: m1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: d245c99162aff6fff4879e5d5c17d454766b45db
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit d245c99162aff6fff4879e5d5c17d454766b45db
+Merge: ebf40e1 abb8baa
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:32:27 2012 +0100
+
+    m1
+
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --cc a.txt
+index b8626c4,45d9e0e..63a911f
+--- a/a.txt
++++ b/a.txt
+@@@ -1,1 -1,1 +1,1 @@@
+- 4
+ -f3
+++m1
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: a5
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:32:50 2012 +0100
+
+    a5
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 63a911f..7ed6ff8 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-m1
++5
+
+--
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
