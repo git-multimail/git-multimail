@@ -5,11 +5,11 @@ T="$D/test-repo.git"
 DUMPFILE="$D/test-repo.dump"
 
 test -d "$T" && rm -rf "$T"
-git init --bare "$T"
+git init --bare "$T" >/dev/null
 GIT_DIR="$T"
 export GIT_DIR
 
-git fast-import <"$DUMPFILE"
+git fast-import <"$DUMPFILE" 2>/dev/null
 
 git config user.name 'Joe User'
 git config user.email 'user@example.com'
