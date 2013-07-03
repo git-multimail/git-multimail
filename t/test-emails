@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 ZEROS=0000000000000000000000000000000000000000
 
@@ -11,102 +11,102 @@ TESTREPO="$D/test-repo.git"
 
 cd $TESTREPO
 
-test-email() {
+test_email() {
     REFNAME="$1"
     OLDREV="$2"
     NEWREV="$3"
     echo "$OLDREV" "$NEWREV" "$REFNAME" | "$MULTIMAIL"
 }
 
-test-create() {
+test_create() {
     REFNAME="$1"
     NEWREV=$(git rev-parse "$REFNAME")
-    test-email "$REFNAME" "$ZEROS" "$NEWREV"
+    test_email "$REFNAME" "$ZEROS" "$NEWREV"
 }
 
-test-update() {
+test_update() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$2")
     NEWREV=$(git rev-parse "$REFNAME")
-    test-email "$REFNAME" "$OLDREV" "$NEWREV"
+    test_email "$REFNAME" "$OLDREV" "$NEWREV"
 }
 
-test-delete() {
+test_delete() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$REFNAME")
     git update-ref -d "$REFNAME" "$OLDREV" &&
-    test-email "$REFNAME" "$OLDREV" "$ZEROS"
+    test_email "$REFNAME" "$OLDREV" "$ZEROS"
     RETCODE=$?
     git update-ref "$REFNAME" "$OLDREV" ||
         echo 1>&2 "Error replacing reference $REFNAME to $OLDREV"
     return $RETCODE
 }
 
-test-rewind() {
+test_rewind() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$REFNAME")
     NEWREV=$(git rev-parse "$2")
     git update-ref "$REFNAME" "$NEWREV" "$OLDREV" &&
-    test-email "$REFNAME" "$OLDREV" "$NEWREV"
+    test_email "$REFNAME" "$OLDREV" "$NEWREV"
     RETCODE=$?
     git update-ref "$REFNAME" "$OLDREV" ||
         echo 1>&2 "Error replacing reference $REFNAME to $OLDREV"
     return $RETCODE
 }
 
-# Like test-update, but using example post-receive script:
-test-hook() {
+# Like test_update, but using example post-receive script:
+test_hook() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$2")
     NEWREV=$(git rev-parse "$REFNAME")
     echo "$OLDREV" "$NEWREV" "$REFNAME" | "$POST_RECEIVE"
 }
 
-test-create refs/heads/master
-test-update refs/heads/master refs/heads/master^^
-test-update refs/heads/master refs/heads/feature
-test-delete refs/heads/master
-test-rewind refs/heads/master refs/heads/master^^
-test-rewind refs/heads/master refs/heads/feature
-test-rewind refs/heads/master refs/heads/master^
+test_create refs/heads/master
+test_update refs/heads/master refs/heads/master^^
+test_update refs/heads/master refs/heads/feature
+test_delete refs/heads/master
+test_rewind refs/heads/master refs/heads/master^^
+test_rewind refs/heads/master refs/heads/feature
+test_rewind refs/heads/master refs/heads/master^
 
-test-update refs/heads/release refs/heads/release^^^^
-test-rewind refs/heads/release refs/heads/release^^
+test_update refs/heads/release refs/heads/release^^^^
+test_rewind refs/heads/release refs/heads/release^^
 
-test-create refs/heads/feature
-test-update refs/heads/feature refs/heads/feature^^^
-test-rewind refs/heads/feature refs/heads/feature^^^
-test-delete refs/heads/feature
+test_create refs/heads/feature
+test_update refs/heads/feature refs/heads/feature^^^
+test_rewind refs/heads/feature refs/heads/feature^^^
+test_delete refs/heads/feature
 
-test-create refs/tags/tag
-test-update refs/tags/tag refs/heads/master
-test-delete refs/tags/tag
+test_create refs/tags/tag
+test_update refs/tags/tag refs/heads/master
+test_delete refs/tags/tag
 
-test-create refs/tags/tag-annotated
-test-update refs/tags/tag-annotated refs/heads/master
-test-delete refs/tags/tag-annotated
+test_create refs/tags/tag-annotated
+test_update refs/tags/tag-annotated refs/heads/master
+test_delete refs/tags/tag-annotated
 
-test-create refs/tags/tag-annotated-new-content
-test-update refs/tags/tag-annotated-new-content refs/heads/master
-test-delete refs/tags/tag-annotated-new-content
+test_create refs/tags/tag-annotated-new-content
+test_update refs/tags/tag-annotated-new-content refs/heads/master
+test_delete refs/tags/tag-annotated-new-content
 
-test-create refs/tags/tree-tag
-test-update refs/tags/tree-tag refs/heads/master
-test-delete refs/tags/tree-tag
+test_create refs/tags/tree-tag
+test_update refs/tags/tree-tag refs/heads/master
+test_delete refs/tags/tree-tag
 
-test-create refs/tags/recursive-tag
-test-update refs/tags/recursive-tag refs/heads/master
-test-delete refs/tags/recursive-tag
+test_create refs/tags/recursive-tag
+test_update refs/tags/recursive-tag refs/heads/master
+test_delete refs/tags/recursive-tag
 
-test-create refs/remotes/remote
-test-update refs/remotes/remote refs/heads/master
-test-delete refs/remotes/remote
+test_create refs/remotes/remote
+test_update refs/remotes/remote refs/heads/master
+test_delete refs/remotes/remote
 
-test-create refs/foo/bar
-test-update refs/foo/bar refs/heads/master
-test-delete refs/foo/bar
+test_create refs/foo/bar
+test_update refs/foo/bar refs/heads/master
+test_delete refs/foo/bar
 
-test-hook refs/heads/master refs/heads/master^^
+test_hook refs/heads/master refs/heads/master^^
 
 rm -rf "$TESTREPO"
 
