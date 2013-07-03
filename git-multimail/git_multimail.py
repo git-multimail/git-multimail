@@ -307,6 +307,7 @@ class Config(object):
         config paths."""
 
         self.section = section
+        self.hash = {}
         if git_config:
             self.env = os.environ.copy()
             self.env['GIT_CONFIG'] = git_config
@@ -320,6 +321,19 @@ class Config(object):
         words = s.split('\0')
         assert words[-1] == ''
         return words[:-1]
+
+    def populate_all(self):
+        lines = self._split(read_git_output(
+            ['config', '--get-regexp', '--null', '%s.*' % (self.section,)],
+            env=self.env, keepends=True,
+            ))
+        for line in lines:
+            (key, value) = line.split('\n', 1)
+            key = key[len(self.section) + 1:]
+            if self.hash.get(key, None):
+                self.hash[key] = self.hash[key] + [value]
+            else:
+                self.hash[key] = [value]
 
     def get(self, name, default=None):
         try:
