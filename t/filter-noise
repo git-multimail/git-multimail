@@ -1,8 +1,0 @@
-#! /bin/sh
-
-# Filter out strings that vary uninterestingly from one test run to
-# the next.
-
-sed -E \
-    -e 's/^(In-Reply-To|Message-ID|References): <.*>$/\1: <...>/'
-

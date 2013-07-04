@@ -1,0 +1,6 @@
+#!/bin/sh
+
+test $# = 1 || exit "Usage: $0 <actual>"
+sed '1d;/In-Reply-To:/d;/^References:/d;/^Message-ID:/d' $1 >/tmp/multimail.actual
+git diff multimail.expect /tmp/multimail.actual
+test $? = 0 && echo "Pass"
