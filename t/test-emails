@@ -15,7 +15,7 @@ test_email() {
     REFNAME="$1"
     OLDREV="$2"
     NEWREV="$3"
-    echo "$OLDREV" "$NEWREV" "$REFNAME" | "$MULTIMAIL"
+    echo "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL"
 }
 
 test_create() {
@@ -59,7 +59,7 @@ test_hook() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$2")
     NEWREV=$(git rev-parse "$REFNAME")
-    echo "$OLDREV" "$NEWREV" "$REFNAME" | "$POST_RECEIVE"
+    echo "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE"
 }
 
 test_create refs/heads/master
