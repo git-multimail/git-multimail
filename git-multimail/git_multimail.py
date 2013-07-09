@@ -657,13 +657,9 @@ class Revision(Change):
     def _compute_values(self):
         values = Change._compute_values(self)
 
-        # First line of commit message:
-        try:
-            oneline = read_git_output(
-                ['log', '--format=%s', '--no-walk', self.rev.sha1]
-                )
-        except CommandError:
-            oneline = self.rev.sha1
+        oneline = read_git_output(
+            ['log', '--format=%s', '--no-walk', self.rev.sha1]
+            )
 
         values['rev'] = self.rev.sha1
         values['rev_short'] = self.rev.short
