@@ -1,0 +1,17 @@
+#!/bin/sh
+
+d=$(dirname "$0")
+
+retcode=0
+
+if ! "$d/compare-emails"
+then
+    retcode=1
+fi
+
+if ! "$d/test-env"
+then
+    retcode=1
+fi
+
+exit $retcode

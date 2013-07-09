@@ -5,11 +5,11 @@ T="$D/test-repo.git"
 DUMPFILE="$D/test-repo.dump"
 
 test -d "$T" && rm -rf "$T"
-git init --bare "$T"
+git init --bare "$T" >/dev/null
 GIT_DIR="$T"
 export GIT_DIR
 
-git fast-import <"$DUMPFILE"
+git fast-import <"$DUMPFILE" 2>/dev/null
 
 git config user.name 'Joe User'
 git config user.email 'user@example.com'
@@ -35,15 +35,15 @@ git config multimailhook.mailer "sendmail"
 git config multimailhook.sendmailcommand "$D/fake-sendmail"
 
 # Create some bizarre tags that git-fast-export cannot handle:
-GIT_COMMITTER_DATE="2012-11-22 02:00" \
+GIT_COMMITTER_DATE="2012-11-22 02:00 +0530" \
 git tag recursive-tag refs/tags/tag-annotated \
     -m 'This annotated tag points at another annotated tag.'
 
-GIT_COMMITTER_DATE="2012-11-22 03:00" \
+GIT_COMMITTER_DATE="2012-11-22 03:00 +0530" \
 git tag tree tag: \
     -m 'This annotated tag points at a tree.'
 
-GIT_COMMITTER_DATE="2012-11-22 04:00" \
+GIT_COMMITTER_DATE="2012-11-22 04:00 +0530" \
 git tag tree-tag tree \
     -m 'This annotated tag points at a tag that points at a tree.'
 
