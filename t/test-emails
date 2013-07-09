@@ -6,8 +6,7 @@ D=$(cd $(dirname "$0") && pwd)
 MULTIMAIL="$D/../git-multimail/git_multimail.py"
 POST_RECEIVE="$D/../git-multimail/post-receive"
 
-"$D/create-test-repo"
-TESTREPO="$D/test-repo.git"
+TESTREPO=$("$D/create-test-repo")
 
 cd $TESTREPO
 
