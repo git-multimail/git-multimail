@@ -21,19 +21,19 @@ By default, for each push received by the repository, git-multimail:
 1. Outputs one email summarizing each reference that was changed.
    These "reference change" (called "refchange" below) emails describe
    the nature of the change (e.g., was the reference created, deleted,
-   fast-forwarded, etc.) and include one-line summaries of the commits
-   that were added to the reference.
+   fast-forwarded, etc.) and include a one-line summary of each commit
+   that was added to the reference.
 
 2. Outputs one email for each new commit that was introduced by the
    reference change.  These "commit" emails include a list of the
-   files changed by the commit, followed by the diffs to text files.
-   The commit emails are threaded to the corresponding reference
-   change email via "In-Reply-To".  This style (similar to the "git
-   format-patch" style used on the Git mailing list) makes it easy
-   to scan through the emails, jump to patches that need further
-   attention, and write comments about specific emails.  Commits are
-   handled in reverse topological order (i.e., parents shown before
-   children).  For example,
+   files changed by the commit, followed by the diffs of files
+   modified by the commit.  The commit emails are threaded to the
+   corresponding reference change email via "In-Reply-To".  This style
+   (similar to the "git format-patch" style used on the Git mailing
+   list) makes it easy to scan through the emails, jump to patches
+   that need further attention, and write comments about specific
+   commits.  Commits are handled in reverse topological order (i.e.,
+   parents shown before children).  For example,
 
    [git] branch master updated
    + [git] 01/08: doc: fix xref link from api docs to manual pages
@@ -57,7 +57,8 @@ By default, for each push received by the repository, git-multimail:
 
 3. Output one "announce" mail for each new annotated tag, including
    information about the tag and optionally a shortlog describing the
-   changes since the previous tag.
+   changes since the previous tag.  Such emails might be useful if you
+   use annotated tags to mark releases of your project.
 
 
 Requirements
@@ -87,8 +88,8 @@ Requirements
 * To send emails using the default configuration, a standard sendmail
   program must be located at '/usr/sbin/sendmail' and configured
   correctly to send emails.  If this is not the case, see the
-  multimailhook.mailer configuration variable below for how to use an
-  SMTP server for sending the emails.
+  multimailhook.mailer configuration variable below for how to
+  configure git-multimail to send emails via an SMTP server.
 
 
 Invocation
@@ -370,8 +371,8 @@ multimailhook.replyToRefchange
       omitted.
 
 
-Email filtering
----------------
+Email filtering aids
+--------------------
 
 All emails include extra headers to enable fine tuned filtering and
 give information for debugging.  All emails include the headers
@@ -387,7 +388,7 @@ git-multimail mostly generates emails by expanding templates.  The
 templates can be customized.  To avoid the need to edit
 git_multimail.py directly, the preferred way to change the templates
 is to write a separate Python script that imports git_multimail.py as
-a module, then replace the templates in place.  See the provided
+a module, then replaces the templates in place.  See the provided
 post-receive script for an example of how this is done.
 
 
