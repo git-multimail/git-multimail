@@ -16,7 +16,7 @@ For an approximate test that you haven't broken anything, run
 
     $ t/run-tests
 
-, which runs all available tests.  The main test, compare-emails,
+, which runs all available tests.  The main test, test-email-content,
 simulates the sending of many notification emails for a test
 repository and compares the email texts with the expected results,
 which are recorded in multimail.expect.  If this test shows any
@@ -61,13 +61,13 @@ generate-test-emails:
     repository, writing to stdout the emails that would normally be
     sent for those pushes.  The output of this script can be filtered
     using filter-noise then compared against multimail.expect by
-    running compare-emails.
+    running test-email-content.
 
 run-tests:
 
     Run all available tests.
 
-compare-emails:
+test-email-content:
 
     Compare the output of generate-test-emails (filtered using
     filter-noise) to the expected output that is recorded in
@@ -99,7 +99,7 @@ multimail.expect
 test-repo.git/
 
     Test repository created by create-test-repo and used for the
-    compare-emails test.  This directory is usually deleted
+    test-email-content test.  This directory is usually deleted
     automatically at the end of the tests.
 
 env-repo.git/
