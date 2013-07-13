@@ -2,17 +2,17 @@
 			   =============
 
 git-multimail is a tool for sending notification emails on pushes to a
-git repository.  It includes a Python module called git_multimail.py,
+Git repository.  It includes a Python module called git_multimail.py,
 which can either be used as a hook script directly or can be imported
 as a Python module into another script.
 
-git-multimail is derived from the old
+git-multimail is derived from the Git project's old
 contrib/hooks/post-receive-email, and is mostly compatible with that
 script.  See README.migrate-from-post-receive-email for details about
 the differences and for how to migrate from post-receive-email to
 git-multimail.
 
-git-multimail, like the rest of the git project, is licensed under
+git-multimail, like the rest of the Git project, is licensed under
 GPLv2 (see the COPYING file for details).
 
 
@@ -29,7 +29,7 @@ By default, for each push received by the repository, git-multimail:
    files changed by the commit, followed by the diffs to text files.
    The commit emails are threaded to the corresponding reference
    change email via "In-Reply-To".  This style (similar to the "git
-   format-patch" style used on the git mailing list) makes it easy
+   format-patch" style used on the Git mailing list) makes it easy
    to scan through the emails, jump to patches that need further
    attention, and write comments about specific emails.  Commits are
    handled in reverse topological order (i.e., parents shown before
@@ -95,13 +95,13 @@ Invocation
 ----------
 
 git_multimail.py is designed to be used as a "post-receive" hook in a
-git repository (see githooks(5)).  Link or copy it to
+Git repository (see githooks(5)).  Link or copy it to
 $GIT_DIR/hooks/post-receive within the repository for which email
 notifications are desired.  Usually it should be installed on the
 central repository for a project, to which all commits are eventually
 pushed.
 
-For use on pre-v1.5.1 git servers, git_multimail.py can also work as
+For use on pre-v1.5.1 Git servers, git_multimail.py can also work as
 an "update" hook, taking its arguments on the command line.  To use
 this script in this manner, link or copy it to $GIT_DIR/hooks/update.
 Please note that the script is not completely reliable in this mode
@@ -158,7 +158,7 @@ multimailhook.environment
 
 multimailhook.repoName
 
-    A short name of this git repository, to be used in various places
+    A short name of this Git repository, to be used in various places
     in the notification email text.  The default is to use $GL_REPO
     for gitolite repositories, or otherwise to derive this value from
     the repository path name.
@@ -266,7 +266,7 @@ multimailhook.from
 
 multimailhook.administrator
 
-    The name and/or email address of the administrator of the git
+    The name and/or email address of the administrator of the Git
     repository; used in FOOTER_TEMPLATE.  Default is
     multimailhook.envelopesender if it is set; otherwise a generic
     string is used.
@@ -395,12 +395,12 @@ Customizing git-multimail for your environment
 ----------------------------------------------
 
 git-multimail is mostly customized via an "environment" that describes
-the local environment in which git is running.  Two types of
+the local environment in which Git is running.  Two types of
 environment are built in:
 
-* GenericEnvironment: a stand-alone git repository.
+* GenericEnvironment: a stand-alone Git repository.
 
-* GitoliteEnvironment: a git repository that is managed by gitolite
+* GitoliteEnvironment: a Git repository that is managed by gitolite
   [3].  For such repositories, the identity of the pusher is read from
   environment variable $GL_USER, and the name of the repository is
   read from $GL_REPO (if it is not overridden by
