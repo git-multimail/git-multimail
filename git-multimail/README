@@ -15,6 +15,11 @@ git-multimail.
 git-multimail, like the rest of the Git project, is licensed under
 GPLv2 (see the COPYING file for details).
 
+Please note: although, as a convenience, git-multimail may be
+distributed along with the main Git project, development of
+git-multimail takes place in its own, separate project.  See section
+"Getting involved" below for more information.
+
 
 By default, for each push received by the repository, git-multimail:
 
@@ -433,6 +438,38 @@ should inherit from, and override individual methods (or even add your
 own mixin classes) to implement entirely new behaviors.  If you
 implement any mixins that might be useful to other people, please
 consider sharing them with the community!
+
+
+Getting involved
+----------------
+
+git-multimail is an open-source project, built by volunteers.  We
+would welcome your help!
+
+The current maintainer is Michael Haggerty <mhagger@alum.mit.edu>.
+
+General discussion of git-multimail takes place on the main Git
+mailing list,
+
+    git@vger.kernel.org
+
+Please CC emails regarding git-multimail to me so that I don't
+overlook them.
+
+The git-multimail project itself is currently hosted on GitHub:
+
+    https://github.com/mhagger/git-multimail
+
+We use the GitHub issue tracker to keep track of bugs and feature
+requests, and GitHub pull requests to exchange patches (though, if you
+prefer, you can send patches via the Git mailing list with cc to me).
+
+Please note that although a copy of git-multimail will probably be
+distributed in the "contrib" section of the main Git project,
+development takes place in the separate git-multimail repository on
+GitHub!  (Whenever enough changes to git-multimail have accumulated, a
+new code-drop of git-multimail will be submitted for inclusion in the
+Git project.)
 
 
 Footnotes
