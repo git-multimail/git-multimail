@@ -40,7 +40,7 @@ create-test-repo:
     testing git-multimail.  Most of the repository is created by
     loading the dumpfile "test-repo.dump", then a few more weird tags
     are created that point to objects other than commits.  This script
-    is invoked automatically by test-emails.
+    is invoked automatically by generate-test-emails.
 
 fake-sendmail:
 
@@ -51,11 +51,11 @@ fake-sendmail:
 
 filter-noise:
 
-    Filters from the test-emails output many strings that vary
-    unpredictably from one test run to another to make it easier to
-    compare the output of different runs.
+    Filters from the generate-test-emails output many strings that
+    vary unpredictably from one test run to another to make it easier
+    to compare the output of different runs.
 
-test-emails:
+generate-test-emails:
 
     Runs create-test-repo and then simulates a bunch of pushes to the
     repository, writing to stdout the emails that would normally be
@@ -69,8 +69,9 @@ run-tests:
 
 compare-emails:
 
-    Compare the output of test-emails (filtered using filter-noise) to
-    the expected output that is recorded in multimail.expect.
+    Compare the output of generate-test-emails (filtered using
+    filter-noise) to the expected output that is recorded in
+    multimail.expect.
 
 test-env:
 
@@ -90,9 +91,10 @@ test-repo.dump
 
 multimail.expect
 
-    This file contains the expected output of test-emails, already
-    filtered using filter-noise.  Please adjust this file if you make
-    a change that intentionally alters the output of git-multimail.
+    This file contains the expected output of generate-test-emails,
+    already filtered using filter-noise.  Please adjust this file if
+    you make a change that intentionally alters the output of
+    git-multimail.
 
 test-repo.git/
 

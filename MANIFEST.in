@@ -8,8 +8,8 @@ include t/compare-emails
 include t/create-test-repo
 include t/fake-sendmail
 include t/filter-noise
+include t/generate-test-emails
 include t/multimail.expect
 include t/run-tests
-include t/test-emails
 include t/test-env
 include t/test-repo.dump
