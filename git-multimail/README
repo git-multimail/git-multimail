@@ -2,18 +2,23 @@
 			   =============
 
 git-multimail is a tool for sending notification emails on pushes to a
-git repository.  It includes a Python module called git_multimail.py,
+Git repository.  It includes a Python module called git_multimail.py,
 which can either be used as a hook script directly or can be imported
 as a Python module into another script.
 
-git-multimail is derived from the old
+git-multimail is derived from the Git project's old
 contrib/hooks/post-receive-email, and is mostly compatible with that
 script.  See README.migrate-from-post-receive-email for details about
 the differences and for how to migrate from post-receive-email to
 git-multimail.
 
-git-multimail, like the rest of the git project, is licensed under
+git-multimail, like the rest of the Git project, is licensed under
 GPLv2 (see the COPYING file for details).
+
+Please note: although, as a convenience, git-multimail may be
+distributed along with the main Git project, development of
+git-multimail takes place in its own, separate project.  See section
+"Getting involved" below for more information.
 
 
 By default, for each push received by the repository, git-multimail:
@@ -21,19 +26,19 @@ By default, for each push received by the repository, git-multimail:
 1. Outputs one email summarizing each reference that was changed.
    These "reference change" (called "refchange" below) emails describe
    the nature of the change (e.g., was the reference created, deleted,
-   fast-forwarded, etc.) and include one-line summaries of the commits
-   that were added to the reference.
+   fast-forwarded, etc.) and include a one-line summary of each commit
+   that was added to the reference.
 
 2. Outputs one email for each new commit that was introduced by the
    reference change.  These "commit" emails include a list of the
-   files changed by the commit, followed by the diffs to text files.
-   The commit emails are threaded to the corresponding reference
-   change email via "In-Reply-To".  This style (similar to the "git
-   format-patch" style used on the git mailing list) makes it easy
-   to scan through the emails, jump to patches that need further
-   attention, and write comments about specific emails.  Commits are
-   handled in reverse topological order (i.e., parents shown before
-   children).  For example,
+   files changed by the commit, followed by the diffs of files
+   modified by the commit.  The commit emails are threaded to the
+   corresponding reference change email via "In-Reply-To".  This style
+   (similar to the "git format-patch" style used on the Git mailing
+   list) makes it easy to scan through the emails, jump to patches
+   that need further attention, and write comments about specific
+   commits.  Commits are handled in reverse topological order (i.e.,
+   parents shown before children).  For example,
 
    [git] branch master updated
    + [git] 01/08: doc: fix xref link from api docs to manual pages
@@ -57,7 +62,8 @@ By default, for each push received by the repository, git-multimail:
 
 3. Output one "announce" mail for each new annotated tag, including
    information about the tag and optionally a shortlog describing the
-   changes since the previous tag.
+   changes since the previous tag.  Such emails might be useful if you
+   use annotated tags to mark releases of your project.
 
 
 Requirements
@@ -87,21 +93,21 @@ Requirements
 * To send emails using the default configuration, a standard sendmail
   program must be located at '/usr/sbin/sendmail' and configured
   correctly to send emails.  If this is not the case, see the
-  multimailhook.mailer configuration variable below for how to use an
-  SMTP server for sending the emails.
+  multimailhook.mailer configuration variable below for how to
+  configure git-multimail to send emails via an SMTP server.
 
 
 Invocation
 ----------
 
 git_multimail.py is designed to be used as a "post-receive" hook in a
-git repository (see githooks(5)).  Link or copy it to
+Git repository (see githooks(5)).  Link or copy it to
 $GIT_DIR/hooks/post-receive within the repository for which email
 notifications are desired.  Usually it should be installed on the
 central repository for a project, to which all commits are eventually
 pushed.
 
-For use on pre-v1.5.1 git servers, git_multimail.py can also work as
+For use on pre-v1.5.1 Git servers, git_multimail.py can also work as
 an "update" hook, taking its arguments on the command line.  To use
 this script in this manner, link or copy it to $GIT_DIR/hooks/update.
 Please note that the script is not completely reliable in this mode
@@ -158,7 +164,7 @@ multimailhook.environment
 
 multimailhook.repoName
 
-    A short name of this git repository, to be used in various places
+    A short name of this Git repository, to be used in various places
     in the notification email text.  The default is to use $GL_REPO
     for gitolite repositories, or otherwise to derive this value from
     the repository path name.
@@ -266,7 +272,7 @@ multimailhook.from
 
 multimailhook.administrator
 
-    The name and/or email address of the administrator of the git
+    The name and/or email address of the administrator of the Git
     repository; used in FOOTER_TEMPLATE.  Default is
     multimailhook.envelopesender if it is set; otherwise a generic
     string is used.
@@ -370,8 +376,8 @@ multimailhook.replyToRefchange
       omitted.
 
 
-Email filtering
----------------
+Email filtering aids
+--------------------
 
 All emails include extra headers to enable fine tuned filtering and
 give information for debugging.  All emails include the headers
@@ -387,7 +393,7 @@ git-multimail mostly generates emails by expanding templates.  The
 templates can be customized.  To avoid the need to edit
 git_multimail.py directly, the preferred way to change the templates
 is to write a separate Python script that imports git_multimail.py as
-a module, then replace the templates in place.  See the provided
+a module, then replaces the templates in place.  See the provided
 post-receive script for an example of how this is done.
 
 
@@ -395,12 +401,12 @@ Customizing git-multimail for your environment
 ----------------------------------------------
 
 git-multimail is mostly customized via an "environment" that describes
-the local environment in which git is running.  Two types of
+the local environment in which Git is running.  Two types of
 environment are built in:
 
-* GenericEnvironment: a stand-alone git repository.
+* GenericEnvironment: a stand-alone Git repository.
 
-* GitoliteEnvironment: a git repository that is managed by gitolite
+* GitoliteEnvironment: a Git repository that is managed by gitolite
   [3].  For such repositories, the identity of the pusher is read from
   environment variable $GL_USER, and the name of the repository is
   read from $GL_REPO (if it is not overridden by
@@ -432,6 +438,38 @@ should inherit from, and override individual methods (or even add your
 own mixin classes) to implement entirely new behaviors.  If you
 implement any mixins that might be useful to other people, please
 consider sharing them with the community!
+
+
+Getting involved
+----------------
+
+git-multimail is an open-source project, built by volunteers.  We
+would welcome your help!
+
+The current maintainer is Michael Haggerty <mhagger@alum.mit.edu>.
+
+General discussion of git-multimail takes place on the main Git
+mailing list,
+
+    git@vger.kernel.org
+
+Please CC emails regarding git-multimail to me so that I don't
+overlook them.
+
+The git-multimail project itself is currently hosted on GitHub:
+
+    https://github.com/mhagger/git-multimail
+
+We use the GitHub issue tracker to keep track of bugs and feature
+requests, and GitHub pull requests to exchange patches (though, if you
+prefer, you can send patches via the Git mailing list with cc to me).
+
+Please note that although a copy of git-multimail will probably be
+distributed in the "contrib" section of the main Git project,
+development takes place in the separate git-multimail repository on
+GitHub!  (Whenever enough changes to git-multimail have accumulated, a
+new code-drop of git-multimail will be submitted for inclusion in the
+Git project.)
 
 
 Footnotes

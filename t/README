@@ -9,6 +9,28 @@ and it is quite possible that they require a newer version of Python
 than does the git-multimail script itself.
 
 
+Short instructions
+==================
+
+For an approximate test that you haven't broken anything, run
+
+    $ t/run-tests
+
+, which runs all available tests.  The main test, test-email-content,
+simulates the sending of many notification emails for a test
+repository and compares the email texts with the expected results,
+which are recorded in multimail.expect.  If this test shows any
+discrepancies, then either
+
+a. Your change broke something.  Fix it :-)
+
+b. Your change intentionally improved something.  Make absolutely sure
+   that you like the change, then copy the new output to
+   multimail.expect, double-check that *now* the tests run without
+   errors, then commit the new version of multimail.expect along with
+   the rest of your change.
+
+
 Test scripts
 ============
 
@@ -17,25 +39,39 @@ create-test-repo:
     Create a test repository "test-repo.git" that can be used for
     testing git-multimail.  Most of the repository is created by
     loading the dumpfile "test-repo.dump", then a few more weird tags
-    are created that point to objects other than commits.
+    are created that point to objects other than commits.  This script
+    is invoked automatically by generate-test-emails.
 
-test-emails:
+fake-sendmail:
+
+    A shell script that is used by the test scripts as the "sendmail"
+    command.  It simply writes the email text to its standard output
+    along with information about how it was invoked, thereby
+    preventing the sending of any actual emails.
+
+filter-noise:
+
+    Filters from the generate-test-emails output many strings that
+    vary unpredictably from one test run to another to make it easier
+    to compare the output of different runs.
+
+generate-test-emails:
 
     Runs create-test-repo and then simulates a bunch of pushes to the
     repository, writing to stdout the emails that would normally be
     sent for those pushes.  The output of this script can be filtered
     using filter-noise then compared against multimail.expect by
-    running compare-emails.
+    running test-email-content.
 
-filter-noise:
+run-tests:
 
-    Filters from the test-emails output many strings that vary
-    unpredictably from one test run to another.
+    Run all available tests.
 
-compare-emails:
+test-email-content:
 
-    Compare the output of test-emails (filtered using filter-noise) to
-    the expected output that is recorded in multimail.expect.
+    Compare the output of generate-test-emails (filtered using
+    filter-noise) to the expected output that is recorded in
+    multimail.expect.
 
 test-env:
 
@@ -44,25 +80,29 @@ test-env:
     environments have set the correct values for the
     template-expansion parameters.
 
-run-tests:
 
-    Run all available tests.
+Other files
+===========
 
+test-repo.dump
 
-Guidelines
-==========
+    A file that is read by create-test-repo (using "git fast-import")
+    to create most of the test repository.
 
-For an approximate test that you haven't broken anything, run
+multimail.expect
 
-    $ t/run-tests
+    This file contains the expected output of generate-test-emails,
+    already filtered using filter-noise.  Please adjust this file if
+    you make a change that intentionally alters the output of
+    git-multimail.
 
-If this shows any differences relative to the expected output in
-multimail.expect, then either
+test-repo.git/
 
-(a) your change broke something.  Fix it :-)
+    Test repository created by create-test-repo and used for the
+    test-email-content test.  This directory is usually deleted
+    automatically at the end of the tests.
 
-(b) your change intentionally changed something.  Make absolutely sure
-that you like the change, then copy the new, improved output to
-multimail.expect, make sure that *now* the tests run without errors,
-then commit the new version of multimail.expect along with your
-change.
+env-repo.git/
+
+    Test repository created and used by test-env.  This directory is
+    usually deleted automatically at the end of the test.
