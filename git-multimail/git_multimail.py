@@ -672,7 +672,11 @@ class Change(object):
         get_values().  The return value should always be a new
         dictionary."""
 
-        return self.environment.get_values()
+        values = self.environment.get_values()
+        fromaddr = self.environment.get_fromaddr(change=self)
+        if fromaddr is not None:
+            values['fromaddr'] = fromaddr
+        return values
 
     def get_values(self, **extra_values):
         """Return a dictionary {keyword: expansion} for this Change.
@@ -1873,11 +1877,13 @@ class Environment(object):
             Return the address to be used as the 'From' email address
             in the email envelope.
 
-        get_fromaddr()
+        get_fromaddr(change=None)
 
             Return the 'From' email address used in the email 'From:'
-            headers.  (May be a full RFC 2822 email address like 'Joe
-            User <user@example.com>'.)
+            headers.  If the change is known when this function is
+            called, it is passed in as the 'change' parameter.  (May
+            be a full RFC 2822 email address like 'Joe User
+            <user@example.com>'.)
 
         get_administrator()
 
@@ -1968,7 +1974,6 @@ class Environment(object):
             'administrator',
             'charset',
             'emailprefix',
-            'fromaddr',
             'pusher',
             'pusher_email',
             'repo_path',
@@ -1994,7 +1999,7 @@ class Environment(object):
     def get_pusher_email(self):
         return None
 
-    def get_fromaddr(self):
+    def get_fromaddr(self, change=None):
         config = Config('user')
         fromname = config.get('name', default='')
         fromemail = config.get('email', default='')
@@ -2208,11 +2213,11 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
     def get_sender(self):
         return self.config.get('envelopesender')
 
-    def get_fromaddr(self):
+    def get_fromaddr(self, change=None):
         fromaddr = self.config.get('from')
         if fromaddr:
             return fromaddr
-        return super(ConfigOptionsEnvironmentMixin, self).get_fromaddr()
+        return super(ConfigOptionsEnvironmentMixin, self).get_fromaddr(change)
 
     def get_reply_to_refchange(self, refchange):
         if self.__reply_to_refchange is None:
@@ -2516,7 +2521,7 @@ class GitoliteEnvironmentMixin(Environment):
     def get_pusher(self):
         return self.osenv.get('GL_USER', 'unknown user')
 
-    def get_fromaddr(self):
+    def get_fromaddr(self, change=None):
         GL_USER = self.osenv.get('GL_USER')
         if GL_USER is not None:
             # Find the path to gitolite.conf.  Note that gitolite v3
@@ -2553,7 +2558,7 @@ class GitoliteEnvironmentMixin(Environment):
                             return m.group(1)
                 finally:
                     f.close()
-        return super(GitoliteEnvironmentMixin, self).get_fromaddr()
+        return super(GitoliteEnvironmentMixin, self).get_fromaddr(change)
 
 
 class IncrementalDateTime(object):
