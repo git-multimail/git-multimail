@@ -139,6 +139,9 @@ class EnvTest(unittest.TestCase):
 
     def check_environment(self, environment):
         values = environment.get_values()
+        fromaddr = environment.get_fromaddr()
+        if fromaddr is not None:
+            values['fromaddr'] = fromaddr
         for (name, value) in self.tests.items():
             if value is None:
                 if name in values:
