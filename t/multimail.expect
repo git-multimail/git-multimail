@@ -1532,10 +1532,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated created (now bc4a4a6)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -1577,10 +1578,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated updated (902dfe1 -> bc4a4a6)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -1657,10 +1659,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated deleted (was bc4a4a6)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -1693,10 +1696,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated-new-content created (now
  3fe4049)
 MIME-Version: 1.0
@@ -1836,10 +1840,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated-new-content updated
  (902dfe1 -> 3fe4049)
 MIME-Version: 1.0
@@ -2009,10 +2014,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated-new-content deleted (was
  3fe4049)
 MIME-Version: 1.0
@@ -2047,10 +2053,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tree-tag created (now df5bc27)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -2089,10 +2096,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tree-tag updated (902dfe1 -> df5bc27)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -2134,10 +2142,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tree-tag deleted (was df5bc27)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -2170,10 +2179,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag recursive-tag created (now b56d4b8)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -2210,10 +2220,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag recursive-tag updated (902dfe1 -> b56d4b8)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -2285,10 +2296,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Sending notification emails to: Announce List <announcelist@example.com>
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
-To: Announce List <announcelist@example.com>
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag recursive-tag deleted (was b56d4b8)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -2652,7 +2664,7 @@ Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
 To: Refchange List <refchangelist@example.com>
-Subject: *test-repo* reference refs/foo/bar created (now ab5a78a)
+Subject: *test-repo* reference refs/foo/bar created (now ce88e42)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -2663,7 +2675,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
 X-Git-Oldrev: 0000000000000000000000000000000000000000
-X-Git-Newrev: ab5a78a6d6540fc787daee288e2f29804430c7a9
+X-Git-Newrev: ce88e4233b43b275d24695813d0bae1460a8f1b8
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2671,11 +2683,11 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to reference refs/foo/bar
 in repository test-repo.
 
-        at  ab5a78a   b1
+        at  ce88e42   b1
 
 This reference includes the following new commits:
 
-       new  ab5a78a   b1
+       new  ce88e42   b1
 
 The 1 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -2696,13 +2708,13 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 From: From <from@example.com>
-Reply-To: Joe User <user@example.com>
+Reply-To: =?utf-8?q?Jo=C3=ABl_User?= <user@example.com>
 In-Reply-To: <...>
 References: <...>
 X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
-X-Git-Rev: ab5a78a6d6540fc787daee288e2f29804430c7a9
+X-Git-Rev: ce88e4233b43b275d24695813d0bae1460a8f1b8
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2710,8 +2722,8 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a commit to reference refs/foo/bar
 in repository test-repo.
 
-commit ab5a78a6d6540fc787daee288e2f29804430c7a9
-Author: Joe User <user@example.com>
+commit ce88e4233b43b275d24695813d0bae1460a8f1b8
+Author: Joël User <user@example.com>
 Date:   Sat Jan 26 07:43:14 2013 +0100
 
     b1
@@ -2738,7 +2750,7 @@ Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
 To: Refchange List <refchangelist@example.com>
-Subject: *test-repo* reference refs/foo/bar updated (902dfe1 -> ab5a78a)
+Subject: *test-repo* reference refs/foo/bar updated (902dfe1 -> ce88e42)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -2749,7 +2761,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
-X-Git-Newrev: ab5a78a6d6540fc787daee288e2f29804430c7a9
+X-Git-Newrev: ce88e4233b43b275d24695813d0bae1460a8f1b8
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2765,7 +2777,7 @@ in repository test-repo.
      omits  ebf40e1   a4
      omits  012fc78   a3
      omits  50d684a   a2
-       new  ab5a78a   b1
+       new  ce88e42   b1
 
 This update added new revisions after undoing existing revisions.
 That is to say, some revisions that were in the old version of the
@@ -2775,7 +2787,7 @@ containing something like this:
 
  * -- * -- B -- O -- O -- O   (902dfe1)
             \
-             N -- N -- N   refs/foo/bar (ab5a78a)
+             N -- N -- N   refs/foo/bar (ce88e42)
 
 You should already have received notification emails for all of the O
 revisions, and so the following emails describe only the N revisions
@@ -2807,13 +2819,13 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 From: From <from@example.com>
-Reply-To: Joe User <user@example.com>
+Reply-To: =?utf-8?q?Jo=C3=ABl_User?= <user@example.com>
 In-Reply-To: <...>
 References: <...>
 X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
-X-Git-Rev: ab5a78a6d6540fc787daee288e2f29804430c7a9
+X-Git-Rev: ce88e4233b43b275d24695813d0bae1460a8f1b8
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2821,8 +2833,8 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a commit to reference refs/foo/bar
 in repository test-repo.
 
-commit ab5a78a6d6540fc787daee288e2f29804430c7a9
-Author: Joe User <user@example.com>
+commit ce88e4233b43b275d24695813d0bae1460a8f1b8
+Author: Joël User <user@example.com>
 Date:   Sat Jan 26 07:43:14 2013 +0100
 
     b1
@@ -2849,7 +2861,7 @@ Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -t -f Sender <sender@example.com> <<EOF
 To: Refchange List <refchangelist@example.com>
-Subject: *test-repo* reference refs/foo/bar deleted (was ab5a78a)
+Subject: *test-repo* reference refs/foo/bar deleted (was ce88e42)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -2859,7 +2871,7 @@ Reply-To: pushuser@example.com
 X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
-X-Git-Oldrev: ab5a78a6d6540fc787daee288e2f29804430c7a9
+X-Git-Oldrev: ce88e4233b43b275d24695813d0bae1460a8f1b8
 X-Git-Newrev: 0000000000000000000000000000000000000000
 Auto-Submitted: auto-generated
 
@@ -2868,11 +2880,11 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to reference refs/foo/bar
 in repository test-repo.
 
-       was  ab5a78a   b1
+       was  ce88e42   b1
 
 This change permanently discards the following revisions:
 
-  discards  ab5a78a   b1
+  discards  ce88e42   b1
 
 -- 
 To stop receiving notification emails like this one, please contact
