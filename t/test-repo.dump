@@ -272,8 +272,8 @@ b1
 
 commit refs/foo/bar
 mark :40
-author Joe User <user@example.com> 1359182594 +0100
-committer Joe User <user@example.com> 1359182594 +0100
+author Joël User <user@example.com> 1359182594 +0100
+committer Joël User <user@example.com> 1359182594 +0100
 data 3
 b1
 from :2

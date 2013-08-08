@@ -73,6 +73,7 @@ ZEROS = '0' * 40
 LOGBEGIN = '- Log -----------------------------------------------------------------\n'
 LOGEND = '-----------------------------------------------------------------------\n'
 
+ADDR_HEADERS = set(['from', 'to', 'cc', 'bcc', 'reply-to', 'sender'])
 
 # It is assumed in many places that the encoding is uniformly UTF-8,
 # so changing these constants is unsupported.  But define them here
@@ -295,6 +296,31 @@ def read_git_lines(args, keepends=False, **kw):
     Return as single lines, with newlines stripped off."""
 
     return read_git_output(args, keepends=True, **kw).splitlines(keepends)
+
+
+def header_encode(text, header_name=None):
+    """Encode and line-wrap the value of an email header field."""
+
+    try:
+        if isinstance(text, str):
+            text = text.decode(ENCODING, errors='replace')
+        return Header(text, header_name=header_name).encode()
+    except UnicodeEncodeError:
+        return Header(text, header_name=header_name, charset=CHARSET,
+                      errors='replace').encode()
+
+
+def addr_header_encode(text, header_name=None):
+    """Encode and line-wrap the value of an email header field containing
+    email addresses."""
+
+    return Header(
+        ', '.join(
+            formataddr((header_encode(name), emailaddr))
+            for name, emailaddr in getaddresses([text])
+            ),
+        header_name=header_name
+        ).encode()
 
 
 class Config(object):
@@ -578,11 +604,11 @@ class Change(object):
                         % (e.args[0], line,)
                         )
             else:
-                try:
-                    h = Header(value, header_name=name)
-                except UnicodeDecodeError:
-                    h = Header(value, header_name=name, charset=CHARSET, errors='replace')
-                for splitline in ('%s: %s\n' % (name, h.encode(),)).splitlines(True):
+                if name.lower() in ADDR_HEADERS:
+                    value = addr_header_encode(value, name)
+                else:
+                    value = header_encode(value, name)
+                for splitline in ('%s: %s\n' % (name, value)).splitlines(True):
                     yield splitline
 
     def generate_email_header(self):

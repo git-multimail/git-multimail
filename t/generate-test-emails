@@ -8,6 +8,11 @@ POST_RECEIVE="$D/../git-multimail/post-receive"
 
 TESTREPO=$("$D/create-test-repo")
 
+HOME="$D"
+XDG_CONFIG_HOME="$D"
+GIT_CONFIG_NOSYSTEM=1
+export HOME XDG_CONFIG_HOME GIT_CONFIG_NOSYSTEM
+
 cd $TESTREPO
 
 test_email() {

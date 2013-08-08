@@ -19,7 +19,7 @@ git config multimailhook.reponame 'test-repo'
 
 git config multimailhook.mailinglist 'Mailing List <mailinglist@example.com>'
 git config multimailhook.refchangelist 'Refchange List <refchangelist@example.com>'
-git config multimailhook.announcelist 'Announce List <announcelist@example.com>'
+git config multimailhook.announcelist 'Announce List <announcelist@example.com>, Zébulon <zeb@example.com>'
 git config multimailhook.commitlist 'Commit List <commitlist@example.com>'
 
 git config multimailhook.announceshortlog 'true'

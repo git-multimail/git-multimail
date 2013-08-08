@@ -1,4 +1,5 @@
 #! /usr/bin/python2
+# encoding=utf-8
 
 import sys
 import os
@@ -6,6 +7,7 @@ import shutil
 import subprocess
 import contextlib
 import unittest
+import email.utils
 
 TEST_DIR = os.path.abspath(os.path.dirname(sys.argv[0]))
 PROJ_DIR = os.path.dirname(TEST_DIR)
@@ -17,6 +19,62 @@ import git_multimail
 from git_multimail import Config
 from git_multimail import GenericEnvironment
 from git_multimail import GitoliteEnvironment
+from git_multimail import addr_header_encode, header_encode
+
+
+class HelperTest(unittest.TestCase):
+    LONG_ASCII_ADDR = email.utils.formataddr((
+        'Nobodywouldhavesuchaninsanelongname Butwhoknowswhathappens',
+        'somelong.sampleaddr@example.com',
+    ))
+    LONG_UNICODE_ADDR = email.utils.formataddr((
+        u'Raphaël Gilbert André Hertzog',
+        'somelong.sampleaddr@example.com',
+    ))
+    SHORT_ASCII_ADDR = 'John Doe <john@example.com>'
+    SHORT_UNICODE_ADDR = u'Joël Doe <joel@example.com>'
+
+    def test_addr_header_encode_short_ascii(self):
+        self.assertEqual(
+            addr_header_encode(self.SHORT_ASCII_ADDR),
+            self.SHORT_ASCII_ADDR,
+            "incorrect encoding or wrapping of short ascii address"
+        )
+
+    def test_addr_header_encode_short_unicode(self):
+        self.assertEqual(
+            addr_header_encode(self.SHORT_UNICODE_ADDR),
+            "=?utf-8?b?Sm/Dq2wgRG9l?= <joel@example.com>",
+            "incorrect encoding or wrapping of short unicode address"
+        )
+
+    def test_addr_header_encode_long_ascii(self):
+        self.assertEqual(
+            addr_header_encode(self.LONG_ASCII_ADDR),
+            "Nobodywouldhavesuchaninsanelongname Butwhoknowswhathappens\n" +
+            " <somelong.sampleaddr@example.com>",
+            "incorrect encoding or wrapping of long ascii address"
+        )
+
+    def test_addr_header_encode_long_unicode(self):
+        self.assertEqual(
+            addr_header_encode(self.LONG_UNICODE_ADDR),
+            "=?utf-8?q?Rapha=C3=ABl_Gilbert_Andr=C3=A9_Hertzog?=\n" +
+            " <somelong.sampleaddr@example.com>",
+            "incorrect encoding or wrapping of long unicode address"
+        )
+
+    def test_addr_header_encode_long_mixed(self):
+        addrlist = ", ".join([self.LONG_UNICODE_ADDR, self.LONG_ASCII_ADDR])
+        self.assertEqual(
+            addr_header_encode(addrlist),
+            "=?utf-8?q?Rapha=C3=ABl_Gilbert_Andr=C3=A9_Hertzog?=\n" +
+            " <somelong.sampleaddr@example.com>,\n" +
+            " Nobodywouldhavesuchaninsanelongname Butwhoknowswhathappens\n" +
+            " <somelong.sampleaddr@example.com>",
+            "incorrect encoding or wrapping of address list mixing " +
+            "unicode and ascii"
+        )
 
 
 class EnvTest(unittest.TestCase):
@@ -178,6 +236,7 @@ EMAILDOMAIN = 'git.example.com'
 
 def suite():
     suite = unittest.TestSuite()
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(HelperTest))
     suite.addTest(GenericEnvTest('basic generic test', tests=GENERIC_ENVIRONMENT))
     suite.addTest(GitoliteEnvTest('basic gitolite test', tests=GITOLITE_ENVIRONMENT))
 
