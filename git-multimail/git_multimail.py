@@ -718,9 +718,7 @@ class Revision(Change):
         """Show this revision."""
 
         return read_git_lines(
-            [ 'log', '-C', '--stat', '-p', '--cc', '-1', ] +
-            self.environment.commitlogopts +
-            [ self.rev.sha1, ],
+            [ 'log' ] + self.environment.commitlogopts + [ '-1', self.rev.sha1 ],
             keepends=True,
             )
 
@@ -1537,7 +1535,7 @@ class Environment(object):
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
         self.refchange_showlog = False
-        self.commitlogopts = []
+        self.commitlogopts = ['-C', '--stat', '-p', '--cc']
 
         self.COMPUTED_KEYS = [
             'administrator',
