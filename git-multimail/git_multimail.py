@@ -303,7 +303,7 @@ def header_encode(text, header_name=None):
 
     try:
         if isinstance(text, str):
-            text = text.decode(ENCODING, errors='replace')
+            text = text.decode(ENCODING, 'replace')
         return Header(text, header_name=header_name).encode()
     except UnicodeEncodeError:
         return Header(text, header_name=header_name, charset=CHARSET,
