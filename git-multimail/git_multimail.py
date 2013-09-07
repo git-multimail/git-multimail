@@ -718,11 +718,7 @@ class Revision(Change):
         """Show this revision."""
 
         return read_git_lines(
-            [
-                'log', '-C',
-                 '--stat', '-p', '--cc',
-                '-1', self.rev.sha1,
-                ],
+            [ 'log' ] + self.environment.commitlogopts + [ '-1', self.rev.sha1 ],
             keepends=True,
             )
 
@@ -826,6 +822,7 @@ class ReferenceChange(Change):
         self.msgid = make_msgid()
         self.diffopts = environment.diffopts
         self.logopts = environment.logopts
+        self.commitlogopts = environment.commitlogopts
         self.showlog = environment.refchange_showlog
 
     def _compute_values(self):
@@ -1521,6 +1518,12 @@ class Environment(object):
             'git log' when generating the detailed log for a set of
             commits (see refchange_showlog)
 
+        commitlogopts (list of strings)
+
+            The options that should be passed to 'git log' for each
+            commit mail. The value should be a list of strings
+            representing words to be passed to the command.
+
     """
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -1532,6 +1535,7 @@ class Environment(object):
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.logopts = []
         self.refchange_showlog = False
+        self.commitlogopts = ['-C', '--stat', '-p', '--cc']
 
         self.COMPUTED_KEYS = [
             'administrator',
@@ -1697,6 +1701,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         logopts = config.get('logopts')
         if logopts is not None:
             self.logopts = shlex.split(logopts)
+
+        commitlogopts = config.get('commitlogopts')
+        if commitlogopts is not None:
+            self.commitlogopts = shlex.split(commitlogopts)
 
         reply_to = config.get('replyTo')
         self.__reply_to_refchange = config.get('replyToRefchange', default=reply_to)
