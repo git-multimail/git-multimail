@@ -344,6 +344,14 @@ multimailhook.logOpts
       [multimailhook]
               logopts = --pretty=format:\"%h %aN <%aE>%n%s%n%n%b%n\"
 
+multimailhook.commitLogOpts
+
+    Options passed to "git log" to generate additional info for
+    revision change emails.  For example, adding --ignore-all-spaces
+    will suppress whitespace changes.  The default options are "-C
+    --stat -p --cc".  Shell quoting is allowed; see
+    multimailhook.logOpts for details.
+
 multimailhook.emailDomain
 
     Domain name appended to the username of the person doing the push
