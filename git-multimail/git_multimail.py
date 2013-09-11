@@ -264,13 +264,43 @@ class ConfigurationException(Exception):
     pass
 
 
+# The "git" program (this could be changed to include a full path):
+GIT_EXECUTABLE = 'git'
+
+
+# How "git" should be invoked (including global arguments), as a list
+# of words.  This variable is usually initialized automatically by
+# read_git_output() via choose_git_command(), but if a value is set
+# here then it will be used unconditionally.
+GIT_CMD = None
+
+
+def choose_git_command():
+    """Decide how to invoke git, and record the choice in GIT_CMD."""
+
+    global GIT_CMD
+
+    if GIT_CMD is None:
+        try:
+            # Check to see whether the "-c" option is accepted (it was
+            # only added in Git 1.7.2).  We don't actually use the
+            # output of "git --version", though if we needed more
+            # specific version information this would be the place to
+            # do it.
+            cmd = [GIT_EXECUTABLE, '-c', 'foo.bar=baz', '--version']
+            read_output(cmd)
+            GIT_CMD = [GIT_EXECUTABLE, '-c', 'i18n.logoutputencoding=%s' % (ENCODING,)]
+        except CommandError:
+            GIT_CMD = [GIT_EXECUTABLE]
+
+
 def read_git_output(args, input=None, keepends=False, **kw):
     """Read the output of a Git command."""
 
-    return read_output(
-        ['git', '-c', 'i18n.logoutputencoding=%s' % (ENCODING,)] + args,
-        input=input, keepends=keepends, **kw
-        )
+    if GIT_CMD is None:
+        choose_git_command()
+
+    return read_output(GIT_CMD + args, input=input, keepends=keepends, **kw)
 
 
 def read_output(cmd, input=None, keepends=False, **kw):
