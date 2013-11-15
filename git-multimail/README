@@ -179,6 +179,16 @@ multimailhook.environment
       and repo come from these two command line flags, which must be
       specified.
 
+    * gerrit
+
+      This value is used when the gerrit-specific command line flags
+      (``--oldrev``, ``--newrev``, ``--refname``, ``--project``) for
+      gerrit's ref-updated hook are present. When this environment is
+      active, the username of the pusher is taken from the
+      ``--submitter`` argument if that command line option is passed,
+      otherwise 'Gerrit' is used. The repository name is taken from
+      the ``--project`` option on the command line, which must be passed.
+
     If none of these environments is suitable for your setup, then you
     can implement a Python class that inherits from Environment and
     instantiate it via a script that looks like the example
@@ -189,8 +199,9 @@ multimailhook.environment
     command line or by ``multimailhook.environment``, the value is
     guessed as follows:
 
-    * If stash-specific command flags are present on the command-line,
-      then ``stash`` is used.
+    * If stash-specific (respectively gerrit-specific) command flags
+      are present on the command-line, then ``stash`` (respectively
+      ``gerrit``) is used.
 
     * If the environment variables $GL_USER and $GL_REPO are set, then
       ``gitolite`` is used.

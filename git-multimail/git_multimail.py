@@ -2764,6 +2764,53 @@ class StashEnvironment(
     pass
 
 
+class GerritEnvironmentMixin(Environment):
+    def __init__(self, project=None, submitter=None, **kw):
+        super(GerritEnvironmentMixin, self).__init__(**kw)
+        self.__project = project
+        self.__submitter = submitter
+
+    def get_repo_shortname(self):
+        return self.__project
+
+    def get_pusher(self):
+        if self.__submitter:
+            return re.match('(.*?)\s*<', self.__submitter).group(1)
+        else:
+            # If we arrive here, this means someone pushed "Submit" from
+            # the gerrit web UI for the CR (or used one of the programmatic
+            # APIs to do the same, such as gerrit review) and the
+            # merge/push was done by the Gerrit user.  It was technically
+            # triggered by someone else, but sadly we have no way of
+            # determining who that someone else is at this point.
+            return 'Gerrit'  # 'unknown user'?
+
+    def get_pusher_email(self):
+        if self.__submitter:
+            return self.__submitter
+        else:
+            return super(GerritEnvironmentMixin, self).get_pusher_email()
+
+    def get_default_ref_ignore_regex(self):
+        default = super(GerritEnvironmentMixin, self).get_default_ref_ignore_regex()
+        return default + '|^refs/changes/|^refs/cache-automerge/|^refs/meta/'
+
+
+class GerritEnvironment(
+        GerritEnvironmentMixin,
+        ProjectdescEnvironmentMixin,
+        ConfigMaxlinesEnvironmentMixin,
+        ComputeFQDNEnvironmentMixin,
+        ConfigFilterLinesEnvironmentMixin,
+        ConfigRecipientsEnvironmentMixin,
+        ConfigRefFilterEnvironmentMixin,
+        PusherDomainEnvironmentMixin,
+        ConfigOptionsEnvironmentMixin,
+        Environment,
+        ):
+    pass
+
+
 class Push(object):
     """Represent an entire push (i.e., a group of ReferenceChanges).
 
@@ -3157,6 +3204,7 @@ KNOWN_ENVIRONMENTS = {
     'generic': GenericEnvironmentMixin,
     'gitolite': GitoliteEnvironmentMixin,
     'stash': StashEnvironmentMixin,
+    'gerrit': GerritEnvironmentMixin,
     }
 
 
@@ -3188,11 +3236,15 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
         else:
             env = 'generic'
 
-    environment_mixins.append(KNOWN_ENVIRONMENTS[env])
+    environment_mixins.insert(0, KNOWN_ENVIRONMENTS[env])
 
     if env == 'stash':
         environment_kw['user'] = hook_info['stash_user']
         environment_kw['repo'] = hook_info['stash_repo']
+    elif env == 'gerrit':
+        environment_kw['project'] = hook_info['project']
+        environment_kw['submitter'] = hook_info['submitter']
+
     if recipients:
         environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
         environment_kw['refchange_recipients'] = recipients
@@ -3223,6 +3275,41 @@ def get_version():
     return __version__
 
 
+def compute_gerrit_options(options, args, required_gerrit_options):
+    if None in required_gerrit_options:
+        raise SystemExit("Error: Specify all of --oldrev, --newrev, --refname, "
+                         "and --project; or none of them.")
+
+    if options.environment not in (None, 'gerrit'):
+        raise SystemExit("Non-gerrit environments incompatible with --oldrev, "
+                         "--newrev, --refname, and --project")
+    options.environment = 'gerrit'
+
+    if args:
+        raise SystemExit("Error: Positional parameters not allowed with "
+                         "--oldrev, --newrev, and --refname.")
+
+    # Gerrit oddly omits 'refs/heads/' in the refname when calling
+    # ref-updated hook; put it back.
+    git_dir = get_git_dir()
+    if (not os.path.exists(os.path.join(git_dir, options.refname)) and
+        os.path.exists(os.path.join(git_dir, 'refs', 'heads',
+                                    options.refname))):
+        options.refname = 'refs/heads/' + options.refname
+
+    # The submitter argument is almost an RFC 2822 email address; change it
+    # from 'User Name (email@domain)' to 'User Name <email@domain>' so it is
+    if options.submitter:
+        options.submitter = options.submitter.replace('(', '<').replace(')', '>')
+        assert options.submitter.find('<') != -1
+
+    # We pass back refname, oldrev, newrev as args because then the
+    # gerrit ref-updated hook is much like the git update hook
+    return (options,
+            [options.refname, options.oldrev, options.newrev],
+            {'project': options.project, 'submitter': options.submitter})
+
+
 def check_hook_specific_args(options, args):
     # First check for stash arguments
     if (options.stash_user is None) != (options.stash_repo is None):
@@ -3232,6 +3319,12 @@ def check_hook_specific_args(options, args):
         options.environment = 'stash'
         return options, args, {'stash_user': options.stash_user,
                                'stash_repo': options.stash_repo}
+
+    # Finally, check for gerrit specific arguments
+    required_gerrit_options = (options.oldrev, options.newrev, options.refname,
+                               options.project)
+    if required_gerrit_options != (None,) * 4:
+        return compute_gerrit_options(options, args, required_gerrit_options)
 
     # No special options in use, just return what we started with
     return options, args, {}
@@ -3280,6 +3373,17 @@ def main(args):
             "Display git-multimail's version"
             ),
         )
+    # The following options permit this script to be run as a gerrit
+    # ref-updated hook.  See e.g.
+    # code.google.com/p/gerrit/source/browse/Documentation/config-hooks.txt
+    # We suppress help for these items, since these are specific to gerrit,
+    # and we don't want users directly using them any way other than how the
+    # gerrit ref-updated hook is called.
+    parser.add_option('--oldrev', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--newrev', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--refname', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--project', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--submitter', action='store', help=optparse.SUPPRESS_HELP)
 
     # The following allow this to be run as a stash asynchronous post-receive
     # hook (almost identical to a git post-receive hook but triggered also for
