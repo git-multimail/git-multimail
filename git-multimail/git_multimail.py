@@ -1543,6 +1543,13 @@ class Environment(object):
             get_reply_to_commit() is used for individual commit
             emails.
 
+        get_ref_ignore_list()
+
+            Return a list of refnames (or refname prefixes) that
+            should be ignored for both what emails to send and when
+            computing what commits are considered new to the
+            repository.  Default is "refs/notes/".
+
     They should also define the following attributes:
 
         announce_show_shortlog (bool)
@@ -1687,6 +1694,9 @@ class Environment(object):
 
     def get_reply_to_commit(self, revision):
         return revision.author
+
+    def get_ref_ignore_list(self):
+        return ["refs/notes/"]
 
     def filter_body(self, lines):
         """Filter the lines intended for an email body.
@@ -2211,12 +2221,12 @@ class Push(object):
             ])
         )
 
-    def __init__(self, changes):
+    def __init__(self, changes, ref_ignore_list):
         self.changes = sorted(changes, key=self._sort_key)
 
         # The SHA-1s of commits referred to by references unaffected
         # by this push:
-        other_ref_sha1s = self._compute_other_ref_sha1s()
+        other_ref_sha1s = self._compute_other_ref_sha1s(ref_ignore_list)
 
         self._old_rev_exclusion_spec = self._compute_rev_exclusion_spec(
             other_ref_sha1s.union(
@@ -2237,7 +2247,7 @@ class Push(object):
     def _sort_key(klass, change):
         return (klass.SORT_ORDER[change.__class__, change.change_type], change.refname,)
 
-    def _compute_other_ref_sha1s(self):
+    def _compute_other_ref_sha1s(self, ref_ignore_list):
         """Return the GitObjects referred to by references unaffected by this push."""
 
         # The refnames being changed by this push:
@@ -2255,7 +2265,8 @@ class Push(object):
             )
         for line in read_git_lines(['for-each-ref', '--format=%s' % (fmt,)]):
             (sha1, type, name) = line.split(' ', 2)
-            if sha1 and type == 'commit' and name not in updated_refs:
+            if sha1 and type == 'commit' and name not in updated_refs and \
+               not any(name.startswith(x) for x in ref_ignore_list):
                 sha1s.add(sha1)
 
         return sha1s
@@ -2374,17 +2385,24 @@ class Push(object):
 
 
 def run_as_post_receive_hook(environment, mailer):
+    ref_ignore_list = environment.get_ref_ignore_list()
     changes = []
     for line in sys.stdin:
         (oldrev, newrev, refname) = line.strip().split(' ', 2)
+        if any(refname.startswith(x) for x in ref_ignore_list):
+            continue
         changes.append(
             ReferenceChange.create(environment, oldrev, newrev, refname)
             )
-    push = Push(changes)
-    push.send_emails(mailer, body_filter=environment.filter_body)
+    if changes:
+        push = Push(changes, ref_ignore_list)
+        push.send_emails(mailer, body_filter=environment.filter_body)
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
+    ref_ignore_list = environment.get_ref_ignore_list()
+    if any(refname.startswith(x) for x in ref_ignore_list):
+        return
     changes = [
         ReferenceChange.create(
             environment,
@@ -2393,7 +2411,7 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
             refname,
             ),
         ]
-    push = Push(changes)
+    push = Push(changes, ref_ignore_list)
     push.send_emails(mailer, body_filter=environment.filter_body)
 
 
