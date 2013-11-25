@@ -830,11 +830,11 @@ class ReferenceChange(Change):
                 klass = OtherReferenceChange
             else:
                 # Some other reference namespace:
-                sys.stderr.write(
-                    '*** Push-update of strange reference %r\n'
-                    '***  - incomplete email generated.\n'
-                    % (refname,)
-                    )
+                #sys.stderr.write(
+                #    '*** Push-update of strange reference %r\n'
+                #    '***  - incomplete email generated.\n'
+                #    % (refname,)
+                #    )
                 klass = OtherReferenceChange
         else:
             # Anything else (is there anything else?)
@@ -2540,7 +2540,7 @@ class Push(object):
                     )
                 send_reference_summary_emails = False
             if send_reference_summary_emails:
-                sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
+                #sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
                 extra_values = {'send_date': send_date.next()}
                 mailer.send(
                     change.generate_email(self, body_filter, extra_values),
