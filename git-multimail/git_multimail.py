@@ -2599,9 +2599,23 @@ def check_hook_specific_args(options, args):
         # The submitter argument is almost an RFC 2822 email address; change it
         # from 'User Name (email@domain)' to 'User Name <email@domain>' so it is
         options.submitter = options.submitter.replace('(','<').replace(')','>')
-        assert options.submitter.find('<') != -1
     else:
         update_method = 'submitted'
+        # Gerrit knew who submitted this patchset, but threw that information
+        # away when it invoked this hook.  However, *IF* Gerrit created a
+        # merge to bring the patchset in (project 'Submit Type' is either
+        # "Always Merge", or is "Merge if Necessary" and happens to be
+        # necessary for this particular CR), then it will have the committer
+        # of that merge be 'Gerrit Code Review' and the author will be the
+        # person who requested the submission of the CR.  Since this is fairly
+        # likely for most gerrit installations (of a reasonable size), it's
+        # worth the extra effort to try to determine the actual submitter.
+        rev_info = read_git_lines(['log', '--no-walk', '--merges',
+                                   '--format=%cN%n%aN <%aE>', options.newrev])
+        if rev_info and rev_info[0] == 'Gerrit Code Review':
+            options.submitter = rev_info[1]
+    if options.submitter:
+        assert options.submitter.find('<') != -1
 
     # We pass back refname, oldrev, newrev as args because then the
     # gerrit ref-updated hook is much like the git update hook
