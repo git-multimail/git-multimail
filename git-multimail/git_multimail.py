@@ -2765,10 +2765,13 @@ class StashEnvironment(
 
 
 class GerritEnvironmentMixin(Environment):
-    def __init__(self, project=None, submitter=None, **kw):
+    def __init__(self, project=None, submitter=None, update_method=None, **kw):
         super(GerritEnvironmentMixin, self).__init__(**kw)
         self.__project = project
         self.__submitter = submitter
+        self.__update_method = update_method
+        "Make an 'update_method' value available for templates."
+        self.COMPUTED_KEYS += ['update_method']
 
     def get_repo_shortname(self):
         return self.__project
@@ -2806,6 +2809,9 @@ class GerritEnvironmentMixin(Environment):
             return []
         else:
             return super(GerritEnvironmentMixin, self).get_revision_recipients(revision)
+
+    def get_update_method(self):
+        return self.__update_method
 
 
 class GerritEnvironment(
@@ -3256,6 +3262,7 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
     elif env == 'gerrit':
         environment_kw['project'] = hook_info['project']
         environment_kw['submitter'] = hook_info['submitter']
+        environment_kw['update_method'] = hook_info['update_method']
 
     if recipients:
         environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
@@ -3309,17 +3316,30 @@ def compute_gerrit_options(options, args, required_gerrit_options):
                                     options.refname))):
         options.refname = 'refs/heads/' + options.refname
 
-    # The submitter argument is almost an RFC 2822 email address; change it
-    # from 'User Name (email@domain)' to 'User Name <email@domain>' so it is
+    # New revisions can appear in a gerrit repository either due to someone
+    # pushing directly (in which case options.submitter will be set), or they
+    # can press "Submit this patchset" in the web UI for some CR (in which
+    # case options.submitter will not be set and gerrit will not have provided
+    # us the information about who pressed the button).
+    #
+    # Note for the nit-picky: I'm lumping in REST API calls and the ssh
+    # gerrit review command in with "Submit this patchset" button, since they
+    # have the same effect.
     if options.submitter:
+        update_method = 'pushed'
+        # The submitter argument is almost an RFC 2822 email address; change it
+        # from 'User Name (email@domain)' to 'User Name <email@domain>' so it is
         options.submitter = options.submitter.replace('(', '<').replace(')', '>')
         assert options.submitter.find('<') != -1
+    else:
+        update_method = 'submitted'
 
     # We pass back refname, oldrev, newrev as args because then the
     # gerrit ref-updated hook is much like the git update hook
     return (options,
             [options.refname, options.oldrev, options.newrev],
-            {'project': options.project, 'submitter': options.submitter})
+            {'project': options.project, 'submitter': options.submitter,
+             'update_method': update_method})
 
 
 def check_hook_specific_args(options, args):
