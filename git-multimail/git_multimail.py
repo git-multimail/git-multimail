@@ -2795,6 +2795,18 @@ class GerritEnvironmentMixin(Environment):
         default = super(GerritEnvironmentMixin, self).get_default_ref_ignore_regex()
         return default + '|^refs/changes/|^refs/cache-automerge/|^refs/meta/'
 
+    def get_revision_recipients(self, revision):
+        # Merge commits created by Gerrit when users hit "Submit this patchset"
+        # in the Web UI (or do equivalently with REST APIs or the gerrit review
+        # command) are not something users want to see an individual email for.
+        # Filter them out.
+        committer = read_git_output(['log', '--no-walk', '--format=%cN',
+                                     revision.rev.sha1])
+        if committer == 'Gerrit Code Review':
+            return []
+        else:
+            return super(GerritEnvironmentMixin, self).get_revision_recipients(revision)
+
 
 class GerritEnvironment(
         GerritEnvironmentMixin,
