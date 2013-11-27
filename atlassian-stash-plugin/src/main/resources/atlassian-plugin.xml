@@ -1,0 +1,32 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="plugin-icon">images/pluginIcon.png</param>
+        <param name="plugin-logo">images/pluginLogo.png</param>
+    </plugin-info>
+
+    <resource type="i18n" name="i18n" location="stash-git-multimail"/>
+
+    <resource type="download" name="git_multimail.py" location="scripts/git_multimail.py">
+        <param name="content-type" value="text/x-python"/>
+    </resource>
+    <resource type="download" name="send_emails.py" location="scripts/send_emails.py">
+        <param name="content-type" value="text/x-python"/>
+    </resource>
+
+    <repository-hook key="git-multimail" name="Send Email Notification of Pushes"
+                     class="com.palantir.stash.multimail.StashGitMultimail">
+        <description>Sends email notification of pushes to this repository.</description>
+        <icon>icons/example.png</icon>
+        <config-form name="Email Addresses" key="email-addresses">
+            <view>plugin.hook.config.multimail.formContents</view>
+            <directory location="/static/"/>
+        </config-form>
+    </repository-hook>
+
+    <!-- publish our component -->
+    <component key="stashGitMultimail" class="com.palantir.stash.multimail.StashGitMultimail"/>
+
+</atlassian-plugin>

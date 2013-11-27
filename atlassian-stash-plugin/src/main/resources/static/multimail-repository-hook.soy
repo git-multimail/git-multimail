@@ -1,0 +1,18 @@
+{namespace plugin.hook.config.multimail}
+
+/**
+ * @param config
+ * @param? errors
+ */
+{template .formContents}
+    {call aui.form.textField}
+        {param id: 'email_addresses' /}
+        {param value: $config['email_addresses'] /}
+        {param labelContent}
+            {stash_i18n('stash.web.multimail.hook.email_addresses.labelContent', 'Email Address(es)')}
+        {/param}
+        {param descriptionText: stash_i18n('stash.web.multimail.hook.email_addresses.description', '(Comma separated) Email addresses to be notified upon pushes') /}
+        {param extraClasses: 'long' /}
+        {param errorTexts: $errors ? $errors['email_addresses'] : null /}
+    {/call}
+{/template}
