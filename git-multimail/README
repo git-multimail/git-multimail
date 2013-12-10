@@ -237,10 +237,11 @@ multimailhook.mailer
            quoting is allowed in the value of this setting, but remember that
            Git requires double-quotes to be escaped; e.g.,
 
-             git config multimailhook.sendmailcommand '/usr/sbin/sendmail -t -F \"Git Repo\"'
+             git config multimailhook.sendmailcommand '/usr/sbin/sendmail -oi -t -F \"Git Repo\"'
 
-           Default is '/usr/sbin/sendmail -t' or '/usr/lib/sendmail
-           -t' (depending on which file is present and executable).
+           Default is '/usr/sbin/sendmail -oi -t' or
+           '/usr/lib/sendmail -oi -t' (depending on which file is
+           present and executable).
 
        multimailhook.envelopeSender
 

@@ -1326,7 +1326,7 @@ class Mailer(object):
 
 
 class SendMailer(Mailer):
-    """Send emails using 'sendmail -t'."""
+    """Send emails using 'sendmail -oi -t'."""
 
     SENDMAIL_CANDIDATES = [
         '/usr/sbin/sendmail',
@@ -1355,7 +1355,7 @@ class SendMailer(Mailer):
         if command:
             self.command = command[:]
         else:
-            self.command = [self.find_sendmail(), '-t']
+            self.command = [self.find_sendmail(), '-oi', '-t']
 
         if envelopesender:
             self.command.extend(['-f', envelopesender])
