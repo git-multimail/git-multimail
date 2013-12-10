@@ -3,7 +3,7 @@
 # Fake replacement for sendmail, for testing purposes.
 
 echo "######################################################################"
-echo "/usr/sbin/sendmail -t $@ <<EOF"
+echo "/usr/sbin/sendmail $@ <<EOF"
 cat
 echo "EOF"
 echo "######################################################################"
