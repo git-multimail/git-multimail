@@ -91,10 +91,11 @@ Requirements
   been tested; if you do so, please report your results.)
 
 * To send emails using the default configuration, a standard sendmail
-  program must be located at '/usr/sbin/sendmail' and configured
-  correctly to send emails.  If this is not the case, see the
-  multimailhook.mailer configuration variable below for how to
-  configure git-multimail to send emails via an SMTP server.
+  program must be located at '/usr/sbin/sendmail' or
+  '/usr/lib/sendmail' and must be configured correctly to send emails.
+  If this is not the case, see the multimailhook.mailer configuration
+  variable below for how to configure git-multimail to send emails via
+  an SMTP server.
 
 
 Invocation
