@@ -79,6 +79,13 @@
             <!-- <version>1.0.11</version>  version from stash-parent/pom.xml -->
             <scope>provided</scope>
         </dependency>
+        <!-- for tests -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.4</version>
+            <scope>test</scope>
+        </dependency>
         <!-- WIRED TEST RUNNER DEPENDENCIES -->
         <dependency>
             <groupId>com.atlassian.plugins</groupId>
