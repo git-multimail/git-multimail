@@ -28,5 +28,6 @@
 
     <!-- publish our component -->
     <component key="stashGitMultimail" class="com.palantir.stash.multimail.StashGitMultimail"/>
+    <component key="pluginLoggerFactory" class="com.palantir.stash.multimail.logger.PluginLoggerFactory"/>
 
 </atlassian-plugin>

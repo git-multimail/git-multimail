@@ -24,6 +24,17 @@
     </description>
     <packaging>atlassian-plugin</packaging>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.atlassian.stash</groupId>
+                <artifactId>stash-parent</artifactId>
+                <version>${stash.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>com.atlassian.stash</groupId>
@@ -61,6 +72,13 @@
             <version>2.6</version>
         </dependency>
 
+        <!-- used for logging -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <!-- <version>1.0.11</version>  version from stash-parent/pom.xml -->
+            <scope>provided</scope>
+        </dependency>
         <!-- WIRED TEST RUNNER DEPENDENCIES -->
         <dependency>
             <groupId>com.atlassian.plugins</groupId>

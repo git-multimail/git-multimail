@@ -1,21 +1,28 @@
 package com.palantir.stash.multimail;
 
-import com.atlassian.stash.user.StashAuthenticationContext;
-import com.atlassian.stash.user.StashUser;
-import com.atlassian.stash.server.ApplicationPropertiesService;
-import com.atlassian.stash.hook.repository.*;
-import com.atlassian.stash.repository.*;
-import com.atlassian.stash.setting.*;
-import java.util.Collection;
-import java.util.Map;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.IOException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.lang.ClassLoader;
+import java.util.Collection;
+import java.util.Map;
+
+import org.slf4j.Logger;
+
+import com.atlassian.stash.hook.repository.AsyncPostReceiveRepositoryHook;
+import com.atlassian.stash.hook.repository.RepositoryHookContext;
+import com.atlassian.stash.repository.RefChange;
+import com.atlassian.stash.repository.Repository;
+import com.atlassian.stash.server.ApplicationPropertiesService;
+import com.atlassian.stash.setting.RepositorySettingsValidator;
+import com.atlassian.stash.setting.Settings;
+import com.atlassian.stash.setting.SettingsValidationErrors;
+import com.atlassian.stash.user.StashAuthenticationContext;
+import com.atlassian.stash.user.StashUser;
+import com.palantir.stash.multimail.logger.PluginLoggerFactory;
 
 /**
  * Note that hooks can implement SettingsValidator directly.
@@ -26,13 +33,16 @@ public class StashGitMultimail implements AsyncPostReceiveRepositoryHook, Reposi
     private final StashAuthenticationContext authContext;
     private final String git_multimail_script;
     private final String email_script;
+    private final Logger logger;
 
     public StashGitMultimail(ApplicationPropertiesService appService,
-                             StashAuthenticationContext authContext) {
+                             StashAuthenticationContext authContext,
+                             PluginLoggerFactory logger) {
         this.appService = appService;
         this.authContext = authContext;
         this.git_multimail_script = initializeScript("git_multimail");
         this.email_script = initializeScript("send_emails");
+        this.logger = logger.getLogger(this.getClass().toString());
     }
 
     private String initializeScript(String resource_name) {
@@ -59,8 +69,7 @@ public class StashGitMultimail implements AsyncPostReceiveRepositoryHook, Reposi
         } catch (IOException e) {
             // What can we do, other than log the fact that we
             // can't send the email out?
-            // FIXME: Use Atlassian logging; see Carl's https://answers.atlassian.com/questions/188880/how-do-i-control-logging-in-an-atlassian-stash-plugin
-            e.printStackTrace();
+            logger.error("Unable to initialize git multimail plugin", e);
             return "/dev/null";
         }
     }
@@ -105,8 +114,7 @@ public class StashGitMultimail implements AsyncPostReceiveRepositoryHook, Reposi
         } catch (IOException e) {
             // What can we do, other than log the fact that we can't
             // send the email out?
-            // FIXME: Use Atlassian logging; see Carl's https://answers.atlassian.com/questions/188880/how-do-i-control-logging-in-an-atlassian-stash-plugin
-            e.printStackTrace();
+            logger.error("Unable to send emails", e);
             return;
         }
 
@@ -126,23 +134,21 @@ public class StashGitMultimail implements AsyncPostReceiveRepositoryHook, Reposi
         } catch (InterruptedException e) {
             // JVM shutdown or something?  Just bail but log the occurrence
             // for anyone wanting to do something fancy
-            // FIXME: Log this info somewhere, don't just throw it to stderr
-            System.err.printf("Execution of %s interrupted!\n", email_script);
+            logger.error("Execution of {} interrupted!\n", email_script);
             return;
         }
 
-        // Report any errors
+        // Report any errors; return status, stderr, & stdout
         if (ret != 0) {
-            // FIXME: Log this info somewhere, don't just throw it to stderr
-            System.err.printf("Return status of %s is %d\n", email_script, ret);
+            logger.error("Return status of {} is {}\n", email_script, ret);
 
             InputStream pr_stderr = pr.getErrorStream();
             java.util.Scanner s = new java.util.Scanner(pr_stderr).useDelimiter("\\A");
-            System.err.println("Stderr is: " + (s.hasNext() ? s.next() : ""));
+            logger.error("Stderr is: " + (s.hasNext() ? s.next() : ""));
 
             InputStream pr_stdout = pr.getInputStream();
             s = new java.util.Scanner(pr_stdout).useDelimiter("\\A");
-            System.err.println("Stdout is: " + (s.hasNext() ? s.next() : ""));
+            logger.error("Stdout is: " + (s.hasNext() ? s.next() : ""));
         }
     }
 
