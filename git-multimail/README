@@ -165,15 +165,26 @@ multimailhook.environment
       For more information about gitolite and git-multimail, read
       doc/gitolite.rst
 
-    If neither of these environments is suitable for your setup, then
-    you can implement a Python class that inherits from Environment
-    and instantiate it via a script that looks like the example
+    * stash
+
+      This value is automatically assumed when the stash-specific
+      flags (``--stash-user`` and ``--stash-repo``) are specified on
+      the command line. When this environment is active, the username
+      and repo come from these two command line flags, which must be
+      specified.
+
+    If none of these environments is suitable for your setup, then you
+    can implement a Python class that inherits from Environment and
+    instantiate it via a script that looks like the example
     post-receive script.
 
     The environment value can be specified on the command line using
     the ``--environment`` option. If it is not specified on the
     command line or by ``multimailhook.environment``, the value is
     guessed as follows:
+
+    * If stash-specific command flags are present on the command-line,
+      then ``stash`` is used.
 
     * If the environment variables $GL_USER and $GL_REPO are set, then
       ``gitolite`` is used.
