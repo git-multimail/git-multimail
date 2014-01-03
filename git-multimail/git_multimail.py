@@ -2193,6 +2193,36 @@ class GitoliteEnvironment(
     pass
 
 
+class StashEnvironmentMixin(Environment):
+    def __init__(self, user=None, repo=None, **kw):
+        super(StashEnvironmentMixin, self).__init__(**kw)
+        self.__user = user
+        self.__repo = repo
+
+    def get_repo_shortname(self):
+        return self.__repo
+
+    def get_pusher(self):
+        return re.match('(.*?)\s*<', self.__user).group(1)
+
+    def get_pusher_email(self):
+        return self.__user
+
+class StashEnvironment(
+    ProjectdescEnvironmentMixin,
+    ConfigMaxlinesEnvironmentMixin,
+    ComputeFQDNEnvironmentMixin,
+    ConfigFilterLinesEnvironmentMixin,
+    ConfigRecipientsEnvironmentMixin,
+    ConfigBranchFilterEnvironmentMixin,
+    PusherDomainEnvironmentMixin,
+    ConfigOptionsEnvironmentMixin,
+    StashEnvironmentMixin,
+    Environment,
+    ):
+    pass
+
+
 class Push(object):
     """Represent an entire push (i.e., a group of ReferenceChanges).
 
@@ -2505,11 +2535,13 @@ def choose_mailer(config, environment):
 KNOWN_ENVIRONMENTS = {
     'generic': GenericEnvironmentMixin,
     'gitolite': GitoliteEnvironmentMixin,
+    'stash': StashEnvironmentMixin,
     }
 
 
 def choose_environment(config, osenv=None, env=None, recipients=None,
-                       ref_filter_incl_regex=None, ref_filter_excl_regex=None):
+                       ref_filter_incl_regex=None, ref_filter_excl_regex=None,
+                       hook_info = None):
     if not osenv:
         osenv = os.environ
 
@@ -2535,7 +2567,12 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
         else:
             env = 'generic'
 
-    environment_mixins.append(KNOWN_ENVIRONMENTS[env])
+    if env == 'stash':
+        environment_mixins.append(KNOWN_ENVIRONMENTS[env])
+        environment_kw['user'] = hook_info['stash_user']
+        environment_kw['repo'] = hook_info['stash_repo']
+    else:
+        environment_mixins.append(KNOWN_ENVIRONMENTS[env])
 
     if recipients:
         environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
@@ -2558,6 +2595,20 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
         {},
         )
     return environment_klass(**environment_kw)
+
+
+def check_hook_specific_args(options, args):
+    # First check for stash arguments
+    if (options.stash_user == None) != (options.stash_repo == None):
+        raise SystemExit("Error: Specify both of --stash-user and "
+                         "--stash-repo or neither.")
+    if options.stash_user:
+        options.environment = 'stash'
+        return options, args, {'stash_user': options.stash_user,
+                               'stash_repo': options.stash_repo}
+
+    # No special options in use, just return what we started with
+    return options, args, {}
 
 
 def main(args):
@@ -2598,7 +2649,15 @@ def main(args):
             ),
         )
 
+    # The following allow this to be run as a stash asynchronous post-receive
+    # hook (almost identical to a git post-receive hook but triggered also for
+    # merges of pull requests from the UI).  We suppress help for these items,
+    # since these are specific to stash.
+    parser.add_option('--stash-user', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--stash-repo', action='store', help=optparse.SUPPRESS_HELP)
+
     (options, args) = parser.parse_args(args)
+    (options, args, hook_info) = check_hook_specific_args(options, args)
 
     config = Config('multimailhook')
 
@@ -2609,6 +2668,7 @@ def main(args):
             recipients=options.recipients,
             ref_filter_incl_regex=options.ref_filter_inclusion_regex,
             ref_filter_excl_regex=options.ref_filter_exclusion_regex,
+            hook_info=hook_info,
             )
 
         if options.show_env:
