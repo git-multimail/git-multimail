@@ -162,6 +162,14 @@ multimailhook.environment
         taken from the --project option on the command line, which
         must be passed.
 
+    "stash" -- much like "gerrit", you should probably not explicitly
+        specify this value; instead it is automatically assumed when
+        the stash-specific flags from the multimail plugin for
+        Atlassian Stash (--stash-user and --stash-repo) are specified
+        on the command line.  When this environment is active, the
+        username and repo come from these two command line flags,
+        which must be specified.
+
     If none of these environments is suitable for your setup, then you
     can implement a Python class that inherits from Environment and
     instantiate it via a script that looks like the example
@@ -169,9 +177,9 @@ multimailhook.environment
 
     The environment value can be specified on the command line using
     the --environment option.  If it is not specified on the command
-    line or by multimailhook.environment, and the gerrit-specific
-    command flags are not present on the command line, then it
-    defaults to "gitolite" if the environment contains variables
+    line or by multimailhook.environment, and the gerrit- and stash-
+    specific command flags are not present on the command line, then
+    it defaults to "gitolite" if the environment contains variables
     $GL_USER and $GL_REPO; otherwise "generic".
 
 multimailhook.repoName

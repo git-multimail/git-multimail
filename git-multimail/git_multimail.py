@@ -2201,6 +2201,34 @@ class GerritEnvironment(
     pass
 
 
+class StashEnvironmentMixin(Environment):
+    def __init__(self, user=None, repo=None, **kw):
+        super(StashEnvironmentMixin, self).__init__(**kw)
+        self.__user = user
+        self.__repo = repo
+
+    def get_repo_shortname(self):
+        return self.__repo
+
+    def get_pusher(self):
+        return re.match('(.*?)\s*<', self.__user).group(1)
+
+    def get_pusher_email(self):
+        return self.__user
+
+class StashEnvironment(
+    ProjectdescEnvironmentMixin,
+    ConfigMaxlinesEnvironmentMixin,
+    ConfigFilterLinesEnvironmentMixin,
+    ConfigRecipientsEnvironmentMixin,
+    PusherDomainEnvironmentMixin,
+    ConfigOptionsEnvironmentMixin,
+    StashEnvironmentMixin,
+    Environment,
+    ):
+    pass
+
+
 class Push(object):
     """Represent an entire push (i.e., a group of ReferenceChanges).
 
@@ -2504,6 +2532,7 @@ KNOWN_ENVIRONMENTS = {
     'generic': GenericEnvironmentMixin,
     'gitolite': GitoliteEnvironmentMixin,
     'gerrit': GerritEnvironmentMixin,
+    'stash': StashEnvironmentMixin,
     }
 
 
@@ -2539,6 +2568,10 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
         environment_kw['project'] = hook_info['project']
         environment_kw['submitter'] = hook_info['submitter']
         environment_kw['update_method'] = hook_info['update_method']
+    elif env == 'stash':
+        environment_mixins.append(KNOWN_ENVIRONMENTS[env])
+        environment_kw['user'] = hook_info['stash_user']
+        environment_kw['repo'] = hook_info['stash_repo']
     else:
         environment_mixins.append(KNOWN_ENVIRONMENTS[env])
 
@@ -2559,6 +2592,16 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
 
 
 def check_hook_specific_args(options, args):
+    # First check for stash arguments
+    if (options.stash_user == None) != (options.stash_repo == None):
+        raise SystemExit("Error: Specify both of --stash-user and "
+                         "--stash-repo or neither.")
+    if options.stash_user:
+        options.environment = 'stash'
+        return options, args, {'stash_user': options.stash_user,
+                               'stash_repo': options.stash_repo}
+
+    # Finally, check for gerrit specific arguments
     required_gerrit_options = (options.oldrev, options.newrev, options.refname,
                                options.project)
     if required_gerrit_options == (None,)*4:
@@ -2664,6 +2707,13 @@ def main(args):
     parser.add_option('--refname', action='store', help=optparse.SUPPRESS_HELP)
     parser.add_option('--project', action='store', help=optparse.SUPPRESS_HELP)
     parser.add_option('--submitter', action='store',help=optparse.SUPPRESS_HELP)
+
+    # The following allow this to be run as a stash asynchronous post-receive
+    # hook (almost identical to a git post-receive hook but triggered also for
+    # merges of pull requests from the UI).  We suppress help for these items,
+    # since these are specific to stash.
+    parser.add_option('--stash-user', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--stash-repo', action='store', help=optparse.SUPPRESS_HELP)
 
     (options, args) = parser.parse_args(args)
     (options, args, hook_info) = check_hook_specific_args(options, args)
