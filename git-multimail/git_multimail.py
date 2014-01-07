@@ -2748,8 +2748,12 @@ class StashEnvironmentMixin(Environment):
     def get_pusher_email(self):
         return self.__user
 
+    def get_fromaddr(self, change=None):
+        return self.__user
+
 
 class StashEnvironment(
+        StashEnvironmentMixin,
         ProjectdescEnvironmentMixin,
         ConfigMaxlinesEnvironmentMixin,
         ComputeFQDNEnvironmentMixin,
@@ -2758,7 +2762,6 @@ class StashEnvironment(
         ConfigRefFilterEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigOptionsEnvironmentMixin,
-        StashEnvironmentMixin,
         Environment,
         ):
     pass
@@ -2793,6 +2796,12 @@ class GerritEnvironmentMixin(Environment):
             return self.__submitter
         else:
             return super(GerritEnvironmentMixin, self).get_pusher_email()
+
+    def get_fromaddr(self, change=None):
+        if self.__submitter:
+            return self.__submitter
+        else:
+            return super(GerritEnvironmentMixin, self).get_fromaddr(change)
 
     def get_default_ref_ignore_regex(self):
         default = super(GerritEnvironmentMixin, self).get_default_ref_ignore_regex()
