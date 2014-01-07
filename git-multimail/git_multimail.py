@@ -2169,6 +2169,12 @@ class GerritEnvironmentMixin(Environment):
         else:
             return super(GerritEnvironmentMixin, self).get_pusher_email()
 
+    def get_fromaddr(self):
+        if self.__submitter:
+            return self.__submitter
+        else:
+            return super(GerritEnvironmentMixin, self).get_fromaddr()
+
     def get_ref_ignore_list(self):
         default = super(GerritEnvironmentMixin, self).get_ref_ignore_list()
         return default + ['refs/changes/', 'refs/cache-automerge/']
@@ -2216,14 +2222,17 @@ class StashEnvironmentMixin(Environment):
     def get_pusher_email(self):
         return self.__user
 
+    def get_fromaddr(self):
+        return self.__user
+
 class StashEnvironment(
+    StashEnvironmentMixin,
     ProjectdescEnvironmentMixin,
     ConfigMaxlinesEnvironmentMixin,
     ConfigFilterLinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
     ConfigOptionsEnvironmentMixin,
-    StashEnvironmentMixin,
     Environment,
     ):
     pass
@@ -2569,7 +2578,7 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
         environment_kw['submitter'] = hook_info['submitter']
         environment_kw['update_method'] = hook_info['update_method']
     elif env == 'stash':
-        environment_mixins.append(KNOWN_ENVIRONMENTS[env])
+        environment_mixins.insert(0, KNOWN_ENVIRONMENTS[env])
         environment_kw['user'] = hook_info['stash_user']
         environment_kw['repo'] = hook_info['stash_repo']
     else:
