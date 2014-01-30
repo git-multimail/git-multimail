@@ -473,6 +473,7 @@ The git-multimail project itself is currently hosted on GitHub:
 We use the GitHub issue tracker to keep track of bugs and feature
 requests, and GitHub pull requests to exchange patches (though, if you
 prefer, you can send patches via the Git mailing list with cc to me).
+Please sign off your patches as per the Git project practice.
 
 Please note that although a copy of git-multimail will probably be
 distributed in the "contrib" section of the main Git project,
