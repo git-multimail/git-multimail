@@ -186,7 +186,8 @@ multimailhook.refchangeList
     separated by commas.  This configuration option can be
     multivalued.  The default is the value in
     multimailhook.mailingList.  Set this value to the empty string to
-    prevent reference change emails from being sent.
+    prevent reference change emails from being sent even if
+    multimailhook.mailingList is set.
 
 multimailhook.announceList
 
@@ -195,7 +196,8 @@ multimailhook.announceList
     commas.  This configuration option can be multivalued.  The
     default is the value in multimailhook.refchangeList or
     multimailhook.mailingList.  Set this value to the empty string to
-    prevent annotated tag announcement emails from being sent.
+    prevent annotated tag announcement emails from being sent even if
+    one of the other values is set.
 
 multimailhook.commitList
 
@@ -204,7 +206,8 @@ multimailhook.commitList
     commas.  This configuration option can be multivalued.  The
     default is the value in multimailhook.mailingList.  Set this value
     to the empty string to prevent notification emails about
-    individual commits from being sent.
+    individual commits from being sent even if
+    multimailhook.mailingList is set.
 
 multimailhook.announceShortlog
 

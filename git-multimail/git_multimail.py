@@ -1939,6 +1939,10 @@ class StaticRecipientsEnvironmentMixin(Environment):
         # actual *contents* of the change being reported, we only
         # choose based on the *type* of the change.  Therefore we can
         # compute them once and for all:
+        if not (refchange_recipients
+                or announce_recipients
+                or revision_recipients):
+            raise ConfigurationException('No email recipients configured!')
         self.__refchange_recipients = refchange_recipients
         self.__announce_recipients = announce_recipients
         self.__revision_recipients = revision_recipients
@@ -1989,17 +1993,8 @@ class ConfigRecipientsEnvironmentMixin(
             retval = config.get_recipients(name)
             if retval is not None:
                 return retval
-        if len(names) == 1:
-            hint = 'Please set "%s.%s"' % (config.section, name)
         else:
-            hint = (
-                'Please set one of the following:\n    "%s"'
-                % ('"\n    "'.join('%s.%s' % (config.section, name) for name in names))
-                )
-
-        raise ConfigurationException(
-            'The list of recipients for %s is not configured.\n%s' % (names[0], hint)
-            )
+            return ''
 
 
 class ProjectdescEnvironmentMixin(Environment):
