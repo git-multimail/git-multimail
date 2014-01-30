@@ -170,7 +170,7 @@ multimailhook.repoName
     for gitolite repositories, or otherwise to derive this value from
     the repository path name.
 
-multimailhook.mailinglist
+multimailhook.mailingList
 
     The list of email addresses to which notification emails should be
     sent, as RFC 2822 email addresses separated by commas.  This
@@ -185,7 +185,7 @@ multimailhook.refchangeList
     reference changes should be sent, as RFC 2822 email addresses
     separated by commas.  This configuration option can be
     multivalued.  The default is the value in
-    multimailhook.mailinglist.  Set this value to the empty string to
+    multimailhook.mailingList.  Set this value to the empty string to
     prevent reference change emails from being sent.
 
 multimailhook.announceList
@@ -193,8 +193,8 @@ multimailhook.announceList
     The list of email addresses to which emails about new annotated
     tags should be sent, as RFC 2822 email addresses separated by
     commas.  This configuration option can be multivalued.  The
-    default is the value in multimailhook.refchangelist or
-    multimailhook.mailinglist.  Set this value to the empty string to
+    default is the value in multimailhook.refchangeList or
+    multimailhook.mailingList.  Set this value to the empty string to
     prevent annotated tag announcement emails from being sent.
 
 multimailhook.commitList
@@ -202,7 +202,7 @@ multimailhook.commitList
     The list of email addresses to which emails about individual new
     commits should be sent, as RFC 2822 email addresses separated by
     commas.  This configuration option can be multivalued.  The
-    default is the value in multimailhook.mailinglist.  Set this value
+    default is the value in multimailhook.mailingList.  Set this value
     to the empty string to prevent notification emails about
     individual commits from being sent.
 
