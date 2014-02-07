@@ -1588,6 +1588,7 @@ class Environment(object):
             'administrator',
             'charset',
             'emailprefix',
+            'fqdn',
             'fromaddr',
             'pusher',
             'pusher_email',
@@ -1641,7 +1642,7 @@ class Environment(object):
         The return value is always a new dictionary."""
 
         if self._values is None:
-            values = {'fqdn': socket.getfqdn()}
+            values = {}
 
             for key in self.COMPUTED_KEYS:
                 value = getattr(self, 'get_%s' % (key,))()
@@ -1651,6 +1652,13 @@ class Environment(object):
             self._values = values
 
         return self._values.copy()
+
+    def get_fqdn(self):
+        """Return the fully-qualified domain name for this host.
+
+        Return None if it is unavailable or unwanted."""
+
+        return socket.getfqdn()
 
     def get_refchange_recipients(self, refchange):
         """Return the recipients for notifications about refchange.
