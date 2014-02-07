@@ -9,6 +9,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -53,6 +54,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -97,6 +99,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -141,6 +144,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -185,6 +189,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -231,6 +236,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -275,6 +281,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -320,6 +327,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -366,6 +374,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -410,6 +419,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -473,6 +483,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -517,6 +528,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -561,6 +573,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -605,6 +618,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -651,6 +665,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -695,6 +710,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -733,6 +749,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -783,6 +800,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -842,6 +860,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -888,6 +907,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
@@ -932,6 +952,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
@@ -976,6 +997,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
@@ -1020,6 +1042,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
@@ -1067,6 +1090,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
@@ -1108,6 +1132,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
@@ -1152,6 +1177,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
@@ -1196,6 +1222,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
@@ -1239,6 +1266,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
@@ -1283,6 +1311,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
@@ -1327,6 +1356,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
@@ -1375,6 +1405,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
@@ -1410,6 +1441,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag
 X-Git-Reftype: tag
@@ -1441,6 +1473,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag
 X-Git-Reftype: tag
@@ -1507,6 +1540,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag
 X-Git-Reftype: tag
@@ -1544,6 +1578,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated
 X-Git-Reftype: annotated tag
@@ -1590,6 +1625,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated
 X-Git-Reftype: annotated tag
@@ -1671,6 +1707,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated
 X-Git-Reftype: annotated tag
@@ -1709,6 +1746,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
@@ -1763,6 +1801,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
@@ -1807,6 +1846,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
@@ -1853,6 +1893,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
@@ -1937,6 +1978,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
@@ -1981,6 +2023,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
@@ -2027,6 +2070,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
@@ -2065,6 +2109,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tree-tag
 X-Git-Reftype: annotated tag
@@ -2108,6 +2153,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tree-tag
 X-Git-Reftype: annotated tag
@@ -2154,6 +2200,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tree-tag
 X-Git-Reftype: annotated tag
@@ -2191,6 +2238,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/recursive-tag
 X-Git-Reftype: annotated tag
@@ -2232,6 +2280,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/recursive-tag
 X-Git-Reftype: annotated tag
@@ -2308,6 +2357,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/recursive-tag
 X-Git-Reftype: annotated tag
@@ -2346,6 +2396,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
@@ -2387,6 +2438,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
@@ -2431,6 +2483,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
@@ -2478,6 +2531,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
@@ -2544,6 +2598,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
@@ -2588,6 +2643,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
@@ -2634,6 +2690,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
@@ -2671,6 +2728,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
@@ -2711,6 +2769,7 @@ From: From <from@example.com>
 Reply-To: =?utf-8?q?Jo=C3=ABl_User?= <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
@@ -2757,6 +2816,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
@@ -2822,6 +2882,7 @@ From: From <from@example.com>
 Reply-To: =?utf-8?q?Jo=C3=ABl_User?= <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
@@ -2868,6 +2929,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
@@ -2902,6 +2964,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -2947,6 +3010,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
@@ -2993,6 +3057,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch

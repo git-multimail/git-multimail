@@ -49,6 +49,7 @@ import sys
 import os
 import re
 import bisect
+import socket
 import subprocess
 import shlex
 import optparse
@@ -104,6 +105,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
+X-Git-Host: %(fqdn)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
@@ -231,6 +233,7 @@ From: %(fromaddr)s
 Reply-To: %(reply_to)s
 In-Reply-To: %(reply_to_msgid)s
 References: %(reply_to_msgid)s
+X-Git-Host: %(fqdn)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
@@ -1624,7 +1627,7 @@ class Environment(object):
         The return value is always a new dictionary."""
 
         if self._values is None:
-            values = {}
+            values = {'fqdn': socket.getfqdn()}
 
             for key in self.COMPUTED_KEYS:
                 value = getattr(self, 'get_%s' % (key,))()
