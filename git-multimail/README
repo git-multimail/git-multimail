@@ -391,8 +391,8 @@ Email filtering aids
 
 All emails include extra headers to enable fine tuned filtering and
 give information for debugging.  All emails include the headers
-"X-Git-Repo", "X-Git-Refname", and "X-Git-Reftype".  ReferenceChange
-emails also include headers "X-Git-Oldrev" and "X-Git-Newrev";
+"X-Git-Host", "X-Git-Repo", "X-Git-Refname", and "X-Git-Reftype".
+ReferenceChange emails also include headers "X-Git-Oldrev" and "X-Git-Newrev";
 Revision emails also include header "X-Git-Rev".
 
 
