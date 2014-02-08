@@ -1,6 +1,7 @@
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch master created (now 902dfe1)
 MIME-Version: 1.0
@@ -44,6 +45,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/05: a2
 MIME-Version: 1.0
@@ -88,6 +90,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/05: a3
 MIME-Version: 1.0
@@ -132,6 +135,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 03/05: a4
 MIME-Version: 1.0
@@ -176,6 +180,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 04/05: m1
 MIME-Version: 1.0
@@ -222,6 +227,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 05/05: a5
 MIME-Version: 1.0
@@ -267,6 +273,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch master updated (ebf40e1 -> 902dfe1)
 MIME-Version: 1.0
@@ -311,6 +318,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/02: m1
 MIME-Version: 1.0
@@ -357,6 +365,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/02: a5
 MIME-Version: 1.0
@@ -402,6 +411,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch master updated (47ef1f8 -> 902dfe1)
 MIME-Version: 1.0
@@ -464,6 +474,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/05: a2
 MIME-Version: 1.0
@@ -508,6 +519,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/05: a3
 MIME-Version: 1.0
@@ -552,6 +564,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 03/05: a4
 MIME-Version: 1.0
@@ -596,6 +609,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 04/05: m1
 MIME-Version: 1.0
@@ -642,6 +656,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 05/05: a5
 MIME-Version: 1.0
@@ -687,6 +702,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch master deleted (was 902dfe1)
 MIME-Version: 1.0
@@ -725,6 +741,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch master updated (902dfe1 -> ebf40e1)
 MIME-Version: 1.0
@@ -775,6 +792,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch master updated (902dfe1 -> 47ef1f8)
 MIME-Version: 1.0
@@ -834,6 +852,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch master updated (902dfe1 -> d245c99)
 MIME-Version: 1.0
@@ -880,6 +899,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch release updated (88ff896 -> cd65463)
 MIME-Version: 1.0
@@ -923,6 +943,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/02: r3
 MIME-Version: 1.0
@@ -967,6 +988,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/02: r4
 MIME-Version: 1.0
@@ -1012,6 +1034,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch release updated (cd65463 -> 1034ac6)
 MIME-Version: 1.0
@@ -1059,6 +1082,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch feature created (now 47ef1f8)
 MIME-Version: 1.0
@@ -1099,6 +1123,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/02: f4
 MIME-Version: 1.0
@@ -1143,6 +1168,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/02: f5
 MIME-Version: 1.0
@@ -1188,6 +1214,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch feature updated (c742b15 -> 47ef1f8)
 MIME-Version: 1.0
@@ -1230,6 +1257,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/02: f4
 MIME-Version: 1.0
@@ -1274,6 +1302,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/02: f5
 MIME-Version: 1.0
@@ -1319,6 +1348,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch feature updated (47ef1f8 -> c742b15)
 MIME-Version: 1.0
@@ -1367,6 +1397,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch feature deleted (was 47ef1f8)
 MIME-Version: 1.0
@@ -1402,6 +1433,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* tag tag created (now 1034ac6)
 MIME-Version: 1.0
@@ -1433,6 +1465,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* tag tag updated (902dfe1 -> 1034ac6)
 MIME-Version: 1.0
@@ -1499,6 +1532,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* tag tag deleted (was 1034ac6)
 MIME-Version: 1.0
@@ -1535,6 +1569,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated created (now bc4a4a6)
@@ -1581,6 +1616,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated updated (902dfe1 -> bc4a4a6)
@@ -1662,6 +1698,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated deleted (was bc4a4a6)
@@ -1699,6 +1736,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated-new-content created (now
@@ -1754,6 +1792,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/02: t1
 MIME-Version: 1.0
@@ -1798,6 +1837,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/02: t2
 MIME-Version: 1.0
@@ -1843,6 +1883,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated-new-content updated
@@ -1928,6 +1969,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/02: t1
 MIME-Version: 1.0
@@ -1972,6 +2014,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/02: t2
 MIME-Version: 1.0
@@ -2017,6 +2060,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tag-annotated-new-content deleted (was
@@ -2056,6 +2100,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tree-tag created (now df5bc27)
@@ -2099,6 +2144,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tree-tag updated (902dfe1 -> df5bc27)
@@ -2145,6 +2191,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag tree-tag deleted (was df5bc27)
@@ -2182,6 +2229,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag recursive-tag created (now b56d4b8)
@@ -2223,6 +2271,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag recursive-tag updated (902dfe1 -> b56d4b8)
@@ -2299,6 +2348,7 @@ EOF
 Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
 Subject: *test-repo* annotated tag recursive-tag deleted (was b56d4b8)
@@ -2338,6 +2388,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* reference refs/remotes/remote created (now cf3c5de)
 MIME-Version: 1.0
@@ -2378,6 +2429,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/02: x1
 MIME-Version: 1.0
@@ -2422,6 +2474,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/02: x2
 MIME-Version: 1.0
@@ -2469,6 +2522,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* reference refs/remotes/remote updated (902dfe1 ->
  cf3c5de)
@@ -2535,6 +2589,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/02: x1
 MIME-Version: 1.0
@@ -2579,6 +2634,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/02: x2
 MIME-Version: 1.0
@@ -2626,6 +2682,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* reference refs/remotes/remote deleted (was cf3c5de)
 MIME-Version: 1.0
@@ -2663,6 +2720,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* reference refs/foo/bar created (now ce88e42)
 MIME-Version: 1.0
@@ -2702,6 +2760,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/01: b1
 MIME-Version: 1.0
@@ -2749,6 +2808,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* reference refs/foo/bar updated (902dfe1 -> ce88e42)
 MIME-Version: 1.0
@@ -2813,6 +2873,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/01: b1
 MIME-Version: 1.0
@@ -2860,6 +2921,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* reference refs/foo/bar deleted (was ce88e42)
 MIME-Version: 1.0
@@ -2894,6 +2956,7 @@ EOF
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Refchange List <refchangelist@example.com>
 Subject: *test-repo* branch master updated (ebf40e1 -> 902dfe1)
 MIME-Version: 1.0
@@ -2938,6 +3001,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 01/02: m1
 MIME-Version: 1.0
@@ -2984,6 +3048,7 @@ EOF
 ######################################################################
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
 To: Commit List <commitlist@example.com>
 Subject: *test-repo* 02/02: a5
 MIME-Version: 1.0
