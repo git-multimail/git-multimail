@@ -53,17 +53,21 @@ import subprocess
 import shlex
 import optparse
 import smtplib
+import datetime
+import time
 
 try:
     from email.utils import make_msgid
     from email.utils import getaddresses
     from email.utils import formataddr
+    from email.utils import formatdate
     from email.header import Header
 except ImportError:
     # Prior to Python 2.5, the email module used different names:
     from email.Utils import make_msgid
     from email.Utils import getaddresses
     from email.Utils import formataddr
+    from email.Utils import formatdate
     from email.Header import Header
 
 
@@ -96,6 +100,7 @@ REF_DELETED_SUBJECT_TEMPLATE = (
     )
 
 REFCHANGE_HEADER_TEMPLATE = """\
+Date: %(send_date)s
 To: %(recipients)s
 Subject: %(subject)s
 MIME-Version: 1.0
@@ -222,6 +227,7 @@ how to provide full information about this reference change.
 
 
 REVISION_HEADER_TEMPLATE = """\
+Date: %(send_date)s
 To: %(recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 MIME-Version: 1.0
@@ -672,15 +678,19 @@ class Change(object):
 
         raise NotImplementedError()
 
-    def generate_email(self, push, body_filter=None):
+    def generate_email(self, push, body_filter=None, extra_header_values={}):
         """Generate an email describing this change.
 
         Iterate over the lines (including the header lines) of an
         email describing this change.  If body_filter is not None,
         then use it to filter the lines that are intended for the
-        email body."""
+        email body.
 
-        for line in self.generate_email_header():
+        The extra_header_values field is received as a dict and not as
+        **kwargs, to allow passing other keyword arguments in the
+        future (e.g. passing extra values to generate_email_intro()"""
+
+        for line in self.generate_email_header(**extra_header_values):
             yield line
         yield '\n'
         for line in self.generate_email_intro():
@@ -736,8 +746,10 @@ class Revision(Change):
 
         return values
 
-    def generate_email_header(self):
-        for line in self.expand_header_lines(REVISION_HEADER_TEMPLATE):
+    def generate_email_header(self, **extra_values):
+        for line in self.expand_header_lines(
+            REVISION_HEADER_TEMPLATE, **extra_values
+            ):
             yield line
 
     def generate_email_intro(self):
@@ -888,9 +900,12 @@ class ReferenceChange(Change):
             }[self.change_type]
         return self.expand(template)
 
-    def generate_email_header(self):
+    def generate_email_header(self, **extra_values):
+        if not 'subject' in extra_values:
+            extra_values.update({'subject': self.get_subject()})
+
         for line in self.expand_header_lines(
-            REFCHANGE_HEADER_TEMPLATE, subject=self.get_subject(),
+            REFCHANGE_HEADER_TEMPLATE, **extra_values
             ):
             yield line
 
@@ -2044,6 +2059,19 @@ class GitoliteEnvironmentMixin(Environment):
         return self.osenv.get('GL_USER', 'unknown user')
 
 
+class IncrementalDateTime():
+    """Simple wrapper to give incremental date/times
+    Each call will result in a date/time a second later than the previous
+    call. This can be used to falsify headers to force correct sort order"""
+    def __init__(self):
+        self.dt = datetime.datetime.utcnow()
+
+    def next(self):
+        formatted = formatdate(time.mktime(self.dt.timetuple()))
+        self.dt += datetime.timedelta(seconds=1)
+        return formatted
+
+
 class GitoliteEnvironment(
     ProjectdescEnvironmentMixin,
     ConfigMaxlinesEnvironmentMixin,
@@ -2251,6 +2279,7 @@ class Push(object):
         # guarantee that one (and only one) email is generated for
         # each new commit.
         unhandled_sha1s = set(self.get_new_commits())
+        send_date = IncrementalDateTime()
         for change in self.changes:
             # Check if we've got anyone to send to
             if not change.recipients:
@@ -2261,7 +2290,11 @@ class Push(object):
                     )
             else:
                 sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
-                mailer.send(change.generate_email(self, body_filter), change.recipients)
+                extra_values = {'send_date': send_date.next()}
+                mailer.send(
+                    change.generate_email(self, body_filter, extra_values),
+                    change.recipients
+                )
 
             sha1s = []
             for sha1 in reversed(list(self.get_new_commits(change))):
@@ -2281,7 +2314,11 @@ class Push(object):
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num+1, tot=len(sha1s))
                 if rev.recipients:
-                    mailer.send(rev.generate_email(self, body_filter), rev.recipients)
+                    extra_values = {'send_date': send_date.next()}
+                    mailer.send(
+                        rev.generate_email(self, body_filter, extra_values),
+                        rev.recipients
+                    )
 
         # Consistency check:
         if unhandled_sha1s:
