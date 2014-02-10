@@ -53,7 +53,6 @@ import subprocess
 import shlex
 import optparse
 import smtplib
-import datetime
 import time
 
 try:
@@ -2068,11 +2067,11 @@ class IncrementalDateTime():
     correctly."""
 
     def __init__(self):
-        self.dt = datetime.datetime.utcnow()
+        self.time = time.time()
 
     def next(self):
-        formatted = formatdate(time.mktime(self.dt.timetuple()))
-        self.dt += datetime.timedelta(seconds=1)
+        formatted = formatdate(self.time, True)
+        self.time += 1
         return formatted
 
 
