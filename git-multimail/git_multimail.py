@@ -368,11 +368,14 @@ class Config(object):
         config paths."""
 
         self.section = section
+        self.hash = {}
         if git_config:
             self.env = os.environ.copy()
             self.env['GIT_CONFIG'] = git_config
         else:
             self.env = None
+
+        self.populate_all()
 
     @staticmethod
     def _split(s):
@@ -382,45 +385,35 @@ class Config(object):
         assert words[-1] == ''
         return words[:-1]
 
+    def populate_all(self):
+        lines = self._split(read_git_output(
+            ['config', '--get-regexp', '--null', '%s.*' % (self.section,)],
+            env=self.env, keepends=True,
+            ))
+        for line in lines:
+            (key, value) = line.split('\n', 1)
+            key = key[len(self.section) + 1:]
+            if self.hash.get(key, None):
+                self.hash[key] = self.hash[key] + [value]
+            else:
+                self.hash[key] = [value]
+
     def get(self, name, default=None):
         try:
-            values = self._split(read_git_output(
-                    ['config', '--get', '--null', '%s.%s' % (self.section, name)],
-                    env=self.env, keepends=True,
-                    ))
-            assert len(values) == 1
-            return values[0]
-        except CommandError:
+            value_list = self.hash[name]
+            return value_list[0]
+        except KeyError:
             return default
 
     def get_bool(self, name, default=None):
         try:
-            value = read_git_output(
-                ['config', '--get', '--bool', '%s.%s' % (self.section, name)],
-                env=self.env,
-                )
-        except CommandError:
+            value_list = self.hash[name]
+            return value_list[0] == 'true'
+        except KeyError:
             return default
-        return value == 'true'
 
     def get_all(self, name, default=None):
-        """Read a (possibly multivalued) setting from the configuration.
-
-        Return the result as a list of values, or default if the name
-        is unset."""
-
-        try:
-            return self._split(read_git_output(
-                ['config', '--get-all', '--null', '%s.%s' % (self.section, name)],
-                env=self.env, keepends=True,
-                ))
-        except CommandError, e:
-            if e.retcode == 1:
-                # "the section or key is invalid"; i.e., there is no
-                # value for the specified key.
-                return default
-            else:
-                raise
+        return self.hash.get(name, default)
 
     def get_recipients(self, name, default=None):
         """Read a recipients list from the configuration.
