@@ -1588,7 +1588,6 @@ class Environment(object):
             'administrator',
             'charset',
             'emailprefix',
-            'fqdn',
             'fromaddr',
             'pusher',
             'pusher_email',
@@ -1652,13 +1651,6 @@ class Environment(object):
             self._values = values
 
         return self._values.copy()
-
-    def get_fqdn(self):
-        """Return the fully-qualified domain name for this host.
-
-        Return None if it is unavailable or unwanted."""
-
-        return socket.getfqdn()
 
     def get_refchange_recipients(self, refchange):
         """Return the recipients for notifications about refchange.
@@ -1918,6 +1910,47 @@ class ConfigMaxlinesEnvironmentMixin(
             )
 
 
+class FQDNEnvironmentMixin(Environment):
+    """A mixin that sets the host's FQDN to its constructor argument."""
+
+    def __init__(self, fqdn, **kw):
+        super(FQDNEnvironmentMixin, self).__init__(**kw)
+        self.COMPUTED_KEYS += ['fqdn']
+        self.__fqdn = fqdn
+
+    def get_fqdn(self):
+        """Return the fully-qualified domain name for this host.
+
+        Return None if it is unavailable or unwanted."""
+
+        return self.__fqdn
+
+
+class ConfigFQDNEnvironmentMixin(
+    ConfigEnvironmentMixin,
+    FQDNEnvironmentMixin,
+    ):
+    """Read the FQDN from the config."""
+
+    def __init__(self, config, **kw):
+        fqdn = config.get('fqdn')
+        super(ConfigFQDNEnvironmentMixin, self).__init__(
+            config=config,
+            fqdn=fqdn,
+            **kw
+            )
+
+
+class ComputeFQDNEnvironmentMixin(FQDNEnvironmentMixin):
+    """Get the FQDN by calling socket.getfqdn()."""
+
+    def __init__(self, **kw):
+        super(ComputeFQDNEnvironmentMixin, self).__init__(
+            fqdn=socket.getfqdn(),
+            **kw
+            )
+
+
 class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):
     """Deduce pusher_email from pusher by appending an emaildomain."""
 
@@ -2040,6 +2073,7 @@ class GenericEnvironmentMixin(Environment):
 class GenericEnvironment(
     ProjectdescEnvironmentMixin,
     ConfigMaxlinesEnvironmentMixin,
+    ComputeFQDNEnvironmentMixin,
     ConfigFilterLinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
@@ -2084,6 +2118,7 @@ class IncrementalDateTime():
 class GitoliteEnvironment(
     ProjectdescEnvironmentMixin,
     ConfigMaxlinesEnvironmentMixin,
+    ComputeFQDNEnvironmentMixin,
     ConfigFilterLinesEnvironmentMixin,
     ConfigRecipientsEnvironmentMixin,
     PusherDomainEnvironmentMixin,
@@ -2398,6 +2433,7 @@ def choose_environment(config, osenv=None, env=None, recipients=None):
     environment_mixins = [
         ProjectdescEnvironmentMixin,
         ConfigMaxlinesEnvironmentMixin,
+        ComputeFQDNEnvironmentMixin,
         ConfigFilterLinesEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigOptionsEnvironmentMixin,
