@@ -2098,7 +2098,7 @@ class GitoliteEnvironmentMixin(Environment):
         return self.osenv.get('GL_USER', 'unknown user')
 
 
-class IncrementalDateTime():
+class IncrementalDateTime(object):
     """Simple wrapper to give incremental date/times.
 
     Each call will result in a date/time a second later than the
