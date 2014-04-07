@@ -14,11 +14,11 @@ def read_readme():
 
 setup(
     name='git-multimail',
-    version='0.9.0',
+    version='1.0.0',
     description='Send notification emails for Git pushes',
     long_description=read_readme(),
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: No Input/Output (Daemon)',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
