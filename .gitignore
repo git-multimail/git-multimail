@@ -1,5 +1,7 @@
 *.pyc
 *.pyo
+*.log
 /build/
 /dist/
 /git-multimail/*.egg-info
+/atlassian-stash-plugin/target/

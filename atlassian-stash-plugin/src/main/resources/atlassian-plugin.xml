@@ -7,6 +7,9 @@
         <param name="plugin-logo">images/pluginLogo.png</param>
     </plugin-info>
 
+    <component-import key="activeObjects" interface="com.atlassian.activeobjects.external.ActiveObjects"/>
+    <component-import key="soyTemplateRenderer" interface="com.atlassian.soy.renderer.SoyTemplateRenderer" filter=""/>
+
     <resource type="i18n" name="i18n" location="stash-git-multimail"/>
 
     <resource type="download" name="git_multimail.py" location="scripts/git_multimail.py">
@@ -15,6 +18,16 @@
     <resource type="download" name="send_emails.py" location="scripts/send_emails.py">
         <param name="content-type" value="text/x-python"/>
     </resource>
+
+    <stash-resource key="multimail-soy" name="Multimail Soy Templates">
+        <directory location="/templates/"/>
+        <dependency>com.atlassian.stash.stash-web-plugin:global</dependency>
+    </stash-resource>
+
+    <ao key="ao-module">
+        <description>Multimail ActiveObjects entities</description>
+        <entity>com.palantir.stash.multimail.admin.ProjectSettings</entity>
+    </ao>
 
     <repository-hook key="git-multimail" name="Send Email Notification of Pushes"
                      class="com.palantir.stash.multimail.StashGitMultimail">
@@ -26,8 +39,20 @@
         </config-form>
     </repository-hook>
 
+    <web-item key="projects-settings-link" name="Multimail Project Settings" weight="20" section="stash.project.settings.panel/project-settings-addons-section">
+        <label>Multimail Project Settings</label>
+        <link linkId="multimail-project-settings-link">/plugins/servlet/multimail/projectsettings/${project.key}</link>
+        <tooltip>Project configuration options for Stash Codesearch</tooltip>
+    </web-item>
+
+    <servlet key="project-settings-servlet" class="com.palantir.stash.multimail.admin.ProjectSettingsServlet">
+        <description key="project-settings-servlet.description">Multimail Project Settings Servlet</description>
+        <url-pattern>/multimail/projectsettings/*</url-pattern>
+    </servlet>
+
     <!-- publish our component -->
     <component key="stashGitMultimail" class="com.palantir.stash.multimail.StashGitMultimail"/>
     <component key="pluginLoggerFactory" class="com.palantir.stash.multimail.logger.PluginLoggerFactory"/>
+    <component key="settingsManager" class="com.palantir.stash.multimail.admin.SettingsManager"/>
 
 </atlassian-plugin>

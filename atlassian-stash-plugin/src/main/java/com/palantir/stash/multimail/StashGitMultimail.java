@@ -22,6 +22,8 @@ import com.atlassian.stash.setting.Settings;
 import com.atlassian.stash.setting.SettingsValidationErrors;
 import com.atlassian.stash.user.StashAuthenticationContext;
 import com.atlassian.stash.user.StashUser;
+import com.palantir.stash.multimail.admin.ProjectSettings;
+import com.palantir.stash.multimail.admin.SettingsManager;
 import com.palantir.stash.multimail.logger.PluginLoggerFactory;
 
 /**
@@ -31,15 +33,18 @@ public class StashGitMultimail implements AsyncPostReceiveRepositoryHook, Reposi
 
     private final ApplicationPropertiesService appService;
     private final StashAuthenticationContext authContext;
+    private final SettingsManager settingsManager;
     private final String git_multimail_script;
     private final String email_script;
     private final Logger logger;
 
     public StashGitMultimail(ApplicationPropertiesService appService,
                              StashAuthenticationContext authContext,
+                             SettingsManager settingsManager,
                              PluginLoggerFactory logger) {
         this.appService = appService;
         this.authContext = authContext;
+        this.settingsManager = settingsManager;
         this.git_multimail_script = initializeScript("git_multimail");
         this.email_script = initializeScript("send_emails");
         this.logger = logger.getLogger(this.getClass().toString());
@@ -80,10 +85,21 @@ public class StashGitMultimail implements AsyncPostReceiveRepositoryHook, Reposi
     @Override
     public void postReceive(RepositoryHookContext context, Collection<RefChange> refChanges) {
 
+        ProjectSettings projectSettings = settingsManager.getProjectSettings(
+            context.getRepository().getProject());
         String email_addresses = context.getSettings().getString("email_addresses");
-        if (email_addresses == null) {
-            // Nothing to do, since there's no one to email
-            return;
+        if (email_addresses == null || email_addresses.trim().isEmpty()) {
+            if (projectSettings == null) {
+                return;
+            }
+            // Use the project's default recipient list
+            email_addresses = projectSettings.getDefaultRecipients();
+            if (email_addresses == null || email_addresses.trim().isEmpty() ||
+                    email_addresses.equalsIgnoreCase(ProjectSettings.DEFAULT_RECIPIENTS_DEFAULT)) {
+                return;
+            }
+            logger.info("No recipient list specified for {}, using default list from {}",
+                context.getRepository().getSlug(), context.getRepository().getProject().getKey());
         }
 
         // Determine the name of the user doing the updates, and the
@@ -155,9 +171,5 @@ public class StashGitMultimail implements AsyncPostReceiveRepositoryHook, Reposi
     @Override
     public void validate(Settings settings, SettingsValidationErrors errors,
                          Repository repository) {
-        if (settings.getString("email_addresses", "").isEmpty()) {
-            errors.addFieldError("email_addresses",
-                                 "Email address field is blank, please supply one");
-        }
     }
 }
