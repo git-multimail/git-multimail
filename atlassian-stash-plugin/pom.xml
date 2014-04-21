@@ -55,6 +55,17 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.atlassian.activeobjects</groupId>
+            <artifactId>activeobjects-plugin</artifactId>
+            <version>${ao.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.soy</groupId>
+            <artifactId>soy-template-renderer-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
@@ -137,7 +148,8 @@
     <properties>
         <stash.version>2.9.4</stash.version>
         <stash.data.version>2.9.4</stash.data.version>
-        <amps.version>4.2.10</amps.version>
+        <amps.version>4.2.20</amps.version>
         <plugin.testrunner.version>1.1.1</plugin.testrunner.version>
+        <ao.version>0.21.2</ao.version>
     </properties>
 </project>

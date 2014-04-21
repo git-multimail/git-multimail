@@ -13,6 +13,7 @@ import com.atlassian.stash.repository.RefChange;
 import com.atlassian.stash.server.ApplicationPropertiesService;
 import com.atlassian.stash.user.StashAuthenticationContext;
 import com.google.common.collect.ImmutableList;
+import com.palantir.stash.multimail.admin.SettingsManager;
 import com.palantir.stash.multimail.logger.PluginLoggerFactory;
 
 public class StashGitMultimailTest {
@@ -24,6 +25,8 @@ public class StashGitMultimailTest {
     private ApplicationPropertiesService appService;
     @Mock
     private StashAuthenticationContext authContext;
+    @Mock
+    private SettingsManager settingsManager;
 
     @Mock
     private RepositoryHookContext rhc;
@@ -37,7 +40,7 @@ public class StashGitMultimailTest {
         MockitoAnnotations.initMocks(this);
 
         loggerFactory = new PluginLoggerFactory();
-        sgm = new StashGitMultimail(appService, authContext, loggerFactory);
+        sgm = new StashGitMultimail(appService, authContext, settingsManager, loggerFactory);
     }
 
     @Test
