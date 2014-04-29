@@ -2334,6 +2334,47 @@ class Push(object):
         unhandled_sha1s = set(self.get_new_commits())
         send_date = IncrementalDateTime()
         for change in self.changes:
+            # In the sadly-all-too-frequent usecase of people pushing only
+            # one of their commits at a time to a repository, users feel
+            # the reference change summary emails are noise rather than
+            # important signal.  This is because, in this particular
+            # usecase, there is a reference change summary email for each
+            # new commit, and all these summaries do is point out that
+            # there is one new commit (which can readily be inferred by the
+            # existence of the individual revision email that is also
+            # sent).  In such cases, our users prefer there to be no push
+            # summary email.
+            #
+            # So, if the change is an update and it doesn't discard any
+            # commits, and it adds exactly one non-merge commit (gerrit forces
+            # a workflow where every commit is individually merged and the
+            # git-multimail hook fired off for just this one change), then we
+            # turn the push summary email off.
+            send_reference_summary_emails = True
+            try:
+                # If this change is a reference update that doesn't discard
+                # any commits...
+                if change.change_type == 'update' \
+                and [change.old.sha1] == read_git_lines(['merge-base',
+                       change.old.sha1, change.new.sha1]):
+                    # Get the new commits introduced by the push
+                    new_commits = read_git_lines(['log', '-3', '--format=%H %P',
+                       '%s..%s' % (change.old.sha1, change.new.sha1)])
+                    # If the newest commit is a merge, ignore it
+                    parents = new_commits[0].split()[1:]
+                    if len(parents) > 1:
+                        new_commits = new_commits[1:]
+                    # If there's exactly one non-merge commit introduced by
+                    # this update, turn off the reference summary email
+                    if len(new_commits) == 1 and \
+                       len(new_commits[0].split())==2 and \
+                       new_commits[0].split()[0] in unhandled_sha1s:
+                        send_reference_summary_emails = False
+            except CommandError:
+                # Cannot determine number of commits in old..new or new..old;
+                # don't turn off reference summary emails
+                pass
+
             # Check if we've got anyone to send to
             if not change.recipients:
                 sys.stderr.write(
@@ -2341,7 +2382,8 @@ class Push(object):
                     '*** for %r update %s->%s\n'
                     % (change.refname, change.old.sha1, change.new.sha1,)
                     )
-            else:
+                send_reference_summary_emails = False
+            if send_reference_summary_emails:
                 sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
                 extra_values = {'send_date': send_date.next()}
                 mailer.send(
