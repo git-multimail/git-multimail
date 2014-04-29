@@ -899,6 +899,34 @@ class ReferenceChange(Change):
 
         return values
 
+    def send_single_combined_email(self, known_added_sha1s):
+        """Determine if a combined refchange/revision email should be sent
+
+        If there is only a single new (non-merge) commit added by a
+        change, it is useful to combine the ReferenceChange and
+        Revision emails into one.  In such a case, return the single
+        revision; otherwise, return None.
+
+        This method is overridden in BranchChange."""
+
+        return None
+
+    def generate_combined_email(self, push, revision, body_filter=None, extra_header_values={}):
+        """Generate an email describing this change AND specified revision.
+
+        Iterate over the lines (including the header lines) of an
+        email describing this change.  If body_filter is not None,
+        then use it to filter the lines that are intended for the
+        email body.
+
+        The extra_header_values field is received as a dict and not as
+        **kwargs, to allow passing other keyword arguments in the
+        future (e.g. passing extra values to generate_email_intro()
+
+        This method is overridden in BranchChange."""
+
+        raise NotImplementedError
+
     def get_subject(self):
         template = {
             'create': REF_CREATED_SUBJECT_TEMPLATE,
@@ -1166,6 +1194,87 @@ class BranchChange(ReferenceChange):
             old=old, new=new, rev=rev,
             )
         self.recipients = environment.get_refchange_recipients(self)
+
+    def send_single_combined_email(self, known_added_sha1s):
+        # In the sadly-all-too-frequent usecase of people pushing only
+        # one of their commits at a time to a repository, users feel
+        # the reference change summary emails are noise rather than
+        # important signal.  This is because, in this particular
+        # usecase, there is a reference change summary email for each
+        # new commit, and all these summaries do is point out that
+        # there is one new commit (which can readily be inferred by
+        # the existence of the individual revision email that is also
+        # sent).  In such cases, our users prefer there to be a combined
+        # reference change summary/new revision email.
+        #
+        # So, if the change is an update and it doesn't discard any
+        # commits, and it adds exactly one non-merge commit (gerrit
+        # forces a workflow where every commit is individually merged
+        # and the git-multimail hook fired off for just this one
+        # change), then we send a combined refchange/revision email.
+        try:
+            # If this change is a reference update that doesn't discard
+            # any commits...
+            if self.change_type != 'update':
+                return None
+
+            if read_git_lines(
+                    ['merge-base', self.old.sha1, self.new.sha1]
+                    ) != [self.old.sha1]:
+                return None
+
+            # Check if this update introduced exactly one non-merge
+            # commit:
+
+            def split_line(line):
+                """Split line into (sha1, [parent,...])."""
+
+                words = line.split()
+                return (words[0], words[1:])
+
+            # Get the new commits introduced by the push as a list of
+            # (sha1, [parent,...])
+            new_commits = [
+                split_line(line)
+                for line in read_git_lines(
+                    [
+                        'log', '-3', '--format=%H %P',
+                        '%s..%s' % (self.old.sha1, self.new.sha1),
+                        ]
+                    )
+                ]
+
+            if not new_commits:
+                return None
+
+            tot = len(new_commits)
+            if len(new_commits[0][1]) > 1:
+                del new_commits[0]
+
+            # Our primary check: we can't combine if more than one commit
+            # is introduced.  We also currently only combine if the new
+            # commit is a non-merge commit, though it may make sense to
+            # combine if it is a merge as well.
+            if not (
+                len(new_commits) == 1
+                and len(new_commits[0][1]) == 1
+                and new_commits[0][0] in known_added_sha1s
+                ):
+                return None
+
+            # We can combine the refchange and one new revision emails
+            # into one.  Return the Revision that a combined email should
+            # be sent about.
+            rev = Revision(self, GitObject(new_commits[0][0]), 1, tot)
+            return rev
+        except CommandError:
+            # Cannot determine number of commits in old..new or new..old;
+            # don't combine reference/revision emails:
+            return None
+
+    def generate_combined_email(self, push, revision, body_filter=None, extra_header_values={}):
+        # FIXME: Need to send a combined email, not just a revision email
+        return revision.generate_email(push, body_filter, extra_header_values)
 
 
 class AnnotatedTagChange(ReferenceChange):
@@ -2350,6 +2459,12 @@ class Push(object):
         unhandled_sha1s = set(self.get_new_commits())
         send_date = IncrementalDateTime()
         for change in self.changes:
+            sha1s = []
+            for sha1 in reversed(list(self.get_new_commits(change))):
+                if sha1 in unhandled_sha1s:
+                    sha1s.append(sha1)
+                    unhandled_sha1s.remove(sha1)
+
             # Check if we've got anyone to send to
             if not change.recipients:
                 sys.stderr.write(
@@ -2361,16 +2476,21 @@ class Push(object):
                 if not change.environment.quiet:
                     sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
                 extra_values = {'send_date': send_date.next()}
-                mailer.send(
-                    change.generate_email(self, body_filter, extra_values),
-                    change.recipients,
-                    )
 
-            sha1s = []
-            for sha1 in reversed(list(self.get_new_commits(change))):
-                if sha1 in unhandled_sha1s:
-                    sha1s.append(sha1)
-                    unhandled_sha1s.remove(sha1)
+                rev = change.send_single_combined_email(sha1s)
+                if rev:
+                    mailer.send(
+                        change.generate_combined_email(self, rev, body_filter, extra_values),
+                        rev.recipients,
+                    )
+                    # This change is now fully handled; no need to handle
+                    # individual revisions any further.
+                    continue
+                else:
+                    mailer.send(
+                        change.generate_email(self, body_filter, extra_values),
+                        change.recipients,
+                    )
 
             max_emails = change.environment.maxcommitemails
             if max_emails and len(sha1s) > max_emails:
