@@ -95,10 +95,15 @@ public class StashGitMultimail implements AsyncPostReceiveRepositoryHook, Reposi
         Repository repo = context.getRepository();
         String reponame = repo.getProject().getKey() + "/" + repo.getSlug();
 
+        // Determine any branches we are filtering on
+        String ref_filter_regex = context.getSettings().getString("ref_filter_regex", "");
+        Boolean reverse_regex = context.getSettings().getBoolean("reverse_regex", false);
+
         // Create the process
         ProcessBuilder pb = new ProcessBuilder("python2", email_script,
                                                git_multimail_script,
                                                "--recipients", email_addresses,
+                                               reverse_regex ? "--ref-filter-inclusion-regex" : "--ref-filter-exclusion-regex", ref_filter_regex,
                                                "--stash-user", submitter,
                                                "--stash-repo", reponame);
 
@@ -158,6 +163,42 @@ public class StashGitMultimail implements AsyncPostReceiveRepositoryHook, Reposi
         if (settings.getString("email_addresses", "").isEmpty()) {
             errors.addFieldError("email_addresses",
                                  "Email address field is blank, please supply one");
+
+        String ref_filter_regex = settings.getString("ref_filter_regex", "");
+        if (ref_filter_regex.isEmpty()) {
+            return;
+        }
+
+        String pycommand = String.format("import re; exec('try: \\n  re.compile(\\\"%s\\\")\\nexcept re.error as e:\\n  raise SystemExit(e.message)')", ref_filter_regex);
+
+        // Start the process
+        Process pr;
+        try {
+            pr = new ProcessBuilder("python2", "-c", pycommand).start();
+        } catch (IOException e) {
+            // Not sure what to do other than point out we can't execute python to verify
+            errors.addFieldError("ref_filter_regex",
+                                 "Unable to execute python2 to verify Ref Filter Regex");
+            return;
+        }
+
+        // Wait for the process to finish
+        int ret = 42;
+        try {
+            ret = pr.waitFor();
+        } catch (InterruptedException e) {
+            // JVM shutdown or something?  Just bail and inform the user.
+            errors.addFieldError("ref_filter_regex",
+                                 "Unable to execute python2 to verify Ref Filter Regex");
+            return;
+        }
+
+        // Report any errors; return status, stderr, & stdout
+        if (ret != 0) {
+            InputStream pr_stderr = pr.getErrorStream();
+            java.util.Scanner s = new java.util.Scanner(pr_stderr).useDelimiter("\\A");
+            errors.addFieldError("ref_filter_regex",
+                                 "Ref Filter Regex is bad: "+(s.hasNext() ? s.next() : ""));
         }
     }
 }
