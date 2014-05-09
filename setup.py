@@ -5,7 +5,7 @@ import os
 from setuptools import setup
 
 assert 0x02040000 <= sys.hexversion < 0x03000000, \
-       "Install Python 2, version 2.4 or greater"
+    "Install Python 2, version 2.4 or greater"
 
 
 def read_readme():
@@ -35,8 +35,6 @@ setup(
     maintainer='Michael Haggerty',
     maintainer_email='mhagger@alum.mit.edu',
     license='GPLv2',
-    package_dir = {'': 'git-multimail'},
+    package_dir={'': 'git-multimail'},
     py_modules=['git_multimail'],
     )
-
-
