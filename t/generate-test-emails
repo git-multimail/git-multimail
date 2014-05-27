@@ -75,6 +75,7 @@ test_rewind refs/heads/master refs/heads/feature
 test_rewind refs/heads/master refs/heads/master^
 
 test_update refs/heads/release refs/heads/release^^^^
+test_update refs/heads/release refs/heads/release^
 test_rewind refs/heads/release refs/heads/release^^
 
 test_create refs/heads/feature
