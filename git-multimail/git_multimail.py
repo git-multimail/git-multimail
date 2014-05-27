@@ -1779,8 +1779,12 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
     def get_emailprefix(self):
         emailprefix = self.config.get('emailprefix')
-        if emailprefix and emailprefix.strip():
-            return emailprefix.strip() + ' '
+        if emailprefix is not None:
+            emailprefix = emailprefix.strip()
+            if emailprefix:
+                return emailprefix + ' '
+            else:
+                return ''
         else:
             return '[%s] ' % (self.get_repo_shortname(),)
 

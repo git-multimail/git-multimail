@@ -287,7 +287,8 @@ multimailhook.emailPrefix
     All emails have this string prepended to their subjects, to aid
     email filtering (though filtering based on the X-Git-* email
     headers is probably more robust).  Default is the short name of
-    the repository in square brackets; e.g., "[myrepo]".
+    the repository in square brackets; e.g., "[myrepo]".  Set this
+    value to the empty string to suppress the email prefix.
 
 multimailhook.emailMaxLines
 
