@@ -1,0 +1,69 @@
+{namespace plugin.page.multimail}
+
+/**
+ * Project settings page template
+ * @param project
+ * @param settings
+ * @param errors
+ */
+{template .projectSettingsPage}
+
+<html>
+<meta name="decorator" content="stash.project.settings">
+<meta name="projectKey" content="{$project.key}">
+<meta name="activeTab" content="project-settings-addon-section">
+<head>
+    <title>Stash Multimail Project Settings</title>
+</head>
+<body>
+
+{call aui.group.group}
+    {param content}
+        {call aui.group.item}
+            {param content}
+                <h2>Multimail Project Settings</h2>
+            {/param}
+        {/call}
+    {/param}
+{/call}
+
+{if $errors.0}
+    {call widget.aui.message.error}
+        {param content}
+            <ul>
+            {foreach $error in $errors}
+                <li>{$error}</li>
+            {/foreach}
+            </ul>
+        {/param}
+    {/call}
+{/if}
+
+{call aui.group.group} {param content} {call aui.form.form}
+    {param action: '' /}
+    {param content}
+        {call aui.form.textField}
+            {param id: 'defaultRecipients' /}
+            {param labelContent: 'Default recipients' /}
+            {param value: $settings.defaultRecipients/}
+            {param descriptionText: '(Comma-separated) Default list of email addresses to be notified upon pushes (for repositories without a specified recipients list)' /}
+        {/call}
+        {call aui.form.buttons}
+            {param content}
+                {call aui.form.submit}
+                    {param id: 'saveButton' /}
+                    {param text: 'Save' /}
+                    {param type: 'submit' /}
+                {/call}
+            {/param}
+        {/call}
+    {/param}
+{/call} {/param} {/call}
+
+{literal}<script>
+    AJS.$('#multimail-project-settings-link').parent().addClass('aui-nav-selected');
+</script>{/literal}
+
+</body>
+</html>
+{/template}

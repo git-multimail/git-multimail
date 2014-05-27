@@ -1,0 +1,33 @@
+{namespace plugin.hook.config.multimail}
+
+/**
+ * @param config
+ * @param? errors
+ */
+{template .formContents}
+    {call aui.form.textField}
+        {param id: 'email_addresses' /}
+        {param value: $config['email_addresses'] /}
+        {param labelContent : stash_i18n('stash.web.multimail.hook.email_addresses.label', 'Email Address(es)') /}
+        {param descriptionText: stash_i18n('stash.web.multimail.hook.email_addresses.description',
+               '(Comma separated) Email addresses to be notified upon pushes -- leave empty to use project defaults') /}
+    {/call}
+
+    <h3>Advanced Options</h3>
+    {call aui.form.checkboxField}
+        {param legendContent: stash_i18n('stash.web.multimail.hook.reverse_regex.description', '') /}
+        {param fields: [[
+          'id': 'reverse_regex',
+          'isChecked': $config['reverse_regex'],
+          'labelText': stash_i18n('stash.web.multimail.hook.reverse_regex.label', 'Reverse the meaning of the Ref Filter Regex (s/NOT//)'),
+          ]] /}
+    {/call}
+    {call aui.form.textField}
+        {param id: 'ref_filter_regex' /}
+        {param value: $config['ref_filter_regex'] /}
+        {param labelContent : stash_i18n('stash.web.multimail.hook.refFilterRegex.label', 'Ref Filter Regex') /}
+        {param descriptionText: stash_i18n('stash.web.multimail.hook.refFilterRegex.description',
+               'Only send emails for changes to refs (branches and tags) that do NOT match this regex') /}
+        {param errorTexts: $errors ? $errors['ref_filter_regex'] : null /}
+    {/call}
+{/template}
