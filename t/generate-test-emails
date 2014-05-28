@@ -171,6 +171,19 @@ test_update refs/heads/master refs/heads/foo
 verbose_do git config multimailhook.refChangeShowGraph false
 git branch feature "$f"
 
+verbose_do git config multimailhook.commitList 'Commit List <commitlist@example.com>'
+# Should produce no output at all
+verbose_do git config multimailhook.refFilterExclusionRegex ^refs/heads/master$
+verbose_do test_update refs/heads/master refs/heads/master^^
+verbose_do git config --unset multimailhook.refFilterExclusionRegex
+verbose_do git config multimailhook.refFilterInclusionRegex ^refs/heads/feature$
+verbose_do test_update refs/heads/master refs/heads/master^^
+
+# Should produce a refchange email with all commits marked as new
+verbose_do git config multimailhook.refFilterInclusionRegex ^refs/heads/master$
+verbose_do test_update refs/heads/master refs/heads/master^^
+verbose_do git config --unset multimailhook.refFilterInclusionRegex
+
 for o in mailinglist refchangelist announcelist commitlist; do
     verbose_do git config multimailhook."$o" ''
 done
