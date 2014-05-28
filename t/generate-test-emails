@@ -119,6 +119,7 @@ test_delete refs/foo/bar
 test_hook refs/heads/master refs/heads/master^^
 
 test_update refs/heads/master refs/heads/master^^ --ref-filter-exclusion-regex ^refs/heads/master$
+test_update refs/heads/master refs/heads/master^^ --ref-filter-inclusion-regex ^refs/heads/master$
 
 rm -rf "$TESTREPO"
 
