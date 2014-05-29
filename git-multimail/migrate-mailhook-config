@@ -22,6 +22,7 @@ OLD_NAMES = [
     'showrev',
     'emailmaxlines',
     'diffopts',
+    'scancommitforcc',
     ]
 
 NEW_NAMES = [
@@ -38,6 +39,7 @@ NEW_NAMES = [
     'emailmaxlines',
     'diffopts',
     'emaildomain',
+    'scancommitforcc',
     ]
 
 
@@ -198,7 +200,7 @@ def migrate_config(strict=False, retain=False, overwrite=False):
             )
         new.set('announceshortlog', 'true')
 
-    for name in ['envelopesender', 'emailmaxlines', 'diffopts']:
+    for name in ['envelopesender', 'emailmaxlines', 'diffopts', 'scancommitforcc']:
         if name in old:
             sys.stderr.write(
                 '...copying "%s.%s" to "%s.%s"\n' % (old.section, name, new.section, name)
