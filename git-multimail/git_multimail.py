@@ -230,6 +230,7 @@ how to provide full information about this reference change.
 REVISION_HEADER_TEMPLATE = """\
 Date: %(send_date)s
 To: %(recipients)s
+Cc: %(cc_recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 MIME-Version: 1.0
 Content-Type: text/plain; charset=%(charset)s
@@ -716,6 +717,8 @@ class Change(object):
 class Revision(Change):
     """A Change consisting of a single git commit."""
 
+    CC_RE = re.compile(r'^\s*C[Cc]:\s*(?P<to>[^#]+@[^#]*)\s*(#.*)?$')
+
     def __init__(self, reference_change, rev, num, tot):
         Change.__init__(self, reference_change.environment)
         self.reference_change = reference_change
@@ -726,6 +729,23 @@ class Revision(Change):
         self.tot = tot
         self.author = read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
         self.recipients = self.environment.get_revision_recipients(self)
+
+        self.cc_recipients = ''
+        if self.environment.get_scancommitforcc():
+            self.cc_recipients = ', '.join(to.strip() for to in self._cc_recipients())
+            if self.cc_recipients:
+                sys.stderr.write('Add %s to CC for %s\n' % (self.cc_recipients, self.rev.sha1))
+
+    def _cc_recipients(self):
+        cc_recipients = []
+        message = read_git_output(['log', '--no-walk', '--format=%b', self.rev.sha1])
+        lines = message.strip().split('\n')
+        for line in lines:
+            m = re.match(self.CC_RE, line)
+            if m:
+                cc_recipients.append(m.group('to'))
+
+        return cc_recipients
 
     def _compute_values(self):
         values = Change._compute_values(self)
@@ -744,6 +764,8 @@ class Revision(Change):
         values['num'] = self.num
         values['tot'] = self.tot
         values['recipients'] = self.recipients
+        if self.cc_recipients:
+            values['cc_recipients'] = self.cc_recipients
         values['oneline'] = oneline
         values['author'] = self.author
 
@@ -1846,6 +1868,9 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             return None
         else:
             return self.__reply_to_commit
+
+    def get_scancommitforcc(self):
+        return self.config.get('scancommitforcc')
 
 
 class FilterLinesEnvironmentMixin(Environment):

@@ -399,6 +399,12 @@ multimailhook.stdout
     For debugging, send emails to stdout rather than to the
     mailer.  Equivalent to the --stdout command line option
 
+multimailhook.scanCommitForCc
+
+    If this option is set to true, than recipients from lines in commit body
+    that starts with "CC:" will be added to CC list.
+    Default: false
+
 
 Email filtering aids
 --------------------

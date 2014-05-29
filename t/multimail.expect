@@ -3201,10 +3201,13 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+Add Some One <Some.One@example.com>, Another Guy <Another.Guy@example.com>, Third.Guy@example.com to CC for 919426837aa07c18459a0acc0f789b6a8cd8fb80
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Commit List <commitlist@example.com>
+Cc: Some One <Some.One@example.com>, Another Guy <Another.Guy@example.com>,
+ Third.Guy@example.com
 Subject: *test-repo* 01/03: Subject line
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -3251,10 +3254,12 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+Add me@example.com to CC for 850c489cf431841cf428e00fc8285456682a9d13
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Commit List <commitlist@example.com>
+Cc: me@example.com
 Subject: *test-repo* 02/03: Another subject line
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
