@@ -452,6 +452,9 @@ class Config(object):
     def has_key(self, name):
         return self.get_all(name, default=None) is not None
 
+    def __contains__(self, x):
+        return self.has_key(x)
+
     def unset_all(self, name):
         try:
             read_git_output(
