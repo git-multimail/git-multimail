@@ -2071,7 +2071,7 @@ class StaticBranchFilterEnvironmentMixin(Environment):
         if ref_filter_incl_regex and ref_filter_excl_regex:
             raise SystemExit("Cannot specify both a ref inclusion and exclusion regex.")
         self.__is_inclusion_filter = bool(ref_filter_incl_regex)
-        default_exclude = super(StaticBranchFilterEnvironmentMixin, self).get_default_ref_ignore_regex()
+        default_exclude = self.get_default_ref_ignore_regex()
         if ref_filter_incl_regex:
           ref_filter_regex = ref_filter_incl_regex
         elif ref_filter_excl_regex:
