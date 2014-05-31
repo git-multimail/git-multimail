@@ -449,8 +449,13 @@ class Config(object):
             env=self.env,
             )
 
-    def has_key(self, name):
+    def __contains__(self, name):
         return self.get_all(name, default=None) is not None
+
+    # We don't use this method anymore internally, but keep it here in
+    # case somebody is calling it from their own code:
+    def has_key(self, name):
+        return name in self
 
     def unset_all(self, name):
         try:
