@@ -2254,7 +2254,7 @@ class GerritEnvironmentMixin(Environment):
 
     def get_default_ref_ignore_regex(self):
         default = super(GerritEnvironmentMixin, self).get_default_ref_ignore_regex()
-        return default + '|^refs/changes/|^refs/cache-automerge/'
+        return default + '|^refs/changes/|^refs/cache-automerge/|^refs/meta/'
 
     def get_revision_recipients(self, revision):
         # Merge commits created by Gerrit when users hit "Submit this patchset"
