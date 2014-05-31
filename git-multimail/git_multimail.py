@@ -2253,7 +2253,7 @@ class GerritEnvironmentMixin(Environment):
             return super(GerritEnvironmentMixin, self).get_pusher_email()
 
     def get_default_ref_ignore_regex(self):
-        default = super(GerritEnvironmentMixin, self).get_default_ref_ignore_list()
+        default = super(GerritEnvironmentMixin, self).get_default_ref_ignore_regex()
         return default + '|^refs/changes/|^refs/cache-automerge/'
 
     def get_revision_recipients(self, revision):
