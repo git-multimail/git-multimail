@@ -389,6 +389,12 @@ multimailhook.replyToRefchange
     - The value "none", in which case the Reply-To: field will be
       omitted.
 
+multimailhook.scancommitforcc
+
+    If this option is set to true, than recipients from lines in commit body
+    that starts with "CC:" will be added to CC list.
+    Default: false
+
 
 Email filtering aids
 --------------------
