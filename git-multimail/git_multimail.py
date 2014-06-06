@@ -729,6 +729,8 @@ class Revision(Change):
         self.tot = tot
         self.author = read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
         self.recipients = self.environment.get_revision_recipients(self)
+
+        self.cc_recipients = ''
         if self.environment.get_scancommitforcc():
             self.cc_recipients = ', '.join(to.strip() for to in self._cc_recipients())
             if self.cc_recipients:
