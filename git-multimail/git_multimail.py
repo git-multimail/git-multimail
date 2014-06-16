@@ -717,7 +717,7 @@ class Change(object):
 class Revision(Change):
     """A Change consisting of a single git commit."""
 
-    CC_RE = re.compile(r'^\s*(?:C(?:c|C):\s*)(?P<to>.+)\s*$')
+    CC_RE = re.compile(r'^\s*(?:C(?:c|C):\s*)(?P<to>.+)(?:\s*#.*|\s*)$')
 
     def __init__(self, reference_change, rev, num, tot):
         Change.__init__(self, reference_change.environment)
