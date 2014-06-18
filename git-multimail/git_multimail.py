@@ -1197,10 +1197,15 @@ class BranchChange(ReferenceChange):
                     '%s..%s' % (self.old.sha1, self.new.sha1),
                     ]
                 )
+
+            if not new_commits:
+                return False
+
             # If the newest commit is a merge, ignore it
             parents = new_commits[0].split()[1:]
             if len(parents) > 1:
                 new_commits = new_commits[1:]
+
             # If there's exactly one non-merge commit introduced by
             # this update, turn off the reference summary email
             return (
