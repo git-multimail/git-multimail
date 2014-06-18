@@ -1548,6 +1548,18 @@ class Environment(object):
             get_reply_to_commit() is used for individual commit
             emails.
 
+        get_ref_filter_regex()
+
+            Return a tuple -- a compiled regex, and a boolean indicating
+            whether the regex picks refs to include (if False, the regex
+            matches on refs to exclude).
+
+        get_default_ref_ignore_regex()
+
+            Return a regex that should be ignored for both what emails
+            to send and when computing what commits are considered new
+            to the repository.  Default is "^refs/notes/".
+
     They should also define the following attributes:
 
         announce_show_shortlog (bool)
@@ -1692,6 +1704,15 @@ class Environment(object):
 
     def get_reply_to_commit(self, revision):
         return revision.author
+
+    def get_default_ref_ignore_regex(self):
+        # The commit messages of git notes are essentially meaningless
+        # and "filenames" in git notes commits are an implementational
+        # detail that might surprise users at first.  As such, we
+        # would need a completely different method for handling emails
+        # of git notes in order for them to be of benefit for users,
+        # which we simply do not have right now.
+        return "^refs/notes/"
 
     def filter_body(self, lines):
         """Filter the lines intended for an email body.
@@ -2050,6 +2071,47 @@ class ConfigRecipientsEnvironmentMixin(
             return ''
 
 
+class StaticBranchFilterEnvironmentMixin(Environment):
+    """Set branch filter statically based on constructor parameters."""
+
+    def __init__(self, ref_filter_incl_regex, ref_filter_excl_regex, **kw):
+        super(StaticBranchFilterEnvironmentMixin, self).__init__(**kw)
+
+        if ref_filter_incl_regex and ref_filter_excl_regex:
+            raise SystemExit("Cannot specify both a ref inclusion and exclusion regex.")
+        self.__is_inclusion_filter = bool(ref_filter_incl_regex)
+        default_exclude = super(StaticBranchFilterEnvironmentMixin, self).get_default_ref_ignore_regex()
+        if ref_filter_incl_regex:
+          ref_filter_regex = ref_filter_incl_regex
+        elif ref_filter_excl_regex:
+          ref_filter_regex = ref_filter_excl_regex+'|'+default_exclude
+        else:
+          ref_filter_regex = default_exclude
+
+        try:
+            self.__compiled_regex = re.compile(ref_filter_regex)
+        except Exception as e:
+            raise SystemExit('Invalid Ref Filter Regex "%s": %s' % (ref_filter_regex, e.message))
+
+    def get_ref_filter_regex(self):
+        return self.__compiled_regex, self.__is_inclusion_filter
+
+
+class ConfigBranchFilterEnvironmentMixin(
+    ConfigEnvironmentMixin,
+    StaticBranchFilterEnvironmentMixin
+    ):
+    """Determine branch filtering statically based on config."""
+
+    def __init__(self, config, **kw):
+        super(ConfigBranchFilterEnvironmentMixin, self).__init__(
+            config=config,
+            ref_filter_incl_regex=config.get('refFilterInclusionRegex'),
+            ref_filter_excl_regex=config.get('refFilterExclusionRegex'),
+            **kw
+            )
+
+
 class ProjectdescEnvironmentMixin(Environment):
     """Make a "projectdesc" value available for templates.
 
@@ -2085,6 +2147,7 @@ class GenericEnvironment(
         ComputeFQDNEnvironmentMixin,
         ConfigFilterLinesEnvironmentMixin,
         ConfigRecipientsEnvironmentMixin,
+        ConfigBranchFilterEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigOptionsEnvironmentMixin,
         GenericEnvironmentMixin,
@@ -2130,11 +2193,115 @@ class GitoliteEnvironment(
         ComputeFQDNEnvironmentMixin,
         ConfigFilterLinesEnvironmentMixin,
         ConfigRecipientsEnvironmentMixin,
+        ConfigBranchFilterEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigOptionsEnvironmentMixin,
         GitoliteEnvironmentMixin,
         Environment,
         ):
+    pass
+
+
+class StashEnvironmentMixin(Environment):
+    def __init__(self, user=None, repo=None, **kw):
+        super(StashEnvironmentMixin, self).__init__(**kw)
+        self.__user = user
+        self.__repo = repo
+
+    def get_repo_shortname(self):
+        return self.__repo
+
+    def get_pusher(self):
+        return re.match('(.*?)\s*<', self.__user).group(1)
+
+    def get_pusher_email(self):
+        return self.__user
+
+    def get_fromaddr(self):
+        return self.__user
+
+class StashEnvironment(
+    StashEnvironmentMixin,
+    ProjectdescEnvironmentMixin,
+    ConfigMaxlinesEnvironmentMixin,
+    ComputeFQDNEnvironmentMixin,
+    ConfigFilterLinesEnvironmentMixin,
+    ConfigRecipientsEnvironmentMixin,
+    ConfigBranchFilterEnvironmentMixin,
+    PusherDomainEnvironmentMixin,
+    ConfigOptionsEnvironmentMixin,
+    Environment,
+    ):
+    pass
+
+class GerritEnvironmentMixin(Environment):
+    def __init__(self, project=None, submitter=None, update_method=None, **kw):
+        super(GerritEnvironmentMixin, self).__init__(**kw)
+        self.__project = project
+        self.__submitter = submitter
+        self.__update_method = update_method
+        "Make an 'update_method' value available for templates."
+        self.COMPUTED_KEYS += ['update_method']
+
+    def get_repo_shortname(self):
+        return self.__project
+
+    def get_pusher(self):
+        if self.__submitter:
+            return re.match('(.*?)\s*<', self.__submitter).group(1)
+        else:
+            # If we arrive here, this means someone pushed "Submit" from
+            # the gerrit web UI for the CR (or used one of the programmatic
+            # APIs to do the same, such as gerrit review) and the
+            # merge/push was done by the Gerrit user.  It was technically
+            # triggered by someone else, but sadly we have no way of
+            # determining who that someone else is at this point.
+            return 'Gerrit'  # 'unknown user'?
+
+    def get_pusher_email(self):
+        if self.__submitter:
+            return self.__submitter
+        else:
+            return super(GerritEnvironmentMixin, self).get_pusher_email()
+
+    def get_fromaddr(self):
+        if self.__submitter:
+            return self.__submitter
+        else:
+            return super(GerritEnvironmentMixin, self).get_fromaddr()
+
+    def get_default_ref_ignore_regex(self):
+        default = super(GerritEnvironmentMixin, self).get_default_ref_ignore_list()
+        return default + '|^refs/changes/|^refs/cache-automerge/'
+
+    def get_revision_recipients(self, revision):
+        # Merge commits created by Gerrit when users hit "Submit this patchset"
+        # in the Web UI (or do equivalently with REST APIs or the gerrit review
+        # command) are not something users want to see an individual email for.
+        # Filter them out.
+        committer = read_git_output(['log', '--no-walk', '--format=%cN',
+                                     revision.rev.sha1])
+        if committer == 'Gerrit Code Review':
+            return []
+        else:
+            return super(GerritEnvironmentMixin, self).get_revision_recipients(revision)
+
+    def get_update_method(self):
+        return self.__update_method
+
+
+class GerritEnvironment(
+    GerritEnvironmentMixin,
+    ProjectdescEnvironmentMixin,
+    ConfigMaxlinesEnvironmentMixin,
+    ComputeFQDNEnvironmentMixin,
+    ConfigFilterLinesEnvironmentMixin,
+    ConfigRecipientsEnvironmentMixin,
+    ConfigBranchFilterEnvironmentMixin,
+    PusherDomainEnvironmentMixin,
+    ConfigOptionsEnvironmentMixin,
+    Environment,
+    ):
     pass
 
 
@@ -2220,12 +2387,13 @@ class Push(object):
             ])
         )
 
-    def __init__(self, changes):
+    def __init__(self, changes, ref_filter_regex, is_inclusion_filter):
         self.changes = sorted(changes, key=self._sort_key)
 
         # The SHA-1s of commits referred to by references unaffected
         # by this push:
-        other_ref_sha1s = self._compute_other_ref_sha1s()
+        other_ref_sha1s = self._compute_other_ref_sha1s(ref_filter_regex,
+                                                        is_inclusion_filter)
 
         self._old_rev_exclusion_spec = self._compute_rev_exclusion_spec(
             other_ref_sha1s.union(
@@ -2246,7 +2414,7 @@ class Push(object):
     def _sort_key(klass, change):
         return (klass.SORT_ORDER[change.__class__, change.change_type], change.refname,)
 
-    def _compute_other_ref_sha1s(self):
+    def _compute_other_ref_sha1s(self, ref_filter_regex, is_inclusion_filter):
         """Return the GitObjects referred to by references unaffected by this push."""
 
         # The refnames being changed by this push:
@@ -2264,7 +2432,8 @@ class Push(object):
             )
         for line in read_git_lines(['for-each-ref', '--format=%s' % (fmt,)]):
             (sha1, type, name) = line.split(' ', 2)
-            if sha1 and type == 'commit' and name not in updated_refs:
+            if sha1 and type == 'commit' and name not in updated_refs and \
+               include_ref(name, ref_filter_regex, is_inclusion_filter):
                 sha1s.add(sha1)
 
         return sha1s
@@ -2382,18 +2551,34 @@ class Push(object):
                 )
 
 
+def include_ref(refname, ref_filter_regex, is_inclusion_filter):
+  return not (bool(ref_filter_regex.search(refname)) ^ is_inclusion_filter)
+  ## More readable version:
+  #does_match = bool(re.search(ref_filter_regex))
+  #if is_inclusion_filter:
+  #  return does_match
+  #else:  # exclusion filter -- we include the ref if the regex doesn't match
+  #  return not does_match
+
 def run_as_post_receive_hook(environment, mailer):
+    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex()
     changes = []
     for line in sys.stdin:
         (oldrev, newrev, refname) = line.strip().split(' ', 2)
+        if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
+            continue
         changes.append(
             ReferenceChange.create(environment, oldrev, newrev, refname)
             )
-    push = Push(changes)
-    push.send_emails(mailer, body_filter=environment.filter_body)
+    if changes:
+        push = Push(changes, ref_filter_regex, is_inclusion_filter)
+        push.send_emails(mailer, body_filter=environment.filter_body)
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
+    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex()
+    if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
+        return
     changes = [
         ReferenceChange.create(
             environment,
@@ -2402,7 +2587,7 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
             refname,
             ),
         ]
-    push = Push(changes)
+    push = Push(changes, ref_filter_regex, is_inclusion_filter)
     push.send_emails(mailer, body_filter=environment.filter_body)
 
 
@@ -2432,10 +2617,14 @@ def choose_mailer(config, environment):
 KNOWN_ENVIRONMENTS = {
     'generic': GenericEnvironmentMixin,
     'gitolite': GitoliteEnvironmentMixin,
+    'stash': StashEnvironmentMixin,
+    'gerrit': GerritEnvironmentMixin,
     }
 
 
-def choose_environment(config, osenv=None, env=None, recipients=None):
+def choose_environment(config, osenv=None, env=None, recipients=None,
+                       ref_filter_incl_regex=None, ref_filter_excl_regex=None,
+                       hook_info = None):
     if not osenv:
         osenv = os.environ
 
@@ -2461,7 +2650,17 @@ def choose_environment(config, osenv=None, env=None, recipients=None):
         else:
             env = 'generic'
 
-    environment_mixins.append(KNOWN_ENVIRONMENTS[env])
+    if env == 'stash':
+        environment_mixins.insert(0, KNOWN_ENVIRONMENTS[env])
+        environment_kw['user'] = hook_info['stash_user']
+        environment_kw['repo'] = hook_info['stash_repo']
+    elif env == 'gerrit':
+        environment_mixins.insert(0, KNOWN_ENVIRONMENTS[env])
+        environment_kw['project'] = hook_info['project']
+        environment_kw['submitter'] = hook_info['submitter']
+        environment_kw['update_method'] = hook_info['update_method']
+    else:
+        environment_mixins.append(KNOWN_ENVIRONMENTS[env])
 
     if recipients:
         environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
@@ -2471,6 +2670,13 @@ def choose_environment(config, osenv=None, env=None, recipients=None):
     else:
         environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
 
+    if ref_filter_incl_regex or ref_filter_excl_regex:
+        environment_mixins.insert(0, StaticBranchFilterEnvironmentMixin)
+        environment_kw['ref_filter_incl_regex'] = ref_filter_incl_regex
+        environment_kw['ref_filter_excl_regex'] = ref_filter_excl_regex
+    else:
+        environment_mixins.insert(0, ConfigBranchFilterEnvironmentMixin)
+
     environment_klass = type(
         'EffectiveEnvironment',
         tuple(environment_mixins) + (Environment,),
@@ -2478,6 +2684,82 @@ def choose_environment(config, osenv=None, env=None, recipients=None):
         )
     return environment_klass(**environment_kw)
 
+
+def check_hook_specific_args(options, args):
+    # First check for stash arguments
+    if (options.stash_user == None) != (options.stash_repo == None):
+        raise SystemExit("Error: Specify both of --stash-user and "
+                         "--stash-repo or neither.")
+    if options.stash_user:
+        options.environment = 'stash'
+        return options, args, {'stash_user': options.stash_user,
+                               'stash_repo': options.stash_repo}
+
+    # Finally, check for gerrit specific arguments
+    required_gerrit_options = (options.oldrev, options.newrev, options.refname,
+                               options.project)
+    if required_gerrit_options == (None,)*4:
+        # No special options in use, just return what we started with
+        return options, args, {}
+
+    if None in required_gerrit_options:
+        raise SystemExit("Error: Specify all of --oldrev, --newrev, --refname, "
+                         "and --project; or none of them.")
+
+    if options.environment not in (None, 'gerrit'):
+        raise SystemExit("Non-gerrit environments incompatible with --oldrev, "
+                         "--newrev, --refname, and --project")
+    options.environment = 'gerrit'
+
+    if args:
+        raise SystemExit("Error: Positional parameters not allowed with "
+                         "--oldrev, --newrev, and --refname.")
+
+    # Gerrit oddly omits 'refs/heads/' in the refname when calling
+    # ref-updated hook; put it back.
+    git_dir = get_git_dir()
+    if not os.path.exists(os.path.join(git_dir, options.refname)) and \
+       os.path.exists(os.path.join(git_dir, 'refs', 'heads', options.refname)):
+        options.refname = 'refs/heads/'+options.refname
+
+    # New revisions can appear in a gerrit repository either due to someone
+    # pushing directly (in which case options.submitter will be set), or they
+    # can press "Submit this patchset" in the web UI for some CR (in which
+    # case options.submitter will not be set and gerrit will not have provided
+    # us the information about who pressed the button).
+    #
+    # Note for the nit-picky: I'm lumping in REST API calls and the ssh
+    # gerrit review command in with "Submit this patchset" button, since they
+    # have the same effect.
+    if options.submitter:
+        update_method = 'pushed'
+        # The submitter argument is almost an RFC 2822 email address; change it
+        # from 'User Name (email@domain)' to 'User Name <email@domain>' so it is
+        options.submitter = options.submitter.replace('(','<').replace(')','>')
+    else:
+        update_method = 'submitted'
+        # Gerrit knew who submitted this patchset, but threw that information
+        # away when it invoked this hook.  However, *IF* Gerrit created a
+        # merge to bring the patchset in (project 'Submit Type' is either
+        # "Always Merge", or is "Merge if Necessary" and happens to be
+        # necessary for this particular CR), then it will have the committer
+        # of that merge be 'Gerrit Code Review' and the author will be the
+        # person who requested the submission of the CR.  Since this is fairly
+        # likely for most gerrit installations (of a reasonable size), it's
+        # worth the extra effort to try to determine the actual submitter.
+        rev_info = read_git_lines(['log', '--no-walk', '--merges',
+                                   '--format=%cN%n%aN <%aE>', options.newrev])
+        if rev_info and rev_info[0] == 'Gerrit Code Review':
+            options.submitter = rev_info[1]
+    if options.submitter:
+        assert options.submitter.find('<') != -1
+
+    # We pass back refname, oldrev, newrev as args because then the
+    # gerrit ref-updated hook is much like the git update hook
+    return (options,
+            [options.refname, options.oldrev, options.newrev],
+            {'project': options.project, 'submitter': options.submitter,
+             'update_method': update_method})
 
 def main(args):
     parser = optparse.OptionParser(
@@ -2502,14 +2784,41 @@ def main(args):
         help='Set list of email recipients for all types of emails.',
         )
     parser.add_option(
+        '--ref-filter-inclusion-regex', action='store', default=None,
+        help='Only send emails for refs matching this regex.',
+        )
+    parser.add_option(
+        '--ref-filter-exclusion-regex', action='store', default=None,
+        help='Do not send emails for refs matching this regex.',
+        )
+    parser.add_option(
         '--show-env', action='store_true', default=False,
         help=(
             'Write to stderr the values determined for the environment '
             '(intended for debugging purposes).'
             ),
         )
+    # The following options permit this script to be run as a gerrit
+    # ref-updated hook.  See e.g.
+    # code.google.com/p/gerrit/source/browse/Documentation/config-hooks.txt
+    # We suppress help for these items, since these are specific to gerrit,
+    # and we don't want users directly using them any way other than how the
+    # gerrit ref-updated hook is called.
+    parser.add_option('--oldrev', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--newrev', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--refname', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--project', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--submitter', action='store',help=optparse.SUPPRESS_HELP)
+
+    # The following allow this to be run as a stash asynchronous post-receive
+    # hook (almost identical to a git post-receive hook but triggered also for
+    # merges of pull requests from the UI).  We suppress help for these items,
+    # since these are specific to stash.
+    parser.add_option('--stash-user', action='store', help=optparse.SUPPRESS_HELP)
+    parser.add_option('--stash-repo', action='store', help=optparse.SUPPRESS_HELP)
 
     (options, args) = parser.parse_args(args)
+    (options, args, hook_info) = check_hook_specific_args(options, args)
 
     config = Config('multimailhook')
 
@@ -2518,6 +2827,9 @@ def main(args):
             config, osenv=os.environ,
             env=options.environment,
             recipients=options.recipients,
+            ref_filter_incl_regex=options.ref_filter_inclusion_regex,
+            ref_filter_excl_regex=options.ref_filter_exclusion_regex,
+            hook_info=hook_info,
             )
 
         if options.show_env:

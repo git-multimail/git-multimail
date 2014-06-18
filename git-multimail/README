@@ -51,14 +51,20 @@ By default, for each push received by the repository, git-multimail:
    + [git] 08/08: Git 1.7.11-rc2
 
    Each commit appears in exactly one commit email, the first time
-   that it is pushed to the repository.  If a commit is later merged
-   into another branch, then a one-line summary of the commit is
-   included in the reference change email (as usual), but no
+   that it is pushed to the repository[*].  If a commit is later
+   merged into another branch, then a one-line summary of the commit
+   is included in the reference change email (as usual), but no
    additional commit email is generated.
 
    By default, reference change emails have their "Reply-To" field set
    to the person who pushed the change, and commit emails have their
    "Reply-To" field set to the author of the commit.
+
+   [*] If either of multimailhook.refFilter(In|Ex)clusionRegex are
+       set, then the commit email will be sent the first time it is
+       pushed _to an included ref_ of the repository.  If neither of
+       these are set, then by default all tags and branches are
+       included.
 
 3. Output one "announce" mail for each new annotated tag, including
    information about the tag and optionally a shortlog describing the
@@ -152,16 +158,34 @@ multimailhook.environment
     "gitolite" -- the username of the pusher is read from $GL_USER and
         the repository name from $GL_REPO.
 
-    If neither of these environments is suitable for your setup, then
-    you can implement a Python class that inherits from Environment
-    and instantiate it via a script that looks like the example
+    "stash" -- you should probably not explicitly specify this value;
+        instead it is automatically assumed when the stash-specific
+        flags (--stash-user and --stash-repo) are specified on the
+        command line.  When this environment is active, the username
+        and repo come from these two command line flags, which must be
+        specified.
+
+    "gerrit" -- you should probably not explicitly specify this value;
+        instead it is automatically assumed when the gerrit-specific
+        command line flags (--oldrev, --newrev, --refname, --project)
+        for gerrit's ref-updated hook are present.  When this
+        environment is active, the username of the pusher is taken
+        from the --submitter argument if that command line option is
+        passed, otherwise 'Gerrit' is used.  The repository name is
+        taken from the --project option on the command line, which
+        must be passed.
+
+    If none of these environments is suitable for your setup, then you
+    can implement a Python class that inherits from Environment and
+    instantiate it via a script that looks like the example
     post-receive script.
 
     The environment value can be specified on the command line using
     the --environment option.  If it is not specified on the command
-    line or by multimailhook.environment, then it defaults to
-    "gitolite" if the environment contains variables $GL_USER and
-    $GL_REPO; otherwise "generic".
+    line or by multimailhook.environment, and the stash- and gerrit-
+    specific command flags are not present on the command line, then
+    it defaults to "gitolite" if the environment contains variables
+    $GL_USER and $GL_REPO; otherwise "generic".
 
 multimailhook.repoName
 
@@ -388,6 +412,18 @@ multimailhook.replyToRefchange
 
     - The value "none", in which case the Reply-To: field will be
       omitted.
+
+multimailhook.refFilterInclusionRegex
+multimailhook.refFilterExclusionRegex
+
+    Regular expressions that can be used to limit refs for which email
+    updates will be sent.  It is an error to specify both an inclusion
+    and an exclusion regex.  If an inclusion regex is specified, emails
+    will only be sent for refs which match this regex.  If an exclusion
+    regex is specified, emails will be sent for all refs except those
+    that match this regex (or that match a predefined regex specific
+    to the environment, such as "^refs/notes" for most environments and
+    "^refs/notes|^refs/changes" for the gerrit environment).
 
 
 Email filtering aids
