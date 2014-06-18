@@ -1548,6 +1548,18 @@ class Environment(object):
             get_reply_to_commit() is used for individual commit
             emails.
 
+        get_ref_filter_regex()
+
+            Return a tuple -- a compiled regex, and a boolean indicating
+            whether the regex picks refs to include (if False, the regex
+            matches on refs to exclude).
+
+        get_default_ref_ignore_regex()
+
+            Return a regex that should be ignored for both what emails
+            to send and when computing what commits are considered new
+            to the repository.  Default is "^refs/notes/".
+
     They should also define the following attributes:
 
         announce_show_shortlog (bool)
@@ -1692,6 +1704,15 @@ class Environment(object):
 
     def get_reply_to_commit(self, revision):
         return revision.author
+
+    def get_default_ref_ignore_regex(self):
+        # The commit messages of git notes are essentially meaningless
+        # and "filenames" in git notes commits are an implementational
+        # detail that might surprise users at first.  As such, we
+        # would need a completely different method for handling emails
+        # of git notes in order for them to be of benefit for users,
+        # which we simply do not have right now.
+        return "^refs/notes/"
 
     def filter_body(self, lines):
         """Filter the lines intended for an email body.
@@ -2050,6 +2071,47 @@ class ConfigRecipientsEnvironmentMixin(
             return ''
 
 
+class StaticBranchFilterEnvironmentMixin(Environment):
+    """Set branch filter statically based on constructor parameters."""
+
+    def __init__(self, ref_filter_incl_regex, ref_filter_excl_regex, **kw):
+        super(StaticBranchFilterEnvironmentMixin, self).__init__(**kw)
+
+        if ref_filter_incl_regex and ref_filter_excl_regex:
+            raise SystemExit("Cannot specify both a ref inclusion and exclusion regex.")
+        self.__is_inclusion_filter = bool(ref_filter_incl_regex)
+        default_exclude = self.get_default_ref_ignore_regex()
+        if ref_filter_incl_regex:
+          ref_filter_regex = ref_filter_incl_regex
+        elif ref_filter_excl_regex:
+          ref_filter_regex = ref_filter_excl_regex+'|'+default_exclude
+        else:
+          ref_filter_regex = default_exclude
+
+        try:
+            self.__compiled_regex = re.compile(ref_filter_regex)
+        except Exception as e:
+            raise SystemExit('Invalid Ref Filter Regex "%s": %s' % (ref_filter_regex, e.message))
+
+    def get_ref_filter_regex(self):
+        return self.__compiled_regex, self.__is_inclusion_filter
+
+
+class ConfigBranchFilterEnvironmentMixin(
+    ConfigEnvironmentMixin,
+    StaticBranchFilterEnvironmentMixin
+    ):
+    """Determine branch filtering statically based on config."""
+
+    def __init__(self, config, **kw):
+        super(ConfigBranchFilterEnvironmentMixin, self).__init__(
+            config=config,
+            ref_filter_incl_regex=config.get('refFilterInclusionRegex'),
+            ref_filter_excl_regex=config.get('refFilterExclusionRegex'),
+            **kw
+            )
+
+
 class ProjectdescEnvironmentMixin(Environment):
     """Make a "projectdesc" value available for templates.
 
@@ -2085,6 +2147,7 @@ class GenericEnvironment(
         ComputeFQDNEnvironmentMixin,
         ConfigFilterLinesEnvironmentMixin,
         ConfigRecipientsEnvironmentMixin,
+        ConfigBranchFilterEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigOptionsEnvironmentMixin,
         GenericEnvironmentMixin,
@@ -2130,6 +2193,7 @@ class GitoliteEnvironment(
         ComputeFQDNEnvironmentMixin,
         ConfigFilterLinesEnvironmentMixin,
         ConfigRecipientsEnvironmentMixin,
+        ConfigBranchFilterEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigOptionsEnvironmentMixin,
         GitoliteEnvironmentMixin,
@@ -2220,12 +2284,13 @@ class Push(object):
             ])
         )
 
-    def __init__(self, changes):
+    def __init__(self, changes, ref_filter_regex, is_inclusion_filter):
         self.changes = sorted(changes, key=self._sort_key)
 
         # The SHA-1s of commits referred to by references unaffected
         # by this push:
-        other_ref_sha1s = self._compute_other_ref_sha1s()
+        other_ref_sha1s = self._compute_other_ref_sha1s(ref_filter_regex,
+                                                        is_inclusion_filter)
 
         self._old_rev_exclusion_spec = self._compute_rev_exclusion_spec(
             other_ref_sha1s.union(
@@ -2246,7 +2311,7 @@ class Push(object):
     def _sort_key(klass, change):
         return (klass.SORT_ORDER[change.__class__, change.change_type], change.refname,)
 
-    def _compute_other_ref_sha1s(self):
+    def _compute_other_ref_sha1s(self, ref_filter_regex, is_inclusion_filter):
         """Return the GitObjects referred to by references unaffected by this push."""
 
         # The refnames being changed by this push:
@@ -2264,7 +2329,8 @@ class Push(object):
             )
         for line in read_git_lines(['for-each-ref', '--format=%s' % (fmt,)]):
             (sha1, type, name) = line.split(' ', 2)
-            if sha1 and type == 'commit' and name not in updated_refs:
+            if sha1 and type == 'commit' and name not in updated_refs and \
+               include_ref(name, ref_filter_regex, is_inclusion_filter):
                 sha1s.add(sha1)
 
         return sha1s
@@ -2382,18 +2448,34 @@ class Push(object):
                 )
 
 
+def include_ref(refname, ref_filter_regex, is_inclusion_filter):
+  return not (bool(ref_filter_regex.search(refname)) ^ is_inclusion_filter)
+  ## More readable version:
+  #does_match = bool(re.search(ref_filter_regex))
+  #if is_inclusion_filter:
+  #  return does_match
+  #else:  # exclusion filter -- we include the ref if the regex doesn't match
+  #  return not does_match
+
 def run_as_post_receive_hook(environment, mailer):
+    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex()
     changes = []
     for line in sys.stdin:
         (oldrev, newrev, refname) = line.strip().split(' ', 2)
+        if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
+            continue
         changes.append(
             ReferenceChange.create(environment, oldrev, newrev, refname)
             )
-    push = Push(changes)
-    push.send_emails(mailer, body_filter=environment.filter_body)
+    if changes:
+        push = Push(changes, ref_filter_regex, is_inclusion_filter)
+        push.send_emails(mailer, body_filter=environment.filter_body)
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
+    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex()
+    if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
+        return
     changes = [
         ReferenceChange.create(
             environment,
@@ -2402,7 +2484,7 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
             refname,
             ),
         ]
-    push = Push(changes)
+    push = Push(changes, ref_filter_regex, is_inclusion_filter)
     push.send_emails(mailer, body_filter=environment.filter_body)
 
 
@@ -2435,7 +2517,8 @@ KNOWN_ENVIRONMENTS = {
     }
 
 
-def choose_environment(config, osenv=None, env=None, recipients=None):
+def choose_environment(config, osenv=None, env=None, recipients=None,
+                       ref_filter_incl_regex=None, ref_filter_excl_regex=None):
     if not osenv:
         osenv = os.environ
 
@@ -2471,6 +2554,13 @@ def choose_environment(config, osenv=None, env=None, recipients=None):
     else:
         environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
 
+    if ref_filter_incl_regex or ref_filter_excl_regex:
+        environment_mixins.insert(0, StaticBranchFilterEnvironmentMixin)
+        environment_kw['ref_filter_incl_regex'] = ref_filter_incl_regex
+        environment_kw['ref_filter_excl_regex'] = ref_filter_excl_regex
+    else:
+        environment_mixins.insert(0, ConfigBranchFilterEnvironmentMixin)
+
     environment_klass = type(
         'EffectiveEnvironment',
         tuple(environment_mixins) + (Environment,),
@@ -2502,6 +2592,14 @@ def main(args):
         help='Set list of email recipients for all types of emails.',
         )
     parser.add_option(
+        '--ref-filter-inclusion-regex', action='store', default=None,
+        help='Only send emails for refs matching this regex.',
+        )
+    parser.add_option(
+        '--ref-filter-exclusion-regex', action='store', default=None,
+        help='Do not send emails for refs matching this regex.',
+        )
+    parser.add_option(
         '--show-env', action='store_true', default=False,
         help=(
             'Write to stderr the values determined for the environment '
@@ -2518,6 +2616,8 @@ def main(args):
             config, osenv=os.environ,
             env=options.environment,
             recipients=options.recipients,
+            ref_filter_incl_regex=options.ref_filter_inclusion_regex,
+            ref_filter_excl_regex=options.ref_filter_exclusion_regex,
             )
 
         if options.show_env:
