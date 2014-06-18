@@ -1190,28 +1190,38 @@ class BranchChange(ReferenceChange):
                     ) != [self.old.sha1]:
                 return False
 
-            # Get the new commits introduced by the push
-            new_commits = read_git_lines(
-                [
-                    'log', '-3', '--format=%H %P',
-                    '%s..%s' % (self.old.sha1, self.new.sha1),
-                    ]
-                )
+            # Check if this update introduced exactly one non-merge
+            # commit:
+
+            def split_line(line):
+                """Split line into (sha1, [parent,...])."""
+
+                words = line.split()
+                return (words[0], words[1:])
+
+            # Get the new commits introduced by the push as a list of
+            # (sha1, [parent,...])
+            new_commits = [
+                split_line(line)
+                for line in read_git_lines(
+                    [
+                        'log', '-3', '--format=%H %P',
+                        '%s..%s' % (self.old.sha1, self.new.sha1),
+                        ]
+                    )
+                ]
 
             if not new_commits:
                 return False
 
             # If the newest commit is a merge, ignore it
-            parents = new_commits[0].split()[1:]
-            if len(parents) > 1:
-                new_commits = new_commits[1:]
+            if len(new_commits[0][1]) > 1:
+                del new_commits[0]
 
-            # If there's exactly one non-merge commit introduced by
-            # this update, turn off the reference summary email
             return (
                 len(new_commits) == 1
-                and len(new_commits[0].split()) == 2
-                and new_commits[0].split()[0] in known_added_sha1s
+                and len(new_commits[0][1]) == 1
+                and new_commits[0][0] in known_added_sha1s
                 )
         except CommandError:
             # Cannot determine number of commits in old..new or new..old;
