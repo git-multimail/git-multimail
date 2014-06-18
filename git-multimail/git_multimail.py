@@ -2354,21 +2354,30 @@ class Push(object):
             try:
                 # If this change is a reference update that doesn't discard
                 # any commits...
-                if change.change_type == 'update' \
-                and [change.old.sha1] == read_git_lines(['merge-base',
-                       change.old.sha1, change.new.sha1]):
+                if (
+                        change.change_type == 'update'
+                        and read_git_lines(
+                            ['merge-base', change.old.sha1, change.new.sha1]
+                            ) == [change.old.sha1]
+                        ):
                     # Get the new commits introduced by the push
-                    new_commits = read_git_lines(['log', '-3', '--format=%H %P',
-                       '%s..%s' % (change.old.sha1, change.new.sha1)])
+                    new_commits = read_git_lines(
+                        [
+                            'log', '-3', '--format=%H %P',
+                            '%s..%s' % (change.old.sha1, change.new.sha1),
+                            ]
+                        )
                     # If the newest commit is a merge, ignore it
                     parents = new_commits[0].split()[1:]
                     if len(parents) > 1:
                         new_commits = new_commits[1:]
                     # If there's exactly one non-merge commit introduced by
                     # this update, turn off the reference summary email
-                    if len(new_commits) == 1 and \
-                       len(new_commits[0].split())==2 and \
-                       new_commits[0].split()[0] in unhandled_sha1s:
+                    if (
+                            len(new_commits) == 1
+                            and len(new_commits[0].split()) == 2
+                            and new_commits[0].split()[0] in unhandled_sha1s
+                            ):
                         send_reference_summary_emails = False
             except CommandError:
                 # Cannot determine number of commits in old..new or new..old;
