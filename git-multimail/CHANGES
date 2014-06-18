@@ -1,3 +1,9 @@
+Release ?.?.?
+=============
+
+* When a single commit is pushed, omit the reference changed email.
+
+
 Release 1.0.0
 =============
 
