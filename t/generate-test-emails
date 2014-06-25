@@ -19,27 +19,31 @@ test_email() {
     REFNAME="$1"
     OLDREV="$2"
     NEWREV="$3"
-    echo "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL"
+    shift; shift; shift;
+    echo "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL" "$@"
 }
 
 test_create() {
     REFNAME="$1"
     NEWREV=$(git rev-parse "$REFNAME")
-    test_email "$REFNAME" "$ZEROS" "$NEWREV"
+    shift
+    test_email "$REFNAME" "$ZEROS" "$NEWREV" "$@"
 }
 
 test_update() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$2")
     NEWREV=$(git rev-parse "$REFNAME")
-    test_email "$REFNAME" "$OLDREV" "$NEWREV"
+    shift; shift;
+    test_email "$REFNAME" "$OLDREV" "$NEWREV" "$@"
 }
 
 test_delete() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$REFNAME")
+    shift;
     git update-ref -d "$REFNAME" "$OLDREV" &&
-    test_email "$REFNAME" "$OLDREV" "$ZEROS"
+    test_email "$REFNAME" "$OLDREV" "$ZEROS" "$@"
     RETCODE=$?
     git update-ref "$REFNAME" "$OLDREV" ||
         echo 1>&2 "Error replacing reference $REFNAME to $OLDREV"
@@ -50,8 +54,9 @@ test_rewind() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$REFNAME")
     NEWREV=$(git rev-parse "$2")
+    shift; shift;
     git update-ref "$REFNAME" "$NEWREV" "$OLDREV" &&
-    test_email "$REFNAME" "$OLDREV" "$NEWREV"
+    test_email "$REFNAME" "$OLDREV" "$NEWREV" "$@"
     RETCODE=$?
     git update-ref "$REFNAME" "$OLDREV" ||
         echo 1>&2 "Error replacing reference $REFNAME to $OLDREV"
@@ -63,7 +68,8 @@ test_hook() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$2")
     NEWREV=$(git rev-parse "$REFNAME")
-    echo "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE"
+    shift; shift;
+    echo "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE" "$@"
 }
 
 test_create refs/heads/master
@@ -111,6 +117,9 @@ test_update refs/foo/bar refs/heads/master
 test_delete refs/foo/bar
 
 test_hook refs/heads/master refs/heads/master^^
+
+test_update refs/heads/master refs/heads/master^^ --ref-filter-exclusion-regex ^refs/heads/master$
+test_update refs/heads/master refs/heads/master^^ --ref-filter-inclusion-regex ^refs/heads/master$
 
 rm -rf "$TESTREPO"
 
