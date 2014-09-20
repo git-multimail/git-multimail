@@ -1288,8 +1288,12 @@ class BranchChange(ReferenceChange):
             if not new_commits:
                 return None
 
+            # If the newest commit is a merge, save it for a later check
+            # but otherwise ignore it
+            merge = None
             tot = len(new_commits)
             if len(new_commits[0][1]) > 1:
+                merge = new_commits[0][0]
                 del new_commits[0]
 
             # Our primary check: we can't combine if more than one commit
@@ -1307,6 +1311,12 @@ class BranchChange(ReferenceChange):
             # those go to separate locations.
             rev = Revision(self, GitObject(new_commits[0][0]), 1, tot)
             if rev.recipients != self.recipients:
+                return None
+
+            # We ignored the newest commit if it was just a merge of the one
+            # commit being introduced.  But we don't want to ignore that
+            # merge commit it it involved conflict resolutions.  Check that.
+            if merge and merge != read_git_output(['diff-tree', '--cc', merge]):
                 return None
 
             # We can combine the refchange and one new revision emails
