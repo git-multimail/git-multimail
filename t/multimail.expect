@@ -1058,18 +1058,19 @@ Sending notification emails to: Refchange List <refchangelist@example.com>
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Commit List <commitlist@example.com>
-Subject: *test-repo* 01/01: r4
+Subject: *test-repo* branch release updated: r4
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
+Message-ID: <...>
 From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
-In-Reply-To: <...>
-References: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
+X-Git-Oldrev: 5f26bd17b128b6f251334af774ba502a6f590fca
+X-Git-Newrev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
 X-Git-Rev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
 Auto-Submitted: auto-generated
 
@@ -1077,6 +1078,10 @@ This is an automated email from the git hooks/post-receive script.
 
 pushuser pushed a commit to branch release
 in repository test-repo.
+
+The following commit(s) were added to refs/heads/release by this push:
+       new  cd65463   r4
+cd65463 is described below
 
 commit cd654633ad4dfb51961a420fca63dca6e4e3d7ac
 Author: Joe User <user@example.com>

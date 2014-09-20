@@ -99,6 +99,10 @@ REF_DELETED_SUBJECT_TEMPLATE = (
     ' (was %(oldrev_short)s)'
     )
 
+COMBINED_REFCHANGE_REVISION_SUBJECT_TEMPLATE = (
+    '%(emailprefix)s%(refname_type)s %(short_refname)s updated: %(oneline)s'
+    )
+
 REFCHANGE_HEADER_TEMPLATE = """\
 Date: %(send_date)s
 To: %(recipients)s
@@ -256,6 +260,38 @@ in repository %(repo_shortname)s.
 
 
 REVISION_FOOTER_TEMPLATE = FOOTER_TEMPLATE
+
+
+# Combined, meaning refchange+revision email (for single-commit additions)
+COMBINED_HEADER_TEMPLATE = """\
+Date: %(send_date)s
+To: %(recipients)s
+Subject: %(subject)s
+MIME-Version: 1.0
+Content-Type: text/plain; charset=%(charset)s
+Content-Transfer-Encoding: 8bit
+Message-ID: %(msgid)s
+From: %(fromaddr)s
+Reply-To: %(reply_to)s
+X-Git-Host: %(fqdn)s
+X-Git-Repo: %(repo_shortname)s
+X-Git-Refname: %(refname)s
+X-Git-Reftype: %(refname_type)s
+X-Git-Oldrev: %(oldrev)s
+X-Git-Newrev: %(newrev)s
+X-Git-Rev: %(rev)s
+Auto-Submitted: auto-generated
+"""
+
+COMBINED_INTRO_TEMPLATE = """\
+This is an automated email from the git hooks/post-receive script.
+
+%(pusher)s pushed a commit to %(refname_type)s %(short_refname)s
+in repository %(repo_shortname)s.
+
+"""
+
+COMBINED_FOOTER_TEMPLATE = FOOTER_TEMPLATE
 
 
 class CommandError(Exception):
@@ -1198,6 +1234,7 @@ class BranchChange(ReferenceChange):
             old=old, new=new, rev=rev,
             )
         self.recipients = environment.get_refchange_recipients(self)
+        self._single_revision = None
 
     def send_single_combined_email(self, known_added_sha1s):
         # In the sadly-all-too-frequent usecase of people pushing only
@@ -1277,8 +1314,52 @@ class BranchChange(ReferenceChange):
             return None
 
     def generate_combined_email(self, push, revision, body_filter=None, extra_header_values={}):
-        # FIXME: Need to send a combined email, not just a revision email
-        return revision.generate_email(push, body_filter, extra_header_values)
+        values = revision.get_values()
+        if extra_header_values:
+            values.update(extra_header_values)
+        if 'subject' not in extra_header_values:
+            values['subject'] = self.expand(COMBINED_REFCHANGE_REVISION_SUBJECT_TEMPLATE, **values)
+
+        self._single_revision = revision
+        self.header_template = COMBINED_HEADER_TEMPLATE
+        self.intro_template = COMBINED_INTRO_TEMPLATE
+        self.footer_template = COMBINED_FOOTER_TEMPLATE
+        for line in self.generate_email(push, body_filter, values):
+            yield line
+
+    def generate_email_body(self, push):
+        '''Call the appropriate body generation routine.
+
+        If this is a combined refchange/revision email, the special logic
+        for handling this combined email comes from this function.  For
+        other cases, we just use the normal handling.'''
+
+        # If self._single_revision isn't set; don't override
+        if not self._single_revision:
+            for line in super(BranchChange, self).generate_email_body(push):
+                yield line
+            return
+
+        # This is a combined refchange/revision email; we first provide
+        # some info from the refchange portion, and then call the revision
+        # generate_email_body function to handle the revision portion.
+        adds = list(generate_summaries(
+            '--topo-order', '--reverse', '%s..%s'
+            % (self.old.commit_sha1, self.new.commit_sha1,)
+        ))
+
+        yield self.expand("The following commit(s) were added to %(refname)s by this push:\n")
+        for (sha1, subject) in adds:
+            yield self.expand(
+                BRIEF_SUMMARY_TEMPLATE, action='new',
+                rev_short=sha1, text=subject,
+            )
+
+        yield self._single_revision.rev.short+" is described below\n"
+        yield '\n'
+
+        for line in self._single_revision.generate_email_body(push):
+            yield line
 
 
 class AnnotatedTagChange(ReferenceChange):
