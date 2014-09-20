@@ -874,6 +874,10 @@ class ReferenceChange(Change):
         self.commitlogopts = environment.commitlogopts
         self.showlog = environment.refchange_showlog
 
+        self.header_template = REFCHANGE_HEADER_TEMPLATE
+        self.intro_template = REFCHANGE_INTRO_TEMPLATE
+        self.footer_template = FOOTER_TEMPLATE
+
     def _compute_values(self):
         values = Change._compute_values(self)
 
@@ -940,12 +944,12 @@ class ReferenceChange(Change):
             extra_values['subject'] = self.get_subject()
 
         for line in self.expand_header_lines(
-                REFCHANGE_HEADER_TEMPLATE, **extra_values
+                self.header_template, **extra_values
                 ):
             yield line
 
     def generate_email_intro(self):
-        for line in self.expand_lines(REFCHANGE_INTRO_TEMPLATE):
+        for line in self.expand_lines(self.intro_template):
             yield line
 
     def generate_email_body(self, push):
@@ -966,7 +970,7 @@ class ReferenceChange(Change):
             yield line
 
     def generate_email_footer(self):
-        return self.expand_lines(FOOTER_TEMPLATE)
+        return self.expand_lines(self.footer_template)
 
     def generate_revision_change_log(self, new_commits_list):
         if self.showlog:
