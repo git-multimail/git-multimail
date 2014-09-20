@@ -1303,10 +1303,15 @@ class BranchChange(ReferenceChange):
                 ):
                 return None
 
+            # We do not want to combine revision and refchange emails if
+            # those go to separate locations.
+            rev = Revision(self, GitObject(new_commits[0][0]), 1, tot)
+            if rev.recipients != self.recipients:
+                return None
+
             # We can combine the refchange and one new revision emails
             # into one.  Return the Revision that a combined email should
             # be sent about.
-            rev = Revision(self, GitObject(new_commits[0][0]), 1, tot)
             return rev
         except CommandError:
             # Cannot determine number of commits in old..new or new..old;
