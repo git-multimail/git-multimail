@@ -99,6 +99,10 @@ REF_DELETED_SUBJECT_TEMPLATE = (
     ' (was %(oldrev_short)s)'
     )
 
+COMBINED_REFCHANGE_REVISION_SUBJECT_TEMPLATE = (
+    '%(emailprefix)s%(refname_type)s %(short_refname)s updated: %(oneline)s'
+    )
+
 REFCHANGE_HEADER_TEMPLATE = """\
 Date: %(send_date)s
 To: %(recipients)s
@@ -256,6 +260,38 @@ in repository %(repo_shortname)s.
 
 
 REVISION_FOOTER_TEMPLATE = FOOTER_TEMPLATE
+
+
+# Combined, meaning refchange+revision email (for single-commit additions)
+COMBINED_HEADER_TEMPLATE = """\
+Date: %(send_date)s
+To: %(recipients)s
+Subject: %(subject)s
+MIME-Version: 1.0
+Content-Type: text/plain; charset=%(charset)s
+Content-Transfer-Encoding: 8bit
+Message-ID: %(msgid)s
+From: %(fromaddr)s
+Reply-To: %(reply_to)s
+X-Git-Host: %(fqdn)s
+X-Git-Repo: %(repo_shortname)s
+X-Git-Refname: %(refname)s
+X-Git-Reftype: %(refname_type)s
+X-Git-Oldrev: %(oldrev)s
+X-Git-Newrev: %(newrev)s
+X-Git-Rev: %(rev)s
+Auto-Submitted: auto-generated
+"""
+
+COMBINED_INTRO_TEMPLATE = """\
+This is an automated email from the git hooks/post-receive script.
+
+%(pusher)s pushed a commit to %(refname_type)s %(short_refname)s
+in repository %(repo_shortname)s.
+
+"""
+
+COMBINED_FOOTER_TEMPLATE = FOOTER_TEMPLATE
 
 
 class CommandError(Exception):
@@ -1277,8 +1313,19 @@ class BranchChange(ReferenceChange):
             return None
 
     def generate_combined_email(self, push, revision, body_filter=None, extra_header_values={}):
-        # FIXME: Need to send a combined email, not just a revision email
-        revision.generate_email(push, body_filter, extra_header_values)
+        # FIXME: This combined email doesn't have much info about the revision
+        values = revision.get_values()
+        if extra_header_values:
+            values.update(extra_header_values)
+        if 'subject' not in extra_header_values:
+            values['subject'] = self.expand(COMBINED_REFCHANGE_REVISION_SUBJECT_TEMPLATE, **values)
+
+        self._single_revision = revision
+        self.header_template = COMBINED_HEADER_TEMPLATE
+        self.intro_template = COMBINED_INTRO_TEMPLATE
+        self.footer_template = COMBINED_FOOTER_TEMPLATE
+        for line in self.generate_email(push, body_filter, values):
+            yield line
 
 
 class AnnotatedTagChange(ReferenceChange):
