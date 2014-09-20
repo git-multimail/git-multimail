@@ -1234,6 +1234,7 @@ class BranchChange(ReferenceChange):
             old=old, new=new, rev=rev,
             )
         self.recipients = environment.get_refchange_recipients(self)
+        self._single_revision = None
 
     def send_single_combined_email(self, known_added_sha1s):
         # In the sadly-all-too-frequent usecase of people pushing only
@@ -1313,7 +1314,6 @@ class BranchChange(ReferenceChange):
             return None
 
     def generate_combined_email(self, push, revision, body_filter=None, extra_header_values={}):
-        # FIXME: This combined email doesn't have much info about the revision
         values = revision.get_values()
         if extra_header_values:
             values.update(extra_header_values)
@@ -1325,6 +1325,40 @@ class BranchChange(ReferenceChange):
         self.intro_template = COMBINED_INTRO_TEMPLATE
         self.footer_template = COMBINED_FOOTER_TEMPLATE
         for line in self.generate_email(push, body_filter, values):
+            yield line
+
+    def generate_email_body(self, push):
+        '''Call the appropriate body generation routine.
+
+        If this is a combined refchange/revision email, the special logic
+        for handling this combined email comes from this function.  For
+        other cases, we just use the normal handling.'''
+
+        # If self._single_revision isn't set; don't override
+        if not self._single_revision:
+            for line in super(BranchChange, self).generate_email_body(push):
+                yield line
+            return
+
+        # This is a combined refchange/revision email; we first provide
+        # some info from the refchange portion, and then call the revision
+        # generate_email_body function to handle the revision portion.
+        adds = list(generate_summaries(
+            '--topo-order', '--reverse', '%s..%s'
+            % (self.old.commit_sha1, self.new.commit_sha1,)
+        ))
+
+        yield self.expand("The following commit(s) were added to %(refname)s by this push:\n")
+        for (sha1, subject) in adds:
+            yield self.expand(
+                BRIEF_SUMMARY_TEMPLATE, action='new',
+                rev_short=sha1, text=subject,
+            )
+
+        yield self._single_revision.rev.short+" is described below\n"
+        yield '\n'
+
+        for line in self._single_revision.generate_email_body(push):
             yield line
 
 
