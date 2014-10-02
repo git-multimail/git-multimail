@@ -1412,7 +1412,7 @@ class SendMailer(Mailer):
 class SMTPMailer(Mailer):
     """Send emails using Python's smtplib."""
 
-    def __init__(self, envelopesender, smtpserver):
+    def __init__(self, envelopesender, smtpserver, smtpservertimeout=10, smtpserverdebug=false):
         if not envelopesender:
             sys.stderr.write(
                 'fatal: git_multimail: cannot use SMTPMailer without a sender address.\n'
@@ -1421,8 +1421,13 @@ class SMTPMailer(Mailer):
             sys.exit(1)
         self.envelopesender = envelopesender
         self.smtpserver = smtpserver
+        self.smtpservertimeout = smtpservertimeout
+        self.smtpserverdebug = smtpserverdebug
         try:
-            self.smtp = smtplib.SMTP(self.smtpserver)
+            self.smtp = smtplib.SMTP(self.smtpserver, timeout=self.smtpservertimeout)
+                if self.smtpserverdebug:
+                    sys.stdout.write("*** Setting debug on for SMTP server connection ***\n")
+                    self.smtp.set_debuglevel(1)
         except Exception, e:
             sys.stderr.write('*** Error establishing SMTP connection to %s***\n' % self.smtpserver)
             sys.stderr.write('*** %s\n' % str(e))
@@ -2411,9 +2416,12 @@ def choose_mailer(config, environment):
 
     if mailer == 'smtp':
         smtpserver = config.get('smtpserver', default='localhost')
+        smtpservertimeout = config.get('smtpservertimeout', default='10')
+        smtpserverdebug = config.get('smtpserverdebug', default=false)
         mailer = SMTPMailer(
             envelopesender=(environment.get_sender() or environment.get_fromaddr()),
-            smtpserver=smtpserver,
+            smtpserver=smtpserver, smtpservertimeout=smtpservertimeout,
+            smtpserverdebug=smtpserverdebug,
             )
     elif mailer == 'sendmail':
         command = config.get('sendmailcommand')
