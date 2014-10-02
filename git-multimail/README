@@ -277,6 +277,16 @@ multimailhook.mailer
            True/False. Set True to see all debug messages to/from
            SMTP server.
 
+       multimailhook.smtpServerSecurity
+
+           Set the security type. Allowed values: none, ssl.
+           Default=none.
+
+       multimailhook.smtpServerUsername
+       multimailhook.smtpServerPassword
+
+           Server username and password. Required if smtpServerSecurity is 'ssl'.
+
 multimailhook.from
 
     If set then use this value in the From: field of generated emails.
