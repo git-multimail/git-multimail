@@ -3,8 +3,8 @@
 # Filter out strings that vary uninterestingly from one test run to
 # the next.
 
-sed -E \
-    -e 's/^(In-Reply-To|Message-ID|References): <.*>$/\1: <...>/' \
-    -e 's/^(Date): [^ ].*$/\1: .../' \
+sed \
+    -e 's/^\(In-Reply-To\|Message-ID\|References\): <.*>$/\1: <...>/' \
+    -e 's/^\(Date\): [^ ].*$/\1: .../' \
     -e "s/^X-Git-Host: `hostname --fqdn`$/X-Git-Host: fqdn.example.org/"
 
