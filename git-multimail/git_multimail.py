@@ -85,6 +85,8 @@ ADDR_HEADERS = set(['from', 'to', 'cc', 'bcc', 'reply-to', 'sender'])
 # where the encoding is important.
 (ENCODING, CHARSET) = ('UTF-8', 'utf-8')
 
+CONTENTTYPE = 'html'
+
 
 REF_CREATED_SUBJECT_TEMPLATE = (
     '%(emailprefix)s%(refname_type)s %(short_refname)s created'
@@ -104,7 +106,7 @@ Date: %(send_date)s
 To: %(recipients)s
 Subject: %(subject)s
 MIME-Version: 1.0
-Content-Type: text/plain; charset=%(charset)s
+Content-Type: text/%(contenttype)s; charset=%(charset)s
 Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
@@ -232,7 +234,7 @@ Date: %(send_date)s
 To: %(recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 MIME-Version: 1.0
-Content-Type: text/plain; charset=%(charset)s
+Content-Type: text/%(contenttype)s; charset=%(charset)s
 Content-Transfer-Encoding: 8bit
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
@@ -344,7 +346,8 @@ def header_encode(text, header_name=None):
             text = text.decode(ENCODING, 'replace')
         return Header(text, header_name=header_name).encode()
     except UnicodeEncodeError:
-        return Header(text, header_name=header_name, charset=CHARSET,
+        return Header(text, header_name=header_name, charset=CHARSET, 
+		      contenttype=CONTENTTYPE,
                       errors='replace').encode()
 
 
@@ -697,16 +700,42 @@ class Change(object):
         **kwargs, to allow passing other keyword arguments in the
         future (e.g. passing extra values to generate_email_intro()"""
 
+        htmlflag = False
+
         for line in self.generate_email_header(**extra_header_values):
+            if line.find("Content-Type: text/html") >= 0:
+                htmlflag = True
             yield line
         yield '\n'
+
         for line in self.generate_email_intro():
+            if htmlflag:
+                line = line[:-1] + '<br>\n'
             yield line
 
         body = self.generate_email_body(push)
         if body_filter is not None:
             body = body_filter(body)
+
+        sawdiff = False
         for line in body:
+            if htmlflag:
+                if line.startswith('commit ') or line.startswith('diff --git'):
+                    line="<div style='width:100%; background: #e0e0e0;'>" + line
+                if line == '---\n':
+                    sawdiff = True
+                if line == '---\n' or line.startswith('index '):
+                    line=line[:-1] + "</div>\n"
+                if sawdiff and line.startswith('@'):
+                    line="<div style='width: 100%; background: #e0e0e0'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
+                if sawdiff and line.startswith('+'):
+                    line="<div style='width: 100%; background: #e0ffe0'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
+                if  sawdiff and line.startswith('-'):
+                    line="<div style='width: 100%; background: #ffe0e0'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
+                if  sawdiff and line.startswith(' '):
+                    line="<div style='width: 100%; background: #ffffff'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
+                if not sawdiff:
+                    line = line[:-1] + '<br>\n'
             yield line
 
         for line in self.generate_email_footer():
@@ -726,6 +755,7 @@ class Revision(Change):
         self.tot = tot
         self.author = read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
         self.recipients = self.environment.get_revision_recipients(self)
+        #self.contenttype = 'text/plain'
 
     def _compute_values(self):
         values = Change._compute_values(self)
@@ -1592,6 +1622,7 @@ class Environment(object):
         self.COMPUTED_KEYS = [
             'administrator',
             'charset',
+            'contenttype',
             'emailprefix',
             'fromaddr',
             'pusher',
@@ -1634,6 +1665,10 @@ class Environment(object):
 
     def get_charset(self):
         return CHARSET
+
+    def get_contenttype(self):
+        return CONTENTTYPE
+
 
     def get_values(self):
         """Return a dictionary {keyword: expansion} for this Environment.
