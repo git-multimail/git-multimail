@@ -717,25 +717,7 @@ class Change(object):
         if body_filter is not None:
             body = body_filter(body)
 
-        sawdiff = False
         for line in body:
-            if htmlflag:
-                if line.startswith('commit ') or line.startswith('diff --git'):
-                    line="<div style='width:100%; background: #e0e0e0;'>" + line
-                if line == '---\n':
-                    sawdiff = True
-                if line == '---\n' or line.startswith('index '):
-                    line=line[:-1] + "</div>\n"
-                if sawdiff and line.startswith('@'):
-                    line="<div style='width: 100%; background: #e0e0e0'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
-                if sawdiff and line.startswith('+'):
-                    line="<div style='width: 100%; background: #e0ffe0'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
-                if  sawdiff and line.startswith('-'):
-                    line="<div style='width: 100%; background: #ffe0e0'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
-                if  sawdiff and line.startswith(' '):
-                    line="<div style='width: 100%; background: #ffffff'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
-                if not sawdiff:
-                    line = line[:-1] + '<br>\n'
             yield line
 
         for line in self.generate_email_footer():
@@ -1610,7 +1592,7 @@ class Environment(object):
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
 
-    def __init__(self, osenv=None):
+    def __init__(self, osenv=None, **kw):
         self.osenv = osenv or os.environ
         self.announce_show_shortlog = False
         self.maxcommitemails = 500
@@ -1867,6 +1849,7 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             return self.__reply_to_commit
 
 
+
 class FilterLinesEnvironmentMixin(Environment):
     """Handle encoding and maximum line length of body lines.
 
@@ -2009,6 +1992,58 @@ class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):
         else:
             return super(PusherDomainEnvironmentMixin, self).get_pusher_email()
 
+class HTMLDiffEnvironmentMixin(Environment):
+    """ Optionally do HTML emails with colored diffs
+    """
+
+    def __init__(self, dohtmldiffs = False,  **kw):
+        super(FilterLinesEnvironmentMixin, self).__init__(**kw)
+        self.dohtmldiffs = dohtmldiffs
+        if self.dohtmldiffs:
+            CONTENTTYPE = 'html'
+        else:
+            CONTENTTYPE = 'plain'
+
+    def filter_body(self, lines):
+        lines = super(FilterLinesEnvironmentMixin, self).filter_body(lines)
+        if self.dohtmldiffs:
+	    sawdiff = False
+            outlines = []
+	    for line in lines:
+		if line.startswith('commit ') or line.startswith('diff --git'):
+		    line="<div style='width:100%; background: #e0e0e0;'>" + line
+		if line == '---\n' or line.startswith('index '):
+		    line=line[:-1] + "</div>\n"
+		if sawdiff and line.startswith('@'):
+		    line="<div style='width: 100%; background: #e0e0e0'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
+		if sawdiff and line.startswith('+'):
+		    line="<div style='width: 100%; background: #e0ffe0'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
+		if  sawdiff and line.startswith('-'):
+		    line="<div style='width: 100%; background: #ffe0e0'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
+		if  sawdiff and line.startswith(' '):
+		    line="<div style='width: 100%; background: #ffffff'><pre style='margin:0'>" + line[:-1] + "</pre></div>\n"
+		if line == '---</div>\n':
+		    sawdiff = True
+		if not sawdiff:
+		    line = line[:-1] + '<br>\n'
+                outlines.append(line)
+            return outlines
+        else:
+            return lines
+
+class ConfigHTMLDiffEnvironmentMixin (
+        ConfigEnvironmentMixin,
+        HTMLDiffEnvironmentMixin,
+        ):
+    """Handle encoding and maximum line length based on config."""
+
+    def __init__(self, config, **kw):
+        dohtmldiffs = config.get_bool('dohtmldiffs', default=False)
+
+        super(ConfigHTMLDiffEnvironmentMixin, self).__init__(
+            dohtmldiffs = dohtmldiffs,
+            config=config, **kw
+            )
 
 class StaticRecipientsEnvironmentMixin(Environment):
     """Set recipients statically based on constructor parameters."""
@@ -2115,6 +2150,7 @@ class GenericEnvironmentMixin(Environment):
 
 
 class GenericEnvironment(
+        ConfigHTMLDiffEnvironmentMixin,
         ProjectdescEnvironmentMixin,
         ConfigMaxlinesEnvironmentMixin,
         ComputeFQDNEnvironmentMixin,
@@ -2160,6 +2196,7 @@ class IncrementalDateTime(object):
 
 
 class GitoliteEnvironment(
+        ConfigHTMLDiffEnvironmentMixin,
         ProjectdescEnvironmentMixin,
         ConfigMaxlinesEnvironmentMixin,
         ComputeFQDNEnvironmentMixin,
