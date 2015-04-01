@@ -85,7 +85,7 @@ ADDR_HEADERS = set(['from', 'to', 'cc', 'bcc', 'reply-to', 'sender'])
 # where the encoding is important.
 (ENCODING, CHARSET) = ('UTF-8', 'utf-8')
 
-CONTENTTYPE = 'html'
+CONTENTTYPE = 'plain'
 
 
 REF_CREATED_SUBJECT_TEMPLATE = (
