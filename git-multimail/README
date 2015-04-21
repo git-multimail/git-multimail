@@ -393,6 +393,11 @@ multimailhook.quiet
 
     Do not output the list of email recipients from the hook
 
+multimailhook.stdout
+
+    For debugging, send emails to stdout rather than to the
+    mailer.  Equivalent to the --stdout command line option
+
 
 Email filtering aids
 --------------------

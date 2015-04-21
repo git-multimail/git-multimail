@@ -1579,6 +1579,9 @@ class Environment(object):
         quiet (bool)
             On success do not write to stderr
 
+        stdout (bool)
+            Write email to stdout rather than emailing. Useful for debugging
+
     """
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -1592,6 +1595,7 @@ class Environment(object):
         self.refchange_showlog = False
         self.commitlogopts = ['-C', '--stat', '-p', '--cc']
         self.quiet = False
+        self.stdout = False
 
         self.COMPUTED_KEYS = [
             'administrator',
@@ -1742,6 +1746,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
         self.quiet = config.get_bool(
             'quiet', default=False
+            )
+
+        self.stdout = config.get_bool(
+            'stdout', default=False
             )
 
         maxcommitemails = config.get('maxcommitemails')
@@ -2535,7 +2543,7 @@ def main(args):
                 sys.stderr.write('    %s : %r\n' % (k, v))
             sys.stderr.write('\n')
 
-        if options.stdout:
+        if options.stdout or environment.stdout:
             mailer = OutputMailer(sys.stdout)
         else:
             mailer = choose_mailer(config, environment)
