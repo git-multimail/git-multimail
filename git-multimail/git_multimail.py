@@ -1548,6 +1548,12 @@ class Environment(object):
             get_reply_to_commit() is used for individual commit
             emails.
 
+        get_branches()
+
+            Return a list of branches to be handled as a list of regex
+            patterns.  If empty list, all branches are handled.  Branches
+            can contain regular expressions (such as foo/.*)
+
     They should also define the following attributes:
 
         announce_show_shortlog (bool)
@@ -1626,6 +1632,9 @@ class Environment(object):
 
     def get_pusher_email(self):
         return None
+
+    def get_branches(self):
+        return []
 
     def get_administrator(self):
         return 'the administrator of this repository'
@@ -1824,6 +1833,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
                 return formataddr([fromname, fromemail])
             else:
                 return self.get_sender()
+
+    def get_branches(self):
+        branches = self.config.get_all('branches',[])
+        return [re.compile('refs/heads/'+b.strip()) for bs in branches for b in bs.split(',')]
 
     def get_reply_to_refchange(self, refchange):
         if self.__reply_to_refchange is None:
@@ -2236,8 +2249,9 @@ class Push(object):
             ])
         )
 
-    def __init__(self, changes):
+    def __init__(self, changes, environment):
         self.changes = sorted(changes, key=self._sort_key)
+        self.environment = environment
 
         # The SHA-1s of commits referred to by references unaffected
         # by this push:
@@ -2262,6 +2276,12 @@ class Push(object):
     def _sort_key(klass, change):
         return (klass.SORT_ORDER[change.__class__, change.change_type], change.refname,)
 
+    def branches_match(self, branch):
+        branches = self.environment.get_branches()
+        if not branches:
+            return [True]
+        return [x for x in [r.match(branch) for r in branches] if x]
+
     def _compute_other_ref_sha1s(self):
         """Return the GitObjects referred to by references unaffected by this push."""
 
@@ -2280,6 +2300,10 @@ class Push(object):
             )
         for line in read_git_lines(['for-each-ref', '--format=%s' % (fmt,)]):
             (sha1, type, name) = line.split(' ', 2)
+            # If we are using a branch filter, skip other branches
+            if type == 'commit' and not self.branches_match(name):
+                continue
+
             if sha1 and type == 'commit' and name not in updated_refs:
                 sha1s.add(sha1)
 
@@ -2350,6 +2374,16 @@ class Push(object):
         unhandled_sha1s = set(self.get_new_commits())
         send_date = IncrementalDateTime()
         for change in self.changes:
+            sha1s = []
+            for sha1 in reversed(list(self.get_new_commits(change))):
+                if sha1 in unhandled_sha1s:
+                    sha1s.append(sha1)
+                    unhandled_sha1s.remove(sha1)
+
+            # if we are filtering on branches, skip branches we don't care about
+            if change.refname_type == 'branch' and not self.branches_match(change.refname):
+                continue
+
             # Check if we've got anyone to send to
             if not change.recipients:
                 sys.stderr.write(
@@ -2365,12 +2399,6 @@ class Push(object):
                     change.generate_email(self, body_filter, extra_values),
                     change.recipients,
                     )
-
-            sha1s = []
-            for sha1 in reversed(list(self.get_new_commits(change))):
-                if sha1 in unhandled_sha1s:
-                    sha1s.append(sha1)
-                    unhandled_sha1s.remove(sha1)
 
             max_emails = change.environment.maxcommitemails
             if max_emails and len(sha1s) > max_emails:
@@ -2406,7 +2434,7 @@ def run_as_post_receive_hook(environment, mailer):
         changes.append(
             ReferenceChange.create(environment, oldrev, newrev, refname)
             )
-    push = Push(changes)
+    push = Push(changes, environment)
     push.send_emails(mailer, body_filter=environment.filter_body)
 
 
