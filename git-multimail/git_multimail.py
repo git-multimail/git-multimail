@@ -1576,6 +1576,9 @@ class Environment(object):
             commit mail.  The value should be a list of strings
             representing words to be passed to the command.
 
+        quiet (bool)
+            On success do not write to stderr
+
     """
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -1588,6 +1591,7 @@ class Environment(object):
         self.logopts = []
         self.refchange_showlog = False
         self.commitlogopts = ['-C', '--stat', '-p', '--cc']
+        self.quiet = False
 
         self.COMPUTED_KEYS = [
             'administrator',
@@ -1734,6 +1738,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
         self.refchange_showlog = config.get_bool(
             'refchangeshowlog', default=self.refchange_showlog
+            )
+
+        self.quiet = config.get_bool(
+            'quiet', default=False
             )
 
         maxcommitemails = config.get('maxcommitemails')
@@ -2342,7 +2350,8 @@ class Push(object):
                     % (change.refname, change.old.sha1, change.new.sha1,)
                     )
             else:
-                sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
+                if not self.environment.quiet:
+                    sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
                 extra_values = {'send_date': send_date.next()}
                 mailer.send(
                     change.generate_email(self, body_filter, extra_values),

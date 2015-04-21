@@ -389,6 +389,10 @@ multimailhook.replyToRefchange
     - The value "none", in which case the Reply-To: field will be
       omitted.
 
+multimailhook.quiet
+
+    Do not output the list of email recipients from the hook
+
 
 Email filtering aids
 --------------------
