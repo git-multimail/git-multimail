@@ -953,6 +953,12 @@ class ReferenceChange(Change):
                     ):
                 yield line
 
+    def generate_new_revision_summary(self, tot, new_commits_list):
+        for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
+            yield line
+        for line in self.generate_revision_change_log(new_commits_list):
+            yield line
+
     def generate_revision_change_summary(self, push):
         """Generate a summary of the revisions added/removed by this change."""
 
@@ -978,9 +984,8 @@ class ReferenceChange(Change):
                         BRIEF_SUMMARY_TEMPLATE, action='new', text=subject,
                         )
                 yield '\n'
-                for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
-                    yield line
-                for line in self.generate_revision_change_log([r.rev.sha1 for r in new_revisions]):
+                for line in self.generate_new_revision_summary(
+                        tot, [r.rev.sha1 for r in new_revisions]):
                     yield line
             else:
                 for line in self.expand_lines(NO_NEW_REVISIONS_TEMPLATE):
@@ -1076,9 +1081,8 @@ class ReferenceChange(Change):
             yield '\n'
 
             if new_commits:
-                for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=len(new_commits)):
-                    yield line
-                for line in self.generate_revision_change_log(new_commits_list):
+                for line in self.generate_new_revision_summary(
+                        len(new_commits), new_commits_list):
                     yield line
             else:
                 for line in self.expand_lines(NO_NEW_REVISIONS_TEMPLATE):
