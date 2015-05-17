@@ -2375,6 +2375,42 @@ class GitoliteEnvironmentMixin(Environment):
     def get_pusher(self):
         return self.osenv.get('GL_USER', 'unknown user')
 
+    def get_fromaddr(self):
+        GL_USER = self.osenv.get('GL_USER')
+        if GL_USER is not None:
+            # Find the path to gitolite.conf.  Note that gitolite v3
+            # did away with the GL_ADMINDIR and GL_CONF environment
+            # variables (they are now hard-coded).
+            GL_ADMINDIR = self.osenv.get(
+                'GL_ADMINDIR',
+                os.path.expanduser(os.path.join('~', '.gitolite')))
+            GL_CONF = self.osenv.get(
+                'GL_CONF',
+                os.path.join(GL_ADMINDIR, 'conf', 'gitolite.conf'))
+            if os.path.isfile(GL_CONF):
+                with open(GL_CONF, 'rU') as f:
+                    in_user_emails_section = False
+                    re_template = r'^\s*#\s*{}\s*$'
+                    re_begin, re_user, re_end = (
+                        re.compile(re_template.format(x))
+                        for x in (
+                            r'BEGIN\s+USER\s+EMAILS',
+                            re.escape(GL_USER) + r'\s+(.*)',
+                            r'END\s+USER\s+EMAILS',
+                        ))
+                    for l in f:
+                        l = l.rstrip('\n')
+                        if not in_user_emails_section:
+                            if re_begin.match(l):
+                                in_user_emails_section = True
+                            continue
+                        if re_end.match(l):
+                            break
+                        m = re_user.match(l)
+                        if m:
+                            return m.group(1)
+        return super(GitoliteEnvironmentMixin, self).get_fromaddr()
+
 
 class IncrementalDateTime(object):
     """Simple wrapper to give incremental date/times.
