@@ -150,8 +150,10 @@ multimailhook.environment
         $USERNAME and the repository name is derived from the
         repository's path.
 
-    "gitolite" -- the username of the pusher is read from $GL_USER and
-        the repository name from $GL_REPO.
+    "gitolite" -- the username of the pusher is read from $GL_USER,
+        the repository name is read from $GL_REPO, and the From:
+        header value is optionally read from gitolite.conf (see
+        multimailhook.from).
 
     If neither of these environments is suitable for your setup, then
     you can implement a Python class that inherits from Environment
@@ -271,10 +273,25 @@ multimailhook.mailer
 
 multimailhook.from
 
-    If set then use this value in the From: field of generated emails.
-    If unset, then use the repository's user configuration (user.name
-    and user.email).  If user.email is also unset, then use
-    multimailhook.envelopeSender.
+    If set, use this value in the From: field of generated emails.  If
+    unset, the value of the From: header is determined as follows:
+
+    1. (gitolite environment only) Parse gitolite.conf, looking for a
+       block of comments that looks like this:
+
+           # BEGIN USER EMAILS
+           # username Firstname Lastname <email@example.com>
+           # END USER EMAILS
+
+       If that block exists, and there is a line between the BEGIN
+       USER EMAILS and END USER EMAILS lines where the first field
+       matches the gitolite username ($GL_USER), use the rest of the
+       line for the From: header.
+
+    2. If the user.email configuration setting is set, use its value
+       (and the value of user.name, if set).
+
+    3. Use the value of multimailhook.envelopeSender.
 
 multimailhook.administrator
 
@@ -438,9 +455,10 @@ environment are built in:
 
 * GitoliteEnvironment: a Git repository that is managed by gitolite
   [3].  For such repositories, the identity of the pusher is read from
-  environment variable $GL_USER, and the name of the repository is
-  read from $GL_REPO (if it is not overridden by
-  multimailhook.reponame).
+  environment variable $GL_USER, the name of the repository is read
+  from $GL_REPO (if it is not overridden by multimailhook.reponame),
+  and the From: header value is optionally read from gitolite.conf
+  (see multimailhook.from).
 
 By default, git-multimail assumes GitoliteEnvironment if $GL_USER and
 $GL_REPO are set, and otherwise assumes GenericEnvironment.
