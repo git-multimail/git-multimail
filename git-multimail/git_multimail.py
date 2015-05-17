@@ -1858,6 +1858,14 @@ class Environment(object):
     def get_pusher_email(self):
         return None
 
+    def get_fromaddr(self):
+        config = Config('user')
+        fromname = config.get('name', default='')
+        fromemail = config.get('email', default='')
+        if fromemail:
+            return formataddr([fromname, fromemail])
+        return self.get_sender()
+
     def get_administrator(self):
         return 'the administrator of this repository'
 
@@ -2065,14 +2073,7 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         fromaddr = self.config.get('from')
         if fromaddr:
             return fromaddr
-        else:
-            config = Config('user')
-            fromname = config.get('name', default='')
-            fromemail = config.get('email', default='')
-            if fromemail:
-                return formataddr([fromname, fromemail])
-            else:
-                return self.get_sender()
+        return super(ConfigOptionsEnvironmentMixin, self).get_fromaddr()
 
     def get_reply_to_refchange(self, refchange):
         if self.__reply_to_refchange is None:
