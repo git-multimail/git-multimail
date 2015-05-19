@@ -352,13 +352,25 @@ def addr_header_encode(text, header_name=None):
     """Encode and line-wrap the value of an email header field containing
     email addresses."""
 
-    return Header(
-        ', '.join(
+    header = ', '.join(
             formataddr((header_encode(name), emailaddr))
             for name, emailaddr in getaddresses([text])
-            ),
-        header_name=header_name
-        ).encode()
+            )
+
+    # Handle non-ascii characters.
+    try:
+        header.encode(ENCODING, 'replace')
+        header_good = header
+    except:
+        header_good = ''
+
+    text = Header(header_good, header_name=header_name).encode()
+
+    # Manual fix for broken email addresses.
+    if header_good == '':
+        text += header
+
+    return text
 
 
 class Config(object):
