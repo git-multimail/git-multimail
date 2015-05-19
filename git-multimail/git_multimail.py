@@ -2358,7 +2358,7 @@ class Push(object):
                     % (change.refname, change.old.sha1, change.new.sha1,)
                     )
             else:
-                if not self.environment.quiet:
+                if not change.environment.quiet:
                     sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
                 extra_values = {'send_date': send_date.next()}
                 mailer.send(
