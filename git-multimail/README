@@ -146,8 +146,9 @@ multimailhook.environment
     This describes the general environment of the repository.
     Currently supported values:
 
-    "generic" -- the username of the pusher is read from $USER and the
-        repository name is derived from the repository's path.
+    "generic" -- the username of the pusher is read from $USER or
+        $USERNAME and the repository name is derived from the
+        repository's path.
 
     "gitolite" -- the username of the pusher is read from $GL_USER and
         the repository name from $GL_REPO.

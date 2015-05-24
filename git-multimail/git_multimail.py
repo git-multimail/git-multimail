@@ -2092,7 +2092,7 @@ class ProjectdescEnvironmentMixin(Environment):
 
 class GenericEnvironmentMixin(Environment):
     def get_pusher(self):
-        return self.osenv.get('USER', 'unknown user')
+        return self.osenv.get('USER', self.osenv.get('USERNAME', 'unknown user'))
 
 
 class GenericEnvironment(
