@@ -1053,6 +1053,58 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+Sending notification emails to: Commit List <commitlist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* branch release updated: r4
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/release
+X-Git-Reftype: branch
+X-Git-Oldrev: 5f26bd17b128b6f251334af774ba502a6f590fca
+X-Git-Newrev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+X-Git-Rev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch release
+in repository test-repo.
+
+The following commit(s) were added to refs/heads/release by this push:
+       new  cd65463   r4
+cd65463 is described below
+
+commit cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+Author: Joe User <user@example.com>
+Date:   Fri Feb 3 09:34:40 2012 +0100
+
+    r4
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index b6693b6..91174ca 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-r3
++r4
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
