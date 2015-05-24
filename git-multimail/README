@@ -171,6 +171,13 @@ multimailhook.repoName
     for gitolite repositories, or otherwise to derive this value from
     the repository path name.
 
+multimailhook.branches
+
+    A comma separated list of branches to monitor. If not set,
+    notifications will be sent for updates to any branch.  Branch
+    names can contain regular expressions, and this configuration
+    option can be multivalued.
+
 multimailhook.mailingList
 
     The list of email addresses to which notification emails should be
