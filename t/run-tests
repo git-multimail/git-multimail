@@ -4,6 +4,13 @@ d=$(dirname "$0")
 
 retcode=0
 
+if ! pep8 $d/../git-multimail/git_multimail.py --ignore=E501,E123
+then
+    retcode=1
+else
+    echo "No new PEP8 error found: PASS"
+fi
+
 if ! "$d/test-email-content"
 then
     retcode=1
