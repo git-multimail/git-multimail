@@ -112,5 +112,8 @@ test_delete refs/foo/bar
 
 test_hook refs/heads/master refs/heads/master^^
 
+git config multimailhook.scanCommitForCc true
+test_update refs/heads/formatting refs/heads/formatting^^^
+
 rm -rf "$TESTREPO"
 

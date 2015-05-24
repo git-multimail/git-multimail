@@ -3156,3 +3156,200 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch formatting updated (6522cd3 -> 8e11f7c)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Oldrev: 6522cd3759908339b14ab0048bc1d756929ac112
+X-Git-Newrev: 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch formatting
+in repository test-repo.
+
+      from  6522cd3   Initial commit
+       new  9194268   Subject line
+       new  850c489   Another subject line
+       new  8e11f7c   Commit without Cc: line.
+
+The 3 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ foo.txt | 3 +++
+ 1 file changed, 3 insertions(+)
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/03: Subject line
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Rev: 919426837aa07c18459a0acc0f789b6a8cd8fb80
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch formatting
+in repository test-repo.
+
+commit 919426837aa07c18459a0acc0f789b6a8cd8fb80
+Author: Matthieu Moy <Matthieu.Moy@imag.fr>
+Date:   Sun May 24 19:57:13 2015 +0200
+
+    Subject line
+    
+    Cc: Some One <Some.One@example.com> # this guy wants to receive emails.
+     CC: Another Guy <Another.Guy@example.com>
+    Cc:Third.Guy@example.com
+---
+ foo.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/foo.txt b/foo.txt
+index 257cc56..eec8bfc 100644
+--- a/foo.txt
++++ b/foo.txt
+@@ -1 +1,2 @@
+ foo
++new-content
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/03: Another subject line
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Rev: 850c489cf431841cf428e00fc8285456682a9d13
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch formatting
+in repository test-repo.
+
+commit 850c489cf431841cf428e00fc8285456682a9d13
+Author: Matthieu Moy <Matthieu.Moy@imag.fr>
+Date:   Sun May 24 19:58:34 2015 +0200
+
+    Another subject line
+    
+    This is the body.
+    And below is the Cc: line.
+    Cc: me@example.com
+---
+ foo.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/foo.txt b/foo.txt
+index eec8bfc..f601cee 100644
+--- a/foo.txt
++++ b/foo.txt
+@@ -1,2 +1,3 @@
+ foo
+ new-content
++new-content
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 03/03: Commit without Cc: line.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Rev: 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch formatting
+in repository test-repo.
+
+commit 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+Author: Matthieu Moy <Matthieu.Moy@imag.fr>
+Date:   Sun May 24 20:19:12 2015 +0200
+
+    Commit without Cc: line.
+    
+    This commit contains Cc: within the text, but has to proper
+    CC: line.
+---
+ foo.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/foo.txt b/foo.txt
+index f601cee..5167925 100644
+--- a/foo.txt
++++ b/foo.txt
+@@ -1,3 +1,4 @@
+ foo
+ new-content
+ new-content
++new-content
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################

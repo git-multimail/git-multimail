@@ -1,302 +1,375 @@
 blob
 mark :1
+data 4
+foo
+
+reset refs/heads/formatting
+commit refs/heads/formatting
+mark :2
+author Matthieu Moy <Matthieu.Moy@imag.fr> 1432490219 +0200
+committer Matthieu Moy <Matthieu.Moy@imag.fr> 1432490219 +0200
+data 15
+Initial commit
+M 100644 :1 foo.txt
+
+blob
+mark :3
+data 16
+foo
+new-content
+
+commit refs/heads/formatting
+mark :4
+author Matthieu Moy <Matthieu.Moy@imag.fr> 1432490233 +0200
+committer Matthieu Moy <Matthieu.Moy@imag.fr> 1432490233 +0200
+data 154
+Subject line
+
+Cc: Some One <Some.One@example.com> # this guy wants to receive emails.
+ CC: Another Guy <Another.Guy@example.com>
+Cc:Third.Guy@example.com
+from :2
+M 100644 :3 foo.txt
+
+blob
+mark :5
+data 28
+foo
+new-content
+new-content
+
+commit refs/heads/formatting
+mark :6
+author Matthieu Moy <Matthieu.Moy@imag.fr> 1432490314 +0200
+committer Matthieu Moy <Matthieu.Moy@imag.fr> 1432490314 +0200
+data 86
+Another subject line
+
+This is the body.
+And below is the Cc: line.
+Cc: me@example.com
+from :4
+M 100644 :5 foo.txt
+
+blob
+mark :7
+data 40
+foo
+new-content
+new-content
+new-content
+
+commit refs/heads/formatting
+mark :8
+author Matthieu Moy <Matthieu.Moy@imag.fr> 1432491552 +0200
+committer Matthieu Moy <Matthieu.Moy@imag.fr> 1432491552 +0200
+data 96
+Commit without Cc: line.
+
+This commit contains Cc: within the text, but has to proper
+CC: line.
+from :6
+M 100644 :7 foo.txt
+
+blob
+mark :9
 data 2
 1
 
 reset refs/heads/foo
 commit refs/heads/foo
-mark :2
+mark :10
 author Joe User <user@example.com> 1328257580 +0100
 committer Joe User <user@example.com> 1328257580 +0100
 data 3
 a1
-M 100644 :1 a.txt
-
-blob
-mark :3
-data 2
-2
-
-commit refs/heads/master
-mark :4
-author Joe User <user@example.com> 1328257607 +0100
-committer Joe User <user@example.com> 1328257607 +0100
-data 3
-a2
-from :2
-M 100644 :3 a.txt
-
-blob
-mark :5
-data 2
-3
-
-commit refs/heads/master
-mark :6
-author Joe User <user@example.com> 1328257614 +0100
-committer Joe User <user@example.com> 1328257614 +0100
-data 3
-a3
-from :4
-M 100644 :5 a.txt
-
-blob
-mark :7
-data 2
-4
-
-commit refs/heads/master
-mark :8
-author Joe User <user@example.com> 1328257651 +0100
-committer Joe User <user@example.com> 1328257651 +0100
-data 3
-a4
-from :6
-M 100644 :7 a.txt
-
-blob
-mark :9
-data 3
-f1
-
-commit refs/heads/master
-mark :10
-author Joe User <user@example.com> 1328257748 +0100
-committer Joe User <user@example.com> 1328257748 +0100
-data 3
-f1
-from :2
 M 100644 :9 a.txt
 
 blob
 mark :11
-data 3
-f2
+data 2
+2
 
 commit refs/heads/master
 mark :12
-author Joe User <user@example.com> 1328257753 +0100
-committer Joe User <user@example.com> 1328257753 +0100
+author Joe User <user@example.com> 1328257607 +0100
+committer Joe User <user@example.com> 1328257607 +0100
 data 3
-f2
+a2
 from :10
 M 100644 :11 a.txt
 
 blob
 mark :13
-data 3
-f3
+data 2
+3
 
 commit refs/heads/master
 mark :14
-author Joe User <user@example.com> 1328257882 +0100
-committer Joe User <user@example.com> 1328257882 +0100
+author Joe User <user@example.com> 1328257614 +0100
+committer Joe User <user@example.com> 1328257614 +0100
 data 3
-f3
+a3
 from :12
 M 100644 :13 a.txt
 
 blob
 mark :15
-data 3
-m1
+data 2
+4
 
 commit refs/heads/master
 mark :16
-author Joe User <user@example.com> 1328257947 +0100
-committer Joe User <user@example.com> 1328257947 +0100
+author Joe User <user@example.com> 1328257651 +0100
+committer Joe User <user@example.com> 1328257651 +0100
 data 3
-m1
-from :8
-merge :14
+a4
+from :14
 M 100644 :15 a.txt
 
 blob
 mark :17
-data 2
-5
+data 3
+f1
 
 commit refs/heads/master
 mark :18
-author Joe User <user@example.com> 1328257970 +0100
-committer Joe User <user@example.com> 1328257970 +0100
+author Joe User <user@example.com> 1328257748 +0100
+committer Joe User <user@example.com> 1328257748 +0100
 data 3
-a5
-from :16
+f1
+from :10
 M 100644 :17 a.txt
 
 blob
 mark :19
 data 3
-f4
+f2
 
-commit refs/heads/feature
+commit refs/heads/master
 mark :20
-author Joe User <user@example.com> 1328257904 +0100
-committer Joe User <user@example.com> 1328257904 +0100
+author Joe User <user@example.com> 1328257753 +0100
+committer Joe User <user@example.com> 1328257753 +0100
 data 3
-f4
-from :14
+f2
+from :18
 M 100644 :19 a.txt
 
 blob
 mark :21
 data 3
-f5
+f3
 
-commit refs/heads/feature
+commit refs/heads/master
 mark :22
-author Joe User <user@example.com> 1328257988 +0100
-committer Joe User <user@example.com> 1328257988 +0100
+author Joe User <user@example.com> 1328257882 +0100
+committer Joe User <user@example.com> 1328257882 +0100
 data 3
-f5
+f3
 from :20
 M 100644 :21 a.txt
 
 blob
 mark :23
 data 3
-r1
+m1
 
-commit refs/tags/tag
+commit refs/heads/master
 mark :24
-author Joe User <user@example.com> 1328257696 +0100
-committer Joe User <user@example.com> 1328257696 +0100
+author Joe User <user@example.com> 1328257947 +0100
+committer Joe User <user@example.com> 1328257947 +0100
 data 3
-r1
-from :2
+m1
+from :16
+merge :22
 M 100644 :23 a.txt
 
 blob
 mark :25
-data 3
-r2
+data 2
+5
 
-commit refs/tags/tag
+commit refs/heads/master
 mark :26
-author Joe User <user@example.com> 1328257706 +0100
-committer Joe User <user@example.com> 1328257706 +0100
+author Joe User <user@example.com> 1328257970 +0100
+committer Joe User <user@example.com> 1328257970 +0100
 data 3
-r2
+a5
 from :24
 M 100644 :25 a.txt
 
 blob
 mark :27
 data 3
-r3
+f4
 
-commit refs/heads/release
+commit refs/heads/feature
 mark :28
-author Joe User <user@example.com> 1328257717 +0100
-committer Joe User <user@example.com> 1328257717 +0100
+author Joe User <user@example.com> 1328257904 +0100
+committer Joe User <user@example.com> 1328257904 +0100
 data 3
-r3
-from :26
+f4
+from :22
 M 100644 :27 a.txt
 
 blob
 mark :29
 data 3
-r4
+f5
 
-commit refs/heads/release
+commit refs/heads/feature
 mark :30
-author Joe User <user@example.com> 1328258080 +0100
-committer Joe User <user@example.com> 1328258080 +0100
+author Joe User <user@example.com> 1328257988 +0100
+committer Joe User <user@example.com> 1328257988 +0100
 data 3
-r4
+f5
 from :28
 M 100644 :29 a.txt
 
 blob
 mark :31
 data 3
-t1
+r1
 
-commit refs/tags/tag-annotated-new-content
+commit refs/tags/tag
 mark :32
-author Joe User <user@example.com> 1341056801 +0200
-committer Joe User <user@example.com> 1341056801 +0200
+author Joe User <user@example.com> 1328257696 +0100
+committer Joe User <user@example.com> 1328257696 +0100
 data 3
-t1
-from :2
+r1
+from :10
 M 100644 :31 a.txt
 
 blob
 mark :33
 data 3
-t2
+r2
 
-commit refs/tags/tag-annotated-new-content
+commit refs/tags/tag
 mark :34
-author Joe User <user@example.com> 1341056810 +0200
-committer Joe User <user@example.com> 1341056810 +0200
+author Joe User <user@example.com> 1328257706 +0100
+committer Joe User <user@example.com> 1328257706 +0100
 data 3
-t2
+r2
 from :32
 M 100644 :33 a.txt
 
 blob
 mark :35
 data 3
-x1
+r3
 
-commit refs/remotes/remote
+commit refs/heads/release
 mark :36
-author Joe User <user@example.com> 1359182362 +0100
-committer Joe User <user@example.com> 1359182362 +0100
+author Joe User <user@example.com> 1328257717 +0100
+committer Joe User <user@example.com> 1328257717 +0100
 data 3
-x1
-from :2
+r3
+from :34
 M 100644 :35 a.txt
 
 blob
 mark :37
 data 3
-x2
+r4
 
-commit refs/remotes/remote
+commit refs/heads/release
 mark :38
-author Joe User <user@example.com> 1359182379 +0100
-committer Joe User <user@example.com> 1359182379 +0100
+author Joe User <user@example.com> 1328258080 +0100
+committer Joe User <user@example.com> 1328258080 +0100
 data 3
-x2
+r4
 from :36
 M 100644 :37 a.txt
 
 blob
 mark :39
 data 3
+t1
+
+commit refs/tags/tag-annotated-new-content
+mark :40
+author Joe User <user@example.com> 1341056801 +0200
+committer Joe User <user@example.com> 1341056801 +0200
+data 3
+t1
+from :10
+M 100644 :39 a.txt
+
+blob
+mark :41
+data 3
+t2
+
+commit refs/tags/tag-annotated-new-content
+mark :42
+author Joe User <user@example.com> 1341056810 +0200
+committer Joe User <user@example.com> 1341056810 +0200
+data 3
+t2
+from :40
+M 100644 :41 a.txt
+
+blob
+mark :43
+data 3
+x1
+
+commit refs/remotes/remote
+mark :44
+author Joe User <user@example.com> 1359182362 +0100
+committer Joe User <user@example.com> 1359182362 +0100
+data 3
+x1
+from :10
+M 100644 :43 a.txt
+
+blob
+mark :45
+data 3
+x2
+
+commit refs/remotes/remote
+mark :46
+author Joe User <user@example.com> 1359182379 +0100
+committer Joe User <user@example.com> 1359182379 +0100
+data 3
+x2
+from :44
+M 100644 :45 a.txt
+
+blob
+mark :47
+data 3
 b1
 
 commit refs/foo/bar
-mark :40
+mark :48
 author Joël User <user@example.com> 1359182594 +0100
 committer Joël User <user@example.com> 1359182594 +0100
 data 3
 b1
-from :2
-M 100644 :39 a.txt
+from :10
+M 100644 :47 a.txt
 
 reset refs/heads/master
-from :18
+from :26
 
 tag tag-annotated-new-content
-from :34
+from :42
 tagger Joe User <user@example.com> 1341056838 +0200
 data 33
 This annotated tag adds commits.
 
 reset refs/tags/tag-annotated
-from :26
+from :34
 
 tag tag-annotated
-from :26
+from :34
 tagger Joe User <user@example.com> 1328258055 +0100
 data 25
 This is an annotated tag
 
 reset refs/tags/tag
-from :26
+from :34
 
