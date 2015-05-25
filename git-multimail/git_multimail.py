@@ -1643,17 +1643,40 @@ class SendMailer(Mailer):
 class SMTPMailer(Mailer):
     """Send emails using Python's smtplib."""
 
-    def __init__(self, envelopesender, smtpserver):
+    def __init__(self, envelopesender, smtpserver, 
+            smtpservertimeout = 10, smtpserverdebuglevel = 0,
+            smtpserversecurity = 'none',
+            smtpserverusername = '', smtpserverpassword = '',
+            ):
         if not envelopesender:
             sys.stderr.write(
                 'fatal: git_multimail: cannot use SMTPMailer without a sender address.\n'
                 'please set either multimailhook.envelopeSender or user.email\n'
                 )
             sys.exit(1)
+        if smtpserversecurity == 'ssl' and not (smtpserverusername and smtpserverpassword):
+            raise ConfigurationException(
+                'Cannot use SMTPMailer with security option sll '
+                'without options username and password.'
+                )
         self.envelopesender = envelopesender
         self.smtpserver = smtpserver
+        self.smtpservertimeout = smtpservertimeout
+        self.smtpserverdebuglevel = smtpserverdebuglevel
+        self.security = smtpserversecurity
+        self.username = smtpserverusername
+        self.password = smtpserverpassword
         try:
-            self.smtp = smtplib.SMTP(self.smtpserver)
+            if self.security == 'none':
+                self.smtp = smtplib.SMTP(self.smtpserver, timeout=self.smtpservertimeout)
+            elif self.security == 'ssl':
+                self.smtp = smtplib.SMTP_SSL(self.smtpserver, timeout=self.smtpservertimeout)
+            else:
+                sys.stdout.write('*** Error: Control reached an invalid option. ***')
+                sys.exit(1)
+            if self.smtpserverdebuglevel > 0:
+                sys.stdout.write("*** Setting debug on for SMTP server connection ***\n")
+                self.smtp.set_debuglevel(self.smtpserverdebuglevel)
         except Exception, e:
             sys.stderr.write('*** Error establishing SMTP connection to %s***\n' % self.smtpserver)
             sys.stderr.write('*** %s\n' % str(e))
@@ -1664,6 +1687,9 @@ class SMTPMailer(Mailer):
 
     def send(self, lines, to_addrs):
         try:
+            if self.security == 'ssl':
+                sys.stderr.write("*** Authenticating as %s ***\n" % self.username)
+                self.smtp.login(self.username, self.password)
             msg = ''.join(lines)
             # turn comma-separated list into Python list if needed.
             if isinstance(to_addrs, basestring):
@@ -2691,9 +2717,18 @@ def choose_mailer(config, environment):
 
     if mailer == 'smtp':
         smtpserver = config.get('smtpserver', default='localhost')
+        smtpservertimeout = config.get('smtpservertimeout', default='10')
+        smtpserverdebuglevel = config.get('smtpserverdebuglevel', default='0')
+        smtpserversecurity = config.get('smtpserversecurity', default='none')
+        smtpserverusername = config.get('smtpserverusername', default='')
+        smtpserverpassword = config.get('smtpserverpassword', default='')
         mailer = SMTPMailer(
-            envelopesender=(environment.get_sender() or environment.get_fromaddr()),
-            smtpserver=smtpserver,
+            envelopesender = (environment.get_sender() or environment.get_fromaddr()),
+            smtpserver = smtpserver, smtpservertimeout = smtpservertimeout,
+            smtpserverdebuglevel = smtpserverdebuglevel,
+            smtpserversecurity = smtpserversecurity,
+            smtpserverusername = smtpserverusername,
+            smtpserverpassword = smtpserverpassword,
             )
     elif mailer == 'sendmail':
         command = config.get('sendmailcommand')
