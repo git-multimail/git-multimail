@@ -1326,7 +1326,7 @@ class BranchChange(ReferenceChange):
                 len(new_commits) == 1
                 and len(new_commits[0][1]) == 1
                 and new_commits[0][0] in known_added_sha1s
-                ):
+            ):
                 return None
 
             # We do not want to combine revision and refchange emails if
@@ -1392,7 +1392,7 @@ class BranchChange(ReferenceChange):
                 rev_short=sha1, text=subject,
             )
 
-        yield self._single_revision.rev.short+" is described below\n"
+        yield self._single_revision.rev.short + " is described below\n"
         yield '\n'
 
         for line in self._single_revision.generate_email_body(push):
