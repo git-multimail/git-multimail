@@ -75,6 +75,14 @@ test_rewind refs/heads/master refs/heads/feature
 test_rewind refs/heads/master refs/heads/master^
 
 test_update refs/heads/release refs/heads/release^^^^
+
+# Should send both summary and revision email:
+test_update refs/heads/release refs/heads/release^
+# Should send a combined email:
+git config multimailhook.refchangelist 'Commit List <commitlist@example.com>'
+test_update refs/heads/release refs/heads/release^
+git config multimailhook.refchangelist 'Refchange List <refchangelist@example.com>'
+
 test_rewind refs/heads/release refs/heads/release^^
 
 test_create refs/heads/feature

@@ -75,11 +75,6 @@ Ideas for the future
   the same commit (e.g., describe them all in a single email rather
   than one email per tag).
 
-* If a single commit is pushed, emit it as a single email (not
-  refchanged + commit).
-
-  Suggested by: Ævar Arnfjörð Bjarmason <avarab@gmail.com>
-
 * Allow people to subscribe to changes only to particular files.
 
   Suggested by: Ævar Arnfjörð Bjarmason <avarab@gmail.com>
