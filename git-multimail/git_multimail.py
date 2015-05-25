@@ -1943,6 +1943,24 @@ class Environment(object):
 
         return lines
 
+    def log_msg(self, msg):
+        """Write the string msg on a log file or on stderr.
+
+        Sends the text to stderr by default, override to change the behavior."""
+        sys.stderr.write(msg)
+
+    def log_warning(self, msg):
+        """Write the string msg on a log file or on stderr.
+
+        Sends the text to stderr by default, override to change the behavior."""
+        sys.stderr.write(msg)
+
+    def log_error(self, msg):
+        """Write the string msg on a log file or on stderr.
+
+        Sends the text to stderr by default, override to change the behavior."""
+        sys.stderr.write(msg)
+
 
 class ConfigEnvironmentMixin(Environment):
     """A mixin that sets self.config to its constructor's config argument.
@@ -1988,7 +2006,7 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             try:
                 self.maxcommitemails = int(maxcommitemails)
             except ValueError:
-                sys.stderr.write(
+                log_warning(
                     '*** Malformed value for multimailhook.maxCommitEmails: %s\n' % maxcommitemails
                     + '*** Expected a number.  Ignoring.\n'
                     )
@@ -2592,14 +2610,14 @@ class Push(object):
 
             # Check if we've got anyone to send to
             if not change.recipients:
-                sys.stderr.write(
+                change.environment.log_warning(
                     '*** no recipients configured so no email will be sent\n'
                     '*** for %r update %s->%s\n'
                     % (change.refname, change.old.sha1, change.new.sha1,)
                     )
             else:
                 if not change.environment.quiet:
-                    sys.stderr.write('Sending notification emails to: %s\n' % (change.recipients,))
+                    change.environment.log_msg('Sending notification emails to: %s\n' % (change.recipients,))
                 extra_values = {'send_date': send_date.next()}
 
                 rev = change.send_single_combined_email(sha1s)
@@ -2619,7 +2637,7 @@ class Push(object):
 
             max_emails = change.environment.maxcommitemails
             if max_emails and len(sha1s) > max_emails:
-                sys.stderr.write(
+                change.environment.log_warning(
                     '*** Too many new commits (%d), not sending commit emails.\n' % len(sha1s)
                     + '*** Try setting multimailhook.maxCommitEmails to a greater value\n'
                     + '*** Currently, multimailhook.maxCommitEmails=%d\n' % max_emails
@@ -2637,7 +2655,7 @@ class Push(object):
 
         # Consistency check:
         if unhandled_sha1s:
-            sys.stderr.write(
+            change.environment.log_error(
                 'ERROR: No emails were sent for the following new commits:\n'
                 '    %s\n'
                 % ('\n    '.join(sorted(unhandled_sha1s)),)
@@ -2683,7 +2701,7 @@ def choose_mailer(config, environment):
             command = shlex.split(command)
         mailer = SendMailer(command=command, envelopesender=environment.get_sender())
     else:
-        sys.stderr.write(
+        environment.log_error(
             'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
             + 'please use one of "smtp" or "sendmail".\n'
             )
