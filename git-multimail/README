@@ -273,7 +273,7 @@ multimailhook.mailer
 
        multimailhook.smtpAuth
 
-           Wether or not to use authentication with the server.
+           Whether or not to use authentication with the server.
            Accepted values are True/False.
 
        multimailhook.smtpUser
