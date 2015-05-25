@@ -4,7 +4,7 @@ ZEROS=0000000000000000000000000000000000000000
 
 D=$(cd $(dirname "$0") && pwd)
 MULTIMAIL="$D/../git-multimail/git_multimail.py"
-POST_RECEIVE="$D/../git-multimail/post-receive"
+POST_RECEIVE="$D/../git-multimail/post-receive.example"
 
 TESTREPO=$("$D/create-test-repo")
 
