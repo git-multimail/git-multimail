@@ -273,6 +273,10 @@ multimailhook.mailer
        multimailhook.smtpServerPassword
 
            Server username and password. Required if smtpServerSecurity is 'ssl'.
+           Note that the username and password currently need to be
+           set cleartext in the configuration file, which is not
+           recommended. If you need to use this option, be sure your
+           configuration file is read-only.
 
        multimailhook.envelopeSender
 
