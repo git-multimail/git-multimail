@@ -264,6 +264,29 @@ multimailhook.mailer
            "mail.example.com:25".  Default is 'localhost' using port
            25.
 
+       multimailhook.smtpPort
+
+           The port on the SMTP server to connect to. Usage of TLS/SSL
+           is detected automatically.
+           	Port 25: No Encryption (not recommended)
+           	Port 465: Use SSL
+           	Port 587: Use StartTLS
+
+       multimailhook.smtpAuth
+
+           Whether or not to use authentication with the server.
+           Accepted values are True/False.
+
+       multimailhook.smtpUser
+
+           If smtpAuth is set to True, use this username to log in
+           to the SMTP server
+
+       multimailhook.smtpServer
+
+           If smtpAuth is set to True, use this password to log in
+           to the SMTP server
+
        multimailhook.envelopeSender
 
            The sender address to be passed to the SMTP server.  If
