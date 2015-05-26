@@ -1660,7 +1660,8 @@ class SMTPMailer(Mailer):
             sys.exit(1)
 
     def __del__(self):
-        self.smtp.quit()
+        if hasattr(self, 'smtp'):
+            self.smtp.quit()
 
     def send(self, lines, to_addrs):
         try:
