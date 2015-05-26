@@ -269,6 +269,25 @@ multimailhook.mailer
            The sender address to be passed to the SMTP server.  If
            unset, then the value of multimailhook.from is used.
 
+       multimailhook.smtpServerTimeout
+
+           Timeout in seconds.
+
+       multimailhook.smtpServerDebug
+
+           True/False. Set True to see all debug messages to/from
+           SMTP server.
+
+       multimailhook.smtpServerSecurity
+
+           Set the security type. Allowed values: none, ssl.
+           Default=none.
+
+       multimailhook.smtpServerUsername
+       multimailhook.smtpServerPassword
+
+           Server username and password. Required if smtpServerSecurity is 'ssl'.
+
 multimailhook.from
 
     If set then use this value in the From: field of generated emails.
