@@ -1823,7 +1823,7 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         if self.__reply_to_commit is None:
             return super(ConfigOptionsEnvironmentMixin, self).get_reply_to_commit(revision)
         elif self.__reply_to_commit.lower() == 'author':
-            return revision.get_author()
+            return revision.author
         elif self.__reply_to_commit.lower() == 'pusher':
             return self.get_pusher_email()
         elif self.__reply_to_commit.lower() == 'none':
