@@ -2006,7 +2006,7 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             try:
                 self.maxcommitemails = int(maxcommitemails)
             except ValueError:
-                log_warning(
+                self.log_warning(
                     '*** Malformed value for multimailhook.maxCommitEmails: %s\n' % maxcommitemails
                     + '*** Expected a number.  Ignoring.\n'
                     )
