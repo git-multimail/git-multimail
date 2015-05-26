@@ -1,0 +1,40 @@
+#! /bin/sh
+
+to=${1}
+
+# This is a simple helper to test various email-sending
+# configurations. It is not fully automated, and actually sends
+# emails.
+#
+# Usage: ./test-email-config Your.Email@example.com
+
+d=$(cd "$(dirname "$0")" && pwd)
+
+# Copy templates (*.in) into config files for local customization.
+for config_in in *.config.in
+do
+    config=${config_in%.in}
+    if [ ! -f "$config" ] || [ "$config_in" -nt "$config" ]
+    then
+	(
+	    echo "# File generated based on $config_in. Customize locally as needed."
+	    cat "$config_in"
+	) >"$config"
+    fi
+done
+
+git init test-repo-email.git
+cd test-repo-email.git
+git config include.path config.email
+git config multimailhook.mailingList "$to"
+echo >file.txt
+git add .
+git commit -m "initial commit"
+for config in ../*.config
+do
+    echo "*** $config ***"
+    cp $config .git/config.email
+    echo $config >file.txt
+    git commit -am "$config"
+    "$d"/../git-multimail/git_multimail.py refs/heads/master HEAD^ HEAD
+done

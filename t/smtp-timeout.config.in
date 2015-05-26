@@ -1,0 +1,3 @@
+[multimailhook]
+	mailer = smtp
+	smtpServer = lmailhost.imag.fr # A host that times out
