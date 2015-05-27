@@ -4,6 +4,12 @@ Setting up git-multimail on gitolite
 ``git-multimail`` supports gitolite natively. Setting up
 ``git-multimail`` on a gitolite 3 installation can be done like this:
 
+The explanations below show an easy way to set up ``git-multimail``,
+but leave ``git-multimail`` installed and unconfigured for a while. If
+you run gitolite on a production server, it is advised that you
+execute the step "Set up the hook" last to avoid confusing your users
+in the meantime.
+
 Set up the hook
 ---------------
 
