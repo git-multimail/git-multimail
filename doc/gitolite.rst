@@ -20,14 +20,13 @@ gitolite::
 
   gitolite setup
 
-
 Configuration
 -------------
 
 First, you have to allow the admin to set Git configuration variables.
 
-Edit the line containing ``GIT_CONFIG_KEYS`` in file ``.gitolite.rc``,
-to make it look like::
+As gitolite user, edit the line containing ``GIT_CONFIG_KEYS`` in file
+``.gitolite.rc``, to make it look like::
 
   GIT_CONFIG_KEYS                 =>  'multimailhook\..*',
 
