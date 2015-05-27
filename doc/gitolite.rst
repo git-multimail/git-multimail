@@ -59,3 +59,18 @@ for repositories for which you want ``git-multimail``.
 Alternatively, you can set up the ``From:`` field on a per-user basis
 by adding a ``BEGIN USER EMAILS``/``END USER EMAILS`` section (see
 ``../../README``).
+
+Troubleshooting
+---------------
+
+Warning: this will disable ``git-multimail`` during the debug, and
+could confuse your users. Don't run on a production server.
+
+To debug configuration issues with ``git-multimail``, you can add the
+``--stdout`` option when calling ``git_multimail.py`` like this::
+
+  #!/bin/sh
+  exec /path/to/git-multimail/git-multimail/git_multimail.py --stdout "$@"
+
+and try pushing from a test repository. You should see the source of
+the email that would have been sent in the output of ``git push``.
