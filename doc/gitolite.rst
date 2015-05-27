@@ -51,3 +51,6 @@ To activate ``git-multimail`` on a per-repository basis, do not set
 ``multimailhook.mailingList`` in the ``@all`` section and set it only
 for repositories for which you want ``git-multimail``.
 
+Alternatively, you can set up the ``From:`` field on a per-user basis
+by adding a ``BEGIN USER EMAILS``/``END USER EMAILS`` section (see
+``../../README``).
