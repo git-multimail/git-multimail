@@ -269,10 +269,28 @@ multimailhook.mailer
            "mail.example.com:25".  Default is 'localhost' using port
            25.
 
+       multimailhook.smtpServerUsername
+       multimailhook.smtpServerPassword
+
+           Server username and password. Required if smtpServerSecurity is 'ssl'.
+
        multimailhook.envelopeSender
 
            The sender address to be passed to the SMTP server.  If
            unset, then the value of multimailhook.from is used.
+
+       multimailhook.smtpServerTimeout
+
+           Timeout in seconds.
+
+       multimailhook.smtpServerSecurity
+
+           Set the security type. Allowed values: none, ssl.
+           Default=none.
+
+       multimailhook.smtpServerDebugLevel
+
+           Integer number. Set to greater than 0 to activate debugging.
 
 multimailhook.from
 
