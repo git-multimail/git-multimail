@@ -58,7 +58,7 @@ for repositories for which you want ``git-multimail``.
 
 Alternatively, you can set up the ``From:`` field on a per-user basis
 by adding a ``BEGIN USER EMAILS``/``END USER EMAILS`` section (see
-``../../README``).
+``../README``).
 
 Troubleshooting
 ---------------

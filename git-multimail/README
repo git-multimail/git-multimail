@@ -155,6 +155,9 @@ multimailhook.environment
         header value is optionally read from gitolite.conf (see
         multimailhook.from).
 
+        For more information about gitolite and git-multimail, read
+        doc/gitolite.rst
+
     If neither of these environments is suitable for your setup, then
     you can implement a Python class that inherits from Environment
     and instantiate it via a script that looks like the example
