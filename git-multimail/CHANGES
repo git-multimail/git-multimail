@@ -2,6 +2,8 @@ Release ?.?.?
 =============
 
 * When a single commit is pushed, omit the reference changed email.
+  Set multimailhook.combineWhenSingleCommit to false to disable this
+  new feature.
 
 
 Release 1.0.0
