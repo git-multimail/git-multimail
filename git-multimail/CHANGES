@@ -1,4 +1,4 @@
-Release ?.?.?
+Release 1.1.0
 =============
 
 * When a single commit is pushed, omit the reference changed email.
@@ -9,6 +9,25 @@ Release ?.?.?
   the From address by creating a specially formatted comment block in
   gitolite.conf (see multimailhook.from in README).
 
+* Support for SMTP authentication/SSL was added, see smtpUser,
+  smtpPass, smtpEncryption in README.
+
+* A new option scanCommitForCc was added to allow git-multimail to
+  search the commit message for 'Cc: ...' lines, and add the
+  corresponding emails in Cc.
+
+* If $USER is not set, use the variable $USERNAME. This is needed on
+  Windows platform to recognize the pusher.
+
+* The emailPrefix variable can now be set to an empty string to remove
+  the prefix.
+
+* A short tutorial was added in doc/gitolite.rst to set up
+  git-multimail with gitolite.
+
+* The post-receive file was renamed to post-receive.example. It has
+  always been an example (the standard way to call git-multimail is to
+  call git_multimail.py), but it was unclear to many users.
 
 Release 1.0.0
 =============
