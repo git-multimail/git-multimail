@@ -1259,6 +1259,9 @@ class BranchChange(ReferenceChange):
         self._single_revision = None
 
     def send_single_combined_email(self, known_added_sha1s):
+        if not self.environment.combine_when_single_commit:
+            return None
+
         # In the sadly-all-too-frequent usecase of people pushing only
         # one of their commits at a time to a repository, users feel
         # the reference change summary emails are noise rather than
@@ -1840,6 +1843,11 @@ class Environment(object):
         stdout (bool)
             Write email to stdout rather than emailing. Useful for debugging
 
+        combine_when_single_commit (bool)
+
+            True if a combined email should be produced when a single
+            new commit is pushed to a branch, False otherwise.
+
     """
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -1854,6 +1862,7 @@ class Environment(object):
         self.commitlogopts = ['-C', '--stat', '-p', '--cc']
         self.quiet = False
         self.stdout = False
+        self.combine_when_single_commit = True
 
         self.COMPUTED_KEYS = [
             'administrator',
@@ -2068,6 +2077,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
                 '"author" is not an allowed setting for replyToRefchange'
                 )
         self.__reply_to_commit = config.get('replyToCommit', default=reply_to)
+
+        combine = config.get_bool('combineWhenSingleCommit')
+        if combine is not None:
+            self.combine_when_single_commit = combine
 
     def get_administrator(self):
         return (
