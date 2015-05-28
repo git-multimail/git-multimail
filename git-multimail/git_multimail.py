@@ -1649,7 +1649,7 @@ class SMTPMailer(Mailer):
     def __init__(self, envelopesender, smtpserver,
                  smtpservertimeout=10.0, smtpserverdebuglevel=0,
                  smtpserversecurity='none',
-                 smtpserverusername='', smtpserverpassword='',
+                 smtpuser='', smtppass='',
             ):
         if not envelopesender:
             sys.stderr.write(
@@ -1657,7 +1657,7 @@ class SMTPMailer(Mailer):
                 'please set either multimailhook.envelopeSender or user.email\n'
                 )
             sys.exit(1)
-        if smtpserversecurity == 'ssl' and not (smtpserverusername and smtpserverpassword):
+        if smtpserversecurity == 'ssl' and not (smtpuser and smtppass):
             raise ConfigurationException(
                 'Cannot use SMTPMailer with security option sll '
                 'without options username and password.'
@@ -1667,8 +1667,8 @@ class SMTPMailer(Mailer):
         self.smtpservertimeout = smtpservertimeout
         self.smtpserverdebuglevel = smtpserverdebuglevel
         self.security = smtpserversecurity
-        self.username = smtpserverusername
-        self.password = smtpserverpassword
+        self.username = smtpuser
+        self.password = smtppass
         try:
             if self.security == 'none':
                 self.smtp = smtplib.SMTP(self.smtpserver, timeout=self.smtpservertimeout)
@@ -2771,15 +2771,15 @@ def choose_mailer(config, environment):
         smtpservertimeout = float(config.get('smtpservertimeout', default=10.0))
         smtpserverdebuglevel = int(config.get('smtpserverdebuglevel', default=0))
         smtpserversecurity = config.get('smtpserversecurity', default='none')
-        smtpserverusername = config.get('smtpserverusername', default='')
-        smtpserverpassword = config.get('smtpserverpassword', default='')
+        smtpuser = config.get('smtpuser', default='')
+        smtppass = config.get('smtppass', default='')
         mailer = SMTPMailer(
             envelopesender=(environment.get_sender() or environment.get_fromaddr()),
             smtpserver=smtpserver, smtpservertimeout=smtpservertimeout,
             smtpserverdebuglevel=smtpserverdebuglevel,
             smtpserversecurity=smtpserversecurity,
-            smtpserverusername=smtpserverusername,
-            smtpserverpassword=smtpserverpassword,
+            smtpuser=smtpuser,
+            smtppass=smtppass,
             )
     elif mailer == 'sendmail':
         command = config.get('sendmailcommand')

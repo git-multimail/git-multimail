@@ -269,8 +269,8 @@ multimailhook.mailer
            "mail.example.com:25".  Default is 'localhost' using port
            25.
 
-       multimailhook.smtpServerUsername
-       multimailhook.smtpServerPassword
+       multimailhook.smtpUser
+       multimailhook.smtpPass
 
            Server username and password. Required if smtpServerSecurity is 'ssl'.
            Note that the username and password currently need to be
