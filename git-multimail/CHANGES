@@ -3,6 +3,10 @@ Release ?.?.?
 
 * When a single commit is pushed, omit the reference changed email.
 
+* In gitolite environments, the pusher's email address can be used as
+  the From address by creating a specially formatted comment block in
+  gitolite.conf (see multimailhook.from in README).
+
 
 Release 1.0.0
 =============
