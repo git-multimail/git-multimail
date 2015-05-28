@@ -2565,12 +2565,15 @@ class Push(object):
             ])
         )
 
-    def __init__(self, changes):
+    def __init__(self, changes, ignore_other_refs=False):
         self.changes = sorted(changes, key=self._sort_key)
 
         # The SHA-1s of commits referred to by references unaffected
         # by this push:
-        other_ref_sha1s = self._compute_other_ref_sha1s()
+        if ignore_other_refs:
+            other_ref_sha1s = set()
+        else:
+            other_ref_sha1s = self._compute_other_ref_sha1s()
 
         self._old_rev_exclusion_spec = self._compute_rev_exclusion_spec(
             other_ref_sha1s.union(
@@ -2750,7 +2753,7 @@ def run_as_post_receive_hook(environment, mailer):
     push.send_emails(mailer, body_filter=environment.filter_body)
 
 
-def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
+def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=False):
     changes = [
         ReferenceChange.create(
             environment,
@@ -2759,7 +2762,7 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev):
             refname,
             ),
         ]
-    push = Push(changes)
+    push = Push(changes, force_send)
     push.send_emails(mailer, body_filter=environment.filter_body)
 
 
@@ -2874,6 +2877,14 @@ def main(args):
             '(intended for debugging purposes).'
             ),
         )
+    parser.add_option(
+        '--force-send', action='store_true', default=False,
+        help=(
+            'Force sending refchange email when using as an update hook. '
+            'This is useful to work around the unreliable new commits '
+            'detection in this mode.'
+            ),
+        )
 
     (options, args) = parser.parse_args(args)
 
@@ -2903,7 +2914,7 @@ def main(args):
             if len(args) != 3:
                 parser.error('Need zero or three non-option arguments')
             (refname, oldrev, newrev) = args
-            run_as_update_hook(environment, mailer, refname, oldrev, newrev)
+            run_as_update_hook(environment, mailer, refname, oldrev, newrev, options.force_send)
         else:
             run_as_post_receive_hook(environment, mailer)
     except ConfigurationException, e:
