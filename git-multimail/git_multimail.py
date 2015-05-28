@@ -928,8 +928,10 @@ class ReferenceChange(Change):
         self.rev = rev
         self.msgid = make_msgid()
         self.diffopts = environment.diffopts
+        self.graphopts = environment.graphopts
         self.logopts = environment.logopts
         self.commitlogopts = environment.commitlogopts
+        self.showgraph = environment.refchange_showgraph
         self.showlog = environment.refchange_showlog
 
         self.header_template = REFCHANGE_HEADER_TEMPLATE
@@ -1030,6 +1032,20 @@ class ReferenceChange(Change):
     def generate_email_footer(self):
         return self.expand_lines(self.footer_template)
 
+    def generate_revision_change_graph(self, new_commits_list):
+        if self.showgraph:
+            yield '\n'
+            yield 'Graph of new commits:\n\n'
+            for line in read_git_lines(
+                    ['log', '--no-walk', '--graph']
+                    + self.graphopts
+                    + new_commits_list
+                    + ['--'],
+                    keepends=True,
+                ):
+                yield line
+            yield '\n'
+
     def generate_revision_change_log(self, new_commits_list):
         if self.showlog:
             yield '\n'
@@ -1042,6 +1058,14 @@ class ReferenceChange(Change):
                     keepends=True,
                     ):
                 yield line
+
+    def generate_new_revision_summary(self, tot, new_commits_list):
+        for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
+            yield line
+        for line in self.generate_revision_change_graph(new_commits_list):
+            yield line
+        for line in self.generate_revision_change_log(new_commits_list):
+            yield line
 
     def generate_revision_change_summary(self, push):
         """Generate a summary of the revisions added/removed by this change."""
@@ -1068,9 +1092,8 @@ class ReferenceChange(Change):
                         BRIEF_SUMMARY_TEMPLATE, action='new', text=subject,
                         )
                 yield '\n'
-                for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
-                    yield line
-                for line in self.generate_revision_change_log([r.rev.sha1 for r in new_revisions]):
+                for line in self.generate_new_revision_summary(
+                        tot, [r.rev.sha1 for r in new_revisions]):
                     yield line
             else:
                 for line in self.expand_lines(NO_NEW_REVISIONS_TEMPLATE):
@@ -1166,9 +1189,8 @@ class ReferenceChange(Change):
             yield '\n'
 
             if new_commits:
-                for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=len(new_commits)):
-                    yield line
-                for line in self.generate_revision_change_log(new_commits_list):
+                for line in self.generate_new_revision_summary(
+                        len(new_commits), new_commits_list):
                     yield line
             else:
                 for line in self.expand_lines(NO_NEW_REVISIONS_TEMPLATE):
@@ -1815,6 +1837,10 @@ class Environment(object):
 
             True iff announce emails should include a shortlog.
 
+        refchange_showgraph (bool)
+
+            True iff refchanges emails should include a detailed graph.
+
         refchange_showlog (bool)
 
             True iff refchanges emails should include a detailed log.
@@ -1824,6 +1850,12 @@ class Environment(object):
             The options that should be passed to 'git diff' for the
             summary email.  The value should be a list of strings
             representing words to be passed to the command.
+
+        graphopts (list of strings)
+
+            Analogous to diffopts, but contains options passed to
+            'git log --graph' when generating the detailed graph for
+            a set of commits (see refchange_showgraph)
 
         logopts (list of strings)
 
@@ -1857,7 +1889,9 @@ class Environment(object):
         self.announce_show_shortlog = False
         self.maxcommitemails = 500
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
+        self.graphopts = ['--oneline', '--decorate']
         self.logopts = []
+        self.refchange_showgraph = False
         self.refchange_showlog = False
         self.commitlogopts = ['-C', '--stat', '-p', '--cc']
         self.quiet = False
@@ -2033,6 +2067,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             'announceshortlog', default=self.announce_show_shortlog
             )
 
+        self.refchange_showgraph = config.get_bool(
+            'refchangeshowgraph', default=self.refchange_showgraph
+            )
+
         self.refchange_showlog = config.get_bool(
             'refchangeshowlog', default=self.refchange_showlog
             )
@@ -2058,6 +2096,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         diffopts = config.get('diffopts')
         if diffopts is not None:
             self.diffopts = shlex.split(diffopts)
+
+        graphopts = config.get('graphopts')
+        if graphopts is not None:
+            self.graphopts = shlex.split(graphopts)
 
         logopts = config.get('logopts')
         if logopts is not None:
