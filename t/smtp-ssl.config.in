@@ -1,6 +1,6 @@
 [multimailhook]
 	mailer = smtp
 	smtpServer = lmailhost.imag.fr # Host that works with SSL
-	smtpserversecurity = ssl
+	smtpencryption = ssl
 	smtpUser = moy
 	smtpPass = secret # Your password here

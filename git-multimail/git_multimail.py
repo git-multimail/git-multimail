@@ -1648,7 +1648,7 @@ class SMTPMailer(Mailer):
 
     def __init__(self, envelopesender, smtpserver,
                  smtpservertimeout=10.0, smtpserverdebuglevel=0,
-                 smtpserversecurity='none',
+                 smtpencryption='none',
                  smtpuser='', smtppass='',
             ):
         if not envelopesender:
@@ -1657,7 +1657,7 @@ class SMTPMailer(Mailer):
                 'please set either multimailhook.envelopeSender or user.email\n'
                 )
             sys.exit(1)
-        if smtpserversecurity == 'ssl' and not (smtpuser and smtppass):
+        if smtpencryption == 'ssl' and not (smtpuser and smtppass):
             raise ConfigurationException(
                 'Cannot use SMTPMailer with security option sll '
                 'without options username and password.'
@@ -1666,7 +1666,7 @@ class SMTPMailer(Mailer):
         self.smtpserver = smtpserver
         self.smtpservertimeout = smtpservertimeout
         self.smtpserverdebuglevel = smtpserverdebuglevel
-        self.security = smtpserversecurity
+        self.security = smtpencryption
         self.username = smtpuser
         self.password = smtppass
         try:
@@ -2770,14 +2770,14 @@ def choose_mailer(config, environment):
         smtpserver = config.get('smtpserver', default='localhost')
         smtpservertimeout = float(config.get('smtpservertimeout', default=10.0))
         smtpserverdebuglevel = int(config.get('smtpserverdebuglevel', default=0))
-        smtpserversecurity = config.get('smtpserversecurity', default='none')
+        smtpencryption = config.get('smtpencryption', default='none')
         smtpuser = config.get('smtpuser', default='')
         smtppass = config.get('smtppass', default='')
         mailer = SMTPMailer(
             envelopesender=(environment.get_sender() or environment.get_fromaddr()),
             smtpserver=smtpserver, smtpservertimeout=smtpservertimeout,
             smtpserverdebuglevel=smtpserverdebuglevel,
-            smtpserversecurity=smtpserversecurity,
+            smtpencryption=smtpencryption,
             smtpuser=smtpuser,
             smtppass=smtppass,
             )
