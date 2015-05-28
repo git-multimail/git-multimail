@@ -29,7 +29,7 @@ setup(
         'Topic :: Software Development :: Version Control',
         ],
     keywords='git hook email',
-    url='https://github.com/mhagger/git-multimail',
+    url='https://github.com/git-multimail/git-multimail',
     author='Michael Haggerty',
     author_email='mhagger@alum.mit.edu',
     maintainer='Michael Haggerty',
