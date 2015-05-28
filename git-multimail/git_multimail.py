@@ -1659,7 +1659,7 @@ class SMTPMailer(Mailer):
             sys.exit(1)
         if smtpencryption == 'ssl' and not (smtpuser and smtppass):
             raise ConfigurationException(
-                'Cannot use SMTPMailer with security option sll '
+                'Cannot use SMTPMailer with security option ssl '
                 'without options username and password.'
                 )
         self.envelopesender = envelopesender
