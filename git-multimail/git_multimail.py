@@ -2503,9 +2503,9 @@ class Push(object):
     references.
 
     The first step is to determine the "other" references--those
-    unaffected by the current push.  They are computed by
-    Push._compute_other_ref_sha1s() by listing all references then
-    removing any affected by this push.
+    unaffected by the current push.  They are computed by listing all
+    references then removing any affected by this push.  The results
+    are stored in Push._other_ref_sha1s.
 
     The commits contained in the repository before this push were
 
@@ -2567,20 +2567,17 @@ class Push(object):
 
     def __init__(self, changes):
         self.changes = sorted(changes, key=self._sort_key)
-
-        # The SHA-1s of commits referred to by references unaffected
-        # by this push:
-        other_ref_sha1s = self._compute_other_ref_sha1s()
+        self.__other_ref_sha1s = None
 
         self._old_rev_exclusion_spec = self._compute_rev_exclusion_spec(
-            other_ref_sha1s.union(
+            self._other_ref_sha1s.union(
                 change.old.sha1
                 for change in self.changes
                 if change.old.type in ['commit', 'tag']
                 )
             )
         self._new_rev_exclusion_spec = self._compute_rev_exclusion_spec(
-            other_ref_sha1s.union(
+            self._other_ref_sha1s.union(
                 change.new.sha1
                 for change in self.changes
                 if change.new.type in ['commit', 'tag']
@@ -2591,28 +2588,34 @@ class Push(object):
     def _sort_key(klass, change):
         return (klass.SORT_ORDER[change.__class__, change.change_type], change.refname,)
 
-    def _compute_other_ref_sha1s(self):
-        """Return the GitObjects referred to by references unaffected by this push."""
+    @property
+    def _other_ref_sha1s(self):
+        """The GitObjects referred to by references unaffected by this push.
+        """
 
-        # The refnames being changed by this push:
-        updated_refs = set(
-            change.refname
-            for change in self.changes
-            )
+        if self.__other_ref_sha1s is None:
+            # The refnames being changed by this push:
+            updated_refs = set(
+                change.refname
+                for change in self.changes
+                )
 
-        # The SHA-1s of commits referred to by all references in this
-        # repository *except* updated_refs:
-        sha1s = set()
-        fmt = (
-            '%(objectname) %(objecttype) %(refname)\n'
-            '%(*objectname) %(*objecttype) %(refname)'
-            )
-        for line in read_git_lines(['for-each-ref', '--format=%s' % (fmt,)]):
-            (sha1, type, name) = line.split(' ', 2)
-            if sha1 and type == 'commit' and name not in updated_refs:
-                sha1s.add(sha1)
+            # The SHA-1s of commits referred to by all references in this
+            # repository *except* updated_refs:
+            sha1s = set()
+            fmt = (
+                '%(objectname) %(objecttype) %(refname)\n'
+                '%(*objectname) %(*objecttype) %(refname)'
+                )
+            for line in read_git_lines(
+                    ['for-each-ref', '--format=%s' % (fmt,)]):
+                (sha1, type, name) = line.split(' ', 2)
+                if sha1 and type == 'commit' and name not in updated_refs:
+                    sha1s.add(sha1)
 
-        return sha1s
+            self.__other_ref_sha1s = sha1s
+
+        return self.__other_ref_sha1s
 
     def _compute_rev_exclusion_spec(self, sha1s):
         """Return an exclusion specification for 'git rev-list'.
