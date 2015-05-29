@@ -373,41 +373,45 @@ def read_git_lines(args, keepends=False, **kw):
     return read_git_output(args, keepends=True, **kw).splitlines(keepends)
 
 
+def git_rev_list_ish(cmd, spec, args=None, **kw):
+    """Common functionality for invoking a 'git rev-list'-like command.
+
+    Parameters:
+      * cmd is the Git command to run, e.g., 'rev-list' or 'log'.
+      * spec is a list of revision arguments to pass to the named
+        command.  If None, this function returns an empty list.
+      * args is a list of extra arguments passed to the named command.
+      * All other keyword arguments (if any) are passed to the
+        underlying read_git_lines() function.
+
+    Returns the output of the Git command in the form of a list, one
+    entry per output line.
+    """
+    if spec is None:
+        return []
+    if args is None:
+        args = []
+    args = [cmd, '--stdin'] + args
+    spec_stdin = ''.join(s + '\n' for s in spec)
+    return read_git_lines(args, input=spec_stdin, **kw)
+
+
 def git_rev_list(spec, **kw):
     """Run 'git rev-list' with the given list of revision arguments.
 
-    Parameters:
-      * spec is a list of revision arguments to pass to 'git
-        rev-list'.  If None, this function returns an empty list.
-      * All other keyword arguments (if any) are passed to the
-        underlying read_git_lines() function.
-
-    Returns the resulting SHA-1 commit identifiers as a list.
+    See git_rev_list_ish() for parameter and return value
+    documentation.
     """
-    if spec is None:
-        return []
-    args = ['rev-list', '--stdin']
-    spec_stdin = ''.join(s + '\n' for s in spec)
-    return read_git_lines(args, input=spec_stdin, **kw)
+    return git_rev_list_ish('rev-list', spec, **kw)
 
 
-def git_log(spec, args=None, **kw):
+def git_log(spec, **kw):
     """Run 'git log' with the given list of revision arguments.
 
-    Parameters:
-      * spec is a list of revision arguments to pass to 'git log'.  If
-        None, this function returns an empty list.
-      * args is a list of extra arguments passed to 'git log'.
-      * All other keyword arguments (if any) are passed to the
-        underlying read_git_lines() function.
-
-    Returns the resulting output as a list, one entry per line.
+    See git_rev_list_ish() for parameter and return value
+    documentation.
     """
-    if spec is None:
-        return []
-    args = ['log', '--stdin'] + args
-    spec_stdin = ''.join(s + '\n' for s in spec)
-    return read_git_lines(args, input=spec_stdin, **kw)
+    return git_rev_list_ish('log', spec, **kw)
 
 
 def header_encode(text, header_name=None):
