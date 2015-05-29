@@ -373,6 +373,47 @@ def read_git_lines(args, keepends=False, **kw):
     return read_git_output(args, keepends=True, **kw).splitlines(keepends)
 
 
+def git_rev_list_ish(cmd, spec, args=None, **kw):
+    """Common functionality for invoking a 'git rev-list'-like command.
+
+    Parameters:
+      * cmd is the Git command to run, e.g., 'rev-list' or 'log'.
+      * spec is a list of revision arguments to pass to the named
+        command.  If None, this function returns an empty list.
+      * args is a list of extra arguments passed to the named command.
+      * All other keyword arguments (if any) are passed to the
+        underlying read_git_lines() function.
+
+    Returns the output of the Git command in the form of a list, one
+    entry per output line.
+    """
+    if spec is None:
+        return []
+    if args is None:
+        args = []
+    args = [cmd, '--stdin'] + args
+    spec_stdin = ''.join(s + '\n' for s in spec)
+    return read_git_lines(args, input=spec_stdin, **kw)
+
+
+def git_rev_list(spec, **kw):
+    """Run 'git rev-list' with the given list of revision arguments.
+
+    See git_rev_list_ish() for parameter and return value
+    documentation.
+    """
+    return git_rev_list_ish('rev-list', spec, **kw)
+
+
+def git_log(spec, **kw):
+    """Run 'git log' with the given list of revision arguments.
+
+    See git_rev_list_ish() for parameter and return value
+    documentation.
+    """
+    return git_rev_list_ish('log', spec, **kw)
+
+
 def header_encode(text, header_name=None):
     """Encode and line-wrap the value of an email header field."""
 
@@ -928,8 +969,10 @@ class ReferenceChange(Change):
         self.rev = rev
         self.msgid = make_msgid()
         self.diffopts = environment.diffopts
+        self.graphopts = environment.graphopts
         self.logopts = environment.logopts
         self.commitlogopts = environment.commitlogopts
+        self.showgraph = environment.refchange_showgraph
         self.showlog = environment.refchange_showlog
 
         self.header_template = REFCHANGE_HEADER_TEMPLATE
@@ -1030,6 +1073,22 @@ class ReferenceChange(Change):
     def generate_email_footer(self):
         return self.expand_lines(self.footer_template)
 
+    def generate_revision_change_graph(self, push):
+        if self.showgraph:
+            args = ['--graph'] + self.graphopts
+            for newold in ('new', 'old'):
+                has_newold = False
+                spec = push.get_commits_spec(newold, self)
+                for line in git_log(spec, args=args, keepends=True):
+                    if not has_newold:
+                        has_newold = True
+                        yield '\n'
+                        yield 'Graph of {} commits:\n\n'.format(
+                            {'new': 'new', 'old': 'discarded'}[newold])
+                    yield '  ' + line
+                if has_newold:
+                    yield '\n'
+
     def generate_revision_change_log(self, new_commits_list):
         if self.showlog:
             yield '\n'
@@ -1042,6 +1101,14 @@ class ReferenceChange(Change):
                     keepends=True,
                     ):
                 yield line
+
+    def generate_new_revision_summary(self, tot, new_commits_list, push):
+        for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
+            yield line
+        for line in self.generate_revision_change_graph(push):
+            yield line
+        for line in self.generate_revision_change_log(new_commits_list):
+            yield line
 
     def generate_revision_change_summary(self, push):
         """Generate a summary of the revisions added/removed by this change."""
@@ -1068,9 +1135,8 @@ class ReferenceChange(Change):
                         BRIEF_SUMMARY_TEMPLATE, action='new', text=subject,
                         )
                 yield '\n'
-                for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
-                    yield line
-                for line in self.generate_revision_change_log([r.rev.sha1 for r in new_revisions]):
+                for line in self.generate_new_revision_summary(
+                        tot, [r.rev.sha1 for r in new_revisions], push):
                     yield line
             else:
                 for line in self.expand_lines(NO_NEW_REVISIONS_TEMPLATE):
@@ -1166,12 +1232,13 @@ class ReferenceChange(Change):
             yield '\n'
 
             if new_commits:
-                for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=len(new_commits)):
-                    yield line
-                for line in self.generate_revision_change_log(new_commits_list):
+                for line in self.generate_new_revision_summary(
+                        len(new_commits), new_commits_list, push):
                     yield line
             else:
                 for line in self.expand_lines(NO_NEW_REVISIONS_TEMPLATE):
+                    yield line
+                for line in self.generate_revision_change_graph(push):
                     yield line
 
             # The diffstat is shown from the old revision to the new
@@ -1211,6 +1278,8 @@ class ReferenceChange(Change):
                     yield r.expand(
                         BRIEF_SUMMARY_TEMPLATE, action='discards', text=subject,
                         )
+                for line in self.generate_revision_change_graph(push):
+                    yield line
             else:
                 for line in self.expand_lines(NO_DISCARDED_REVISIONS_TEMPLATE):
                     yield line
@@ -1815,6 +1884,10 @@ class Environment(object):
 
             True iff announce emails should include a shortlog.
 
+        refchange_showgraph (bool)
+
+            True iff refchanges emails should include a detailed graph.
+
         refchange_showlog (bool)
 
             True iff refchanges emails should include a detailed log.
@@ -1824,6 +1897,12 @@ class Environment(object):
             The options that should be passed to 'git diff' for the
             summary email.  The value should be a list of strings
             representing words to be passed to the command.
+
+        graphopts (list of strings)
+
+            Analogous to diffopts, but contains options passed to
+            'git log --graph' when generating the detailed graph for
+            a set of commits (see refchange_showgraph)
 
         logopts (list of strings)
 
@@ -1857,7 +1936,9 @@ class Environment(object):
         self.announce_show_shortlog = False
         self.maxcommitemails = 500
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
+        self.graphopts = ['--oneline', '--decorate']
         self.logopts = []
+        self.refchange_showgraph = False
         self.refchange_showlog = False
         self.commitlogopts = ['-C', '--stat', '-p', '--cc']
         self.quiet = False
@@ -2029,21 +2110,16 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             config=config, **kw
             )
 
-        self.announce_show_shortlog = config.get_bool(
-            'announceshortlog', default=self.announce_show_shortlog
-            )
-
-        self.refchange_showlog = config.get_bool(
-            'refchangeshowlog', default=self.refchange_showlog
-            )
-
-        self.quiet = config.get_bool(
-            'quiet', default=False
-            )
-
-        self.stdout = config.get_bool(
-            'stdout', default=False
-            )
+        for var, cfg in (
+                ('announce_show_shortlog', 'announceshortlog'),
+                ('refchange_showgraph', 'refchangeShowGraph'),
+                ('refchange_showlog', 'refchangeshowlog'),
+                ('quiet', 'quiet'),
+                ('stdout', 'stdout'),
+        ):
+            val = config.get_bool(cfg)
+            if val is not None:
+                setattr(self, var, val)
 
         maxcommitemails = config.get('maxcommitemails')
         if maxcommitemails is not None:
@@ -2058,6 +2134,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         diffopts = config.get('diffopts')
         if diffopts is not None:
             self.diffopts = shlex.split(diffopts)
+
+        graphopts = config.get('graphOpts')
+        if graphopts is not None:
+            self.graphopts = shlex.split(graphopts)
 
         logopts = config.get('logopts')
         if logopts is not None:
@@ -2568,6 +2648,7 @@ class Push(object):
     def __init__(self, changes):
         self.changes = sorted(changes, key=self._sort_key)
         self.__other_ref_sha1s = None
+        self.__cached_commits_spec = {}
 
     @classmethod
     def _sort_key(klass, change):
@@ -2602,23 +2683,47 @@ class Push(object):
 
         return self.__other_ref_sha1s
 
-    def _compute_rev_exclusion_spec(self, sha1s):
-        """Return an exclusion specification for 'git rev-list'.
+    def _get_commits_spec_incl(self, new_or_old, reference_change=None):
+        """Get new or old SHA-1 from one or each of the changed refs.
 
-        git_objects is an iterable over GitObject instances.  Return a
-        string that can be passed to the standard input of 'git
-        rev-list --stdin' to exclude all of the commits referred to by
-        git_objects."""
+        Return a list of SHA-1 commit identifier strings suitable as
+        arguments to 'git rev-list' (or 'git log' or ...).  The
+        returned identifiers are either the old or new values from one
+        or all of the changed references, depending on the values of
+        new_or_old and reference_change.
 
-        return ''.join(
-            ['^%s\n' % (sha1,) for sha1 in sorted(sha1s)]
-            )
+        new_or_old is either the string 'new' or the string 'old'.  If
+        'new', the returned SHA-1 identifiers are the new values from
+        each changed reference.  If 'old', the SHA-1 identifiers are
+        the old values from each changed reference.
+
+        If reference_change is specified and not None, only the new or
+        old reference from the specified reference is included in the
+        return value.
+
+        This function returns None if there are no matching revisions
+        (e.g., because a branch was deleted and new_or_old is 'new').
+        """
+
+        if not reference_change:
+            incl_spec = sorted(
+                getattr(change, new_or_old).sha1
+                for change in self.changes
+                if getattr(change, new_or_old)
+                )
+            if not incl_spec:
+                incl_spec = None
+        elif not getattr(reference_change, new_or_old).commit_sha1:
+            incl_spec = None
+        else:
+            incl_spec = [getattr(reference_change, new_or_old).commit_sha1]
+        return incl_spec
 
     def _get_commits_spec_excl(self, new_or_old):
         """Get exclusion revisions for determining new or discarded commits.
 
-        Return a multiline string suitable for input to 'git rev-list
-        --stdin' (or 'git log --stdin' or ...) that will exclude all
+        Return a list of strings suitable as arguments to 'git
+        rev-list' (or 'git log' or ...) that will exclude all
         commits that, depending on the value of new_or_old, were
         either previously in the repository (useful for determining
         which commits are new to the repository) or currently in the
@@ -2636,7 +2741,36 @@ class Push(object):
             for change in self.changes
             if getattr(change, old_or_new).type in ['commit', 'tag']
         )
-        return self._compute_rev_exclusion_spec(excl_revs)
+        return ['^' + sha1 for sha1 in sorted(excl_revs)]
+
+    def get_commits_spec(self, new_or_old, reference_change=None):
+        """Get rev-list arguments for added or discarded commits.
+
+        Return a list of strings suitable as arguments to 'git
+        rev-list' (or 'git log' or ...) that select those commits
+        that, depending on the value of new_or_old, are either new to
+        the repository or were discarded from the repository.
+
+        new_or_old is either the string 'new' or the string 'old'.  If
+        'new', the returned list is used to select commits that are
+        new to the repository.  If 'old', the returned value is used
+        to select the commits that have been discarded from the
+        repository.
+
+        If reference_change is specified and not None, the new or
+        discarded commits are limited to those that are reachable from
+        the new or old value of the specified reference.
+
+        This function returns None if there are no added (or discarded)
+        revisions.
+        """
+        key = (new_or_old, reference_change)
+        if key not in self.__cached_commits_spec:
+            ret = self._get_commits_spec_incl(new_or_old, reference_change)
+            if ret is not None:
+                ret.extend(self._get_commits_spec_excl(new_or_old))
+            self.__cached_commits_spec[key] = ret
+        return self.__cached_commits_spec[key]
 
     def get_new_commits(self, reference_change=None):
         """Return a list of commits added by this push.
@@ -2646,19 +2780,8 @@ class Push(object):
         reference_change is None, then return a list of *all* commits
         added by this push."""
 
-        if not reference_change:
-            new_revs = sorted(
-                change.new.sha1
-                for change in self.changes
-                if change.new
-                )
-        elif not reference_change.new.commit_sha1:
-            return []
-        else:
-            new_revs = [reference_change.new.commit_sha1]
-
-        cmd = ['rev-list', '--stdin'] + new_revs
-        return read_git_lines(cmd, input=self._get_commits_spec_excl('new'))
+        spec = self.get_commits_spec('new', reference_change)
+        return git_rev_list(spec)
 
     def get_discarded_commits(self, reference_change):
         """Return a list of commits discarded by this push.
@@ -2667,13 +2790,8 @@ class Push(object):
         entirely discarded from the repository by the part of this
         push represented by reference_change."""
 
-        if not reference_change.old.commit_sha1:
-            return []
-        else:
-            old_revs = [reference_change.old.commit_sha1]
-
-        cmd = ['rev-list', '--stdin'] + old_revs
-        return read_git_lines(cmd, input=self._get_commits_spec_excl('old'))
+        spec = self.get_commits_spec('old', reference_change)
+        return git_rev_list(spec)
 
     def send_emails(self, mailer, body_filter=None):
         """Use send all of the notification emails needed for this push.
