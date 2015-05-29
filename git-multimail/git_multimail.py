@@ -2602,18 +2602,6 @@ class Push(object):
 
         return self.__other_ref_sha1s
 
-    def _compute_rev_exclusion_spec(self, sha1s):
-        """Return an exclusion specification for 'git rev-list'.
-
-        git_objects is an iterable over GitObject instances.  Return a
-        string that can be passed to the standard input of 'git
-        rev-list --stdin' to exclude all of the commits referred to by
-        git_objects."""
-
-        return ''.join(
-            ['^%s\n' % (sha1,) for sha1 in sorted(sha1s)]
-            )
-
     def _get_commits_spec_incl(self, new_or_old, reference_change=None):
         """Get new or old SHA-1 from one or each of the changed refs.
 
@@ -2653,8 +2641,8 @@ class Push(object):
     def _get_commits_spec_excl(self, new_or_old):
         """Get exclusion revisions for determining new or discarded commits.
 
-        Return a multiline string suitable for input to 'git rev-list
-        --stdin' (or 'git log --stdin' or ...) that will exclude all
+        Return a list of strings suitable as arguments to 'git
+        rev-list' (or 'git log' or ...) that will exclude all
         commits that, depending on the value of new_or_old, were
         either previously in the repository (useful for determining
         which commits are new to the repository) or currently in the
@@ -2672,7 +2660,7 @@ class Push(object):
             for change in self.changes
             if getattr(change, old_or_new).type in ['commit', 'tag']
         )
-        return self._compute_rev_exclusion_spec(excl_revs)
+        return ['^' + sha1 for sha1 in sorted(excl_revs)]
 
     def get_new_commits(self, reference_change=None):
         """Return a list of commits added by this push.
@@ -2687,9 +2675,9 @@ class Push(object):
             return []
 
         cmd = ['rev-list', '--stdin']
-        incl = ''.join(s + '\n' for s in new_revs)
-        excl = self._get_commits_spec_excl('new')
-        return read_git_lines(cmd, input=incl+excl)
+        spec = new_revs + self._get_commits_spec_excl('new')
+        input = ''.join(s + '\n' for s in spec)
+        return read_git_lines(cmd, input=input)
 
     def get_discarded_commits(self, reference_change):
         """Return a list of commits discarded by this push.
@@ -2703,9 +2691,9 @@ class Push(object):
             return []
 
         cmd = ['rev-list', '--stdin']
-        incl = ''.join(s + '\n' for s in old_revs)
-        excl = self._get_commits_spec_excl('old')
-        return read_git_lines(cmd, input=incl+excl)
+        spec = old_revs + self._get_commits_spec_excl('old')
+        input = ''.join(s + '\n' for s in spec)
+        return read_git_lines(cmd, input=input)
 
     def send_emails(self, mailer, body_filter=None):
         """Use send all of the notification emails needed for this push.
