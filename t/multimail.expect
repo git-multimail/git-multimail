@@ -314,6 +314,12 @@ listed as "adds" were already present in the repository and have only
 been added to this reference.
 
 
+Graph of new commits:
+
+  * 902dfe1 a5
+  * d245c99 m1
+
+
 Summary of changes:
  a.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -1233,6 +1239,12 @@ Any revisions marked "omits" are not gone; other references still
 refer to them.  Any revisions marked "discards" are gone forever.
 
 No new revisions were added by this update.
+
+Graph of discarded commits:
+
+  * cd65463 r4
+  * 5f26bd1 r3
+
 
 Summary of changes:
  a.txt | 2 +-
@@ -3539,6 +3551,19 @@ The 8 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
 listed as "adds" were already present in the repository and have only
 been added to this reference.
+
+
+Graph of new commits:
+
+  * 902dfe1 (HEAD, master) a5
+  *   d245c99 m1
+  |\  
+  | * abb8baa f3
+  | * c742b15 f2
+  | * f0e9a98 f1
+  * ebf40e1 a4
+  * 012fc78 a3
+  * 50d684a a2
 
 
 Summary of changes:
