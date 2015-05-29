@@ -2047,21 +2047,15 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             config=config, **kw
             )
 
-        self.announce_show_shortlog = config.get_bool(
-            'announceshortlog', default=self.announce_show_shortlog
-            )
-
-        self.refchange_showlog = config.get_bool(
-            'refchangeshowlog', default=self.refchange_showlog
-            )
-
-        self.quiet = config.get_bool(
-            'quiet', default=False
-            )
-
-        self.stdout = config.get_bool(
-            'stdout', default=False
-            )
+        for var, cfg in (
+                ('announce_show_shortlog', 'announceshortlog'),
+                ('refchange_showlog', 'refchangeshowlog'),
+                ('quiet', 'quiet'),
+                ('stdout', 'stdout'),
+        ):
+            val = config.get_bool(cfg)
+            if val is not None:
+                setattr(self, var, val)
 
         maxcommitemails = config.get('maxcommitemails')
         if maxcommitemails is not None:
