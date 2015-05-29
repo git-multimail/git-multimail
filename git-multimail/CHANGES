@@ -29,6 +29,11 @@ Release 1.1.0
   always been an example (the standard way to call git-multimail is to
   call git_multimail.py), but it was unclear to many users.
 
+* A new refchangeShowGraph option was added to make it possible to
+  include both a graph and a log in the summary emails.  The options
+  to control the graph formatting can be set via the new graphOpts
+  option.
+
 Release 1.0.0
 =============
 

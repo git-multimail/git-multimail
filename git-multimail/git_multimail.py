@@ -391,6 +391,25 @@ def git_rev_list(spec, **kw):
     return read_git_lines(args, input=spec_stdin, **kw)
 
 
+def git_log(spec, args=None, **kw):
+    """Run 'git log' with the given list of revision arguments.
+
+    Parameters:
+      * spec is a list of revision arguments to pass to 'git log'.  If
+        None, this function returns an empty list.
+      * args is a list of extra arguments passed to 'git log'.
+      * All other keyword arguments (if any) are passed to the
+        underlying read_git_lines() function.
+
+    Returns the resulting output as a list, one entry per line.
+    """
+    if spec is None:
+        return []
+    args = ['log', '--stdin'] + args
+    spec_stdin = ''.join(s + '\n' for s in spec)
+    return read_git_lines(args, input=spec_stdin, **kw)
+
+
 def header_encode(text, header_name=None):
     """Encode and line-wrap the value of an email header field."""
 
@@ -946,8 +965,10 @@ class ReferenceChange(Change):
         self.rev = rev
         self.msgid = make_msgid()
         self.diffopts = environment.diffopts
+        self.graphopts = environment.graphopts
         self.logopts = environment.logopts
         self.commitlogopts = environment.commitlogopts
+        self.showgraph = environment.refchange_showgraph
         self.showlog = environment.refchange_showlog
 
         self.header_template = REFCHANGE_HEADER_TEMPLATE
@@ -1048,6 +1069,22 @@ class ReferenceChange(Change):
     def generate_email_footer(self):
         return self.expand_lines(self.footer_template)
 
+    def generate_revision_change_graph(self, push):
+        if self.showgraph:
+            args = ['--graph'] + self.graphopts
+            for newold in ('new', 'old'):
+                has_newold = False
+                spec = push.get_commits_spec(newold, self)
+                for line in git_log(spec, args=args, keepends=True):
+                    if not has_newold:
+                        has_newold = True
+                        yield '\n'
+                        yield 'Graph of {} commits:\n\n'.format(
+                            {'new': 'new', 'old': 'discarded'}[newold])
+                    yield '  ' + line
+                if has_newold:
+                    yield '\n'
+
     def generate_revision_change_log(self, new_commits_list):
         if self.showlog:
             yield '\n'
@@ -1063,6 +1100,8 @@ class ReferenceChange(Change):
 
     def generate_new_revision_summary(self, tot, new_commits_list, push):
         for line in self.expand_lines(NEW_REVISIONS_TEMPLATE, tot=tot):
+            yield line
+        for line in self.generate_revision_change_graph(push):
             yield line
         for line in self.generate_revision_change_log(new_commits_list):
             yield line
@@ -1195,6 +1234,8 @@ class ReferenceChange(Change):
             else:
                 for line in self.expand_lines(NO_NEW_REVISIONS_TEMPLATE):
                     yield line
+                for line in self.generate_revision_change_graph(push):
+                    yield line
 
             # The diffstat is shown from the old revision to the new
             # revision.  This is to show the truth of what happened in
@@ -1233,6 +1274,8 @@ class ReferenceChange(Change):
                     yield r.expand(
                         BRIEF_SUMMARY_TEMPLATE, action='discards', text=subject,
                         )
+                for line in self.generate_revision_change_graph(push):
+                    yield line
             else:
                 for line in self.expand_lines(NO_DISCARDED_REVISIONS_TEMPLATE):
                     yield line
@@ -1837,6 +1880,10 @@ class Environment(object):
 
             True iff announce emails should include a shortlog.
 
+        refchange_showgraph (bool)
+
+            True iff refchanges emails should include a detailed graph.
+
         refchange_showlog (bool)
 
             True iff refchanges emails should include a detailed log.
@@ -1846,6 +1893,12 @@ class Environment(object):
             The options that should be passed to 'git diff' for the
             summary email.  The value should be a list of strings
             representing words to be passed to the command.
+
+        graphopts (list of strings)
+
+            Analogous to diffopts, but contains options passed to
+            'git log --graph' when generating the detailed graph for
+            a set of commits (see refchange_showgraph)
 
         logopts (list of strings)
 
@@ -1879,7 +1932,9 @@ class Environment(object):
         self.announce_show_shortlog = False
         self.maxcommitemails = 500
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
+        self.graphopts = ['--oneline', '--decorate']
         self.logopts = []
+        self.refchange_showgraph = False
         self.refchange_showlog = False
         self.commitlogopts = ['-C', '--stat', '-p', '--cc']
         self.quiet = False
@@ -2053,6 +2108,7 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
         for var, cfg in (
                 ('announce_show_shortlog', 'announceshortlog'),
+                ('refchange_showgraph', 'refchangeShowGraph'),
                 ('refchange_showlog', 'refchangeshowlog'),
                 ('quiet', 'quiet'),
                 ('stdout', 'stdout'),
@@ -2074,6 +2130,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         diffopts = config.get('diffopts')
         if diffopts is not None:
             self.diffopts = shlex.split(diffopts)
+
+        graphopts = config.get('graphOpts')
+        if graphopts is not None:
+            self.graphopts = shlex.split(graphopts)
 
         logopts = config.get('logopts')
         if logopts is not None:
