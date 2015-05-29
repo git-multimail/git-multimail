@@ -2569,21 +2569,6 @@ class Push(object):
         self.changes = sorted(changes, key=self._sort_key)
         self.__other_ref_sha1s = None
 
-        self._old_rev_exclusion_spec = self._compute_rev_exclusion_spec(
-            self._other_ref_sha1s.union(
-                change.old.sha1
-                for change in self.changes
-                if change.old.type in ['commit', 'tag']
-                )
-            )
-        self._new_rev_exclusion_spec = self._compute_rev_exclusion_spec(
-            self._other_ref_sha1s.union(
-                change.new.sha1
-                for change in self.changes
-                if change.new.type in ['commit', 'tag']
-                )
-            )
-
     @classmethod
     def _sort_key(klass, change):
         return (klass.SORT_ORDER[change.__class__, change.change_type], change.refname,)
@@ -2629,6 +2614,30 @@ class Push(object):
             ['^%s\n' % (sha1,) for sha1 in sorted(sha1s)]
             )
 
+    def _get_commits_spec_excl(self, new_or_old):
+        """Get exclusion revisions for determining new or discarded commits.
+
+        Return a multiline string suitable for input to 'git rev-list
+        --stdin' (or 'git log --stdin' or ...) that will exclude all
+        commits that, depending on the value of new_or_old, were
+        either previously in the repository (useful for determining
+        which commits are new to the repository) or currently in the
+        repository (useful for determining which commits were
+        discarded from the repository).
+
+        new_or_old is either the string 'new' or the string 'old'.  If
+        'new', the commits to be excluded are those that were in the
+        repository before the push.  If 'old', the commits to be
+        excluded are those that are currently in the repository.  """
+
+        old_or_new = {'old': 'new', 'new': 'old'}[new_or_old]
+        excl_revs = self._other_ref_sha1s.union(
+            getattr(change, old_or_new).sha1
+            for change in self.changes
+            if getattr(change, old_or_new).type in ['commit', 'tag']
+        )
+        return self._compute_rev_exclusion_spec(excl_revs)
+
     def get_new_commits(self, reference_change=None):
         """Return a list of commits added by this push.
 
@@ -2649,7 +2658,7 @@ class Push(object):
             new_revs = [reference_change.new.commit_sha1]
 
         cmd = ['rev-list', '--stdin'] + new_revs
-        return read_git_lines(cmd, input=self._old_rev_exclusion_spec)
+        return read_git_lines(cmd, input=self._get_commits_spec_excl('new'))
 
     def get_discarded_commits(self, reference_change):
         """Return a list of commits discarded by this push.
@@ -2664,7 +2673,7 @@ class Push(object):
             old_revs = [reference_change.old.commit_sha1]
 
         cmd = ['rev-list', '--stdin'] + old_revs
-        return read_git_lines(cmd, input=self._new_rev_exclusion_spec)
+        return read_git_lines(cmd, input=self._get_commits_spec_excl('old'))
 
     def send_emails(self, mailer, body_filter=None):
         """Use send all of the notification emails needed for this push.
