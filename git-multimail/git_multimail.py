@@ -373,6 +373,24 @@ def read_git_lines(args, keepends=False, **kw):
     return read_git_output(args, keepends=True, **kw).splitlines(keepends)
 
 
+def git_rev_list(spec, **kw):
+    """Run 'git rev-list' with the given list of revision arguments.
+
+    Parameters:
+      * spec is a list of revision arguments to pass to 'git
+        rev-list'.  If None, this function returns an empty list.
+      * All other keyword arguments (if any) are passed to the
+        underlying read_git_lines() function.
+
+    Returns the resulting SHA-1 commit identifiers as a list.
+    """
+    if spec is None:
+        return []
+    args = ['rev-list', '--stdin']
+    spec_stdin = ''.join(s + '\n' for s in spec)
+    return read_git_lines(args, input=spec_stdin, **kw)
+
+
 def header_encode(text, header_name=None):
     """Encode and line-wrap the value of an email header field."""
 
@@ -2696,12 +2714,8 @@ class Push(object):
         reference_change is None, then return a list of *all* commits
         added by this push."""
 
-        cmd = ['rev-list', '--stdin']
         spec = self.get_commits_spec('new', reference_change)
-        if spec is None:
-            return []
-        input = ''.join(s + '\n' for s in spec)
-        return read_git_lines(cmd, input=input)
+        return git_rev_list(spec)
 
     def get_discarded_commits(self, reference_change):
         """Return a list of commits discarded by this push.
@@ -2710,12 +2724,8 @@ class Push(object):
         entirely discarded from the repository by the part of this
         push represented by reference_change."""
 
-        cmd = ['rev-list', '--stdin']
         spec = self.get_commits_spec('old', reference_change)
-        if spec is None:
-            return []
-        input = ''.join(s + '\n' for s in spec)
-        return read_git_lines(cmd, input=input)
+        return git_rev_list(spec)
 
     def send_emails(self, mailer, body_filter=None):
         """Use send all of the notification emails needed for this push.
