@@ -2614,6 +2614,42 @@ class Push(object):
             ['^%s\n' % (sha1,) for sha1 in sorted(sha1s)]
             )
 
+    def _get_commits_spec_incl(self, new_or_old, reference_change=None):
+        """Get new or old SHA-1 from one or each of the changed refs.
+
+        Return a list of SHA-1 commit identifier strings suitable as
+        arguments to 'git rev-list' (or 'git log' or ...).  The
+        returned identifiers are either the old or new values from one
+        or all of the changed references, depending on the values of
+        new_or_old and reference_change.
+
+        new_or_old is either the string 'new' or the string 'old'.  If
+        'new', the returned SHA-1 identifiers are the new values from
+        each changed reference.  If 'old', the SHA-1 identifiers are
+        the old values from each changed reference.
+
+        If reference_change is specified and not None, only the new or
+        old reference from the specified reference is included in the
+        return value.
+
+        This function returns None if there are no matching revisions
+        (e.g., because a branch was deleted and new_or_old is 'new').
+        """
+
+        if not reference_change:
+            incl_spec = sorted(
+                getattr(change, new_or_old).sha1
+                for change in self.changes
+                if getattr(change, new_or_old)
+                )
+            if not incl_spec:
+                incl_spec = None
+        elif not getattr(reference_change, new_or_old).commit_sha1:
+            incl_spec = None
+        else:
+            incl_spec = [getattr(reference_change, new_or_old).commit_sha1]
+        return incl_spec
+
     def _get_commits_spec_excl(self, new_or_old):
         """Get exclusion revisions for determining new or discarded commits.
 
@@ -2646,16 +2682,9 @@ class Push(object):
         reference_change is None, then return a list of *all* commits
         added by this push."""
 
-        if not reference_change:
-            new_revs = sorted(
-                change.new.sha1
-                for change in self.changes
-                if change.new
-                )
-        elif not reference_change.new.commit_sha1:
+        new_revs = self._get_commits_spec_incl('new', reference_change)
+        if new_revs is None:
             return []
-        else:
-            new_revs = [reference_change.new.commit_sha1]
 
         cmd = ['rev-list', '--stdin'] + new_revs
         return read_git_lines(cmd, input=self._get_commits_spec_excl('new'))
@@ -2667,10 +2696,9 @@ class Push(object):
         entirely discarded from the repository by the part of this
         push represented by reference_change."""
 
-        if not reference_change.old.commit_sha1:
+        old_revs = self._get_commits_spec_incl('old', reference_change)
+        if old_revs is None:
             return []
-        else:
-            old_revs = [reference_change.old.commit_sha1]
 
         cmd = ['rev-list', '--stdin'] + old_revs
         return read_git_lines(cmd, input=self._get_commits_spec_excl('old'))
