@@ -2662,6 +2662,32 @@ class Push(object):
         )
         return ['^' + sha1 for sha1 in sorted(excl_revs)]
 
+    def get_commits_spec(self, new_or_old, reference_change=None):
+        """Get rev-list arguments for added or discarded commits.
+
+        Return a list of strings suitable as arguments to 'git
+        rev-list' (or 'git log' or ...) that select those commits
+        that, depending on the value of new_or_old, are either new to
+        the repository or were discarded from the repository.
+
+        new_or_old is either the string 'new' or the string 'old'.  If
+        'new', the returned list is used to select commits that are
+        new to the repository.  If 'old', the returned value is used
+        to select the commits that have been discarded from the
+        repository.
+
+        If reference_change is specified and not None, the new or
+        discarded commits are limited to those that are reachable from
+        the new or old value of the specified reference.
+
+        This function returns None if there are no added (or discarded)
+        revisions.
+        """
+        incl = self._get_commits_spec_incl(new_or_old, reference_change)
+        if incl is None:
+            return None
+        return incl + self._get_commits_spec_excl(new_or_old)
+
     def get_new_commits(self, reference_change=None):
         """Return a list of commits added by this push.
 
@@ -2670,12 +2696,10 @@ class Push(object):
         reference_change is None, then return a list of *all* commits
         added by this push."""
 
-        new_revs = self._get_commits_spec_incl('new', reference_change)
-        if new_revs is None:
-            return []
-
         cmd = ['rev-list', '--stdin']
-        spec = new_revs + self._get_commits_spec_excl('new')
+        spec = self.get_commits_spec('new', reference_change)
+        if spec is None:
+            return []
         input = ''.join(s + '\n' for s in spec)
         return read_git_lines(cmd, input=input)
 
@@ -2686,12 +2710,10 @@ class Push(object):
         entirely discarded from the repository by the part of this
         push represented by reference_change."""
 
-        old_revs = self._get_commits_spec_incl('old', reference_change)
-        if old_revs is None:
-            return []
-
         cmd = ['rev-list', '--stdin']
-        spec = old_revs + self._get_commits_spec_excl('old')
+        spec = self.get_commits_spec('old', reference_change)
+        if spec is None:
+            return []
         input = ''.join(s + '\n' for s in spec)
         return read_git_lines(cmd, input=input)
 
