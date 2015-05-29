@@ -2586,6 +2586,7 @@ class Push(object):
     def __init__(self, changes):
         self.changes = sorted(changes, key=self._sort_key)
         self.__other_ref_sha1s = None
+        self.__cached_commits_spec = {}
 
     @classmethod
     def _sort_key(klass, change):
@@ -2701,10 +2702,13 @@ class Push(object):
         This function returns None if there are no added (or discarded)
         revisions.
         """
-        incl = self._get_commits_spec_incl(new_or_old, reference_change)
-        if incl is None:
-            return None
-        return incl + self._get_commits_spec_excl(new_or_old)
+        key = (new_or_old, reference_change)
+        if key not in self.__cached_commits_spec:
+            ret = self._get_commits_spec_incl(new_or_old, reference_change)
+            if ret is not None:
+                ret.extend(self._get_commits_spec_excl(new_or_old))
+            self.__cached_commits_spec[key] = ret
+        return self.__cached_commits_spec[key]
 
     def get_new_commits(self, reference_change=None):
         """Return a list of commits added by this push.
