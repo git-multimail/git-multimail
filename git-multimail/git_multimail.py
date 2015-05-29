@@ -2686,8 +2686,10 @@ class Push(object):
         if new_revs is None:
             return []
 
-        cmd = ['rev-list', '--stdin'] + new_revs
-        return read_git_lines(cmd, input=self._get_commits_spec_excl('new'))
+        cmd = ['rev-list', '--stdin']
+        incl = ''.join(s + '\n' for s in new_revs)
+        excl = self._get_commits_spec_excl('new')
+        return read_git_lines(cmd, input=incl+excl)
 
     def get_discarded_commits(self, reference_change):
         """Return a list of commits discarded by this push.
@@ -2700,8 +2702,10 @@ class Push(object):
         if old_revs is None:
             return []
 
-        cmd = ['rev-list', '--stdin'] + old_revs
-        return read_git_lines(cmd, input=self._get_commits_spec_excl('old'))
+        cmd = ['rev-list', '--stdin']
+        incl = ''.join(s + '\n' for s in old_revs)
+        excl = self._get_commits_spec_excl('old')
+        return read_git_lines(cmd, input=incl+excl)
 
     def send_emails(self, mailer, body_filter=None):
         """Use send all of the notification emails needed for this push.
