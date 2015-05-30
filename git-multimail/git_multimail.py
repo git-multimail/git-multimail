@@ -2411,7 +2411,11 @@ class Push(object):
 
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num + 1, tot=len(sha1s))
-                if rev.recipients or rev.cc_recipients:
+                if not rev.recipients and rev.cc_recipients:
+                    sys.stderr.write('*** Replace Cc: with To:\n')
+                    rev.recipients = rev.cc_recipients
+                    rev.cc_recipients = None
+                if rev.recipients:
                     extra_values = {'send_date': send_date.next()}
                     mailer.send(
                         rev.generate_email(self, body_filter, extra_values),
