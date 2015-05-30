@@ -2021,7 +2021,7 @@ class StaticRecipientsEnvironmentMixin(Environment):
 
     def __init__(
             self,
-            refchange_recipients, announce_recipients, revision_recipients,
+            refchange_recipients, announce_recipients, revision_recipients, scancommitforcc,
             **kw
             ):
         super(StaticRecipientsEnvironmentMixin, self).__init__(**kw)
@@ -2035,7 +2035,8 @@ class StaticRecipientsEnvironmentMixin(Environment):
         # compute them once and for all:
         if not (refchange_recipients
                 or announce_recipients
-                or revision_recipients):
+                or revision_recipients
+                or scancommitforcc):
             raise ConfigurationException('No email recipients configured!')
         self.__refchange_recipients = refchange_recipients
         self.__announce_recipients = announce_recipients
@@ -2069,6 +2070,8 @@ class ConfigRecipientsEnvironmentMixin(
             revision_recipients=self._get_recipients(
                 config, 'commitlist', 'mailinglist',
                 ),
+            scancommitforcc=config.get('scancommitforcc')
+                ,
             **kw
             )
 
@@ -2408,7 +2411,7 @@ class Push(object):
 
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num + 1, tot=len(sha1s))
-                if rev.recipients:
+                if rev.recipients or rev.cc_recipients:
                     extra_values = {'send_date': send_date.next()}
                     mailer.send(
                         rev.generate_email(self, body_filter, extra_values),
