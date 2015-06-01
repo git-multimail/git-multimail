@@ -696,7 +696,7 @@ class Change(object):
                 value = value % values
             except KeyError, e:
                 if DEBUG:
-                    sys.stderr.write(
+                    self.environment.log_warning(
                         'Warning: unknown variable %r in the following line; line skipped:\n'
                         '    %s\n'
                         % (e.args[0], line,)
@@ -788,7 +788,7 @@ class Revision(Change):
         if self.environment.get_scancommitforcc():
             self.cc_recipients = ', '.join(to.strip() for to in self._cc_recipients())
             if self.cc_recipients:
-                sys.stderr.write('Add %s to CC for %s\n' % (self.cc_recipients, self.rev.sha1))
+                self.environment.log_msg('Add %s to CC for %s\n' % (self.cc_recipients, self.rev.sha1))
 
     def _cc_recipients(self):
         cc_recipients = []
@@ -903,7 +903,7 @@ class ReferenceChange(Change):
                 klass = BranchChange
             elif area == 'remotes':
                 # Tracking branch:
-                sys.stderr.write(
+                environment.log_warning(
                     '*** Push-update of tracking branch %r\n'
                     '***  - incomplete email generated.\n'
                     % (refname,)
@@ -911,7 +911,7 @@ class ReferenceChange(Change):
                 klass = OtherReferenceChange
             else:
                 # Some other reference namespace:
-                sys.stderr.write(
+                environment.log_warning(
                     '*** Push-update of strange reference %r\n'
                     '***  - incomplete email generated.\n'
                     % (refname,)
@@ -919,7 +919,7 @@ class ReferenceChange(Change):
                 klass = OtherReferenceChange
         else:
             # Anything else (is there anything else?)
-            sys.stderr.write(
+            environment.log_warning(
                 '*** Unknown type of update to %r (%s)\n'
                 '***  - incomplete email generated.\n'
                 % (refname, rev.type,)
