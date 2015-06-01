@@ -2906,6 +2906,7 @@ def choose_environment(config, osenv=None, env=None, recipients=None):
         environment_kw['refchange_recipients'] = recipients
         environment_kw['announce_recipients'] = recipients
         environment_kw['revision_recipients'] = recipients
+        environment_kw['scancommitforcc'] = config.get('scancommitforcc')
     else:
         environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
 
