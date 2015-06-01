@@ -123,5 +123,10 @@ test_hook refs/heads/master refs/heads/master^^
 git config multimailhook.scanCommitForCc true
 test_update refs/heads/formatting refs/heads/formatting^^^
 
+for o in mailinglist refchangelist announcelist commitlist; do
+    git config multimailhook.$o ''
+done
+test_update refs/heads/formatting refs/heads/formatting^^^
+
 rm -rf "$TESTREPO"
 
