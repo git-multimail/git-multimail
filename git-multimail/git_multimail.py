@@ -1713,7 +1713,7 @@ class SMTPMailer(Mailer):
 
     def send(self, lines, to_addrs):
         try:
-            if self.security == 'ssl':
+            if self.username or self.password:
                 sys.stderr.write("*** Authenticating as %s ***\n" % self.username)
                 self.smtp.login(self.username, self.password)
             msg = ''.join(lines)
