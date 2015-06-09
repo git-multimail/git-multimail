@@ -1703,7 +1703,7 @@ class SMTPMailer(Mailer):
                 sys.stdout.write("*** Setting debug on for SMTP server connection (%s) ***\n" % self.smtpserverdebuglevel)
                 self.smtp.set_debuglevel(self.smtpserverdebuglevel)
         except Exception, e:
-            sys.stderr.write('*** Error establishing SMTP connection to %s***\n' % self.smtpserver)
+            sys.stderr.write('*** Error establishing SMTP connection to %s ***\n' % self.smtpserver)
             sys.stderr.write('*** %s\n' % str(e))
             sys.exit(1)
 
@@ -1722,7 +1722,7 @@ class SMTPMailer(Mailer):
                 to_addrs = [email for (name, email) in getaddresses([to_addrs])]
             self.smtp.sendmail(self.envelopesender, to_addrs, msg)
         except Exception, e:
-            sys.stderr.write('*** Error sending email***\n')
+            sys.stderr.write('*** Error sending email ***\n')
             sys.stderr.write('*** %s\n' % str(e))
             self.smtp.quit()
             sys.exit(1)
