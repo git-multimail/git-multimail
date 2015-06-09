@@ -36,11 +36,22 @@ git config multimailhook.mailingList "$to"
 echo >file.txt
 git add .
 git commit -m "initial commit"
-for config in ../*.config
-do
+
+run_config () {
+    config=$1
     echo "*** $config ***"
     cp $config .git/config.email
     echo $config >file.txt
     git commit -am "$config"
     "$d"/../git-multimail/git_multimail.py refs/heads/master HEAD^ HEAD
-done
+}
+
+if test -z "$2"
+then
+    for config in ../*.config
+    do
+	run_config "$config"
+    done
+else
+    run_config ../"$2"
+fi
