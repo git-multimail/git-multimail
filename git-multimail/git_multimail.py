@@ -1696,6 +1696,13 @@ class SMTPMailer(Mailer):
                 self.smtp = smtplib.SMTP(self.smtpserver, timeout=self.smtpservertimeout)
             elif self.security == 'ssl':
                 self.smtp = smtplib.SMTP_SSL(self.smtpserver, timeout=self.smtpservertimeout)
+            elif self.security == 'tls':
+                if ':' not in self.smtpserver:
+                    self.smtpserver += ':587'  # default port for TLS
+                self.smtp = smtplib.SMTP(self.smtpserver, timeout=self.smtpservertimeout)
+                self.smtp.ehlo()
+                self.smtp.starttls()
+                self.smtp.ehlo()
             else:
                 sys.stdout.write('*** Error: Control reached an invalid option. ***')
                 sys.exit(1)
