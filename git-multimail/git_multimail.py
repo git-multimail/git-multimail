@@ -788,7 +788,8 @@ class Revision(Change):
         if self.environment.get_scancommitforcc():
             self.cc_recipients = ', '.join(to.strip() for to in self._cc_recipients())
             if self.cc_recipients:
-                self.environment.log_msg('Add %s to CC for %s\n' % (self.cc_recipients, self.rev.sha1))
+                self.environment.log_msg(
+                    'Add %s to CC for %s\n' % (self.cc_recipients, self.rev.sha1))
 
     def _cc_recipients(self):
         cc_recipients = []
@@ -1672,7 +1673,7 @@ class SMTPMailer(Mailer):
                  smtpservertimeout=10.0, smtpserverdebuglevel=0,
                  smtpencryption='none',
                  smtpuser='', smtppass='',
-            ):
+                 ):
         if not envelopesender:
             sys.stderr.write(
                 'fatal: git_multimail: cannot use SMTPMailer without a sender address.\n'
@@ -1707,10 +1708,14 @@ class SMTPMailer(Mailer):
                 sys.stdout.write('*** Error: Control reached an invalid option. ***')
                 sys.exit(1)
             if self.smtpserverdebuglevel > 0:
-                sys.stdout.write("*** Setting debug on for SMTP server connection (%s) ***\n" % self.smtpserverdebuglevel)
+                sys.stdout.write(
+                    "*** Setting debug on for SMTP server connection (%s) ***\n"
+                    % self.smtpserverdebuglevel)
                 self.smtp.set_debuglevel(self.smtpserverdebuglevel)
         except Exception, e:
-            sys.stderr.write('*** Error establishing SMTP connection to %s ***\n' % self.smtpserver)
+            sys.stderr.write(
+                '*** Error establishing SMTP connection to %s ***\n'
+                % self.smtpserver)
             sys.stderr.write('*** %s\n' % str(e))
             sys.exit(1)
 
@@ -2687,7 +2692,7 @@ class Push(object):
             getattr(change, old_or_new).sha1
             for change in self.changes
             if getattr(change, old_or_new).type in ['commit', 'tag']
-        )
+            )
         return ['^' + sha1 for sha1 in sorted(excl_revs)]
 
     def get_commits_spec(self, new_or_old, reference_change=None):
