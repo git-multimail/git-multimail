@@ -1348,10 +1348,10 @@ class BranchChange(ReferenceChange):
             # commit is a non-merge commit, though it may make sense to
             # combine if it is a merge as well.
             if not (
-                len(new_commits) == 1
-                and len(new_commits[0][1]) == 1
-                and new_commits[0][0] in known_added_sha1s
-            ):
+                    len(new_commits) == 1
+                    and len(new_commits[0][1]) == 1
+                    and new_commits[0][0] in known_added_sha1s
+                    ):
                 return None
 
             # We do not want to combine revision and refchange emails if
@@ -1408,14 +1408,14 @@ class BranchChange(ReferenceChange):
         adds = list(generate_summaries(
             '--topo-order', '--reverse', '%s..%s'
             % (self.old.commit_sha1, self.new.commit_sha1,)
-        ))
+            ))
 
         yield self.expand("The following commit(s) were added to %(refname)s by this push:\n")
         for (sha1, subject) in adds:
             yield self.expand(
                 BRIEF_SUMMARY_TEMPLATE, action='new',
                 rev_short=sha1, text=subject,
-            )
+                )
 
         yield self._single_revision.rev.short + " is described below\n"
         yield '\n'
@@ -2462,7 +2462,7 @@ class GitoliteEnvironmentMixin(Environment):
                             r'BEGIN\s+USER\s+EMAILS',
                             re.escape(GL_USER) + r'\s+(.*)',
                             r'END\s+USER\s+EMAILS',
-                        ))
+                            ))
                     for l in f:
                         l = l.rstrip('\n')
                         if not in_user_emails_section:
@@ -2771,7 +2771,8 @@ class Push(object):
                     )
             else:
                 if not change.environment.quiet:
-                    change.environment.log_msg('Sending notification emails to: %s\n' % (change.recipients,))
+                    change.environment.log_msg(
+                        'Sending notification emails to: %s\n' % (change.recipients,))
                 extra_values = {'send_date': send_date.next()}
 
                 rev = change.send_single_combined_email(sha1s)
@@ -2779,7 +2780,7 @@ class Push(object):
                     mailer.send(
                         change.generate_combined_email(self, rev, body_filter, extra_values),
                         rev.recipients,
-                    )
+                        )
                     # This change is now fully handled; no need to handle
                     # individual revisions any further.
                     continue
@@ -2787,7 +2788,7 @@ class Push(object):
                     mailer.send(
                         change.generate_email(self, body_filter, extra_values),
                         change.recipients,
-                    )
+                        )
 
             max_emails = change.environment.maxcommitemails
             if max_emails and len(sha1s) > max_emails:

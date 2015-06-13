@@ -4,7 +4,9 @@ d=$(dirname "$0")
 
 retcode=0
 
-if ! pep8 $d/../git-multimail/git_multimail.py --ignore=E501,E123
+# W503: line break before binary operator => could eventually be
+# removed, but at a moment where there are less pending PRs.
+if ! pep8 $d/../git-multimail/git_multimail.py --ignore=W503
 then
     retcode=1
 else
