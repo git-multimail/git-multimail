@@ -10,8 +10,17 @@ printf '%s' 'PEP8 version: '
 pep8 --version
 printf '%s' 'Git version: '
 git --version
+printf '%s' 'rstcheck version: '
+rstcheck --version
 
 echo
+
+if ! rstcheck $d/../README.rst
+then
+    retcode=1
+else
+    echo "No RST error in README.rst: PASS"
+fi
 
 # W503: line break before binary operator => could eventually be
 # removed, but at a moment where there are less pending PRs.
