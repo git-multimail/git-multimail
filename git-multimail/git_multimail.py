@@ -2458,7 +2458,8 @@ class GitoliteEnvironmentMixin(Environment):
                 'GL_CONF',
                 os.path.join(GL_ADMINDIR, 'conf', 'gitolite.conf'))
             if os.path.isfile(GL_CONF):
-                with open(GL_CONF, 'rU') as f:
+                f = open(GL_CONF, 'rU')
+                try:
                     in_user_emails_section = False
                     re_template = r'^\s*#\s*{}\s*$'
                     re_begin, re_user, re_end = (
@@ -2479,6 +2480,8 @@ class GitoliteEnvironmentMixin(Environment):
                         m = re_user.match(l)
                         if m:
                             return m.group(1)
+                finally:
+                    f.close()
         return super(GitoliteEnvironmentMixin, self).get_fromaddr()
 
 
