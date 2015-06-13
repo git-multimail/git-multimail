@@ -4,6 +4,15 @@ d=$(dirname "$0")
 
 retcode=0
 
+printf '%s' 'Python version: '
+python --version
+printf '%s' 'PEP8 version: '
+pep8 --version
+printf '%s' 'Git version: '
+git --version
+
+echo
+
 # W503: line break before binary operator => could eventually be
 # removed, but at a moment where there are less pending PRs.
 if ! pep8 $d/../git-multimail/git_multimail.py --ignore=W503
