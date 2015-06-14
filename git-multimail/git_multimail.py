@@ -1084,8 +1084,8 @@ class ReferenceChange(Change):
                     if not has_newold:
                         has_newold = True
                         yield '\n'
-                        yield 'Graph of {0} commits:\n\n'.format(
-                            {'new': 'new', 'old': 'discarded'}[newold])
+                        yield 'Graph of %s commits:\n\n' % (
+                            {'new': 'new', 'old': 'discarded'}[newold],)
                     yield '  ' + line
                 if has_newold:
                     yield '\n'
@@ -1699,13 +1699,17 @@ class SendMailer(Mailer):
             sys.exit(1)
         try:
             p.stdin.writelines(lines)
-        except:
+        except Exception, e:
             sys.stderr.write(
                 '*** Error while generating commit email\n'
                 '***  - mail sending aborted.\n'
                 )
-            p.terminate()
-            raise
+            try:
+                # subprocess.terminate() is not available in Python 2.4
+                p.terminate()
+            except AttributeError:
+                pass
+            raise e
         else:
             p.stdin.close()
             retcode = p.wait()
