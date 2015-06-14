@@ -123,6 +123,15 @@ test_hook refs/heads/master refs/heads/master^^
 git config multimailhook.scanCommitForCc true
 test_update refs/heads/formatting refs/heads/formatting^^^
 
+f=$(git rev-parse feature)
+git branch -D feature
+# git log --decorate behaves differently with different Git versions
+# on non-detached HEAD
+git update-ref HEAD master
+git config multimailhook.commitList ''
+test_update refs/heads/master refs/heads/foo
+git branch feature $f
+
 for o in mailinglist refchangelist announcelist commitlist; do
     git config multimailhook.$o ''
 done

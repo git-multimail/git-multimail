@@ -3499,6 +3499,57 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+Deleted branch feature (was 47ef1f8).
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master updated (88ff896 -> 902dfe1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: 88ff8966d0e43a97b88b249605af4c4b77ba8b8e
+X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+      from  88ff896   a1
+       new  50d684a   a2
+       new  012fc78   a3
+       new  ebf40e1   a4
+       new  f0e9a98   f1
+       new  c742b15   f2
+       new  abb8baa   f3
+       new  d245c99   m1
+       new  902dfe1   a5
+
+The 8 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
 *** no recipients configured so no email will be sent
 *** for 'refs/heads/formatting' update 6522cd3759908339b14ab0048bc1d756929ac112->8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
 Add Some One <Some.One@example.com>, Another Guy <Another.Guy@example.com>, Third.Guy@example.com to CC for 919426837aa07c18459a0acc0f789b6a8cd8fb80
