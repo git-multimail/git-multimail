@@ -15,7 +15,10 @@ rstcheck --version
 
 echo
 
-if ! rstcheck $d/../README.rst
+if ! rstcheck $d/../README.rst 2>&1 | tee $d/rstcheck.out
+then
+    retcode=1
+elif test -s $d/rstcheck.out
 then
     retcode=1
 else
