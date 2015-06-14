@@ -9,8 +9,8 @@ Release 1.1.0
   the From address by creating a specially formatted comment block in
   gitolite.conf (see multimailhook.from in README).
 
-* Support for SMTP authentication/SSL was added, see smtpUser,
-  smtpPass, smtpEncryption in README.
+* Support for SMTP authentication and SSL/TLS encryption was added,
+  see smtpUser, smtpPass, smtpEncryption in README.
 
 * A new option scanCommitForCc was added to allow git-multimail to
   search the commit message for 'Cc: ...' lines, and add the
