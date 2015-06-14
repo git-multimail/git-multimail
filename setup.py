@@ -14,7 +14,7 @@ def read_readme():
 
 setup(
     name='git-multimail',
-    version='1.0.0',
+    version='1.1.0',
     description='Send notification emails for Git pushes',
     long_description=read_readme(),
     classifiers=[
@@ -32,8 +32,8 @@ setup(
     url='https://github.com/git-multimail/git-multimail',
     author='Michael Haggerty',
     author_email='mhagger@alum.mit.edu',
-    maintainer='Michael Haggerty',
-    maintainer_email='mhagger@alum.mit.edu',
+    maintainer='Matthieu Moy',
+    maintainer_email='Matthieu.Moy@imag.fr',
     license='GPLv2',
     package_dir={'': 'git-multimail'},
     py_modules=['git_multimail'],
