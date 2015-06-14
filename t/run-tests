@@ -3,6 +3,11 @@
 d=$(dirname "$0")
 
 retcode=0
+errors=
+record_error () {
+    errors="$errors $1"
+    retcode=1
+}
 
 printf '%s' 'Python version: '
 python --version
@@ -15,12 +20,10 @@ rstcheck --version
 
 echo
 
-if ! rstcheck $d/../README.rst 2>&1 | tee $d/rstcheck.out
+if ! rstcheck $d/../README.rst 2>&1 | tee $d/rstcheck.out || 
+       test -s $d/rstcheck.out
 then
-    retcode=1
-elif test -s $d/rstcheck.out
-then
-    retcode=1
+    record_error RST
 else
     echo "No RST error in README.rst: PASS"
 fi
@@ -29,19 +32,24 @@ fi
 # removed, but at a moment where there are less pending PRs.
 if ! pep8 $d/../git-multimail/git_multimail.py --ignore=W503
 then
-    retcode=1
+    record_error PEP8
 else
     echo "No new PEP8 error found: PASS"
 fi
 
 if ! "$d/test-email-content"
 then
-    retcode=1
+    record_error test-email-content
 fi
 
 if ! "$d/test-env"
 then
-    retcode=1
+    record_error test-env
+fi
+
+if [ -n "$errors" ]
+then
+    echo "Errors found in:$errors"
 fi
 
 exit $retcode
