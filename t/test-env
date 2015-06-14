@@ -30,11 +30,11 @@ class HelperTest(unittest.TestCase):
     LONG_ASCII_ADDR = formataddr((
         'Nobodywouldhavesuchaninsanelongname Butwhoknowswhathappens',
         'somelong.sampleaddr@example.com',
-    ))
+        ))
     LONG_UNICODE_ADDR = formataddr((
         u'Raphaël Gilbert André Hertzog',
         'somelong.sampleaddr@example.com',
-    ))
+        ))
     SHORT_ASCII_ADDR = 'John Doe <john@example.com>'
     SHORT_UNICODE_ADDR = u'Joël Doe <joel@example.com>'
 
@@ -43,14 +43,14 @@ class HelperTest(unittest.TestCase):
             addr_header_encode(self.SHORT_ASCII_ADDR),
             self.SHORT_ASCII_ADDR,
             "incorrect encoding or wrapping of short ascii address"
-        )
+            )
 
     def test_addr_header_encode_short_unicode(self):
         self.assertEqual(
             addr_header_encode(self.SHORT_UNICODE_ADDR),
             "=?utf-8?b?Sm/Dq2wgRG9l?= <joel@example.com>",
             "incorrect encoding or wrapping of short unicode address"
-        )
+            )
 
     def test_addr_header_encode_long_ascii(self):
         self.assertEqual(
@@ -58,7 +58,7 @@ class HelperTest(unittest.TestCase):
             "Nobodywouldhavesuchaninsanelongname Butwhoknowswhathappens\n" +
             " <somelong.sampleaddr@example.com>",
             "incorrect encoding or wrapping of long ascii address"
-        )
+            )
 
     def test_addr_header_encode_long_unicode(self):
         self.assertEqual(
@@ -66,7 +66,7 @@ class HelperTest(unittest.TestCase):
             "=?utf-8?q?Rapha=C3=ABl_Gilbert_Andr=C3=A9_Hertzog?=\n" +
             " <somelong.sampleaddr@example.com>",
             "incorrect encoding or wrapping of long unicode address"
-        )
+            )
 
     def test_addr_header_encode_long_mixed(self):
         addrlist = ", ".join([self.LONG_UNICODE_ADDR, self.LONG_ASCII_ADDR])
@@ -78,17 +78,17 @@ class HelperTest(unittest.TestCase):
             " <somelong.sampleaddr@example.com>",
             "incorrect encoding or wrapping of address list mixing " +
             "unicode and ascii"
-        )
+            )
 
 
 class EnvTest(unittest.TestCase):
     def __init__(
-        self,
-        description,
-        user_config=None,
-        extra_config=None, extra_osenv=None,
-        tests=None,
-        ):
+            self,
+            description,
+            user_config=None,
+            extra_config=None, extra_osenv=None,
+            tests=None,
+            ):
         unittest.TestCase.__init__(self)
         self.description = description
         self.user_config = user_config
@@ -112,7 +112,7 @@ class EnvTest(unittest.TestCase):
             stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT,
             )
         self.assertEqual(retcode, 0,
-            'git init --bare "%s" returned %d' % (REPO, retcode))
+                         'git init --bare "%s" returned %d' % (REPO, retcode))
         os.chdir(REPO)
         user_config = Config('user')
         if self.user_config is None:
@@ -206,7 +206,7 @@ class ProjectDescTest(GenericEnvTest):
         GenericEnvTest.__init__(
             self,
             'Test reading project description',
-            tests={'projectdesc' : self.PROJECTDESC.splitlines(False)[0]},
+            tests={'projectdesc': self.PROJECTDESC.splitlines(False)[0]},
             )
 
     def setUp(self):
@@ -251,77 +251,71 @@ def suite():
             # Tests of value of "repo_shortname" and "emailprefix":
             test(
                 'Test "repo_shortname" and "emailprefix" settings',
-                extra_config={'reponame' : REPONAME},
-                tests={
-                        'repo_shortname' : REPONAME,
-                        'emailprefix' : EMAILPREFIX + ' ',
-                        },
+                extra_config={'reponame': REPONAME},
+                tests={'repo_shortname': REPONAME,
+                       'emailprefix': EMAILPREFIX + ' ',
+                       },
                 ),
             test(
                 'Test setting "emailprefix" explicitly',
-                extra_config={'emailprefix' : EMAILPREFIX},
-                tests={
-                        'emailprefix' : EMAILPREFIX + ' ',
-                        },
+                extra_config={'emailprefix': EMAILPREFIX},
+                tests={'emailprefix': EMAILPREFIX + ' '},
                 ),
             test(
                 'Test "emailprefix" spaces are correct',
-                extra_config={'emailprefix' : EMAILPREFIX + ' '},
-                tests={
-                        'emailprefix' : EMAILPREFIX + ' ',
-                        },
+                extra_config={'emailprefix': EMAILPREFIX + ' '},
+                tests={'emailprefix': EMAILPREFIX + ' '},
                 ),
 
             # Tests of value of "fromaddr":
             test(
                 'Test "from" setting',
-                extra_config={'from' : FROM},
-                tests={'fromaddr' : FROM},
+                extra_config={'from': FROM},
+                tests={'fromaddr': FROM},
                 ),
             test(
                 'Test that "from" defaults to user settings',
                 user_config=dict(name='User', email='user@example.com'),
-                extra_config={'envelopesender' : ENVELOPE},
-                tests={'fromaddr' : 'User <user@example.com>'},
+                extra_config={'envelopesender': ENVELOPE},
+                tests={'fromaddr': 'User <user@example.com>'},
                 ),
             test(
                 'Test that "from" defaults to user email',
                 user_config=dict(email='user@example.com'),
-                extra_config={'envelopesender' : ENVELOPE},
-                tests={'fromaddr' : 'user@example.com'},
+                extra_config={'envelopesender': ENVELOPE},
+                tests={'fromaddr': 'user@example.com'},
                 ),
             test(
                 'Test that "from" defaults to "envelopesender"',
                 user_config=dict(name='User'),
-                extra_config={'envelopesender' : ENVELOPE},
-                tests={'fromaddr' : ENVELOPE},
+                extra_config={'envelopesender': ENVELOPE},
+                tests={'fromaddr': ENVELOPE},
                 ),
             test(
                 'Test no "from" source',
                 user_config=dict(name='User'),
-                tests={'fromaddr' : None},
+                tests={'fromaddr': None},
                 ),
 
             # Tests of value of "administrator":
             test(
                 'Test "administrator" setting',
-                extra_config={'administrator' : ADMIN},
-                tests={'administrator' : ADMIN},
+                extra_config={'administrator': ADMIN},
+                tests={'administrator': ADMIN},
                 ),
             test(
                 'Test that "administrator" defaults to "envelopesender"',
-                extra_config={'envelopesender' : ENVELOPE},
-                tests={'administrator' : ENVELOPE},
+                extra_config={'envelopesender': ENVELOPE},
+                tests={'administrator': ENVELOPE},
                 ),
 
             # Tests of value of "pusher":
             test(
                 'Test "pusher" setting',
-                extra_config={'emaildomain' : EMAILDOMAIN},
-                tests={
-                        'pusher' : test.PUSHER,
-                        'pusher_email' : '%s@%s' % (test.PUSHER, EMAILDOMAIN),
-                        },
+                extra_config={'emaildomain': EMAILDOMAIN},
+                tests={'pusher': test.PUSHER,
+                       'pusher_email': '%s@%s' % (test.PUSHER, EMAILDOMAIN),
+                       },
                 ),
             ])
 
@@ -335,4 +329,3 @@ if __name__ == '__main__':
     os.environ['XDG_CONFIG_HOME'] = TEST_DIR
     os.environ['GIT_CONFIG_NOSYSTEM'] = '1'
     unittest.TextTestRunner().run(suite())
-

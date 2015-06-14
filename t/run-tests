@@ -30,7 +30,7 @@ fi
 
 # W503: line break before binary operator => could eventually be
 # removed, but at a moment where there are less pending PRs.
-if ! pep8 $d/../git-multimail/git_multimail.py --ignore=W503
+if ! pep8 $d/../git-multimail/git_multimail.py $d/test-env --ignore=W503,E402
 then
     record_error PEP8
 else
