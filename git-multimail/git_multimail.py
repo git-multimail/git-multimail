@@ -1084,7 +1084,7 @@ class ReferenceChange(Change):
                     if not has_newold:
                         has_newold = True
                         yield '\n'
-                        yield 'Graph of {} commits:\n\n'.format(
+                        yield 'Graph of {0} commits:\n\n'.format(
                             {'new': 'new', 'old': 'discarded'}[newold])
                     yield '  ' + line
                 if has_newold:
