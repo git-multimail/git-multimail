@@ -68,7 +68,7 @@ test_hook() {
 
 test_create refs/heads/master
 git config multimailhook.refChangeShowGraph true
-git config multimailhook.graphOpts '--oneline --no-decorate'
+git config multimailhook.graphOpts '--oneline'
 test_update refs/heads/master refs/heads/master^^
 git config multimailhook.refChangeShowGraph false
 git config --unset multimailhook.graphOpts
