@@ -35,7 +35,17 @@ rstcheck_file doc/gitolite.rst
 
 # W503: line break before binary operator => could eventually be
 # removed, but at a moment where there are less pending PRs.
-if ! pep8 $d/../git-multimail/git_multimail.py $d/test-env --ignore=W503,E402
+#
+# E402: module level import not at top of file => we need this in the
+# tests.
+#
+# E501: line too long (... characters) => we don't have _very_ long
+# lines, but we could get better.
+#
+# E123: closing bracket does not match indentation of opening bracket's line
+# => not raised on all pep8 version, and really constraining. We can
+# probably keep ignoring it forever.
+if ! pep8 $d/../git-multimail/git_multimail.py $d/test-env --ignore=W503,E402,E501,E123
 then
     record_error PEP8
 else
