@@ -20,13 +20,18 @@ rstcheck --version
 
 echo
 
-if ! rstcheck $d/../README.rst 2>&1 | tee $d/rstcheck.out || 
-       test -s $d/rstcheck.out
-then
-    record_error RST
-else
-    echo "No RST error in README.rst: PASS"
-fi
+rstcheck_file () {
+    if ! rstcheck $d/../$1 2>&1 | tee $d/rstcheck.out ||
+	test -s $d/rstcheck.out
+    then
+	record_error RST
+    else
+	echo "No RST error in $1: PASS"
+    fi
+}
+
+rstcheck_file README.rst
+rstcheck_file doc/gitolite.rst
 
 # W503: line break before binary operator => could eventually be
 # removed, but at a moment where there are less pending PRs.
