@@ -134,7 +134,7 @@ f=$(git rev-parse feature)
 git branch -D feature
 # git log --decorate behaves differently with different Git versions
 # on non-detached HEAD
-git update-ref HEAD master
+git update-ref --no-deref HEAD HEAD
 git config multimailhook.commitList ''
 test_update refs/heads/master refs/heads/foo
 git config multimailhook.refChangeShowGraph false
