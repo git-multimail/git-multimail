@@ -1,0 +1,16 @@
+#! /bin/sh
+
+# In shallow clones, we may not have all revisions ...
+negative_rev=$(git rev-parse 03f63a7422abfee45f2abc7af15affa48ffca666^0 2>/dev/null)
+if test -n "$negative_rev"
+then
+    negative_rev="^$negative_rev"
+fi
+
+git log --invert-grep --grep '^Signed-off-by: ' HEAD $negative_rev | tee log-output.txt
+
+if test -s log-output.txt
+then
+    echo
+    echo "Some commits lack sign-off, see above."
+fi

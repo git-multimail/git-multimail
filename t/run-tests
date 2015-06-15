@@ -30,6 +30,8 @@ rstcheck_file () {
     fi
 }
 
+$d/check-sign-off
+
 rstcheck_file README.rst
 rstcheck_file doc/gitolite.rst
 
