@@ -149,17 +149,19 @@ multimailhook.environment
     This describes the general environment of the repository.
     Currently supported values:
 
-    "generic" -- the username of the pusher is read from $USER or
-        $USERNAME and the repository name is derived from the
-        repository's path.
+    * generic
 
-    "gitolite" -- the username of the pusher is read from $GL_USER,
-        the repository name is read from $GL_REPO, and the From:
-        header value is optionally read from gitolite.conf (see
-        multimailhook.from).
+      the username of the pusher is read from $USER or $USERNAME and
+      the repository name is derived from the repository's path.
 
-        For more information about gitolite and git-multimail, read
-        doc/gitolite.rst
+    * gitolite
+
+      the username of the pusher is read from $GL_USER, the repository
+      name is read from $GL_REPO, and the From: header value is
+      optionally read from gitolite.conf (see multimailhook.from).
+
+      For more information about gitolite and git-multimail, read
+      doc/gitolite.rst
 
     If neither of these environments is suitable for your setup, then
     you can implement a Python class that inherits from Environment
