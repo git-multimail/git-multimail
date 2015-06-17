@@ -15,7 +15,7 @@ except ImportError:
 
 TEST_DIR = os.path.abspath(os.path.dirname(sys.argv[0]))
 PROJ_DIR = os.path.dirname(TEST_DIR)
-REPO = os.path.join(TEST_DIR, 'env-repo.git')
+REPO = os.path.realpath(os.path.join(TEST_DIR, 'env-repo.git'))
 
 sys.path.insert(0, os.path.join(PROJ_DIR, 'git-multimail'))
 
