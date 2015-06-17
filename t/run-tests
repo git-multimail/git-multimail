@@ -20,13 +20,13 @@ rstcheck --version
 
 echo
 
-$d/check-sign-off
+"$d"/check-sign-off
 
 rstcheck_file () {
-    if ! rstcheck $d/../$1 >$d/rstcheck.out 2>&1 ||
-	test -s $d/rstcheck.out
+    if ! rstcheck "$d"/../"$1" >$d/rstcheck.out 2>&1 ||
+	test -s "$d"/rstcheck.out
     then
-	cat $d/rstcheck.out
+	cat "$d"/rstcheck.out
 	record_error RST
     else
 	echo "No RST error in $1: PASS"
@@ -47,7 +47,7 @@ rstcheck_file doc/gitolite.rst
 # E123: closing bracket does not match indentation of opening bracket's line
 # => not raised on all pep8 version, and really constraining. We can
 # probably keep ignoring it forever.
-if ! pep8 $d/../git-multimail/git_multimail.py $d/test-env --ignore=W503,E402,E501,E123
+if ! pep8 "$d"/../git-multimail/git_multimail.py "$d"/test-env --ignore=W503,E402,E501,E123
 then
     record_error PEP8
 else

@@ -13,7 +13,7 @@ XDG_CONFIG_HOME="$D"
 GIT_CONFIG_NOSYSTEM=1
 export HOME XDG_CONFIG_HOME GIT_CONFIG_NOSYSTEM
 
-cd $TESTREPO
+cd "$TESTREPO"
 
 test_email() {
     REFNAME="$1"
@@ -138,10 +138,10 @@ git update-ref --no-deref HEAD HEAD
 git config multimailhook.commitList ''
 test_update refs/heads/master refs/heads/foo
 git config multimailhook.refChangeShowGraph false
-git branch feature $f
+git branch feature "$f"
 
 for o in mailinglist refchangelist announcelist commitlist; do
-    git config multimailhook.$o ''
+    git config multimailhook."$o" ''
 done
 test_update refs/heads/formatting refs/heads/formatting^^^
 
