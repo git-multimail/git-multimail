@@ -1,6 +1,8 @@
 #! /bin/sh
 
 D=$(cd $(dirname "$0") && pwd)
+cd "${D}" || exit 1
+. ./helper-functions.sh || exit 1
 T="$D/test-repo.git"
 DUMPFILE="$D/test-repo.dump"
 
@@ -47,4 +49,4 @@ GIT_COMMITTER_DATE="2012-11-22 04:00 +0530" \
 git tag tree-tag tree \
     -m 'This annotated tag points at a tag that points at a tree.'
 
-echo "$T"
+pecho "$T"

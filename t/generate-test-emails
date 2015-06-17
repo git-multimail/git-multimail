@@ -3,6 +3,8 @@
 ZEROS=0000000000000000000000000000000000000000
 
 D=$(cd $(dirname "$0") && pwd)
+cd "${D}" || exit 1
+. ./helper-functions.sh || exit 1
 MULTIMAIL="$D/../git-multimail/git_multimail.py"
 POST_RECEIVE="$D/../git-multimail/post-receive.example"
 
@@ -13,13 +15,13 @@ XDG_CONFIG_HOME="$D"
 GIT_CONFIG_NOSYSTEM=1
 export HOME XDG_CONFIG_HOME GIT_CONFIG_NOSYSTEM
 
-cd $TESTREPO
+cd "$TESTREPO"
 
 test_email() {
     REFNAME="$1"
     OLDREV="$2"
     NEWREV="$3"
-    echo "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL"
+    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL"
 }
 
 test_create() {
@@ -42,7 +44,7 @@ test_delete() {
     test_email "$REFNAME" "$OLDREV" "$ZEROS"
     RETCODE=$?
     git update-ref "$REFNAME" "$OLDREV" ||
-        echo 1>&2 "Error replacing reference $REFNAME to $OLDREV"
+        error "Error replacing reference $REFNAME to $OLDREV"
     return $RETCODE
 }
 
@@ -54,7 +56,7 @@ test_rewind() {
     test_email "$REFNAME" "$OLDREV" "$NEWREV"
     RETCODE=$?
     git update-ref "$REFNAME" "$OLDREV" ||
-        echo 1>&2 "Error replacing reference $REFNAME to $OLDREV"
+        error "Error replacing reference $REFNAME to $OLDREV"
     return $RETCODE
 }
 
@@ -63,7 +65,7 @@ test_hook() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$2")
     NEWREV=$(git rev-parse "$REFNAME")
-    echo "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE"
+    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE"
 }
 
 test_create refs/heads/master
@@ -138,10 +140,10 @@ git update-ref --no-deref HEAD HEAD
 git config multimailhook.commitList ''
 test_update refs/heads/master refs/heads/foo
 git config multimailhook.refChangeShowGraph false
-git branch feature $f
+git branch feature "$f"
 
 for o in mailinglist refchangelist announcelist commitlist; do
-    git config multimailhook.$o ''
+    git config multimailhook."$o" ''
 done
 test_update refs/heads/formatting refs/heads/formatting^^^
 

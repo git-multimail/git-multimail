@@ -1,10 +1,13 @@
 #! /bin/sh
 
+cd "${0%/*}" || exit 1
+. ./helper-functions.sh || exit 1
+
 # Fake replacement for sendmail, for testing purposes.
 
-echo "######################################################################"
-echo "/usr/sbin/sendmail $@ <<EOF"
+pecho "######################################################################"
+pecho "/usr/sbin/sendmail $@ <<EOF"
 cat
-echo "EOF"
-echo "######################################################################"
+pecho "EOF"
+pecho "######################################################################"
 

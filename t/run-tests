@@ -1,6 +1,8 @@
 #!/bin/sh
 
 d=$(dirname "$0")
+cd "${d}" || exit 1
+. ./helper-functions.sh || exit 1
 
 retcode=0
 errors=
@@ -9,29 +11,51 @@ record_error () {
     retcode=1
 }
 
-printf '%s' 'Python version: '
-python --version
-printf '%s' 'PEP8 version: '
-pep8 --version
-printf '%s' 'Git version: '
-git --version
-printf '%s' 'rstcheck version: '
-rstcheck --version
+for c in \
+    python2 \
+    pep8 \
+    git \
+    rstcheck \
+    ;
+do
+    unset "${c}"_installed
+    ver=unavailable
+    if command -v "${c}" >/dev/null 2>&1
+    then
+	ver=$("${c}" --version 2>&1)
+	ver=${ver##* }
+	eval "${c}_installed=true"
+    fi
+    log "${c} version: ${ver}"
+done
 
-echo
+log
+
+if [ -z "${git_installed+set}" ]
+then
+    error "git not installed"
+    record_error sign-off
+elif ! ./check-sign-off
+then
+    record_error sign-off
+else
+    log "Each commit has a sign-off: PASS"
+fi
 
 rstcheck_file () {
-    if ! rstcheck $d/../$1 2>&1 | tee $d/rstcheck.out ||
-	test -s $d/rstcheck.out
+    if [ -z "${rstcheck_installed+set}" ]
     then
+	error "rstcheck not installed"
+	record_error RST
+    elif ! rstcheck ../"$1" >rstcheck.out 2>&1 ||
+	test -s rstcheck.out
+    then
+	cat rstcheck.out
 	record_error RST
     else
-	echo "No RST error in $1: PASS"
+	log "No RST error in $1: PASS"
     fi
 }
-
-$d/check-sign-off
-
 rstcheck_file README.rst
 rstcheck_file doc/gitolite.rst
 
@@ -47,26 +71,46 @@ rstcheck_file doc/gitolite.rst
 # E123: closing bracket does not match indentation of opening bracket's line
 # => not raised on all pep8 version, and really constraining. We can
 # probably keep ignoring it forever.
-if ! pep8 $d/../git-multimail/git_multimail.py $d/test-env --ignore=W503,E402,E501,E123
-then
-    record_error PEP8
-else
-    echo "No new PEP8 error found: PASS"
-fi
+pep8_file () {
+    if [ -z "${pep8_installed+set}" ]
+    then
+	error "pep8 not installed"
+	record_error PEP8
+    elif ! pep8 ../"$1" --ignore=W503,E402,E501,E123
+    then
+	record_error PEP8
+    else
+	log "No new PEP8 error in $1 found: PASS"
+    fi
+}
+pep8_file git-multimail/git_multimail.py
+pep8_file t/test-env
 
-if ! "$d/test-email-content"
+if [ -z "${python2_installed+set}" ]
+then
+    error "python2 not installed"
+    record_error test-email-content
+elif ! ./test-email-content
 then
     record_error test-email-content
+else
+    echo "test-email-content: PASS"
 fi
 
-if ! "$d/test-env"
+if [ -z "${python2_installed+set}" ]
+then
+    error "python2 not installed"
+    record_error test-env
+elif ! ./test-env
 then
     record_error test-env
+else
+    echo "test-env: PASS"
 fi
 
 if [ -n "$errors" ]
 then
-    echo "Errors found in:$errors"
+    error "failed tests:$errors"
 fi
 
 exit $retcode

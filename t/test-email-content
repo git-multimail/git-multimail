@@ -1,16 +1,16 @@
 #!/bin/sh
 
 d=$(dirname "$0")
+cd "${d}" || exit 1
+. ./helper-functions.sh || exit 1
 
-echo "Comparing generated emails to $d/multimail.expect ..."
+log "Comparing generated emails to $d/multimail.expect ..."
 
-"$d/generate-test-emails" 2>&1 | "$d/filter-noise" >/tmp/multimail.actual
-git diff -u "$d/multimail.expect" /tmp/multimail.actual
-if test $? = 0
+./generate-test-emails 2>&1 | ./filter-noise >/tmp/multimail.actual
+diff -u multimail.expect /tmp/multimail.actual
+if test $? -ne 0
 then
-    echo "PASS"
-else
-    echo "
+    fatal "
 ===========================================================================
 FAILURE!
 Please investigate the discrepancies shown above.
@@ -19,5 +19,4 @@ If you are sure that your version is correct, then please
     cp /tmp/multimail.actual $d/multimail.expect
 
 and commit."
-    exit 1
 fi
