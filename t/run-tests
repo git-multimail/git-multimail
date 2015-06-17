@@ -11,14 +11,17 @@ record_error () {
     retcode=1
 }
 
-printf '%s' 'Python version: '
-python2 --version
-printf '%s' 'PEP8 version: '
-pep8 --version
-printf '%s' 'Git version: '
-git --version
-printf '%s' 'rstcheck version: '
-rstcheck --version
+for c in \
+    python2 \
+    pep8 \
+    git \
+    rstcheck \
+    ;
+do
+    ver=$("${c}" --version 2>&1)
+    ver=${ver##* }
+    log "${c} version: ${ver}"
+done
 
 log
 
