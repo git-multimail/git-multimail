@@ -9,6 +9,7 @@ to=${1}
 # Usage: ./test-email-config Your.Email@example.com
 
 d=$(cd "$(dirname "$0")" && pwd)
+cd "${d}" || exit 1
 
 # Copy templates (*.in) into config files for local customization.
 for config_in in *.config.in
@@ -43,7 +44,7 @@ run_config () {
     cp "$config" .git/config.email
     echo "$config" >file.txt
     git commit -am "$config"
-    "$d"/../git-multimail/git_multimail.py refs/heads/master HEAD^ HEAD
+    ../git-multimail/git_multimail.py refs/heads/master HEAD^ HEAD
 }
 
 if test -z "$2"

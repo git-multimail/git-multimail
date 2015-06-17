@@ -1,6 +1,7 @@
 #!/bin/sh
 
 d=$(dirname "$0")
+cd "$d" || exit 1
 
 retcode=0
 errors=
@@ -20,7 +21,7 @@ rstcheck --version
 
 echo
 
-if ! "$d"/check-sign-off
+if ! ./check-sign-off
 then
     record_error sign-off
 else
@@ -28,10 +29,10 @@ else
 fi
 
 rstcheck_file () {
-    if ! rstcheck "$d"/../"$1" >$d/rstcheck.out 2>&1 ||
-	test -s "$d"/rstcheck.out
+    if ! rstcheck ../"$1" >rstcheck.out 2>&1 ||
+	test -s rstcheck.out
     then
-	cat "$d"/rstcheck.out
+	cat rstcheck.out
 	record_error RST
     else
 	echo "No RST error in $1: PASS"
@@ -53,7 +54,7 @@ rstcheck_file doc/gitolite.rst
 # => not raised on all pep8 version, and really constraining. We can
 # probably keep ignoring it forever.
 pep8_file () {
-    if ! pep8 "$d"/../"$1" --ignore=W503,E402,E501,E123
+    if ! pep8 ../"$1" --ignore=W503,E402,E501,E123
     then
 	record_error PEP8
     else
@@ -63,14 +64,14 @@ pep8_file () {
 pep8_file git-multimail/git_multimail.py
 pep8_file t/test-env
 
-if ! "$d/test-email-content"
+if ! ./test-email-content
 then
     record_error test-email-content
 else
     echo "test-email-content: PASS"
 fi
 
-if ! "$d/test-env"
+if ! ./test-env
 then
     record_error test-env
 else
