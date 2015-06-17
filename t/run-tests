@@ -20,7 +20,12 @@ rstcheck --version
 
 echo
 
-"$d"/check-sign-off
+if ! "$d"/check-sign-off
+then
+    record_error sign-off
+else
+    echo "Each commit has a sign-off: PASS"
+fi
 
 rstcheck_file () {
     if ! rstcheck "$d"/../"$1" >$d/rstcheck.out 2>&1 ||
