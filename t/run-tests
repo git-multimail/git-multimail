@@ -81,7 +81,7 @@ fi
 
 if [ -n "$errors" ]
 then
-    error "Errors found in:$errors"
+    error "failed tests:$errors"
 fi
 
 exit $retcode
