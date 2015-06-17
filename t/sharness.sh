@@ -25,30 +25,25 @@ export SHARNESS_VERSION
 : ${SHARNESS_TEST_EXTENSION:=t}
 export SHARNESS_TEST_EXTENSION
 
-# Keep the original TERM for say_color
-ORIGINAL_TERM=$TERM
-
 # Export SHELL_PATH
 : ${SHELL_PATH:=$SHELL}
 export SHELL_PATH
 
 # For repeatability, reset the environment to a known state.
+# TERM is set below, after color info has been saved.
 LANG=C
 LC_ALL=C
 PAGER=cat
 TZ=UTC
-TERM=dumb
 EDITOR=:
-export LANG LC_ALL PAGER TZ TERM EDITOR
+export LANG LC_ALL PAGER TZ EDITOR
 unset VISUAL CDPATH GREP_OPTIONS
 
 # Line feed
 LF='
 '
 
-[ "x$ORIGINAL_TERM" != "xdumb" ] && (
-		TERM=$ORIGINAL_TERM &&
-		export TERM &&
+[ "x$TERM" != "xdumb" ] && (
 		[ -t 1 ] &&
 		tput bold >/dev/null 2>&1 &&
 		tput setaf 1 >/dev/null 2>&1 &&
@@ -87,27 +82,29 @@ while test "$#" -ne 0; do
 done
 
 if test -n "$color"; then
+	# save the color control sequences now rather than run tput
+	# each time say_color() is called for two reasons:
+	#   * TERM will be changed to dumb
+	#   * HOME will be changed to a temporary directory and tput
+	#     might need to read ~/.terminfo from the original HOME
+	#     directory to get the control sequences
+	say_color_error=$(tput bold; tput setaf 1) # bold red
+	say_color_skip=$(tput setaf 4) # blue
+	say_color_warn=$(tput setaf 3) # brown/yellow
+	say_color_pass=$(tput setaf 2) # green
+	say_color_info=$(tput setaf 6) # cyan
+	say_color_sgr0=$(tput sgr0)
 	say_color() {
 		(
-		TERM=$ORIGINAL_TERM
-		export TERM
+		color=
 		case "$1" in
-		error)
-			tput bold; tput setaf 1;; # bold red
-		skip)
-			tput setaf 4;; # blue
-		warn)
-			tput setaf 3;; # brown/yellow
-		pass)
-			tput setaf 2;; # green
-		info)
-			tput setaf 6;; # cyan
+		error|skip|warn|pass|info)
+			eval "color=\${say_color_$1}";;
 		*)
 			test -n "$quiet" && return;;
 		esac
 		shift
-		printf "%s" "$*"
-		tput sgr0
+		printf "%s" "$color$*$say_color_sgr0"
 		echo
 		)
 	}
@@ -118,6 +115,9 @@ else
 		printf "%s\n" "$*"
 	}
 fi
+
+TERM=dumb
+export TERM
 
 error() {
 	say_color error "error: $*"
@@ -689,7 +689,7 @@ test_done() {
 	if test -z "$HARNESS_ACTIVE"; then
 		test_results_dir="$SHARNESS_TEST_DIRECTORY/test-results"
 		mkdir -p "$test_results_dir"
-		test_results_path="$test_results_dir/${SHARNESS_TEST_FILE%.$SHARNESS_TEST_EXTENSION}.$$.counts"
+		test_results_path="$test_results_dir/$this_test.$$.counts"
 
 		cat >>"$test_results_path" <<-EOF
 		total $test_count
