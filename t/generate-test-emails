@@ -21,7 +21,7 @@ test_email() {
     REFNAME="$1"
     OLDREV="$2"
     NEWREV="$3"
-    echo "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL"
+    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL"
 }
 
 test_create() {
@@ -44,7 +44,7 @@ test_delete() {
     test_email "$REFNAME" "$OLDREV" "$ZEROS"
     RETCODE=$?
     git update-ref "$REFNAME" "$OLDREV" ||
-        echo 1>&2 "Error replacing reference $REFNAME to $OLDREV"
+        error "Error replacing reference $REFNAME to $OLDREV"
     return $RETCODE
 }
 
@@ -56,7 +56,7 @@ test_rewind() {
     test_email "$REFNAME" "$OLDREV" "$NEWREV"
     RETCODE=$?
     git update-ref "$REFNAME" "$OLDREV" ||
-        echo 1>&2 "Error replacing reference $REFNAME to $OLDREV"
+        error "Error replacing reference $REFNAME to $OLDREV"
     return $RETCODE
 }
 
@@ -65,7 +65,7 @@ test_hook() {
     REFNAME="$1"
     OLDREV=$(git rev-parse "$2")
     NEWREV=$(git rev-parse "$REFNAME")
-    echo "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE"
+    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE"
 }
 
 test_create refs/heads/master

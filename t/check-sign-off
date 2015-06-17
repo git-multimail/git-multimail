@@ -14,7 +14,6 @@ git log --invert-grep --grep '^Signed-off-by: ' HEAD $negative_rev | tee log-out
 
 if test -s log-output.txt
 then
-    echo
-    echo "Some commits lack sign-off, see above." >&2
-    exit 1
+    log
+    fatal "Some commits lack sign-off, see above."
 fi
