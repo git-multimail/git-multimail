@@ -40,13 +40,6 @@ Ideas for the future
 
 * Allow branch-specific configuration.
 
-* Add a "Date:" field to emails, and ensure that the dates are
-  monotonic (e.g., by incrementing the date by 1s for each email) to
-  help mail clients thread the messages in the right order (apparently
-  "git send-email" does this).
-
-  Suggested by: Matthieu Moy <Matthieu.Moy@grenoble-inp.fr>
-
 * Support LDAP, for example by adding an LDAP environment:
 
   * Use LDAP to convert pusher usernames to email addresses.
