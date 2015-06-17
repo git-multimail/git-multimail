@@ -18,14 +18,24 @@ for c in \
     rstcheck \
     ;
 do
-    ver=$("${c}" --version 2>&1)
-    ver=${ver##* }
+    unset "${c}"_installed
+    ver=unavailable
+    if command -v "${c}" >/dev/null 2>&1
+    then
+	ver=$("${c}" --version 2>&1)
+	ver=${ver##* }
+	eval "${c}_installed=true"
+    fi
     log "${c} version: ${ver}"
 done
 
 log
 
-if ! ./check-sign-off
+if [ -z "${git_installed+set}" ]
+then
+    error "git not installed"
+    record_error sign-off
+elif ! ./check-sign-off
 then
     record_error sign-off
 else
@@ -33,7 +43,11 @@ else
 fi
 
 rstcheck_file () {
-    if ! rstcheck ../"$1" >rstcheck.out 2>&1 ||
+    if [ -z "${rstcheck_installed+set}" ]
+    then
+	error "rstcheck not installed"
+	record_error RST
+    elif ! rstcheck ../"$1" >rstcheck.out 2>&1 ||
 	test -s rstcheck.out
     then
 	cat rstcheck.out
@@ -58,7 +72,11 @@ rstcheck_file doc/gitolite.rst
 # => not raised on all pep8 version, and really constraining. We can
 # probably keep ignoring it forever.
 pep8_file () {
-    if ! pep8 ../"$1" --ignore=W503,E402,E501,E123
+    if [ -z "${pep8_installed+set}" ]
+    then
+	error "pep8 not installed"
+	record_error PEP8
+    elif ! pep8 ../"$1" --ignore=W503,E402,E501,E123
     then
 	record_error PEP8
     else
@@ -68,14 +86,22 @@ pep8_file () {
 pep8_file git-multimail/git_multimail.py
 pep8_file t/test-env
 
-if ! ./test-email-content
+if [ -z "${python2_installed+set}" ]
+then
+    error "python2 not installed"
+    record_error test-email-content
+elif ! ./test-email-content
 then
     record_error test-email-content
 else
     echo "test-email-content: PASS"
 fi
 
-if ! ./test-env
+if [ -z "${python2_installed+set}" ]
+then
+    error "python2 not installed"
+    record_error test-env
+elif ! ./test-env
 then
     record_error test-env
 else
