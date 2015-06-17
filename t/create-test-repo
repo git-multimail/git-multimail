@@ -2,6 +2,7 @@
 
 D=$(cd $(dirname "$0") && pwd)
 cd "${D}" || exit 1
+. ./helper-functions.sh || exit 1
 T="$D/test-repo.git"
 DUMPFILE="$D/test-repo.dump"
 

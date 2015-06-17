@@ -10,6 +10,7 @@ to=${1}
 
 d=$(cd "$(dirname "$0")" && pwd)
 cd "${d}" || exit 1
+. ./helper-functions.sh || exit 1
 
 # Copy templates (*.in) into config files for local customization.
 for config_in in *.config.in
