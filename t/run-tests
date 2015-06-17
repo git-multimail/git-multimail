@@ -20,6 +20,8 @@ rstcheck --version
 
 echo
 
+$d/check-sign-off
+
 rstcheck_file () {
     if ! rstcheck $d/../$1 >$d/rstcheck.out 2>&1 ||
 	test -s $d/rstcheck.out
@@ -30,9 +32,6 @@ rstcheck_file () {
 	echo "No RST error in $1: PASS"
     fi
 }
-
-$d/check-sign-off
-
 rstcheck_file README.rst
 rstcheck_file doc/gitolite.rst
 
