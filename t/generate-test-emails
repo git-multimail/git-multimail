@@ -4,6 +4,7 @@ ZEROS=0000000000000000000000000000000000000000
 
 D=$(cd $(dirname "$0") && pwd)
 cd "$D" || exit 1
+. ./helper-functions.sh || exit 1
 MULTIMAIL="$D/../git-multimail/git_multimail.py"
 POST_RECEIVE="$D/../git-multimail/post-receive.example"
 

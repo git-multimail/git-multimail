@@ -2,6 +2,7 @@
 
 d=$(dirname "$0")
 cd "${d}" || exit 1
+. ./helper-functions.sh || exit 1
 
 echo "Comparing generated emails to $d/multimail.expect ..."
 

@@ -1,5 +1,8 @@
 #! /bin/sh
 
+cd "${0%/*}" || exit 1
+. ./helper-functions.sh || exit 1
+
 # Fake replacement for sendmail, for testing purposes.
 
 echo "######################################################################"
