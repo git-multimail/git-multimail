@@ -67,7 +67,7 @@ fi
 
 if [ -n "$errors" ]
 then
-    echo "Errors found in:$errors"
+    echo "Errors found in:$errors" >&2
 fi
 
 exit $retcode
