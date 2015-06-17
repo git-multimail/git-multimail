@@ -4,13 +4,13 @@ d=$(dirname "$0")
 cd "${d}" || exit 1
 . ./helper-functions.sh || exit 1
 
-echo "Comparing generated emails to $d/multimail.expect ..."
+log "Comparing generated emails to $d/multimail.expect ..."
 
 ./generate-test-emails 2>&1 | ./filter-noise >/tmp/multimail.actual
 diff -u multimail.expect /tmp/multimail.actual
 if test $? -ne 0
 then
-    echo "
+    fatal "
 ===========================================================================
 FAILURE!
 Please investigate the discrepancies shown above.
@@ -18,6 +18,5 @@ If you are sure that your version is correct, then please
 
     cp /tmp/multimail.actual $d/multimail.expect
 
-and commit." >&2
-    exit 1
+and commit."
 fi

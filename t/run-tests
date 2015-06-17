@@ -20,13 +20,13 @@ git --version
 printf '%s' 'rstcheck version: '
 rstcheck --version
 
-echo
+log
 
 if ! ./check-sign-off
 then
     record_error sign-off
 else
-    echo "Each commit has a sign-off: PASS"
+    log "Each commit has a sign-off: PASS"
 fi
 
 rstcheck_file () {
@@ -36,7 +36,7 @@ rstcheck_file () {
 	cat rstcheck.out
 	record_error RST
     else
-	echo "No RST error in $1: PASS"
+	log "No RST error in $1: PASS"
     fi
 }
 rstcheck_file README.rst
@@ -59,7 +59,7 @@ pep8_file () {
     then
 	record_error PEP8
     else
-	echo "No new PEP8 error in $1 found: PASS"
+	log "No new PEP8 error in $1 found: PASS"
     fi
 }
 pep8_file git-multimail/git_multimail.py
@@ -81,7 +81,7 @@ fi
 
 if [ -n "$errors" ]
 then
-    echo "Errors found in:$errors" >&2
+    error "Errors found in:$errors"
 fi
 
 exit $retcode

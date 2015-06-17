@@ -19,7 +19,7 @@ do
     if [ ! -f "$config" ] || [ "$config_in" -nt "$config" ]
     then
 	(
-	    echo "# File generated based on $config_in. Customize locally as needed."
+	    pecho "# File generated based on $config_in. Customize locally as needed."
 	    cat "$config_in"
 	) >"$config"
     fi
@@ -27,23 +27,22 @@ done
 
 if test -z "$to"
 then
-    echo "Please, set a recipient using $0 user@example.com"
-    exit 1
+    fatal "Please, set a recipient using $0 user@example.com"
 fi
 
 git init test-repo-email.git
 cd test-repo-email.git
 git config include.path config.email
 git config multimailhook.mailingList "$to"
-echo >file.txt
+pecho >file.txt
 git add .
 git commit -m "initial commit"
 
 run_config () {
     config=$1
-    echo "*** $config ***"
+    log "*** $config ***"
     cp "$config" .git/config.email
-    echo "$config" >file.txt
+    pecho "$config" >file.txt
     git commit -am "$config"
     ../git-multimail/git_multimail.py refs/heads/master HEAD^ HEAD
 }

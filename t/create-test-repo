@@ -49,4 +49,4 @@ GIT_COMMITTER_DATE="2012-11-22 04:00 +0530" \
 git tag tree-tag tree \
     -m 'This annotated tag points at a tag that points at a tree.'
 
-echo "$T"
+pecho "$T"
