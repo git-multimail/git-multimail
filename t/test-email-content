@@ -5,7 +5,7 @@ d=$(dirname "$0")
 echo "Comparing generated emails to $d/multimail.expect ..."
 
 "$d/generate-test-emails" 2>&1 | "$d/filter-noise" >/tmp/multimail.actual
-git diff -u "$d/multimail.expect" /tmp/multimail.actual
+diff -u "$d/multimail.expect" /tmp/multimail.actual
 if test $? = 0
 then
     echo "PASS"
