@@ -34,8 +34,10 @@ test_expect_success git "sign-off" '
 rstcheck_file () {
     f=$1
     test_expect_success rstcheck "rstcheck $f" '
-	rstcheck "$D"/../"$f" >rstcheck.out 2>&1 &&
-	! test -s rstcheck.out
+	rstcheck "$D"/../"$f" >rstcheck.out 2>&1 || status=$? &&
+	cat rstcheck.out &&
+	! test -s rstcheck.out &&
+	return $status
     '
 }
 rstcheck_file README.rst
