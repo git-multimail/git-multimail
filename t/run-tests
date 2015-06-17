@@ -21,9 +21,10 @@ rstcheck --version
 echo
 
 rstcheck_file () {
-    if ! rstcheck $d/../$1 2>&1 | tee $d/rstcheck.out ||
+    if ! rstcheck $d/../$1 >$d/rstcheck.out 2>&1 ||
 	test -s $d/rstcheck.out
     then
+	cat $d/rstcheck.out
 	record_error RST
     else
 	echo "No RST error in $1: PASS"
