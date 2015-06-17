@@ -2,4 +2,5 @@
 
 cd "${0%/*}" || exit 1
 
+export verbose=t
 exec make "$@"
