@@ -62,11 +62,15 @@ fi
 if ! "$d/test-email-content"
 then
     record_error test-email-content
+else
+    echo "test-email-content: PASS"
 fi
 
 if ! "$d/test-env"
 then
     record_error test-env
+else
+    echo "test-env: PASS"
 fi
 
 if [ -n "$errors" ]
