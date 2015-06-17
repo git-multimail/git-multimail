@@ -10,7 +10,7 @@ record_error () {
 }
 
 printf '%s' 'Python version: '
-python --version
+python2 --version
 printf '%s' 'PEP8 version: '
 pep8 --version
 printf '%s' 'Git version: '
