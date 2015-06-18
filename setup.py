@@ -14,7 +14,7 @@ def read_readme():
 
 setup(
     name='git-multimail',
-    version='1.1.0',
+    version='1.2.0-snapshot',
     description='Send notification emails for Git pushes',
     long_description=read_readme(),
     classifiers=[
