@@ -10,7 +10,7 @@ then
     negative_rev="^$negative_rev"
 fi
 
-git log --invert-grep --grep '^Signed-off-by: ' HEAD $negative_rev | tee log-output.txt
+git log --no-merges --invert-grep --grep '^Signed-off-by: ' HEAD $negative_rev | tee log-output.txt
 
 if test -s log-output.txt
 then
