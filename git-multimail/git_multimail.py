@@ -2129,6 +2129,14 @@ class ConfigEnvironmentMixin(Environment):
 class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
     """An Environment that reads most of its information from "git config"."""
 
+    @staticmethod
+    def forbid_field_values(name, value, forbidden):
+        for forbidden_val in forbidden:
+            if value is not None and value.lower() == forbidden:
+                raise ConfigurationException(
+                    '"%s" is not an allowed setting for %s' % (value, name)
+                    )
+
     def __init__(self, config, **kw):
         super(ConfigOptionsEnvironmentMixin, self).__init__(
             config=config, **kw
@@ -2173,14 +2181,20 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
         reply_to = config.get('replyTo')
         self.__reply_to_refchange = config.get('replyToRefchange', default=reply_to)
-        if (
-                self.__reply_to_refchange is not None
-                and self.__reply_to_refchange.lower() == 'author'
-                ):
-            raise ConfigurationException(
-                '"author" is not an allowed setting for replyToRefchange'
-                )
+        self.forbid_field_values('replyToRefchange',
+                                 self.__reply_to_refchange,
+                                 ['author'])
         self.__reply_to_commit = config.get('replyToCommit', default=reply_to)
+
+        from_addr = self.config.get('from')
+        self.__from_refchange = config.get('fromRefchange', default=from_addr)
+        self.forbid_field_values('fromRefchange',
+                                 self.__reply_to_refchange,
+                                 ['author', 'none'])
+        self.__from_commit = config.get('fromCommit', default=from_addr)
+        self.forbid_field_values('replyToRefchange',
+                                 self.__reply_to_refchange,
+                                 ['none'])
 
         combine = config.get_bool('combineWhenSingleCommit')
         if combine is not None:
@@ -2228,6 +2242,14 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
     def get_fromaddr(self, change=None):
         fromaddr = self.config.get('from')
+        if isinstance(change, Revision):
+            if self.__from_commit:
+                fromaddr = self.__from_commit
+        if isinstance(change, ReferenceChange):
+            if self.__from_refchange:
+                fromaddr = self.__from_refchange
+        if fromaddr:
+            fromaddr = self.process_addr(fromaddr, change)
         if fromaddr:
             return fromaddr
         return super(ConfigOptionsEnvironmentMixin, self).get_fromaddr(change)

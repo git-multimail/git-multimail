@@ -2586,6 +2586,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+*** git config multimailhook.fromCommit author
 *** Push-update of tracking branch 'refs/remotes/remote'
 ***  - incomplete email generated.
 Sending notification emails to: Refchange List <refchangelist@example.com>
@@ -2639,7 +2640,7 @@ Subject: *test-repo* 01/02: x1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: Joe User <user@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -2685,7 +2686,7 @@ Subject: *test-repo* 02/02: x2
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: Joe User <user@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -2802,7 +2803,7 @@ Subject: *test-repo* 01/02: x1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: Joe User <user@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -2848,7 +2849,7 @@ Subject: *test-repo* 02/02: x2
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: Joe User <user@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -2886,6 +2887,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+*** git config multimailhook.fromRefChange 'From RefChange <from@example.com>'
 *** Push-update of tracking branch 'refs/remotes/remote'
 ***  - incomplete email generated.
 Sending notification emails to: Refchange List <refchangelist@example.com>
@@ -2898,7 +2900,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: From <from@example.com>
+From: From RefChange <from@example.com>
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -2937,7 +2939,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: From <from@example.com>
+From: From RefChange <from@example.com>
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -2977,7 +2979,7 @@ Subject: *test-repo* 01/01: b1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: =?utf-8?q?Jo=C3=ABl_User?= <user@example.com>
 Reply-To: =?utf-8?q?Jo=C3=ABl_User?= <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -3027,7 +3029,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: From <from@example.com>
+From: From RefChange <from@example.com>
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -3092,7 +3094,7 @@ Subject: *test-repo* 01/01: b1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: =?utf-8?q?Jo=C3=ABl_User?= <user@example.com>
 Reply-To: =?utf-8?q?Jo=C3=ABl_User?= <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -3130,6 +3132,9 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+*** git config multimailhook.from 'From <from@example.com>'
+*** git config multimailhook.fromRefChange pusher
+*** git config --unset multimailhook.fromCommit
 *** Push-update of strange reference 'refs/foo/bar'
 ***  - incomplete email generated.
 Sending notification emails to: Refchange List <refchangelist@example.com>
@@ -3142,7 +3147,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: From <from@example.com>
+From: pushuser@example.com
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -3178,7 +3183,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: From <from@example.com>
+From: pushuser@example.com
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -3319,7 +3324,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: From <from@example.com>
+From: pushuser@example.com
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -3511,6 +3516,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+*** git config --unset multimailhook.fromRefChange
 Deleted branch feature (was 47ef1f8).
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
