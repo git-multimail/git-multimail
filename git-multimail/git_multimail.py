@@ -1,5 +1,7 @@
 #! /usr/bin/env python2
 
+__version__ = '1.2.dev'
+
 # Copyright (c) 2015 Matthieu Moy and others
 # Copyright (c) 2012-2014 Michael Haggerty and others
 # Derived from contrib/hooks/post-receive-email, which is
@@ -3005,6 +3007,19 @@ def choose_environment(config, osenv=None, env=None, recipients=None):
     return environment_klass(**environment_kw)
 
 
+def get_version():
+    try:
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        git_version = read_git_output(['describe', '--tags', 'HEAD'])
+        if git_version == __version__:
+            return git_version
+        else:
+            return '%s (%s)' % (__version__, git_version)
+    except:
+        pass
+    return __version__
+
+
 def main(args):
     parser = optparse.OptionParser(
         description=__doc__,
@@ -3042,8 +3057,18 @@ def main(args):
             'detection in this mode.'
             ),
         )
+    parser.add_option(
+        '--version', '-v', action='store_true', default=False,
+        help=(
+            "Display git-multimail's version"
+            ),
+        )
 
     (options, args) = parser.parse_args(args)
+
+    if options.version:
+        sys.stdout.write('git-multimail version ' + get_version() + '\n')
+        return
 
     config = Config('multimailhook')
 

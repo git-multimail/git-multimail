@@ -7,14 +7,17 @@ from setuptools import setup
 assert 0x02040000 <= sys.hexversion < 0x03000000, \
     "Install Python 2, version 2.4 or greater"
 
+def read_version():
+    sys.path.insert(0, os.path.join('git-multimail'))
+    import git_multimail
+    return git_multimail.__version__
 
 def read_readme():
     return open(os.path.join('git-multimail', 'README')).read()
 
-
 setup(
     name='git-multimail',
-    version='1.2.0-snapshot',
+    version=read_version(),
     description='Send notification emails for Git pushes',
     long_description=read_readme(),
     classifiers=[
