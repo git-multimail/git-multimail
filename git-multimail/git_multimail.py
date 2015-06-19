@@ -2213,6 +2213,19 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
     def get_sender(self):
         return self.config.get('envelopesender')
 
+    def process_addr(self, addr, change):
+        if addr.lower() == 'author':
+            if hasattr(change, 'author'):
+                return change.author
+            else:
+                return None
+        elif addr.lower() == 'pusher':
+            return self.get_pusher_email()
+        elif addr.lower() == 'none':
+            return None
+        else:
+            return addr
+
     def get_fromaddr(self, change=None):
         fromaddr = self.config.get('from')
         if fromaddr:
@@ -2222,24 +2235,14 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
     def get_reply_to_refchange(self, refchange):
         if self.__reply_to_refchange is None:
             return super(ConfigOptionsEnvironmentMixin, self).get_reply_to_refchange(refchange)
-        elif self.__reply_to_refchange.lower() == 'pusher':
-            return self.get_pusher_email()
-        elif self.__reply_to_refchange.lower() == 'none':
-            return None
         else:
-            return self.__reply_to_refchange
+            return self.process_addr(self.__reply_to_refchange, refchange)
 
     def get_reply_to_commit(self, revision):
         if self.__reply_to_commit is None:
             return super(ConfigOptionsEnvironmentMixin, self).get_reply_to_commit(revision)
-        elif self.__reply_to_commit.lower() == 'author':
-            return revision.author
-        elif self.__reply_to_commit.lower() == 'pusher':
-            return self.get_pusher_email()
-        elif self.__reply_to_commit.lower() == 'none':
-            return None
         else:
-            return self.__reply_to_commit
+            return self.process_addr(self.__reply_to_commit, revision)
 
     def get_scancommitforcc(self):
         return self.config.get('scancommitforcc')
