@@ -68,8 +68,4 @@ test_expect_success "test-email-content" '
     "$D"/test-email-content
 '
 
-test_expect_success "test-env" '
-    "$D"/test-env
-'
-
 test_done
