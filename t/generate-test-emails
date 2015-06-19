@@ -87,7 +87,7 @@ verbose_do() {
 
 test_create refs/heads/master
 verbose_do git config multimailhook.refChangeShowGraph true
-git config multimailhook.graphOpts '--oneline'
+verbose_do git config multimailhook.graphOpts '--oneline'
 test_update refs/heads/master refs/heads/master^^
 verbose_do git config multimailhook.refChangeShowGraph false
 verbose_do git config --unset multimailhook.graphOpts
@@ -135,18 +135,24 @@ test_create refs/tags/recursive-tag
 test_update refs/tags/recursive-tag refs/heads/master
 test_delete refs/tags/recursive-tag
 
+verbose_do git config multimailhook.fromCommit author
 test_create refs/remotes/remote
 test_update refs/remotes/remote refs/heads/master
+verbose_do git config multimailhook.fromRefChange 'From RefChange <from@example.com>'
 test_delete refs/remotes/remote
 
 test_create refs/foo/bar
 test_update refs/foo/bar refs/heads/master
+verbose_do git config multimailhook.from 'From <from@example.com>'
+verbose_do git config multimailhook.fromRefChange pusher
+verbose_do git config --unset multimailhook.fromCommit
 test_delete refs/foo/bar
 
 test_hook refs/heads/master refs/heads/master^^
 
 verbose_do git config multimailhook.scanCommitForCc true
 test_update refs/heads/formatting refs/heads/formatting^^^
+verbose_do git config --unset multimailhook.fromRefChange
 
 verbose_do git config multimailhook.refChangeShowGraph true
 f=$(git rev-parse feature)

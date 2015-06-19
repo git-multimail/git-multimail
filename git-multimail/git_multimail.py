@@ -797,6 +797,9 @@ class Change(object):
         for line in self.generate_email_footer():
             yield line
 
+    def get_alt_fromaddr(self):
+        return None
+
 
 class Revision(Change):
     """A Change consisting of a single git commit."""
@@ -880,6 +883,9 @@ class Revision(Change):
 
     def generate_email_footer(self):
         return self.expand_lines(REVISION_FOOTER_TEMPLATE)
+
+    def get_alt_fromaddr(self):
+        return self.environment.from_commit
 
 
 class ReferenceChange(Change):
@@ -1321,6 +1327,9 @@ class ReferenceChange(Change):
             rev_short=sha1, text=subject,
             )
         yield '\n'
+
+    def get_alt_fromaddr(self):
+        return self.environment.from_refchange
 
 
 class BranchChange(ReferenceChange):
@@ -1952,6 +1961,13 @@ class Environment(object):
             True if a combined email should be produced when a single
             new commit is pushed to a branch, False otherwise.
 
+        from_refchange, from_commit (strings)
+
+            Addresses to use for the From: field for refchange emails
+            and commit emails respectively.  Set from
+            multimailhook.fromRefchange and multimailhook.fromCommit
+            by ConfigEnvironmentMixin.
+
     """
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -2129,6 +2145,14 @@ class ConfigEnvironmentMixin(Environment):
 class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
     """An Environment that reads most of its information from "git config"."""
 
+    @staticmethod
+    def forbid_field_values(name, value, forbidden):
+        for forbidden_val in forbidden:
+            if value is not None and value.lower() == forbidden:
+                raise ConfigurationException(
+                    '"%s" is not an allowed setting for %s' % (value, name)
+                    )
+
     def __init__(self, config, **kw):
         super(ConfigOptionsEnvironmentMixin, self).__init__(
             config=config, **kw
@@ -2173,14 +2197,20 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
         reply_to = config.get('replyTo')
         self.__reply_to_refchange = config.get('replyToRefchange', default=reply_to)
-        if (
-                self.__reply_to_refchange is not None
-                and self.__reply_to_refchange.lower() == 'author'
-                ):
-            raise ConfigurationException(
-                '"author" is not an allowed setting for replyToRefchange'
-                )
+        self.forbid_field_values('replyToRefchange',
+                                 self.__reply_to_refchange,
+                                 ['author'])
         self.__reply_to_commit = config.get('replyToCommit', default=reply_to)
+
+        from_addr = self.config.get('from')
+        self.from_refchange = config.get('fromRefchange')
+        self.forbid_field_values('fromRefchange',
+                                 self.from_refchange,
+                                 ['author', 'none'])
+        self.from_commit = config.get('fromCommit')
+        self.forbid_field_values('fromCommit',
+                                 self.from_commit,
+                                 ['none'])
 
         combine = config.get_bool('combineWhenSingleCommit')
         if combine is not None:
@@ -2228,6 +2258,12 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
     def get_fromaddr(self, change=None):
         fromaddr = self.config.get('from')
+        if change:
+            alt_fromaddr = change.get_alt_fromaddr()
+            if alt_fromaddr:
+                fromaddr = alt_fromaddr
+        if fromaddr:
+            fromaddr = self.process_addr(fromaddr, change)
         if fromaddr:
             return fromaddr
         return super(ConfigOptionsEnvironmentMixin, self).get_fromaddr(change)

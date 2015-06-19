@@ -313,9 +313,26 @@ multimailhook.mailer
         Integer number. Set to greater than 0 to activate debugging.
 
 multimailhook.from
+multimailhook.fromCommit
+multimailhook.fromRefchange
 
-    If set, use this value in the From: field of generated emails.  If
-    unset, the value of the From: header is determined as follows:
+    If set, use this value in the From: field of generated emails.
+    ``fromCommit`` is used for commit emails, ``fromRefchange`` is
+    used for refchange emails, and ``from`` is used as fall-back in
+    all cases.
+
+    The value for these variables can be either:
+
+    - An email address, which will be used directly.
+
+    - The value ``pusher``, in which case the pusher's address (if
+      available) will be used.
+
+    - The value ``author`` (meaningful only for replyToCommit), in which
+      case the commit author's address will be used.
+
+    If config values are unset, the value of the From: header is
+    determined as follows:
 
     1. (gitolite environment only) Parse gitolite.conf, looking for a
        block of comments that looks like this::
@@ -440,21 +457,13 @@ multimailhook.replyToRefchange
     Addresses to use in the Reply-To: field for commit emails
     (replyToCommit) and refchange emails (replyToRefchange).
     multimailhook.replyTo is used as default when replyToCommit or
-    replyToRefchange is not set.  The value for these variables can be
-    either:
+    replyToRefchange is not set. The shortcuts ``pusher`` and
+    ``author`` are allowed with the same semantics as for
+    ``multimailhook.from``. In addition, the value ``none`` can be
+    used to omit the ``Reply-To:`` field.
 
-    - An email address, which will be used directly.
-
-    - The value `pusher`, in which case the pusher's address (if
-      available) will be used.  This is the default for refchange
-      emails.
-
-    - The value `author` (meaningful only for replyToCommit), in which
-      case the commit author's address will be used.  This is the
-      default for commit emails.
-
-    - The value `none`, in which case the Reply-To: field will be
-      omitted.
+    The default is ``pusher`` for refchange emails, and ``author`` for
+    commit emails.
 
 multimailhook.quiet
 
