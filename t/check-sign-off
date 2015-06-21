@@ -14,16 +14,33 @@ cleanup () {
 negative_rev=$(git rev-parse 03f63a7422abfee45f2abc7af15affa48ffca666^0 2>/dev/null)
 if test -n "$negative_rev"
 then
-    negative_rev="^$negative_rev"
+	negative_rev="^$negative_rev"
 fi
 
-git log --no-merges --invert-grep --grep '^Signed-off-by: ' HEAD $negative_rev | tee "$tmp"/log-output.txt
+if ! git log --no-merges --invert-grep --grep '^Signed-off-by: ' \
+    HEAD $negative_rev >"$tmp"/log-output.txt
+then
+	# Probably we're using a pre-2.4 version of Git that does not
+	# have --invert-grep.
+	git rev-list --no-merges --grep '^Signed-off-by: ' HEAD $negative_rev \
+	    >"$tmp"/signed-commits.txt
+	git rev-list --no-merges HEAD $negative_rev \
+	    >"$tmp"/all-commits.txt
+	grep -Fvf "$tmp"/signed-commits.txt "$tmp"/all-commits.txt \
+	    >"$tmp"/unsigned-commits.txt
+	if test -s "$tmp"/unsigned-commits.txt
+	then
+		git log --stdin --no-walk \
+		    <"$tmp"/unsigned-commits.txt \
+		    >"$tmp"/log-output.txt
+	fi
+fi
 
 if test -s "$tmp"/log-output.txt
 then
-    rm -f log-output.txt
-    log
-    fatal "Some commits lack sign-off, see above."
+	cat "$tmp"/log-output.txt
+	log
+	fatal "Some commits lack sign-off, see above."
 fi
 
 cleanup
