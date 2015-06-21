@@ -3,6 +3,13 @@
 cd "${0%/*}" || exit 1
 . ./helper-functions.sh || exit 1
 
+tmp=$(mktemp -d || echo /tmp/test.$$)
+mkdir -p "$tmp"
+
+cleanup () {
+	rm -fr "$tmp"
+}
+
 # In shallow clones, we may not have all revisions ...
 negative_rev=$(git rev-parse 03f63a7422abfee45f2abc7af15affa48ffca666^0 2>/dev/null)
 if test -n "$negative_rev"
@@ -10,13 +17,13 @@ then
     negative_rev="^$negative_rev"
 fi
 
-git log --no-merges --invert-grep --grep '^Signed-off-by: ' HEAD $negative_rev | tee log-output.txt
+git log --no-merges --invert-grep --grep '^Signed-off-by: ' HEAD $negative_rev | tee "$tmp"/log-output.txt
 
-if test -s log-output.txt
+if test -s "$tmp"/log-output.txt
 then
     rm -f log-output.txt
     log
     fatal "Some commits lack sign-off, see above."
 fi
 
-rm -f log-output.txt
+cleanup

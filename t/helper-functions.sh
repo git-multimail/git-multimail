@@ -9,5 +9,12 @@ debug() { : log "DEBUG: $@" >&2; }
 error() { log "ERROR: $@" >&2; }
 
 # error handling
-fatal() { error "$@"; exit 1; }
+fatal() {
+    error "$@";
+    if test $(command -v cleanup) = cleanup
+    then
+	cleanup
+    fi
+    exit 1;
+}
 try() { "$@" || fatal "'$@' failed"; }
