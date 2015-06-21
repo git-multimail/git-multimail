@@ -672,7 +672,11 @@ class Change(object):
         get_values().  The return value should always be a new
         dictionary."""
 
-        return self.environment.get_values()
+        values = self.environment.get_values()
+        fromaddr = self.environment.get_fromaddr(change=self)
+        if fromaddr is not None:
+            values['fromaddr'] = fromaddr
+        return values
 
     def get_values(self, **extra_values):
         """Return a dictionary {keyword: expansion} for this Change.
@@ -1873,11 +1877,13 @@ class Environment(object):
             Return the address to be used as the 'From' email address
             in the email envelope.
 
-        get_fromaddr()
+        get_fromaddr(change=None)
 
             Return the 'From' email address used in the email 'From:'
-            headers.  (May be a full RFC 2822 email address like 'Joe
-            User <user@example.com>'.)
+            headers.  If the change is known when this function is
+            called, it is passed in as the 'change' parameter.  (May
+            be a full RFC 2822 email address like 'Joe User
+            <user@example.com>'.)
 
         get_administrator()
 
@@ -1968,7 +1974,6 @@ class Environment(object):
             'administrator',
             'charset',
             'emailprefix',
-            'fromaddr',
             'pusher',
             'pusher_email',
             'repo_path',
@@ -1994,7 +1999,7 @@ class Environment(object):
     def get_pusher_email(self):
         return None
 
-    def get_fromaddr(self):
+    def get_fromaddr(self, change=None):
         config = Config('user')
         fromname = config.get('name', default='')
         fromemail = config.get('email', default='')
@@ -2124,6 +2129,14 @@ class ConfigEnvironmentMixin(Environment):
 class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
     """An Environment that reads most of its information from "git config"."""
 
+    @staticmethod
+    def forbid_field_values(name, value, forbidden):
+        for forbidden_val in forbidden:
+            if value is not None and value.lower() == forbidden:
+                raise ConfigurationException(
+                    '"%s" is not an allowed setting for %s' % (value, name)
+                    )
+
     def __init__(self, config, **kw):
         super(ConfigOptionsEnvironmentMixin, self).__init__(
             config=config, **kw
@@ -2168,14 +2181,20 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
         reply_to = config.get('replyTo')
         self.__reply_to_refchange = config.get('replyToRefchange', default=reply_to)
-        if (
-                self.__reply_to_refchange is not None
-                and self.__reply_to_refchange.lower() == 'author'
-                ):
-            raise ConfigurationException(
-                '"author" is not an allowed setting for replyToRefchange'
-                )
+        self.forbid_field_values('replyToRefchange',
+                                 self.__reply_to_refchange,
+                                 ['author'])
         self.__reply_to_commit = config.get('replyToCommit', default=reply_to)
+
+        from_addr = self.config.get('from')
+        self.__from_refchange = config.get('fromRefchange', default=from_addr)
+        self.forbid_field_values('fromRefchange',
+                                 self.__reply_to_refchange,
+                                 ['author', 'none'])
+        self.__from_commit = config.get('fromCommit', default=from_addr)
+        self.forbid_field_values('replyToRefchange',
+                                 self.__reply_to_refchange,
+                                 ['none'])
 
         combine = config.get_bool('combineWhenSingleCommit')
         if combine is not None:
@@ -2208,33 +2227,44 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
     def get_sender(self):
         return self.config.get('envelopesender')
 
-    def get_fromaddr(self):
+    def process_addr(self, addr, change):
+        if addr.lower() == 'author':
+            if hasattr(change, 'author'):
+                return change.author
+            else:
+                return None
+        elif addr.lower() == 'pusher':
+            return self.get_pusher_email()
+        elif addr.lower() == 'none':
+            return None
+        else:
+            return addr
+
+    def get_fromaddr(self, change=None):
         fromaddr = self.config.get('from')
+        if isinstance(change, Revision):
+            if self.__from_commit:
+                fromaddr = self.__from_commit
+        if isinstance(change, ReferenceChange):
+            if self.__from_refchange:
+                fromaddr = self.__from_refchange
+        if fromaddr:
+            fromaddr = self.process_addr(fromaddr, change)
         if fromaddr:
             return fromaddr
-        return super(ConfigOptionsEnvironmentMixin, self).get_fromaddr()
+        return super(ConfigOptionsEnvironmentMixin, self).get_fromaddr(change)
 
     def get_reply_to_refchange(self, refchange):
         if self.__reply_to_refchange is None:
             return super(ConfigOptionsEnvironmentMixin, self).get_reply_to_refchange(refchange)
-        elif self.__reply_to_refchange.lower() == 'pusher':
-            return self.get_pusher_email()
-        elif self.__reply_to_refchange.lower() == 'none':
-            return None
         else:
-            return self.__reply_to_refchange
+            return self.process_addr(self.__reply_to_refchange, refchange)
 
     def get_reply_to_commit(self, revision):
         if self.__reply_to_commit is None:
             return super(ConfigOptionsEnvironmentMixin, self).get_reply_to_commit(revision)
-        elif self.__reply_to_commit.lower() == 'author':
-            return revision.author
-        elif self.__reply_to_commit.lower() == 'pusher':
-            return self.get_pusher_email()
-        elif self.__reply_to_commit.lower() == 'none':
-            return None
         else:
-            return self.__reply_to_commit
+            return self.process_addr(self.__reply_to_commit, revision)
 
     def get_scancommitforcc(self):
         return self.config.get('scancommitforcc')
@@ -2516,7 +2546,7 @@ class GitoliteEnvironmentMixin(Environment):
     def get_pusher(self):
         return self.osenv.get('GL_USER', 'unknown user')
 
-    def get_fromaddr(self):
+    def get_fromaddr(self, change=None):
         GL_USER = self.osenv.get('GL_USER')
         if GL_USER is not None:
             # Find the path to gitolite.conf.  Note that gitolite v3
@@ -2553,7 +2583,7 @@ class GitoliteEnvironmentMixin(Environment):
                             return m.group(1)
                 finally:
                     f.close()
-        return super(GitoliteEnvironmentMixin, self).get_fromaddr()
+        return super(GitoliteEnvironmentMixin, self).get_fromaddr(change)
 
 
 class IncrementalDateTime(object):
