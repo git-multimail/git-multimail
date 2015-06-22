@@ -11,7 +11,7 @@ error() { log "ERROR: $@" >&2; }
 # error handling
 fatal() {
     error "$@";
-    if test $(command -v cleanup) = cleanup
+    if test "$(command -v cleanup)" = cleanup
     then
 	cleanup
     fi
