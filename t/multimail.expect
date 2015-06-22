@@ -276,6 +276,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ git 'config' 'multimailhook.refChangeShowGraph' 'true'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -423,6 +424,8 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ git 'config' 'multimailhook.refChangeShowGraph' 'false'
+$ git 'config' '--unset' 'multimailhook.graphOpts'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -1148,6 +1151,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ git 'config' 'multimailhook.refchangelist' 'Commit List <commitlist@example.com>'
 Sending notification emails to: Commit List <commitlist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -1200,6 +1204,8 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ git 'config' 'multimailhook.refchangelist' 'Refchange List <refchangelist@example.com>'
+$ git 'config' 'multimailhook.refChangeShowGraph' 'true'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -1255,6 +1261,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ git 'config' 'multimailhook.refChangeShowGraph' 'false'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -3309,6 +3316,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ git 'config' 'multimailhook.scanCommitForCc' 'true'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -3511,7 +3519,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ git 'config' 'multimailhook.refChangeShowGraph' 'true'
+$ git 'branch' '-D' 'feature'
 Deleted branch feature (was 47ef1f8).
+$ git 'update-ref' '--no-deref' 'HEAD' 'HEAD'
+$ git 'config' 'multimailhook.commitList' ''
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -3575,6 +3587,11 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ git 'config' 'multimailhook.refChangeShowGraph' 'false'
+$ git 'config' 'multimailhook.mailinglist' ''
+$ git 'config' 'multimailhook.refchangelist' ''
+$ git 'config' 'multimailhook.announcelist' ''
+$ git 'config' 'multimailhook.commitlist' ''
 *** no recipients configured so no email will be sent
 *** for 'refs/heads/formatting' update 6522cd3759908339b14ab0048bc1d756929ac112->8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
 Add Some One <Some.One@example.com>, Another Guy <Another.Guy@example.com>, Third.Guy@example.com to CC for 919426837aa07c18459a0acc0f789b6a8cd8fb80
