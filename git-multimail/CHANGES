@@ -1,7 +1,10 @@
 Release 1.2.0
 =============
 
-
+* The From: field is now more customizeable. It can be set
+  independently for refchange emails and commit emails (see
+  fromCommit, fromRefChange). The special values pusher and author can
+  be used in these configuration variable.
 
 Release 1.1.0
 =============
