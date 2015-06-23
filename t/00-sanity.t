@@ -66,9 +66,11 @@ pep8_file t/test-env
 
 test_expect_success 'Simple git-multimail run' '
 	"$D"/../git-multimail/git_multimail.py --stdout \
-		refs/heads/master refs/heads/master^ refs/heads/master \
+		HEAD HEAD^ HEAD \
 		 --recipient=recipient@example.com >out 2>err &&
 	cat <<-\EOF >expect-err &&
+	*** Push-update of strange reference '\''HEAD'\''
+	***  - incomplete email generated.
 	Sending notification emails to: recipient@example.com
 	EOF
 	test_cmp err expect-err &&
