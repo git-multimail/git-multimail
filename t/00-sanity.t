@@ -3,7 +3,7 @@
 d=$(dirname "$0")
 cd "$d" || exit 1
 . ./helper-functions.sh || exit 1
-test_description="main"
+test_description="Quick sanity checks"
 . ./sharness.sh || exit 1
 D=$SHARNESS_TEST_DIRECTORY
 
@@ -63,5 +63,16 @@ pep8_file () {
 }
 pep8_file git-multimail/git_multimail.py
 pep8_file t/test-env
+
+test_expect_success 'Simple git-multimail run' '
+	"$D"/../git-multimail/git_multimail.py --stdout \
+		refs/heads/master refs/heads/master^ refs/heads/master \
+		 --recipient=recipient@example.com >out 2>err &&
+	cat <<-\EOF >expect-err &&
+	Sending notification emails to: recipient@example.com
+	EOF
+	test_cmp err expect-err &&
+	grep "^To: recipient@example.com" out
+'
 
 test_done
