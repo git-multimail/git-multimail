@@ -26,12 +26,12 @@ test_expect_success 'setup test repo' '
 	git init test-repo-cli.git &&
 	cd test-repo-cli.git &&
 	GIT_AUTHOR_DATE="100000000 +0200" &&
-	GIT_COMMITTER_NAME="100000010 +0200" &&
+	GIT_COMMITTER_DATE="100000010 +0200" &&
 	GIT_AUTHOR_NAME="Auth Or" &&
 	GIT_AUTHOR_EMAIL="Auth.Or@example.com" &&
 	GIT_COMMITTER_NAME="Comm Itter" &&
 	GIT_COMMITTER_EMAIL="Comm.Itter@example.com" &&
-	export GIT_AUTHOR_DATE GIT_COMMITTER_NAME GIT_AUTHOR_NAME \
+	export GIT_AUTHOR_DATE GIT_COMMITTER_DATE GIT_AUTHOR_NAME \
 	    GIT_AUTHOR_EMAIL GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL &&
 	echo one   >file && git add . && git commit -m one &&
 	echo two   >file && git commit -am two &&
