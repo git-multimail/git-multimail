@@ -6,6 +6,8 @@ Release 1.2.0
   fromCommit, fromRefChange). The special values pusher and author can
   be used in these configuration variable.
 
+* A new command-line option, --version, was added.
+
 Release 1.1.0
 =============
 
