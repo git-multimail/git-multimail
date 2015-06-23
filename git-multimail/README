@@ -512,15 +512,31 @@ multimailhook.combineWhenSingleCommit
 
 multimailhook.refFilterInclusionRegex
 multimailhook.refFilterExclusionRegex
+multimailhook.refFilterDoSendRegex
+multimailhook.refFilterDontSendRegex
 
     Regular expressions that can be used to limit refs for which email
     updates will be sent.  It is an error to specify both an inclusion
-    and an exclusion regex.  If an inclusion regex is specified, emails
-    will only be sent for refs which match this regex.  If an exclusion
-    regex is specified, emails will be sent for all refs except those
-    that match this regex (or that match a predefined regex specific
-    to the environment, such as "^refs/notes" for most environments and
+    and an exclusion regex.  If a ``refFilterInclusionRegex`` is
+    specified, emails will only be sent for refs which match this
+    regex.  If a ``refFilterExclusionRegex`` regex is specified,
+    emails will be sent for all refs except those that match this
+    regex (or that match a predefined regex specific to the
+    environment, such as "^refs/notes" for most environments and
     "^refs/notes|^refs/changes" for the gerrit environment).
+
+    ``refFilterDoSendRegex`` and ``refFilterDontSendRegex`` are
+    analogous to ``refFilterInclusionRegex`` and
+    ``refFilterExclusionRegex`` with one difference: with
+    ``refFilterDoSendRegex`` and ``refFilterDontSendRegex``, commits
+    introduced by one excluded ref will not be considered as new when
+    they reach an included ref. Typically, if you add a branch ``foo``
+    to  ``refFilterDontSendRegex``, push commits to this branch, and
+    later merge branch ``foo`` into ``master``, then the notification
+    email for ``master`` will contain a commit email only for the
+    merge commit. If you include ``foo`` in
+    ``refFilterExclusionRegex``, then at the time of merge, you will
+    receive one commit email per commit in the branch.
 
 
 Email filtering aids

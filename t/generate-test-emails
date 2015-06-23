@@ -174,7 +174,12 @@ git branch feature "$f"
 verbose_do git config multimailhook.commitList 'Commit List <commitlist@example.com>'
 # Should produce no output at all
 verbose_do git config multimailhook.refFilterExclusionRegex ^refs/heads/master$
+verbose_do git config multimailhook.refFilterInclusionRegex whatever
+# Errors out
 verbose_do test_update refs/heads/master refs/heads/master^^
+verbose_do git config --unset multimailhook.refFilterInclusionRegex
+verbose_do test_update refs/heads/master refs/heads/master^^
+
 verbose_do git config --unset multimailhook.refFilterExclusionRegex
 verbose_do git config multimailhook.refFilterInclusionRegex ^refs/heads/feature$
 verbose_do test_update refs/heads/master refs/heads/master^^
@@ -183,6 +188,12 @@ verbose_do test_update refs/heads/master refs/heads/master^^
 verbose_do git config multimailhook.refFilterInclusionRegex ^refs/heads/master$
 verbose_do test_update refs/heads/master refs/heads/master^^
 verbose_do git config --unset multimailhook.refFilterInclusionRegex
+
+# Should produce a refchange email with m1 and a5 marked as new
+# and others as add
+verbose_do git config multimailhook.refFilterDoSendRegex ^refs/heads/master$
+verbose_do test_update refs/heads/master refs/heads/master^^
+verbose_do git config --unset multimailhook.refFilterDoSendRegex
 
 for o in mailinglist refchangelist announcelist commitlist; do
     verbose_do git config multimailhook."$o" ''

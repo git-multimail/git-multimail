@@ -2531,7 +2531,9 @@ class ConfigRecipientsEnvironmentMixin(
 class StaticRefFilterEnvironmentMixin(Environment):
     """Set branch filter statically based on constructor parameters."""
 
-    def __init__(self, ref_filter_incl_regex, ref_filter_excl_regex, **kw):
+    def __init__(self, ref_filter_incl_regex, ref_filter_excl_regex,
+                 ref_filter_do_send_regex, ref_filter_dont_send_regex,
+                 **kw):
         super(StaticRefFilterEnvironmentMixin, self).__init__(**kw)
 
         if ref_filter_incl_regex and ref_filter_excl_regex:
@@ -2545,15 +2547,38 @@ class StaticRefFilterEnvironmentMixin(Environment):
             ref_filter_regex = ref_filter_excl_regex + '|' + default_exclude
         else:
             ref_filter_regex = default_exclude
-
         try:
             self.__compiled_regex = re.compile(ref_filter_regex)
         except Exception as e:
             raise ConfigurationException(
                 'Invalid Ref Filter Regex "%s": %s' % (ref_filter_regex, e.message))
 
-    def get_ref_filter_regex(self):
-        return self.__compiled_regex, self.__is_inclusion_filter
+        if ref_filter_do_send_regex and ref_filter_dont_send_regex:
+            raise ConfigurationException(
+                "Cannot specify both a ref doSend and dontSend regex.")
+        if ref_filter_do_send_regex or ref_filter_dont_send_regex:
+            self.__is_do_send_filter = bool(ref_filter_do_send_regex)
+            if ref_filter_incl_regex:
+                ref_filter_send_regex = ref_filter_incl_regex
+            elif ref_filter_excl_regex:
+                ref_filter_send_regex = ref_filter_excl_regex
+            else:
+                ref_filter_send_regex = '.*'
+                self.__is_do_send_filter = True
+            try:
+                self.__send_compiled_regex = re.compile(ref_filter_send_regex)
+            except Exception as e:
+                raise ConfigurationException(
+                    'Invalid Ref Filter Regex "%s": %s' % (ref_filter_send_regex, e.message))
+        else:
+            self.__send_compiled_regex = self.__compiled_regex
+            self.__is_do_send_filter = self.__is_inclusion_filter
+
+    def get_ref_filter_regex(self, send_filter=False):
+        if send_filter:
+            return self.__send_compiled_regex, self.__is_do_send_filter
+        else:
+            return self.__compiled_regex, self.__is_inclusion_filter
 
 
 class ConfigRefFilterEnvironmentMixin(
@@ -2567,6 +2592,8 @@ class ConfigRefFilterEnvironmentMixin(
             config=config,
             ref_filter_incl_regex=config.get('refFilterInclusionRegex'),
             ref_filter_excl_regex=config.get('refFilterExclusionRegex'),
+            ref_filter_do_send_regex=config.get('refFilterDoSendRegex'),
+            ref_filter_dont_send_regex=config.get('refFilterDontSendRegex'),
             **kw
             )
 
@@ -3058,7 +3085,7 @@ def include_ref(refname, ref_filter_regex, is_inclusion_filter):
 
 
 def run_as_post_receive_hook(environment, mailer):
-    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex()
+    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(True)
     changes = []
     for line in sys.stdin:
         (oldrev, newrev, refname) = line.strip().split(' ', 2)
@@ -3073,7 +3100,7 @@ def run_as_post_receive_hook(environment, mailer):
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=False):
-    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex()
+    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(True)
     if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
         return
     changes = [
