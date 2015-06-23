@@ -64,8 +64,4 @@ pep8_file () {
 pep8_file git-multimail/git_multimail.py
 pep8_file t/test-env
 
-test_expect_success "test-email-content" '
-    "$D"/test-email-content
-'
-
 test_done
