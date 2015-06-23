@@ -515,6 +515,11 @@ multimailhook.refFilterExclusionRegex
 multimailhook.refFilterDoSendRegex
 multimailhook.refFilterDontSendRegex
 
+    **Warning:** these options are experimental. They should work, but
+    the user-interface is not stable yet (in particular, the option
+    names may change). If you want to participate in stabilizing the
+    feature, please contact the maintainers and/or send pull-requests.
+
     Regular expressions that can be used to limit refs for which email
     updates will be sent.  It is an error to specify both an inclusion
     and an exclusion regex.  If a ``refFilterInclusionRegex`` is
