@@ -122,6 +122,7 @@ X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
 X-Git-Oldrev: %(oldrev)s
 X-Git-Newrev: %(newrev)s
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 """
 
@@ -251,6 +252,7 @@ X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
 X-Git-Rev: %(rev)s
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 """
 
@@ -284,6 +286,7 @@ X-Git-Reftype: %(refname_type)s
 X-Git-Oldrev: %(oldrev)s
 X-Git-Newrev: %(newrev)s
 X-Git-Rev: %(rev)s
+X-Git-NotificationType: ref_changed_plus_diff
 Auto-Submitted: auto-generated
 """
 
