@@ -8,6 +8,10 @@ Release 1.2.0
 
 * A new command-line option, --version, was added.
 
+* Set X-Git-NotificationType header to differentiate the various types
+  of notifications. Current values are: diff, ref_changed_plus_diff,
+  ref_changed.
+
 Release 1.1.0
 =============
 

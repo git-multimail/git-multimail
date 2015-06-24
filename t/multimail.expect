@@ -16,6 +16,7 @@ X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -61,6 +62,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 50d684ad4a020a5b356c12cde0bbce01014f90d5
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -107,6 +109,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 012fc788c644eebb6f0dc54489d642dec24878db
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -153,6 +156,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -199,6 +203,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: d245c99162aff6fff4879e5d5c17d454766b45db
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -247,6 +252,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -296,6 +302,7 @@ X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
 X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -348,6 +355,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: d245c99162aff6fff4879e5d5c17d454766b45db
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -396,6 +404,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -445,6 +454,7 @@ X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
 X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -509,6 +519,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 50d684ad4a020a5b356c12cde0bbce01014f90d5
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -555,6 +566,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 012fc788c644eebb6f0dc54489d642dec24878db
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -601,6 +613,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -647,6 +660,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: d245c99162aff6fff4879e5d5c17d454766b45db
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -695,6 +709,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -742,6 +757,7 @@ X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -782,6 +798,7 @@ X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -834,6 +851,7 @@ X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -895,6 +913,7 @@ X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: d245c99162aff6fff4879e5d5c17d454766b45db
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -943,6 +962,7 @@ X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
 X-Git-Oldrev: 88ff8966d0e43a97b88b249605af4c4b77ba8b8e
 X-Git-Newrev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -988,6 +1008,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
 X-Git-Rev: 5f26bd17b128b6f251334af774ba502a6f590fca
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1034,6 +1055,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
 X-Git-Rev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1081,6 +1103,7 @@ X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
 X-Git-Oldrev: 5f26bd17b128b6f251334af774ba502a6f590fca
 X-Git-Newrev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1123,6 +1146,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
 X-Git-Rev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1172,6 +1196,7 @@ X-Git-Reftype: branch
 X-Git-Oldrev: 5f26bd17b128b6f251334af774ba502a6f590fca
 X-Git-Newrev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
 X-Git-Rev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+X-Git-NotificationType: ref_changed_plus_diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1225,6 +1250,7 @@ X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
 X-Git-Oldrev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
 X-Git-Newrev: 1034ac6f45124ba093336b47541704f4a7c30dfc
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1281,6 +1307,7 @@ X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1323,6 +1350,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
 X-Git-Rev: 7a9800a4ba059cf9962b8a8d4d823a4e8f2cae2a
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1369,6 +1397,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
 X-Git-Rev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1416,6 +1445,7 @@ X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
 X-Git-Oldrev: c742b15e5c9cbb174294c1b3efaa959413bf4137
 X-Git-Newrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1460,6 +1490,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
 X-Git-Rev: 7a9800a4ba059cf9962b8a8d4d823a4e8f2cae2a
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1506,6 +1537,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
 X-Git-Rev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1553,6 +1585,7 @@ X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
 X-Git-Oldrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
 X-Git-Newrev: c742b15e5c9cbb174294c1b3efaa959413bf4137
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1603,6 +1636,7 @@ X-Git-Refname: refs/heads/feature
 X-Git-Reftype: branch
 X-Git-Oldrev: 47ef1f8bb115409dc2d7ac878360df3823198d2b
 X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1640,6 +1674,7 @@ X-Git-Refname: refs/tags/tag
 X-Git-Reftype: tag
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: 1034ac6f45124ba093336b47541704f4a7c30dfc
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1673,6 +1708,7 @@ X-Git-Refname: refs/tags/tag
 X-Git-Reftype: tag
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: 1034ac6f45124ba093336b47541704f4a7c30dfc
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1741,6 +1777,7 @@ X-Git-Refname: refs/tags/tag
 X-Git-Reftype: tag
 X-Git-Oldrev: 1034ac6f45124ba093336b47541704f4a7c30dfc
 X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1780,6 +1817,7 @@ X-Git-Refname: refs/tags/tag-annotated
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: bc4a4a6920231744413492b4084a96a3cd428ca6
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1828,6 +1866,7 @@ X-Git-Refname: refs/tags/tag-annotated
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: bc4a4a6920231744413492b4084a96a3cd428ca6
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1911,6 +1950,7 @@ X-Git-Refname: refs/tags/tag-annotated
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: bc4a4a6920231744413492b4084a96a3cd428ca6
 X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -1951,6 +1991,7 @@ X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: 3fe4049f738325dcf028a306bcb27a50246fab86
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2006,6 +2047,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
 X-Git-Rev: 8fe34ad1d135ff2d216e5b1b98be5817943c9622
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2052,6 +2094,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
 X-Git-Rev: fe0ff82b4b647afd6aa5f85362f95207639e76b1
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2101,6 +2144,7 @@ X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: 3fe4049f738325dcf028a306bcb27a50246fab86
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2186,6 +2230,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
 X-Git-Rev: 8fe34ad1d135ff2d216e5b1b98be5817943c9622
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2232,6 +2277,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
 X-Git-Rev: fe0ff82b4b647afd6aa5f85362f95207639e76b1
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2281,6 +2327,7 @@ X-Git-Refname: refs/tags/tag-annotated-new-content
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: 3fe4049f738325dcf028a306bcb27a50246fab86
 X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2321,6 +2368,7 @@ X-Git-Refname: refs/tags/tree-tag
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: df5bc274e13996487dbf1738ea2497549e9ece0e
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2366,6 +2414,7 @@ X-Git-Refname: refs/tags/tree-tag
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: df5bc274e13996487dbf1738ea2497549e9ece0e
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2414,6 +2463,7 @@ X-Git-Refname: refs/tags/tree-tag
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: df5bc274e13996487dbf1738ea2497549e9ece0e
 X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2453,6 +2503,7 @@ X-Git-Refname: refs/tags/recursive-tag
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: b56d4b8564a5f3082eb493c9e765d7de3237014e
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2496,6 +2547,7 @@ X-Git-Refname: refs/tags/recursive-tag
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: b56d4b8564a5f3082eb493c9e765d7de3237014e
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2574,6 +2626,7 @@ X-Git-Refname: refs/tags/recursive-tag
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: b56d4b8564a5f3082eb493c9e765d7de3237014e
 X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2615,6 +2668,7 @@ X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: cf3c5decbcf03c567cdcc48f054441943013e121
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2657,6 +2711,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
 X-Git-Rev: 25d99c94a2fa9b1e1888faa63836f910fbfe773e
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2703,6 +2758,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
 X-Git-Rev: cf3c5decbcf03c567cdcc48f054441943013e121
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2753,6 +2809,7 @@ X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: cf3c5decbcf03c567cdcc48f054441943013e121
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2820,6 +2877,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
 X-Git-Rev: 25d99c94a2fa9b1e1888faa63836f910fbfe773e
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2866,6 +2924,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
 X-Git-Rev: cf3c5decbcf03c567cdcc48f054441943013e121
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2916,6 +2975,7 @@ X-Git-Refname: refs/remotes/remote
 X-Git-Reftype: reference
 X-Git-Oldrev: cf3c5decbcf03c567cdcc48f054441943013e121
 X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2955,6 +3015,7 @@ X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: ce88e4233b43b275d24695813d0bae1460a8f1b8
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -2996,6 +3057,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
 X-Git-Rev: ce88e4233b43b275d24695813d0bae1460a8f1b8
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3045,6 +3107,7 @@ X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: ce88e4233b43b275d24695813d0bae1460a8f1b8
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3111,6 +3174,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
 X-Git-Rev: ce88e4233b43b275d24695813d0bae1460a8f1b8
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3163,6 +3227,7 @@ X-Git-Refname: refs/foo/bar
 X-Git-Reftype: reference
 X-Git-Oldrev: ce88e4233b43b275d24695813d0bae1460a8f1b8
 X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3199,6 +3264,7 @@ X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
 X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3245,6 +3311,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: d245c99162aff6fff4879e5d5c17d454766b45db
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3293,6 +3360,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3341,6 +3409,7 @@ X-Git-Refname: refs/heads/formatting
 X-Git-Reftype: branch
 X-Git-Oldrev: 6522cd3759908339b14ab0048bc1d756929ac112
 X-Git-Newrev: 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3388,6 +3457,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
 X-Git-Reftype: branch
 X-Git-Rev: 919426837aa07c18459a0acc0f789b6a8cd8fb80
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3440,6 +3510,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
 X-Git-Reftype: branch
 X-Git-Rev: 850c489cf431841cf428e00fc8285456682a9d13
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3491,6 +3562,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
 X-Git-Reftype: branch
 X-Git-Rev: 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3549,6 +3621,7 @@ X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: 88ff8966d0e43a97b88b249605af4c4b77ba8b8e
 X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: ref_changed
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3621,6 +3694,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
 X-Git-Reftype: branch
 X-Git-Rev: 919426837aa07c18459a0acc0f789b6a8cd8fb80
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
@@ -3673,6 +3747,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
 X-Git-Reftype: branch
 X-Git-Rev: 850c489cf431841cf428e00fc8285456682a9d13
+X-Git-NotificationType: diff
 Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
