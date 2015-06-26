@@ -146,7 +146,9 @@ following ``git config`` settings:
 
 multimailhook.environment
 
-    This describes the general environment of the repository.
+    This describes the general environment of the repository. In most
+    cases, you do not need to specify a value for this variable:
+    `git-multimail` will autodetect which environment to use.
     Currently supported values:
 
     * generic
@@ -169,10 +171,14 @@ multimailhook.environment
     post-receive script.
 
     The environment value can be specified on the command line using
-    the --environment option.  If it is not specified on the command
-    line or by multimailhook.environment, then it defaults to
-    ``gitolite`` if the environment contains variables $GL_USER and
-    $GL_REPO; otherwise ``generic``.
+    the ``--environment`` option. If it is not specified on the
+    command line or by ``multimailhook.environment``, the value is
+    guessed as follows:
+
+    * If the environment variables $GL_USER and $GL_REPO are set, then
+      ``gitolite`` is used.
+
+    * If none of the above apply, then ``generic`` is used.
 
 multimailhook.repoName
 
