@@ -54,14 +54,20 @@ By default, for each push received by the repository, git-multimail:
      + [git] 08/08: Git 1.7.11-rc2
 
    Each commit appears in exactly one commit email, the first time
-   that it is pushed to the repository.  If a commit is later merged
-   into another branch, then a one-line summary of the commit is
-   included in the reference change email (as usual), but no
+   that it is pushed to the repository[*].  If a commit is later
+   merged into another branch, then a one-line summary of the commit
+   is included in the reference change email (as usual), but no
    additional commit email is generated.
 
    By default, reference change emails have their "Reply-To" field set
    to the person who pushed the change, and commit emails have their
    "Reply-To" field set to the author of the commit.
+
+   [*] If either of multimailhook.refFilter(In|Ex)clusionRegex are
+       set, then the commit email will be sent the first time it is
+       pushed *to an included ref* of the repository.  If neither of
+       these are set, then by default all tags and branches are
+       included.
 
 3. Output one "announce" mail for each new annotated tag, including
    information about the tag and optionally a shortlog describing the
@@ -503,6 +509,39 @@ multimailhook.combineWhenSingleCommit
     a branch, combine the summary and commit email messages into a
     single email.
     Default: true
+
+multimailhook.refFilterInclusionRegex
+multimailhook.refFilterExclusionRegex
+multimailhook.refFilterDoSendRegex
+multimailhook.refFilterDontSendRegex
+
+    **Warning:** these options are experimental. They should work, but
+    the user-interface is not stable yet (in particular, the option
+    names may change). If you want to participate in stabilizing the
+    feature, please contact the maintainers and/or send pull-requests.
+
+    Regular expressions that can be used to limit refs for which email
+    updates will be sent.  It is an error to specify both an inclusion
+    and an exclusion regex.  If a ``refFilterInclusionRegex`` is
+    specified, emails will only be sent for refs which match this
+    regex.  If a ``refFilterExclusionRegex`` regex is specified,
+    emails will be sent for all refs except those that match this
+    regex (or that match a predefined regex specific to the
+    environment, such as "^refs/notes" for most environments and
+    "^refs/notes|^refs/changes" for the gerrit environment).
+
+    ``refFilterDoSendRegex`` and ``refFilterDontSendRegex`` are
+    analogous to ``refFilterInclusionRegex`` and
+    ``refFilterExclusionRegex`` with one difference: with
+    ``refFilterDoSendRegex`` and ``refFilterDontSendRegex``, commits
+    introduced by one excluded ref will not be considered as new when
+    they reach an included ref. Typically, if you add a branch ``foo``
+    to  ``refFilterDontSendRegex``, push commits to this branch, and
+    later merge branch ``foo`` into ``master``, then the notification
+    email for ``master`` will contain a commit email only for the
+    merge commit. If you include ``foo`` in
+    ``refFilterExclusionRegex``, then at the time of merge, you will
+    receive one commit email per commit in the branch.
 
 
 Email filtering aids

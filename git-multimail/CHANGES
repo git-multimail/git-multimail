@@ -12,6 +12,10 @@ Release 1.2.0
   of notifications. Current values are: diff, ref_changed_plus_diff,
   ref_changed.
 
+* It is now possible to exclude some refs (e.g. exclude some branches
+  or tags). See refFilterDoSendRegex, refFilterDontSendRegex,
+  refFilterInclusionRegex and refFilterExclusionRegex.
+
 Release 1.1.0
 =============
 
