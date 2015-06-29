@@ -30,7 +30,7 @@ export SHARNESS_TEST_EXTENSION
 export SHELL_PATH
 
 # For repeatability, reset the environment to a known state.
-# TERM is set below, after color info has been saved.
+# TERM is sanitized below, after saving color control sequences.
 LANG=C
 LC_ALL=C
 PAGER=cat
@@ -82,31 +82,30 @@ while test "$#" -ne 0; do
 done
 
 if test -n "$color"; then
-	# save the color control sequences now rather than run tput
-	# each time say_color() is called for two reasons:
+	# Save the color control sequences now rather than run tput
+	# each time say_color() is called.  This is done for two
+	# reasons:
 	#   * TERM will be changed to dumb
 	#   * HOME will be changed to a temporary directory and tput
 	#     might need to read ~/.terminfo from the original HOME
 	#     directory to get the control sequences
+	# Note:  This approach assumes the control sequences don't end
+	# in a newline for any terminal of interest (command
+	# substitutions strip trailing newlines).  Given that most
+	# (all?) terminals in common use are related to ECMA-48, this
+	# shouldn't be a problem.
 	say_color_error=$(tput bold; tput setaf 1) # bold red
 	say_color_skip=$(tput setaf 4) # blue
 	say_color_warn=$(tput setaf 3) # brown/yellow
 	say_color_pass=$(tput setaf 2) # green
 	say_color_info=$(tput setaf 6) # cyan
-	say_color_sgr0=$(tput sgr0)
+	say_color_reset=$(tput sgr0)
+	say_color_="" # no formatting for normal text
 	say_color() {
-		(
-		color=
-		case "$1" in
-		error|skip|warn|pass|info)
-			eval "color=\${say_color_$1}";;
-		*)
-			test -n "$quiet" && return;;
-		esac
+		test -z "$1" && test -n "$quiet" && return
+		eval "say_color_color=\$say_color_$1"
 		shift
-		printf "%s" "$color$*$say_color_sgr0"
-		echo
-		)
+		printf "%s\\n" "$say_color_color$*$say_color_reset"
 	}
 else
 	say_color() {
