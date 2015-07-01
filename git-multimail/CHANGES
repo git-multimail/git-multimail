@@ -16,6 +16,13 @@ Release 1.2.0
   or tags). See refFilterDoSendRegex, refFilterDontSendRegex,
   refFilterInclusionRegex and refFilterExclusionRegex.
 
+Plus all the bugfixes from version 1.1.1.
+
+Release 1.1.1 (bugfix-only release)
+===================================
+
+* The SMTP mailer was not working with Python 2.4.
+
 Release 1.1.0
 =============
 
