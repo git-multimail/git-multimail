@@ -44,7 +44,7 @@ run_config () {
     cp "$config" .git/config.email
     pecho "$config" >file.txt
     git commit -am "$config"
-    ../git-multimail/git_multimail.py refs/heads/master HEAD^ HEAD
+    ../../git-multimail/git_multimail.py refs/heads/master HEAD^ HEAD
 }
 
 if test -z "$2"
