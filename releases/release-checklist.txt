@@ -1,0 +1,21 @@
+At each release:
+
+* Update version number in git_multimail.py
+
+* Update version number in setup.py
+
+* Add version number in README
+
+* Commit and tag the result
+
+* push & release on GitHub
+
+* Release to Git::
+
+ ./copy-to-git.sh <path-to-git>
+
+(and send to the Git mailing-list)
+
+* release on pypi::
+
+ python setup.py sdist upload -r pypi

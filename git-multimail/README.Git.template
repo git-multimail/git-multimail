@@ -6,10 +6,10 @@ website:
     https://github.com/git-multimail/git-multimail
 
 The version in this directory was obtained from the upstream project
-on <DATE> and consists of the "git-multimail" subdirectory from
+on @DATE@ and consists of the "git-multimail" subdirectory from
 revision
 
-    <SHA-1>
+    @SHA1@
 
 Please see the README file in this directory for information about how
 to report bugs or contribute to git-multimail.
