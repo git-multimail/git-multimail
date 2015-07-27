@@ -2555,7 +2555,7 @@ class StaticRefFilterEnvironmentMixin(Environment):
             ref_filter_regex = default_exclude
         try:
             self.__compiled_regex = re.compile(ref_filter_regex)
-        except Exception as e:
+        except Exception, e:
             raise ConfigurationException(
                 'Invalid Ref Filter Regex "%s": %s' % (ref_filter_regex, e.message))
 
@@ -2573,7 +2573,7 @@ class StaticRefFilterEnvironmentMixin(Environment):
                 self.__is_do_send_filter = True
             try:
                 self.__send_compiled_regex = re.compile(ref_filter_send_regex)
-            except Exception as e:
+            except Exception, e:
                 raise ConfigurationException(
                     'Invalid Ref Filter Regex "%s": %s' % (ref_filter_send_regex, e.message))
         else:
