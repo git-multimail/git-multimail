@@ -165,7 +165,7 @@ multimailhook.environment
       optionally read from gitolite.conf (see multimailhook.from).
 
       For more information about gitolite and git-multimail, read
-      doc/gitolite.rst
+      `<doc/gitolite.rst>`__
 
     * stash
 
