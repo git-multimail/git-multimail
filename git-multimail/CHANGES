@@ -1,6 +1,9 @@
 Release 1.2.0
 =============
 
+* git-multimail can now be ran as a Gerrit ref-updated hook, or from
+  Atlassian Stash.
+
 * The From: field is now more customizeable. It can be set
   independently for refchange emails and commit emails (see
   fromCommit, fromRefChange). The special values pusher and author can
