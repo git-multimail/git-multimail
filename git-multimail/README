@@ -169,6 +169,10 @@ multimailhook.environment
 
     * stash
 
+      **Warning:** this mode was provided by a third-party contributor
+      and never tested by the git-multimail maintainers. It is
+      provided as-is and may or may not work for you.
+
       This value is automatically assumed when the stash-specific
       flags (``--stash-user`` and ``--stash-repo``) are specified on
       the command line. When this environment is active, the username
