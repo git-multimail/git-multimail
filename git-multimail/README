@@ -181,6 +181,9 @@ multimailhook.environment
 
     * gerrit
 
+      Environment to use when ``git-multimail`` is ran as a
+      ``ref-updated`` Gerrit hook.
+
       This value is used when the gerrit-specific command line flags
       (``--oldrev``, ``--newrev``, ``--refname``, ``--project``) for
       gerrit's ref-updated hook are present. When this environment is
@@ -188,6 +191,9 @@ multimailhook.environment
       ``--submitter`` argument if that command line option is passed,
       otherwise 'Gerrit' is used. The repository name is taken from
       the ``--project`` option on the command line, which must be passed.
+
+      For more information about gerrit and git-multimail, read
+      `<doc/gerrit.rst>`__
 
     If none of these environments is suitable for your setup, then you
     can implement a Python class that inherits from Environment and
