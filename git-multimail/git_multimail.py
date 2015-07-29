@@ -2781,7 +2781,13 @@ class GerritEnvironmentMixin(Environment):
 
     def get_pusher(self):
         if self.__submitter:
-            return re.match('(.*?)\s*<', self.__submitter).group(1)
+            if self.__submitter.find('<') != -1:
+                # Submitter has a configured email, we transformed
+                # __submitter into an RFC 2822 string already.
+                return re.match('(.*?)\s*<', self.__submitter).group(1)
+            else:
+                # Submitter has no configured email, it's just his name.
+                return self.__submitter
         else:
             # If we arrive here, this means someone pushed "Submit" from
             # the gerrit web UI for the CR (or used one of the programmatic
@@ -2798,7 +2804,7 @@ class GerritEnvironmentMixin(Environment):
             return super(GerritEnvironmentMixin, self).get_pusher_email()
 
     def get_fromaddr(self, change=None):
-        if self.__submitter:
+        if self.__submitter and self.__submitter.find('<') != -1:
             return self.__submitter
         else:
             return super(GerritEnvironmentMixin, self).get_fromaddr(change)
@@ -3354,8 +3360,6 @@ def compute_gerrit_options(options, args, required_gerrit_options):
                                    '--format=%cN%n%aN <%aE>', options.newrev])
         if rev_info and rev_info[0] == 'Gerrit Code Review':
             options.submitter = rev_info[1]
-    if options.submitter:
-        assert options.submitter.find('<') != -1
 
     # We pass back refname, oldrev, newrev as args because then the
     # gerrit ref-updated hook is much like the git update hook
