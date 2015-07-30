@@ -6,5 +6,6 @@
 sed \
     -e 's/^\(In-Reply-To\|Message-ID\|References\): <.*>$/\1: <...>/' \
     -e 's/^\(Date\): [^ ].*$/\1: .../' \
-    -e "s/^X-Git-Host: `hostname --fqdn`\$/X-Git-Host: fqdn.example.org/"
+    -e "s/^\(X-Git-Host\): `hostname --fqdn`\$/\1: fqdn.example.org/" \
+    -e "s/^\(X-Git-Multimail-Version\): $MULTIMAIL_VERSION_QUOTED/\1: .../"
 

@@ -5,6 +5,9 @@ cd "${d}" || exit 1
 . ./helper-functions.sh || exit 1
 
 log "Comparing generated emails to $d/multimail.expect ..."
+MULTIMAIL_VERSION_QUOTED=$("$d"/../git-multimail/git_multimail.py --version |
+    sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
+export MULTIMAIL_VERSION_QUOTED
 
 ./generate-test-emails 2>&1 | ./filter-noise >/tmp/multimail.actual
 GIT_PAGER=cat git diff -u multimail.expect /tmp/multimail.actual

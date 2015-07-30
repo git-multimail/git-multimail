@@ -9,7 +9,8 @@ Release 1.2.0
   fromCommit, fromRefChange). The special values pusher and author can
   be used in these configuration variable.
 
-* A new command-line option, --version, was added.
+* A new command-line option, --version, was added. The version is also
+  available in the X-Git-Multimail-Version header of sent emails.
 
 * Set X-Git-NotificationType header to differentiate the various types
   of notifications. Current values are: diff, ref_changed_plus_diff,

@@ -6,6 +6,8 @@ D=$(cd $(dirname "$0") && pwd)
 cd "$D" || exit 1
 . ./helper-functions.sh || exit 1
 MULTIMAIL="$D/../git-multimail/git_multimail.py"
+MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
+    sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
 POST_RECEIVE="$D/../git-multimail/post-receive.example"
 
 TESTREPO=$("$D/create-test-repo")

@@ -123,6 +123,7 @@ X-Git-Reftype: %(refname_type)s
 X-Git-Oldrev: %(oldrev)s
 X-Git-Newrev: %(newrev)s
 X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: %(multimail_version)s
 Auto-Submitted: auto-generated
 """
 
@@ -253,6 +254,7 @@ X-Git-Refname: %(refname)s
 X-Git-Reftype: %(refname_type)s
 X-Git-Rev: %(rev)s
 X-Git-NotificationType: diff
+X-Git-Multimail-Version: %(multimail_version)s
 Auto-Submitted: auto-generated
 """
 
@@ -287,6 +289,7 @@ X-Git-Oldrev: %(oldrev)s
 X-Git-Newrev: %(newrev)s
 X-Git-Rev: %(rev)s
 X-Git-NotificationType: ref_changed_plus_diff
+X-Git-Multimail-Version: %(multimail_version)s
 Auto-Submitted: auto-generated
 """
 
@@ -679,6 +682,7 @@ class Change(object):
         fromaddr = self.environment.get_fromaddr(change=self)
         if fromaddr is not None:
             values['fromaddr'] = fromaddr
+        values['multimail_version'] = get_version()
         return values
 
     def get_values(self, **extra_values):
