@@ -3297,6 +3297,7 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
 
 
 def get_version():
+    oldcwd = os.getcwd()
     try:
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
         git_version = read_git_output(['describe', '--tags', 'HEAD'])
@@ -3306,6 +3307,8 @@ def get_version():
             return '%s (%s)' % (__version__, git_version)
     except:
         pass
+    finally:
+        os.chdir(oldcwd)
     return __version__
 
 
