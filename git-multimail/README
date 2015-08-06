@@ -345,7 +345,7 @@ multimailhook.mailer
 
       * multimailhook.smtpEncryption
 
-        Set the security type. Allowed values: none, ssl.
+        Set the security type. Allowed values: none, ssl, tls.
         Default=none.
 
       * multimailhook.smtpServerDebugLevel
