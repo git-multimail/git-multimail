@@ -58,6 +58,7 @@ import shlex
 import optparse
 import smtplib
 import time
+import cgi
 
 try:
     from email.utils import make_msgid
@@ -111,7 +112,7 @@ Date: %(send_date)s
 To: %(recipients)s
 Subject: %(subject)s
 MIME-Version: 1.0
-Content-Type: text/plain; charset=%(charset)s
+Content-Type: text/%(contenttype)s; charset=%(charset)s
 Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
@@ -242,7 +243,7 @@ To: %(recipients)s
 Cc: %(cc_recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 MIME-Version: 1.0
-Content-Type: text/plain; charset=%(charset)s
+Content-Type: text/%(contenttype)s; charset=%(charset)s
 Content-Transfer-Encoding: 8bit
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
@@ -276,7 +277,7 @@ Date: %(send_date)s
 To: %(recipients)s
 Subject: %(subject)s
 MIME-Version: 1.0
-Content-Type: text/plain; charset=%(charset)s
+Content-Type: text/%(contenttype)s; charset=%(charset)s
 Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
@@ -669,6 +670,12 @@ class Change(object):
     def __init__(self, environment):
         self.environment = environment
         self._values = None
+        self._contains_html_diff = False
+
+    def _contains_diff(self):
+        # We do contain a diff, should it be rendered in HTML?
+        if self.environment.commit_email_format == "html":
+            self._contains_html_diff = True
 
     def _compute_values(self):
         """Return a dictionary {keyword: expansion} for this Change.
@@ -726,6 +733,8 @@ class Change(object):
         skip lines that contain references to unknown variables."""
 
         values = self.get_values(**extra_values)
+        values['contenttype'] = 'html' if self._contains_html_diff else 'plain'
+
         for line in template.splitlines():
             (name, value) = line.split(':', 1)
 
@@ -777,6 +786,24 @@ class Change(object):
 
         raise NotImplementedError()
 
+    def _wrap_for_html(self, lines):
+        """Wrap the lines in HTML <pre> tag when using HTML format.
+
+        Escape special HTML characters and add <pre> and </pre> tags around
+        the given lines if we should be generating HTML as indicated by
+        self._contains_html_diff being set to true.
+        """
+        if self._contains_html_diff:
+            yield "<pre style='margin:0'>\n"
+
+            for line in lines:
+                yield cgi.escape(line)
+
+            yield '</pre>\n'
+        else:
+            for line in lines:
+                yield line
+
     def generate_email(self, push, body_filter=None, extra_header_values={}):
         """Generate an email describing this change.
 
@@ -792,16 +819,51 @@ class Change(object):
         for line in self.generate_email_header(**extra_header_values):
             yield line
         yield '\n'
-        for line in self.generate_email_intro():
+        for line in self._wrap_for_html(self.generate_email_intro()):
             yield line
 
         body = self.generate_email_body(push)
         if body_filter is not None:
             body = body_filter(body)
+
+        diff_started = False
         for line in body:
+            if self._contains_html_diff:
+                # This is very, very naive. It would be much better to really
+                # parse the diff, i.e. look at how many lines do we have in
+                # the hunk headers instead of blindly highlighting everything
+                # that looks like it might be part of a diff.
+                color = ''
+                if line.startswith('--- a/'):
+                    diff_started = True
+                    color = 'e0e0ff'
+                elif diff_started:
+                    if line.startswith('+++ '):
+                        color = 'e0e0ff'
+                    elif line.startswith('@@'):
+                        color = 'e0e0e0'
+                    elif line.startswith('+'):
+                        color = 'e0ffe0'
+                    if line.startswith('-'):
+                        color = 'ffe0e0'
+
+                # Chop the trailing LF, we don't want it inside <pre>.
+                line = cgi.escape(line[:-1])
+                if line:
+                    line = "<pre style='margin:0'>%s</pre>" % line
+                else:
+                    # Empty <pre> is just ignored, so represent blank lines
+                    # otherwise.
+                    line = '<br>'
+
+                if color:
+                    line = "<div style='background:#%s'>%s</div>\n" % (color, line)
+                else:
+                    line = line + '\n'
+
             yield line
 
-        for line in self.generate_email_footer():
+        for line in self._wrap_for_html(self.generate_email_footer()):
             yield line
 
     def get_alt_fromaddr(self):
@@ -890,6 +952,10 @@ class Revision(Change):
 
     def generate_email_footer(self):
         return self.expand_lines(REVISION_FOOTER_TEMPLATE)
+
+    def generate_email(self, push, body_filter=None, extra_header_values={}):
+        self._contains_diff()
+        return Change.generate_email(self, push, body_filter, extra_header_values)
 
     def get_alt_fromaddr(self):
         return self.environment.from_commit
@@ -1454,6 +1520,7 @@ class BranchChange(ReferenceChange):
             values['subject'] = self.expand(COMBINED_REFCHANGE_REVISION_SUBJECT_TEMPLATE, **values)
 
         self._single_revision = revision
+        self._contains_diff()
         self.header_template = COMBINED_HEADER_TEMPLATE
         self.intro_template = COMBINED_INTRO_TEMPLATE
         self.footer_template = COMBINED_FOOTER_TEMPLATE
@@ -1943,6 +2010,11 @@ class Environment(object):
 
             True iff announce emails should include a shortlog.
 
+        commit_email_format (string)
+
+            If "html", generate commit emails in HTML instead of plain text
+            used by default.
+
         refchange_showgraph (bool)
 
             True iff refchanges emails should include a detailed graph.
@@ -2000,6 +2072,7 @@ class Environment(object):
     def __init__(self, osenv=None):
         self.osenv = osenv or os.environ
         self.announce_show_shortlog = False
+        self.commit_email_format = "text"
         self.maxcommitemails = 500
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.graphopts = ['--oneline', '--decorate']
@@ -2202,6 +2275,16 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             val = config.get_bool(cfg)
             if val is not None:
                 setattr(self, var, val)
+
+        commit_email_format = config.get('commitEmailFormat')
+        if commit_email_format is not None:
+            if commit_email_format != "html" and commit_email_format != "text":
+                self.log_warning(
+                    '*** Unknown value for multimailhook.commitEmailFormat: %s\n' % commit_email_format
+                    + '*** Expected either "text" or "html".  Ignoring.\n'
+                    )
+            else:
+                self.commit_email_format = commit_email_format
 
         maxcommitemails = config.get('maxcommitemails')
         if maxcommitemails is not None:
