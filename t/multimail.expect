@@ -288,8 +288,6 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-$ git 'config' 'multimailhook.refChangeShowGraph' 'true'
-$ git 'config' 'multimailhook.graphOpts' '--oneline'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -443,8 +441,6 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-$ git 'config' 'multimailhook.refChangeShowGraph' 'false'
-$ git 'config' '--unset' 'multimailhook.graphOpts'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -1256,7 +1252,6 @@ Administrator <administrator@example.com>.
 EOF
 ######################################################################
 $ git 'config' 'multimailhook.refchangelist' 'Refchange List <refchangelist@example.com>'
-$ git 'config' 'multimailhook.refChangeShowGraph' 'true'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -1314,7 +1309,6 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-$ git 'config' 'multimailhook.refChangeShowGraph' 'false'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -3742,17 +3736,11 @@ EOF
 ######################################################################
 $ git 'config' 'multimailhook.refChangeShowGraph' 'false'
 $ git 'config' 'multimailhook.commitList' 'Commit List <commitlist@example.com>'
-$ git 'config' 'multimailhook.refFilterExclusionRegex' '^refs/heads/master$'
-$ git 'config' 'multimailhook.refFilterInclusionRegex' 'whatever'
-$ test_update 'refs/heads/master' 'refs/heads/master^^'
+$ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/master$' '-c' 'multimailhook.refFilterInclusionRegex=whatever'
 Cannot specify both a ref inclusion and exclusion regex.
-$ git 'config' '--unset' 'multimailhook.refFilterInclusionRegex'
-$ test_update 'refs/heads/master' 'refs/heads/master^^'
-$ git 'config' '--unset' 'multimailhook.refFilterExclusionRegex'
-$ git 'config' 'multimailhook.refFilterInclusionRegex' '^refs/heads/feature$'
-$ test_update 'refs/heads/master' 'refs/heads/master^^'
-$ git 'config' 'multimailhook.refFilterInclusionRegex' '^refs/heads/master$'
-$ test_update 'refs/heads/master' 'refs/heads/master^^'
+$ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/master$'
+$ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterInclusionRegex=^refs/heads/feature$'
+$ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterInclusionRegex=^refs/heads/master$'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -4044,9 +4032,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-$ git 'config' '--unset' 'multimailhook.refFilterInclusionRegex'
-$ git 'config' 'multimailhook.refFilterDoSendRegex' '^refs/heads/master$'
-$ test_update 'refs/heads/master' 'refs/heads/master^^'
+$ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterDoSendRegex=^refs/heads/master$'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -4194,7 +4180,6 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-$ git 'config' '--unset' 'multimailhook.refFilterDoSendRegex'
 $ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter Sub Mitter (sub.mitter@example.com)
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ===========================================================================
