@@ -3434,6 +3434,14 @@ def main(args):
             ),
         )
     parser.add_option(
+        '-c', metavar="<name>=<value>", action='append',
+        help=(
+            'Pass a configuration parameter through to git.  The value given '
+            'will override values from configuration files.  See the -c option '
+            'of git(1) for more details.  (Only works with git >= 1.7.3)'
+            ),
+        )
+    parser.add_option(
         '--version', '-v', action='store_true', default=False,
         help=(
             "Display git-multimail's version"
@@ -3464,6 +3472,19 @@ def main(args):
     if options.version:
         sys.stdout.write('git-multimail version ' + get_version() + '\n')
         return
+
+    if options.c:
+        parameters = os.environ.get('GIT_CONFIG_PARAMETERS', '')
+        if parameters:
+            parameters += ' '
+        # git expects GIT_CONFIG_PARAMETERS to be of the form
+        #    "'name1=value1' 'name2=value2' 'name3=value3'"
+        # including everything inside the double quotes (but not the double
+        # quotes themselves).  Spacing is critical.  Also, if a value contains
+        # a literal single quote that quote must be represented using the
+        # four character sequence: '\''
+        parameters += ' '.join("'" + x.replace("'", "'\\''") + "'" for x in options.c)
+        os.environ['GIT_CONFIG_PARAMETERS'] = parameters
 
     config = Config('multimailhook')
 
