@@ -74,7 +74,7 @@ test_expect_failure 'Non-ascii characters in email' '
 test_expect_success "test-email-content" '
 	log "Generating emails ..."
 	(
-		"$SHARNESS_TEST_DIRECTORY"/generate-test-emails
+		. "$SHARNESS_TEST_DIRECTORY"/generate-test-emails
 	) >all 2>&1 &&
 	check_email_content all email-content.d/all
 '
