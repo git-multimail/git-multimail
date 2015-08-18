@@ -3164,6 +3164,8 @@ EOF
 ######################################################################
 $ git 'config' 'multimailhook.scanCommitForCc' 'true'
 Sending notification emails to: Refchange List <refchangelist@example.com>
+Add Some One <Some.One@example.com>, Another Guy <Another.Guy@example.com>, Third.Guy@example.com to CC for 919426837aa07c18459a0acc0f789b6a8cd8fb80
+Add me@example.com to CC for 850c489cf431841cf428e00fc8285456682a9d13
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
@@ -3210,7 +3212,6 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Add Some One <Some.One@example.com>, Another Guy <Another.Guy@example.com>, Third.Guy@example.com to CC for 919426837aa07c18459a0acc0f789b6a8cd8fb80
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
@@ -3265,7 +3266,6 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Add me@example.com to CC for 850c489cf431841cf428e00fc8285456682a9d13
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
@@ -4078,6 +4078,8 @@ $ git 'config' 'multimailhook.commitlist' ''
 *** for 'refs/heads/formatting' update 6522cd3759908339b14ab0048bc1d756929ac112->8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
 Add Some One <Some.One@example.com>, Another Guy <Another.Guy@example.com>, Third.Guy@example.com to CC for 919426837aa07c18459a0acc0f789b6a8cd8fb80
 *** Replacing Cc: with To:
+Add me@example.com to CC for 850c489cf431841cf428e00fc8285456682a9d13
+*** Replacing Cc: with To:
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
@@ -4131,8 +4133,6 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-Add me@example.com to CC for 850c489cf431841cf428e00fc8285456682a9d13
-*** Replacing Cc: with To:
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
