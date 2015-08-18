@@ -1,0 +1,96 @@
+*** Push-update of strange reference 'HEAD'
+***  - incomplete email generated.
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* reference HEAD updated (902dfe1 -> efcb618)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: Joe User <user@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: HEAD
+X-Git-Reftype: reference
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: efcb618216061d6db40469f37a0ed520a81b0d75
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to reference HEAD
+in repository test-repo.
+
+      from  902dfe1   a5
+       new  efcb618   Message accentué
+
+The 1 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ "fichier-accentu\303\251.txt" | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 "fichier-accentu\303\251.txt"
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: =?utf-8?q?_*test-repo*_01/01=3A_Message_accentu=C3=A9?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: =?utf-8?q?S=C3=A9bastien?= <sebastien@example.com>
+Reply-To: =?utf-8?q?S=C3=A9bastien?= <sebastien@example.com>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: HEAD
+X-Git-Reftype: reference
+X-Git-Rev: efcb618216061d6db40469f37a0ed520a81b0d75
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to reference HEAD
+in repository test-repo.
+
+commit efcb618216061d6db40469f37a0ed520a81b0d75
+Author: Sébastien <sebastien@example.com>
+Date:   Sat Mar 3 11:46:40 1973 +0200
+
+    Message accentué
+---
+ "fichier-accentu\303\251.txt" | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git "a/fichier-accentu\303\251.txt" "b/fichier-accentu\303\251.txt"
+new file mode 100644
+index 0000000..aa1180f
+--- /dev/null
++++ "b/fichier-accentu\303\251.txt"
+@@ -0,0 +1 @@
++Contenu accentué
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################

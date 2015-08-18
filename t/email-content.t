@@ -53,6 +53,21 @@ test_expect_success 'HTML messages' '
 	check_email_content html email-content.d/html
 '
 
+# Accents seem to be accepted everywhere except in the email part
+# (sébastien@example.com).
+test_expect_failure 'Non-ascii characters in email' '
+	git checkout --detach master &&
+	test_when_finished "git checkout master" &&
+	echo "Contenu accentué" >fichier-accentué.txt &&
+	git add fichier-accentué.txt &&
+	git commit -m "Message accentué" --author="Sébastien <sébastien@example.com>" &&
+	log "Generating emails ..."
+	(
+		test_update HEAD HEAD^ -c multimailhook.from=author
+	) >accent 2>&1 &&
+	check_email_content accent email-content.d/accent
+'
+
 # The old test infrastructure was using one big 'generate-test-emails'
 # script. Existing tests are kept there, but new tests should be added
 # with separate test_expect_success.
