@@ -43,6 +43,7 @@ rstcheck_file () {
 rstcheck_file README.rst
 rstcheck_file doc/gitolite.rst
 rstcheck_file doc/gerrit.rst
+rstcheck_file t/README
 
 # W503: line break before binary operator => could eventually be
 # removed, but at a moment where there are less pending PRs.

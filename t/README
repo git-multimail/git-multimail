@@ -12,7 +12,7 @@ than does the git-multimail script itself.
 Short instructions
 ==================
 
-For an approximate test that you haven't broken anything, run
+For an approximate test that you haven't broken anything, run::
 
     $ t/run-tests
 
