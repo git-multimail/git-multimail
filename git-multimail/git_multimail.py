@@ -60,6 +60,24 @@ import smtplib
 import time
 import cgi
 
+PYTHON3 = sys.version_info >= (3, 0)
+
+if PYTHON3:
+    def str_to_bytes(s):
+        return s.encode(ENCODING)
+
+    def bytes_to_str(s):
+        return s.decode(ENCODING)
+
+    unicode = str
+else:
+    def str_to_bytes(s):
+        return s
+
+    def bytes_to_str(s):
+        return s
+
+
 try:
     from email.charset import Charset
     from email.utils import make_msgid
@@ -363,12 +381,14 @@ def read_git_output(args, input=None, keepends=False, **kw):
 def read_output(cmd, input=None, keepends=False, **kw):
     if input:
         stdin = subprocess.PIPE
+        input = str_to_bytes(input)
     else:
         stdin = None
     p = subprocess.Popen(
         cmd, stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kw
         )
     (out, err) = p.communicate(input)
+    out = bytes_to_str(out)
     retcode = p.wait()
     if retcode:
         raise CommandError(cmd, retcode)
@@ -1779,6 +1799,7 @@ class SendMailer(Mailer):
                 )
             sys.exit(1)
         try:
+            lines = (str_to_bytes(line) for line in lines)
             p.stdin.writelines(lines)
         except Exception, e:
             sys.stderr.write(
@@ -2420,12 +2441,14 @@ class FilterLinesEnvironmentMixin(Environment):
     def filter_body(self, lines):
         lines = super(FilterLinesEnvironmentMixin, self).filter_body(lines)
         if self.__strict_utf8:
-            lines = (line.decode(ENCODING, 'replace') for line in lines)
+            if not PYTHON3:
+                lines = (line.decode(ENCODING, 'replace') for line in lines)
             # Limit the line length in Unicode-space to avoid
             # splitting characters:
             if self.__emailmaxlinelength:
                 lines = limit_linelength(lines, self.__emailmaxlinelength)
-            lines = (line.encode(ENCODING, 'replace') for line in lines)
+            if not PYTHON3:
+                lines = (line.encode(ENCODING, 'replace') for line in lines)
         elif self.__emailmaxlinelength:
             lines = limit_linelength(lines, self.__emailmaxlinelength)
 
