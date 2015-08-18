@@ -44,12 +44,15 @@ test_expect_success 'Create a ref' '
 	check_email_content create-master email-content.d/create-master
 '
 
+# The old test infrastructure was using one big 'generate-test-emails'
+# script. Existing tests are kept there, but new tests should be added
+# with separate test_expect_success.
 test_expect_success "test-email-content" '
 	log "Generating emails ..."
 	(
 		"$SHARNESS_TEST_DIRECTORY"/generate-test-emails
-	) >multimail.actual 2>&1 &&
-	check_email_content multimail.actual multimail.expect
+	) >all 2>&1 &&
+	check_email_content all email-content.d/all
 '
 
 test_done

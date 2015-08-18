@@ -94,9 +94,9 @@ test-repo.dump
     A file that is read by create-test-repo (using "git fast-import")
     to create most of the test repository.
 
-multimail.expect
+email-content.d/
 
-    This file contains the expected output of generate-test-emails,
+    This directory contains the expected output of email-content.t,
     already filtered using filter-noise.  Please adjust this file if
     you make a change that intentionally alters the output of
     git-multimail.
