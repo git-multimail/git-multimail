@@ -13,9 +13,9 @@ test_expect_success 'Setup test repo' '
 	cd "$TESTREPO"
 '
 
-
+. "$SHARNESS_TEST_DIRECTORY"/test-email-content
 test_expect_success "test-email-content" '
-    "$D"/test-email-content
+	test_email_content
 '
 
 test_done
