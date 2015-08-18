@@ -13,12 +13,12 @@ test_expect_success 'Setup test repo' '
 	cd "$TESTREPO"
 '
 
+MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
+    sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
+export MULTIMAIL_VERSION_QUOTED
 
 test_email_content() {
 	log "Comparing generated emails to $d/multimail.expect ..."
-	MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
-		sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
-	export MULTIMAIL_VERSION_QUOTED
 
 	"$SHARNESS_TEST_DIRECTORY"/generate-test-emails 2>&1 |
 	"$SHARNESS_TEST_DIRECTORY"/filter-noise >/tmp/multimail.actual
