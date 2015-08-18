@@ -65,12 +65,6 @@ generate-test-emails:
     using filter-noise then compared against multimail.expect by
     running test-email-content.
 
-test-email-content:
-
-    Compare the output of generate-test-emails (filtered using
-    filter-noise) to the expected output that is recorded in
-    multimail.expect.
-
 test-env:
 
     Runs through various configuration scenarios for
