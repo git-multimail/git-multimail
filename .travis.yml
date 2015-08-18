@@ -6,4 +6,4 @@ install:
   - pip install pep8
   # latest version seems broken with Python 2.6, no version seem to work with 3.2
   - if ! python --version 2>&1 | grep -q -e 'Python 2.6' -e 'Python 3.2'; then pip install rstcheck; fi
-script: cd t/ && verbose=t make all
+script: cd t/ && verbose=t make all && ! git status --porcelain | grep -e '^??'
