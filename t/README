@@ -87,6 +87,10 @@ test-env:
 Other files
 ===========
 
+helper-functions.sh
+
+    A set of shell functions and variables used by other scripts.
+
 test-repo.dump
 
     A file that is read by create-test-repo (using "git fast-import")
