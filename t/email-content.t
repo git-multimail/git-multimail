@@ -24,7 +24,7 @@ check_email_content() {
 	GIT_PAGER=cat git diff -u "$SHARNESS_TEST_DIRECTORY/$2" "$PWD/$1".filtered
 	if test $? -ne 0
 	then
-		fatal "
+		error "
 ===========================================================================
 FAILURE!
 Please investigate the discrepancies shown above.
@@ -33,6 +33,7 @@ If you are sure that your version is correct, then please
     cp '$PWD/$1.filtered' '$SHARNESS_TEST_DIRECTORY/$2'
 
 and commit."
+		false
 	fi
 }
 
