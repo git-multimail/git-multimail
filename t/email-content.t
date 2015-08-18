@@ -21,9 +21,9 @@ test_email_content() {
 	log "Comparing generated emails to $d/multimail.expect ..."
 
 	"$SHARNESS_TEST_DIRECTORY"/generate-test-emails 2>&1 |
-	"$SHARNESS_TEST_DIRECTORY"/filter-noise >/tmp/multimail.actual
+	"$SHARNESS_TEST_DIRECTORY"/filter-noise >multimail.actual
 
-	GIT_PAGER=cat git diff -u "$SHARNESS_TEST_DIRECTORY"/multimail.expect /tmp/multimail.actual
+	GIT_PAGER=cat git diff -u "$SHARNESS_TEST_DIRECTORY"/multimail.expect multimail.actual
 	if test $? -ne 0
 	then
 		fatal "
@@ -32,7 +32,7 @@ FAILURE!
 Please investigate the discrepancies shown above.
 If you are sure that your version is correct, then please
 
-    cp /tmp/multimail.actual $d/multimail.expect
+    cp $PWD/multimail.actual $d/multimail.expect
 
 and commit."
 	fi
