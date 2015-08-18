@@ -18,3 +18,8 @@ fatal() {
     exit 1;
 }
 try() { "$@" || fatal "'$@' failed"; }
+
+if [ -z "$SHARNESS_TEST_DIRECTORY" ]
+then
+    fatal "Please, source sharness.sh before helper-functions.sh"
+fi
