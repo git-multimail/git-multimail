@@ -1,3 +1,9 @@
+Release x.y.z (in progress)
+=============
+
+* New commitEmailFormat option which can be set to "html" to generate
+  simple colorized diffs using HTML for the commit emails.
+
 Release 1.2.0
 =============
 
