@@ -61,6 +61,7 @@ import time
 import cgi
 
 try:
+    from email.charset import Charset
     from email.utils import make_msgid
     from email.utils import getaddresses
     from email.utils import formataddr
@@ -68,6 +69,7 @@ try:
     from email.header import Header
 except ImportError:
     # Prior to Python 2.5, the email module used different names:
+    from email.Charset import Charset
     from email.Utils import make_msgid
     from email.Utils import getaddresses
     from email.Utils import formataddr
@@ -430,9 +432,9 @@ def header_encode(text, header_name=None):
     try:
         if isinstance(text, str):
             text = text.decode(ENCODING, 'replace')
-        return Header(text, header_name=header_name).encode()
+        return Header(text, header_name=header_name, charset=Charset(CHARSET)).encode()
     except UnicodeEncodeError:
-        return Header(text, header_name=header_name, charset=CHARSET,
+        return Header(text, header_name=header_name, charset=Charset(CHARSET),
                       errors='replace').encode()
 
 
@@ -445,7 +447,8 @@ def addr_header_encode(text, header_name=None):
             formataddr((header_encode(name), emailaddr))
             for name, emailaddr in getaddresses([text])
             ),
-        header_name=header_name
+        header_name=header_name,
+        charset=Charset(CHARSET)
         ).encode()
 
 
