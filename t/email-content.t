@@ -38,7 +38,7 @@ and commit."
 }
 
 test_expect_success 'Create a ref' '
-	log "Generating emails ..."
+	log "Generating emails ..." &&
 	(
 		test_create refs/heads/master
 	) >create-master 2>&1 &&
@@ -46,7 +46,7 @@ test_expect_success 'Create a ref' '
 '
 
 test_expect_success 'HTML messages' '
-	log "Generating emails ..."
+	log "Generating emails ..." &&
 	(
 		test_update refs/heads/master refs/heads/master^^ -c multimailhook.commitEmailFormat=html
 	) >html 2>&1 &&
@@ -61,7 +61,7 @@ test_expect_failure 'Non-ascii characters in email' '
 	echo "Contenu accentué" >fichier-accentué.txt &&
 	git add fichier-accentué.txt &&
 	git commit -m "Message accentué" --author="Sébastien <sébastien@example.com>" &&
-	log "Generating emails ..."
+	log "Generating emails ..." &&
 	(
 		test_update HEAD HEAD^ -c multimailhook.from=author
 	) >accent 2>&1 &&
