@@ -37,6 +37,12 @@ b. Your change intentionally improved something.  Make absolutely sure
 Test scripts
 ============
 
+email-content.t:
+
+    This is the main test script, it calls git_multimail.py in various
+    conditions with --stdout, and checks that the output is the
+    expected one. Expected output is stored in ``email-content.d/*``.
+
 create-test-repo:
 
     Create a test repository "test-repo.git" that can be used for
@@ -58,6 +64,9 @@ filter-noise:
     to compare the output of different runs.
 
 generate-test-emails:
+
+    **Warning:** The use of this file is deprecated. Use
+    email-content.t instead.
 
     Runs create-test-repo and then simulates a bunch of pushes to the
     repository, writing to stdout the emails that would normally be

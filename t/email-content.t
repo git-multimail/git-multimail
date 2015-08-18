@@ -36,6 +36,14 @@ and commit."
 	fi
 }
 
+test_expect_success 'Create a ref' '
+	log "Generating emails ..."
+	(
+		test_create refs/heads/master
+	) >create-master 2>&1 &&
+	check_email_content create-master email-content.d/create-master
+'
+
 test_expect_success "test-email-content" '
 	log "Generating emails ..."
 	(

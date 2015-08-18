@@ -2,7 +2,6 @@
 
 . "$SHARNESS_TEST_DIRECTORY"/helper-functions.sh || exit 1
 
-test_create refs/heads/master
 test_update refs/heads/master refs/heads/master^^ -c multimailhook.refChangeShowGraph=true -c multimailhook.graphOpts=--oneline
 test_update refs/heads/master refs/heads/feature -c multimailhook.from="John O'Connor <john@example.com>"
 test_delete refs/heads/master
