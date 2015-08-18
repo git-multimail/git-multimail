@@ -1,13 +1,16 @@
 Aids to testing git-multimail.
 
 This directory contains some scripts that can be used to help test
-git-multimail.  The tests are not very complete and not very
+git-multimail.  The tests are not very complete and not all of them are
 automated, but they do catch many errors.
 
 It is likely that the test scripts only work correctly on Linux/Unix,
 and it is quite possible that they require a newer version of Python
 than does the git-multimail script itself.
 
+The testsuite uses Sharness_. Tests scripts are ``*.t`` files.
+
+.. _Sharness: https://github.com/mlafeldt/sharness
 
 Short instructions
 ==================
