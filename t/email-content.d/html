@@ -1,0 +1,155 @@
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master updated (ebf40e1 -> 902dfe1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
+X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+      from  ebf40e1   a4
+      adds  f0e9a98   f1
+      adds  c742b15   f2
+      adds  abb8baa   f3
+       new  d245c99   m1
+       new  902dfe1   a5
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: m1
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: d245c99162aff6fff4879e5d5c17d454766b45db
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+<pre style='margin:0'>
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+</pre>
+<pre style='margin:0'>commit d245c99162aff6fff4879e5d5c17d454766b45db</pre>
+<pre style='margin:0'>Merge: ebf40e1 abb8baa</pre>
+<pre style='margin:0'>Author: Joe User &lt;user@example.com&gt;</pre>
+<pre style='margin:0'>Date:   Fri Feb 3 09:32:27 2012 +0100</pre>
+<br>
+<pre style='margin:0'>    m1</pre>
+<br>
+<pre style='margin:0'> a.txt | 2 +-</pre>
+<pre style='margin:0'> 1 file changed, 1 insertion(+), 1 deletion(-)</pre>
+<br>
+<pre style='margin:0'>diff --cc a.txt</pre>
+<pre style='margin:0'>index b8626c4,45d9e0e..63a911f</pre>
+<div style='background:#e0e0ff'><pre style='margin:0'>--- a/a.txt</pre></div>
+<div style='background:#e0e0ff'><pre style='margin:0'>+++ b/a.txt</pre></div>
+<div style='background:#e0e0e0'><pre style='margin:0'>@@@ -1,1 -1,1 +1,1 @@@</pre></div>
+<div style='background:#ffe0e0'><pre style='margin:0'>- 4</pre></div>
+<pre style='margin:0'> -f3</pre>
+<div style='background:#e0ffe0'><pre style='margin:0'>++m1</pre></div>
+<pre style='margin:0'>
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator &lt;administrator@example.com&gt;.
+</pre>
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: a5
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+<pre style='margin:0'>
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+</pre>
+<pre style='margin:0'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d</pre>
+<pre style='margin:0'>Author: Joe User &lt;user@example.com&gt;</pre>
+<pre style='margin:0'>Date:   Fri Feb 3 09:32:50 2012 +0100</pre>
+<br>
+<pre style='margin:0'>    a5</pre>
+<pre style='margin:0'>---</pre>
+<pre style='margin:0'> a.txt | 2 +-</pre>
+<pre style='margin:0'> 1 file changed, 1 insertion(+), 1 deletion(-)</pre>
+<br>
+<pre style='margin:0'>diff --git a/a.txt b/a.txt</pre>
+<pre style='margin:0'>index 63a911f..7ed6ff8 100644</pre>
+<div style='background:#e0e0ff'><pre style='margin:0'>--- a/a.txt</pre></div>
+<div style='background:#e0e0ff'><pre style='margin:0'>+++ b/a.txt</pre></div>
+<div style='background:#e0e0e0'><pre style='margin:0'>@@ -1 +1 @@</pre></div>
+<div style='background:#ffe0e0'><pre style='margin:0'>-m1</pre></div>
+<div style='background:#e0ffe0'><pre style='margin:0'>+5</pre></div>
+<pre style='margin:0'>
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator &lt;administrator@example.com&gt;.
+</pre>
+EOF
+######################################################################

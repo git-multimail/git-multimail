@@ -44,6 +44,14 @@ test_expect_success 'Create a ref' '
 	check_email_content create-master email-content.d/create-master
 '
 
+test_expect_success 'HTML messages' '
+	log "Generating emails ..."
+	(
+		test_update refs/heads/master refs/heads/master^^ -c multimailhook.commitEmailFormat=html
+	) >html 2>&1 &&
+	check_email_content html email-content.d/html
+'
+
 # The old test infrastructure was using one big 'generate-test-emails'
 # script. Existing tests are kept there, but new tests should be added
 # with separate test_expect_success.
