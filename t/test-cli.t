@@ -7,17 +7,16 @@ test_description="Command-line interface"
 . "$SHARNESS_TEST_DIRECTORY"/helper-functions.sh || exit 1
 D=$SHARNESS_TEST_DIRECTORY
 
-git_multimail=$D/../git-multimail/git_multimail.py
 options='--stdout --recipients recipient@example.com'
 
 test_expect_success '--help' '
-	$git_multimail --help >actual &&
+	$MULTIMAIL --help >actual &&
 	grep -e ^Usage: -e ^Options: actual
 '
 
 test_expect_success '-v, --version' '
-	$git_multimail --version >actual &&
-	$git_multimail -v >actual-short &&
+	$MULTIMAIL --version >actual &&
+	$MULTIMAIL -v >actual-short &&
 	test_cmp actual actual-short &&
 	grep "^git-multimail version" actual
 '
@@ -45,11 +44,11 @@ test_expect_success 'setup test repo' '
 '
 
 test_expect_success '--force-send does consider everything new' '
-	$git_multimail $options refs/heads/master master^^ master >out &&
+	$MULTIMAIL $options refs/heads/master master^^ master >out &&
 	grep "adds .* three" out &&
 	grep "adds .* two" out &&
 	test $(grep -c Subject out) -eq 1 &&
-	$git_multimail --force-send $options refs/heads/master master^^ master >out &&
+	$MULTIMAIL --force-send $options refs/heads/master master^^ master >out &&
 	grep "new .* three" out &&
 	grep "new .* two" out &&
 	test $(grep -c Subject out) -eq 3
