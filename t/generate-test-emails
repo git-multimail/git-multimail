@@ -1,97 +1,12 @@
 #! /bin/sh
 
-ZEROS=0000000000000000000000000000000000000000
-
 D=$(cd $(dirname "$0") && pwd)
 cd "$D" || exit 1
 . ./helper-functions.sh || exit 1
-MULTIMAIL="$D/../git-multimail/git_multimail.py"
-MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
-    sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
-POST_RECEIVE="$D/../git-multimail/post-receive.example"
 
 TESTREPO=$("$D/create-test-repo")
 
-HOME="$D"
-XDG_CONFIG_HOME="$D"
-GIT_CONFIG_NOSYSTEM=1
-export HOME XDG_CONFIG_HOME GIT_CONFIG_NOSYSTEM
-
 cd "$TESTREPO"
-
-test_email() {
-    REFNAME="$1"
-    OLDREV="$2"
-    NEWREV="$3"
-    shift 3
-    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL" "$@"
-}
-
-test_create() {
-    REFNAME="$1"
-    NEWREV=$(git rev-parse "$REFNAME")
-    shift
-    test_email "$REFNAME" "$ZEROS" "$NEWREV" "$@"
-}
-
-test_update() {
-    REFNAME="$1"
-    OLDREV=$(git rev-parse "$2")
-    NEWREV=$(git rev-parse "$REFNAME")
-    shift 2
-    test_email "$REFNAME" "$OLDREV" "$NEWREV" "$@"
-}
-
-test_delete() {
-    REFNAME="$1"
-    OLDREV=$(git rev-parse "$REFNAME")
-    shift
-    git update-ref -d "$REFNAME" "$OLDREV" &&
-    test_email "$REFNAME" "$OLDREV" "$ZEROS" "$@"
-    RETCODE=$?
-    git update-ref "$REFNAME" "$OLDREV" ||
-        error "Error replacing reference $REFNAME to $OLDREV"
-    return $RETCODE
-}
-
-test_rewind() {
-    REFNAME="$1"
-    OLDREV=$(git rev-parse "$REFNAME")
-    NEWREV=$(git rev-parse "$2")
-    shift 2
-    git update-ref "$REFNAME" "$NEWREV" "$OLDREV" &&
-    test_email "$REFNAME" "$OLDREV" "$NEWREV" "$@"
-    RETCODE=$?
-    git update-ref "$REFNAME" "$OLDREV" ||
-        error "Error replacing reference $REFNAME to $OLDREV"
-    return $RETCODE
-}
-
-# Like test_update, but using example post-receive script:
-test_hook() {
-    REFNAME="$1"
-    OLDREV=$(git rev-parse "$2")
-    NEWREV=$(git rev-parse "$REFNAME")
-    shift 2
-    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE" "$@"
-}
-
-verbose_do() {
-    if test $# -gt 1
-    then
-	(
-	    printf "\$ %s" "$1"
-	    shift
-	    # Show each argument quoted (e.g. to distinguish between
-	    # '' and nothing at all).
-	    printf " '%s'" "$@"
-	    printf '\n'
-	)
-    else
-	printf "\$ %s\n" "$*"
-    fi
-    "$@"
-}
 
 test_create refs/heads/master
 test_update refs/heads/master refs/heads/master^^ -c multimailhook.refChangeShowGraph=true -c multimailhook.graphOpts=--oneline
