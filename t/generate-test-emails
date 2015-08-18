@@ -1,12 +1,6 @@
 #! /bin/sh
 
-D=$(cd $(dirname "$0") && pwd)
-cd "$D" || exit 1
-. ./helper-functions.sh || exit 1
-
-TESTREPO=$("$D/create-test-repo")
-
-cd "$TESTREPO"
+. "$SHARNESS_TEST_DIRECTORY"/helper-functions.sh || exit 1
 
 test_create refs/heads/master
 test_update refs/heads/master refs/heads/master^^ -c multimailhook.refChangeShowGraph=true -c multimailhook.graphOpts=--oneline

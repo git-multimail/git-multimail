@@ -42,8 +42,7 @@ create-test-repo:
     Create a test repository "test-repo.git" that can be used for
     testing git-multimail.  Most of the repository is created by
     loading the dumpfile "test-repo.dump", then a few more weird tags
-    are created that point to objects other than commits.  This script
-    is invoked automatically by generate-test-emails.
+    are created that point to objects other than commits.
 
 fake-sendmail:
 
