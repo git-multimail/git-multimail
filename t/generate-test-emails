@@ -102,5 +102,3 @@ for o in mailinglist refchangelist announcelist commitlist; do
 done
 test_update refs/heads/formatting refs/heads/formatting^^^
 
-rm -rf "$TESTREPO"
-

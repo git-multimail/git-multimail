@@ -79,4 +79,8 @@ test_expect_success "test-email-content" '
 	check_email_content all email-content.d/all
 '
 
+test_expect_success 'cleanup' '
+	rm -rf "$TESTREPO"
+'
+
 test_done
