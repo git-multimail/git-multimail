@@ -451,7 +451,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: From <from@example.com>
+From: John O'Connor <john@example.com>
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -516,7 +516,7 @@ Subject: *test-repo* 01/05: a2
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: John O'Connor <john@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -564,7 +564,7 @@ Subject: *test-repo* 02/05: a3
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: John O'Connor <john@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -612,7 +612,7 @@ Subject: *test-repo* 03/05: a4
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: John O'Connor <john@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -660,7 +660,7 @@ Subject: *test-repo* 04/05: m1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: John O'Connor <john@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -710,7 +710,7 @@ Subject: *test-repo* 05/05: a5
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: John O'Connor <john@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
