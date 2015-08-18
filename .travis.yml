@@ -5,4 +5,4 @@ python:
 install:
   - pip install pep8
   - pip install rstcheck==1.0 # latest version seems broken with Python 2.6
-script: ./t/run-tests
+script: cd t/ && verbose=t make all

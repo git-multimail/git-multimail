@@ -17,7 +17,7 @@ Short instructions
 
 For an approximate test that you haven't broken anything, run::
 
-    $ t/run-tests
+    $ verbose=t make
 
 , which runs all available tests.  The main test, test-email-content,
 simulates the sending of many notification emails for a test
@@ -65,10 +65,6 @@ generate-test-emails:
     sent for those pushes.  The output of this script can be filtered
     using filter-noise then compared against multimail.expect by
     running test-email-content.
-
-run-tests:
-
-    Run all available tests.
 
 test-email-content:
 
