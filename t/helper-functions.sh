@@ -26,8 +26,19 @@ fi
 
 ZEROS=0000000000000000000000000000000000000000
 
+if [ -z "$PYTHON" ]
+then
+    PYTHON=python2
+fi
+
 # Calling git-multimail
-MULTIMAIL="$SHARNESS_TEST_DIRECTORY/../git-multimail/git_multimail.py"
+if "$PYTHON" --version 2>&1 | grep -q "^Python 3"
+then
+    (cd "$SHARNESS_TEST_DIRECTORY/../git-multimail/" && make git_multimail3.py) >/dev/null 2>&1
+    MULTIMAIL="$SHARNESS_TEST_DIRECTORY/../git-multimail/git_multimail3.py"
+else
+    MULTIMAIL="$SHARNESS_TEST_DIRECTORY/../git-multimail/git_multimail.py"
+fi
 MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
     sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
 POST_RECEIVE="$SHARNESS_TEST_DIRECTORY/../git-multimail/post-receive.example"
