@@ -18,10 +18,12 @@ MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
 export MULTIMAIL_VERSION_QUOTED
 
 test_email_content() {
-	log "Comparing generated emails to $d/multimail.expect ..."
+	log "Generating emails ..."
 
 	"$SHARNESS_TEST_DIRECTORY"/generate-test-emails 2>&1 |
 	"$SHARNESS_TEST_DIRECTORY"/filter-noise >multimail.actual
+
+	log "Comparing generated emails to $d/multimail.expect ..."
 
 	GIT_PAGER=cat git diff -u "$SHARNESS_TEST_DIRECTORY"/multimail.expect multimail.actual
 	if test $? -ne 0
