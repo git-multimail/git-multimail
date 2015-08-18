@@ -17,15 +17,11 @@ MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
     sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
 export MULTIMAIL_VERSION_QUOTED
 
-test_email_content() {
-	log "Generating emails ..."
-
-	"$SHARNESS_TEST_DIRECTORY"/generate-test-emails 2>&1 |
-	"$SHARNESS_TEST_DIRECTORY"/filter-noise >multimail.actual
-
+check_email_content() {
 	log "Comparing generated emails to $d/multimail.expect ..."
 
-	GIT_PAGER=cat git diff -u "$SHARNESS_TEST_DIRECTORY"/multimail.expect multimail.actual
+	"$SHARNESS_TEST_DIRECTORY"/filter-noise <multimail.actual >multimail.filtered
+	GIT_PAGER=cat git diff -u "$SHARNESS_TEST_DIRECTORY"/multimail.expect multimail.filtered
 	if test $? -ne 0
 	then
 		fatal "
@@ -34,14 +30,18 @@ FAILURE!
 Please investigate the discrepancies shown above.
 If you are sure that your version is correct, then please
 
-    cp $PWD/multimail.actual $d/multimail.expect
+    cp $PWD/multimail.filtered $d/multimail.expect
 
 and commit."
 	fi
 }
 
 test_expect_success "test-email-content" '
-	test_email_content
+	log "Generating emails ..."
+	(
+		"$SHARNESS_TEST_DIRECTORY"/generate-test-emails
+	) >multimail.actual 2>&1 &&
+	check_email_content
 '
 
 test_done
