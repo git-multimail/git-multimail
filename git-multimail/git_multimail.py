@@ -736,7 +736,7 @@ class Change(object):
         values['contenttype'] = 'html' if self._contains_html_diff else 'plain'
 
         for line in template.splitlines():
-            (name, value) = line.split(':', 1)
+            (name, value) = line.split(': ', 1)
 
             try:
                 value = value % values
