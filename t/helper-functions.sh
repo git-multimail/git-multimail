@@ -36,8 +36,16 @@ if "$PYTHON" --version 2>&1 | grep -q "^Python 3"
 then
     (cd "$SHARNESS_TEST_DIRECTORY/../git-multimail/" && make git_multimail3.py) >/dev/null 2>&1
     MULTIMAIL="$SHARNESS_TEST_DIRECTORY/../git-multimail/git_multimail3.py"
+    if command -v test_set_prereq >/dev/null
+    then
+	test_set_prereq PYTHON3
+    fi
 else
     MULTIMAIL="$SHARNESS_TEST_DIRECTORY/../git-multimail/git_multimail.py"
+    if command -v test_set_prereq >/dev/null
+    then
+	test_set_prereq PYTHON2
+    fi
 fi
 MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
     sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
