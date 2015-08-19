@@ -97,6 +97,25 @@ test_expect_success PYTHON2 'annotated tag create/update/delete (tag to tree and
 	check_email_content annotated-tag-tree email-content.d/annotated-tag-tree
 '
 
+test_expect_success 'refFilter inclusion/exclusion/doSend/DontSend' '
+	log "Generating emails ..." &&
+	(
+		echo "** Expected below: error" &&
+		verbose_do test_must_fail test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ -c multimailhook.refFilterInclusionRegex=whatever &&
+		echo "** Expected below: no output" &&
+		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ &&
+
+		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/feature$ &&
+
+		echo "** Expected below: a refchange email with all commits marked as new" &&
+		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/master$ &&
+
+		echo "** Expected below: a refchange email with m1 and a5 marked as new and others as add" &&
+		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterDoSendRegex=^refs/heads/master$
+	) >ref-filter 2>&1 &&
+	check_email_content ref-filter email-content.d/ref-filter
+'
+
 # Accents seem to be accepted everywhere except in the email part
 # (sébastien@example.com).
 test_expect_failure 'Non-ascii characters in email' '

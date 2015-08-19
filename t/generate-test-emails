@@ -50,21 +50,7 @@ verbose_do git config multimailhook.commitList ''
 test_update refs/heads/master refs/heads/foo
 verbose_do git config multimailhook.refChangeShowGraph false
 git branch feature "$f"
-
 verbose_do git config multimailhook.commitList 'Commit List <commitlist@example.com>'
-# Should produce no output at all
-# Errors out
-verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ -c multimailhook.refFilterInclusionRegex=whatever
-verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$
-
-verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/feature$
-
-# Should produce a refchange email with all commits marked as new
-verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/master$
-
-# Should produce a refchange email with m1 and a5 marked as new
-# and others as add
-verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterDoSendRegex=^refs/heads/master$
 
 # Test for Gerrit environment
 # (no verbose_do since "$MULTIMAIL" changes from a machine to another)
