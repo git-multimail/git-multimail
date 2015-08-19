@@ -1,5 +1,8 @@
-Release 1.2.0
+Release 1.2.0 (in progress)
 =============
+
+* Preliminary support for Python 3. The testsuite pass with Python 3,
+  but it has not received as much testing as the Python 2 version yet.
 
 * New commitEmailFormat option which can be set to "html" to generate
   simple colorized diffs using HTML for the commit emails.

@@ -40,11 +40,7 @@ import os
 #LIBDIR = 'path/to/directory/containing/module'
 #sys.path.insert(0, LIBDIR)
 
-if sys.version_info >= (3, 0):
-    import git_multimail3
-    git_multimail = git_multimail3
-else:
-    import git_multimail
+import git_multimail
 
 # It is possible to modify the output templates here; e.g.:
 

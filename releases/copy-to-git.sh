@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd "${0%/*}"/.. || exit 1
+SHARNESS_TEST_DIRECTORY=t/
 . t/helper-functions.sh || exit 1
 
 gitsrc="$1"
@@ -35,7 +36,9 @@ then
 	fatal "Please, run this script on a revision with only one tag"
 fi
 
-cp $(git ls-files git-multimail/) "$gitsrc"/contrib/hooks/multimail/
+
+cp $(git ls-files git-multimail/ | grep -v -e '/\.gitignore$') "$gitsrc"/contrib/hooks/multimail/
+
 cd "$gitsrc"/contrib/hooks/multimail/
 sed -e "s/@DATE@/$date/" -e "s/@SHA1@/$sha1 refs\/tags\/$tag/" README.Git.template \
 	>README.Git

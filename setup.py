@@ -4,8 +4,8 @@ import sys
 import os
 from setuptools import setup
 
-assert 0x02040000 <= sys.hexversion < 0x03000000, \
-    "Install Python 2, version 2.4 or greater"
+assert 0x02040000 <= sys.hexversion, \
+    "Install Python, version 2.4 or greater"
 
 def read_version():
     sys.path.insert(0, os.path.join('git-multimail'))
