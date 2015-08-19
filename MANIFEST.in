@@ -1,14 +1,6 @@
 include COPYING
 include git-multimail/README
+include git-multimail/CHANGES
 include git-multimail/README.migrate-from-post-receive-email
 include git-multimail/post-receive.example
 include git-multimail/migrate-mailhook-config
-include t/README
-include t/create-test-repo
-include t/fake-sendmail
-include t/filter-noise
-include t/generate-test-emails
-include t/multimail.expect
-include t/test-env
-include t/test-email-content
-include t/test-repo.dump
