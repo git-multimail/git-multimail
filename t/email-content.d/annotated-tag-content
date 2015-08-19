@@ -4,8 +4,7 @@ Sending notification emails to: Announce List <announcelist@example.com>, Zébul
 Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
-Subject: *test-repo* annotated tag tag-annotated-new-content created (now
- 3fe4049)
+Subject: *test-repo* annotated tag tag-annotated-new-content created (now 3fe4049)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -160,8 +159,7 @@ Sending notification emails to: Announce List <announcelist@example.com>, Zébul
 Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
-Subject: *test-repo* annotated tag tag-annotated-new-content updated
- (902dfe1 -> 3fe4049)
+Subject: *test-repo* annotated tag tag-annotated-new-content updated (902dfe1 -> 3fe4049)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -346,8 +344,7 @@ Sending notification emails to: Announce List <announcelist@example.com>, Zébul
 Date: ...
 To: Announce List <announcelist@example.com>,
  =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
-Subject: *test-repo* annotated tag tag-annotated-new-content deleted (was
- 3fe4049)
+Subject: *test-repo* annotated tag tag-annotated-new-content deleted (was 3fe4049)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit

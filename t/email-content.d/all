@@ -1545,8 +1545,7 @@ Sending notification emails to: Refchange List <refchangelist@example.com>
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Refchange List <refchangelist@example.com>
-Subject: *test-repo* reference refs/remotes/remote updated (902dfe1 ->
- cf3c5de)
+Subject: *test-repo* reference refs/remotes/remote updated (902dfe1 -> cf3c5de)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
