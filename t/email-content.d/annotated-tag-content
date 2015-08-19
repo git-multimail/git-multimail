@@ -1,0 +1,385 @@
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
+Subject: *test-repo* annotated tag tag-annotated-new-content created (now
+ 3fe4049)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: 3fe4049f738325dcf028a306bcb27a50246fab86
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+        at  3fe4049   (tag)
+   tagging  fe0ff82b4b647afd6aa5f85362f95207639e76b1 (commit)
+ tagged by  Joe User
+        on  Sat Jun 30 13:47:18 2012 +0200
+
+- Log -----------------------------------------------------------------
+This annotated tag adds commits.
+
+Joe User (3):
+      a1
+      t1
+      t2
+
+-----------------------------------------------------------------------
+
+This annotated tag includes the following new commits:
+
+       new  8fe34ad   t1
+       new  fe0ff82   t2
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: t1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Rev: 8fe34ad1d135ff2d216e5b1b98be5817943c9622
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+commit 8fe34ad1d135ff2d216e5b1b98be5817943c9622
+Author: Joe User <user@example.com>
+Date:   Sat Jun 30 13:46:41 2012 +0200
+
+    t1
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index d00491f..795ea43 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-1
++t1
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: t2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Rev: fe0ff82b4b647afd6aa5f85362f95207639e76b1
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+commit fe0ff82b4b647afd6aa5f85362f95207639e76b1
+Author: Joe User <user@example.com>
+Date:   Sat Jun 30 13:46:50 2012 +0200
+
+    t2
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 795ea43..9bc7ad0 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-t1
++t2
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
+Subject: *test-repo* annotated tag tag-annotated-new-content updated
+ (902dfe1 -> 3fe4049)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: 3fe4049f738325dcf028a306bcb27a50246fab86
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+*** WARNING: tag tag-annotated-new-content was modified! ***
+
+      from  902dfe1   (commit)
+        to  3fe4049   (tag)
+   tagging  fe0ff82b4b647afd6aa5f85362f95207639e76b1 (commit)
+ tagged by  Joe User
+        on  Sat Jun 30 13:47:18 2012 +0200
+
+- Log -----------------------------------------------------------------
+This annotated tag adds commits.
+
+Joe User (3):
+      a1
+      t1
+      t2
+
+-----------------------------------------------------------------------
+
+     omits  902dfe1   a5
+     omits  d245c99   m1
+     omits  abb8baa   f3
+     omits  c742b15   f2
+     omits  f0e9a98   f1
+     omits  ebf40e1   a4
+     omits  012fc78   a3
+     omits  50d684a   a2
+       new  8fe34ad   t1
+       new  fe0ff82   t2
+
+This update added new revisions after undoing existing revisions.
+That is to say, some revisions that were in the old version of the
+annotated tag are not in the new version.  This situation occurs
+when a user --force pushes a change and generates a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O   (902dfe1)
+            \
+             N -- N -- N   refs/tags/tag-annotated-new-content (3fe4049)
+
+You should already have received notification emails for all of the O
+revisions, and so the following emails describe only the N revisions
+from the common base, B.
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "adds" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: t1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Rev: 8fe34ad1d135ff2d216e5b1b98be5817943c9622
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+commit 8fe34ad1d135ff2d216e5b1b98be5817943c9622
+Author: Joe User <user@example.com>
+Date:   Sat Jun 30 13:46:41 2012 +0200
+
+    t1
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index d00491f..795ea43 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-1
++t1
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: t2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Rev: fe0ff82b4b647afd6aa5f85362f95207639e76b1
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+commit fe0ff82b4b647afd6aa5f85362f95207639e76b1
+Author: Joe User <user@example.com>
+Date:   Sat Jun 30 13:46:50 2012 +0200
+
+    t2
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 795ea43..9bc7ad0 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-t1
++t2
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
+Subject: *test-repo* annotated tag tag-annotated-new-content deleted (was
+ 3fe4049)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tag-annotated-new-content
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 3fe4049f738325dcf028a306bcb27a50246fab86
+X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tag-annotated-new-content
+in repository test-repo.
+
+*** WARNING: tag tag-annotated-new-content was deleted! ***
+
+   tag was  3fe4049
+
+This change permanently discards the following revisions:
+
+  discards  fe0ff82   t2
+  discards  8fe34ad   t1
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################

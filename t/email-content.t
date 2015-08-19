@@ -73,6 +73,16 @@ test_expect_success PYTHON2 'annotated tag create/update/delete' '
 	check_email_content annotated-tag email-content.d/annotated-tag
 '
 
+test_expect_success PYTHON2 'annotated tag create/update/delete (new content)' '
+	log "Generating emails ..." &&
+	(
+		test_create refs/tags/tag-annotated-new-content &&
+		test_update refs/tags/tag-annotated-new-content refs/heads/master &&
+		test_delete refs/tags/tag-annotated-new-content
+	) >annotated-tag-content 2>&1 &&
+	check_email_content annotated-tag-content email-content.d/annotated-tag-content
+'
+
 # Accents seem to be accepted everywhere except in the email part
 # (sébastien@example.com).
 test_expect_failure 'Non-ascii characters in email' '
