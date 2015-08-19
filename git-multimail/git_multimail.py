@@ -74,12 +74,23 @@ if PYTHON3:
         return s.decode(ENCODING)
 
     unicode = str
+
+    def write_str(f, msg):
+        # Try outputing with the default encoding. If it fails,
+        # try UTF-8.
+        try:
+            f.buffer.write(msg.encode(sys.getdefaultencoding()))
+        except UnicodeEncodeError:
+            f.buffer.write(msg.encode(ENCODING))
 else:
     def str_to_bytes(s):
         return s
 
     def bytes_to_str(s):
         return s
+
+    def write_str(f, msg):
+        f.write(msg)
 
 
 try:
@@ -2245,19 +2256,19 @@ class Environment(object):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        sys.stderr.write(msg)
+        write_str(sys.stderr, msg)
 
     def log_warning(self, msg):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        sys.stderr.write(msg)
+        write_str(sys.stderr, msg)
 
     def log_error(self, msg):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        sys.stderr.write(msg)
+        write_str(sys.stderr, msg)
 
 
 class ConfigEnvironmentMixin(Environment):
