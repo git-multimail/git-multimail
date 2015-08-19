@@ -79,20 +79,20 @@ test_email_content 'tag create/update/delete' simple-tag '
 	test_delete refs/tags/tag
 '
 
-test_email_content PYTHON2 'annotated tag create/update/delete' annotated-tag '
+test_email_content 'annotated tag create/update/delete' annotated-tag '
 	test_create refs/tags/tag-annotated &&
 	test_update refs/tags/tag-annotated refs/heads/master &&
 	test_delete refs/tags/tag-annotated
 '
 
-test_email_content PYTHON2 'annotated tag create/update/delete (new content)' \
+test_email_content 'annotated tag create/update/delete (new content)' \
     annotated-tag-content '
 	test_create refs/tags/tag-annotated-new-content &&
 	test_update refs/tags/tag-annotated-new-content refs/heads/master &&
 	test_delete refs/tags/tag-annotated-new-content
 '
 
-test_email_content PYTHON2 'annotated tag create/update/delete (tag to tree and recursive)' \
+test_email_content 'annotated tag create/update/delete (tag to tree and recursive)' \
     annotated-tag-tree '
 	test_create refs/tags/tree-tag &&
 	test_update refs/tags/tree-tag refs/heads/master &&
