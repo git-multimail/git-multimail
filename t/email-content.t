@@ -105,6 +105,14 @@ test_expect_success 'refFilter inclusion/exclusion/doSend/DontSend' '
 		echo "** Expected below: no output" &&
 		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ &&
 
+		verbose_do test_update refs/heads/master refs/heads/master^^ \
+			-c multimailhook.refFilterExclusionRegex=^refs/heads/foo$ \
+			-c multimailhook.refFilterExclusionRegex=^refs/heads/master$ \
+			-c multimailhook.refFilterExclusionRegex=^refs/heads/bar$ &&
+
+		verbose_do test_update refs/heads/master refs/heads/master^^ \
+			-c multimailhook.refFilterExclusionRegex="^refs/heads/foo$ ^refs/heads/master$ ^refs/heads/bar$" \
+
 		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/feature$ &&
 
 		echo "** Expected below: a refchange email with all commits marked as new" &&

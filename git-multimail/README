@@ -567,6 +567,22 @@ multimailhook.refFilterDontSendRegex
     ``refFilterExclusionRegex``, then at the time of merge, you will
     receive one commit email per commit in the branch.
 
+    These variables can be multi-valued, like::
+
+      [multimailhook]
+              refFilterExclusionRegex = ^refs/tags/
+              refFilterExclusionRegex = ^refs/heads/master$
+
+    You can also provide a whitespace-separated list like::
+
+      [multimailhook]
+              refFilterExclusionRegex = ^refs/tags/ ^refs/heads/master$
+
+    Both examples exclude tags and the master branch, and are
+    equivalent to::
+
+      [multimailhook]
+              refFilterExclusionRegex = ^refs/tags/|^refs/heads/master$
 
 Email filtering aids
 --------------------

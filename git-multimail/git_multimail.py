@@ -2680,13 +2680,29 @@ class ConfigRefFilterEnvironmentMixin(
         ):
     """Determine branch filtering statically based on config."""
 
+    def _get_regex(self, config, key):
+        """Get a list of whitespace-separated regex. The refFilter* config
+        variables are multivalued (hence the use of get_all), and we
+        allow each entry to be a whitespace-separated list (hence the
+        split on each line). The whole thing is glued into a single regex."""
+        values = config.get_all(key)
+        if values is None:
+            return values
+        items = []
+        for line in values:
+            for i in line.split():
+                items.append(i)
+        if items == []:
+            return None
+        return '|'.join(items)
+
     def __init__(self, config, **kw):
         super(ConfigRefFilterEnvironmentMixin, self).__init__(
             config=config,
-            ref_filter_incl_regex=config.get('refFilterInclusionRegex'),
-            ref_filter_excl_regex=config.get('refFilterExclusionRegex'),
-            ref_filter_do_send_regex=config.get('refFilterDoSendRegex'),
-            ref_filter_dont_send_regex=config.get('refFilterDontSendRegex'),
+            ref_filter_incl_regex=self._get_regex(config, 'refFilterInclusionRegex'),
+            ref_filter_excl_regex=self._get_regex(config, 'refFilterExclusionRegex'),
+            ref_filter_do_send_regex=self._get_regex(config, 'refFilterDoSendRegex'),
+            ref_filter_dont_send_regex=self._get_regex(config, 'refFilterDontSendRegex'),
             **kw
             )
 
