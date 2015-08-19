@@ -53,6 +53,16 @@ test_expect_success 'HTML messages' '
 	check_email_content html email-content.d/html
 '
 
+test_expect_success 'tag create/update/delete' '
+	log "Generating emails ..." &&
+	(
+		test_create refs/tags/tag &&
+		test_update refs/tags/tag refs/heads/master &&
+		test_delete refs/tags/tag
+	) >simple-tag 2>&1 &&
+	check_email_content simple-tag email-content.d/simple-tag
+'
+
 # Accents seem to be accepted everywhere except in the email part
 # (sébastien@example.com).
 test_expect_failure 'Non-ascii characters in email' '

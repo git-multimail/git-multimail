@@ -21,10 +21,6 @@ test_update refs/heads/feature refs/heads/feature^^^
 test_rewind refs/heads/feature refs/heads/feature^^^
 test_delete refs/heads/feature
 
-test_create refs/tags/tag
-test_update refs/tags/tag refs/heads/master
-test_delete refs/tags/tag
-
 test_create refs/tags/tag-annotated
 test_update refs/tags/tag-annotated refs/heads/master
 test_delete refs/tags/tag-annotated
