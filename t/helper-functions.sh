@@ -137,3 +137,8 @@ export HOME XDG_CONFIG_HOME GIT_CONFIG_NOSYSTEM
 GIT_AUTHOR_DATE="100000000 +0200"
 GIT_COMMITTER_DATE="100000010 +0200"
 export GIT_AUTHOR_DATE GIT_COMMITTER_DATE
+# GIT_WORK_TREE and GIT_DIR must really be unset for the testsuite to
+# be runnable from Git hooks (like pre-push). Others are less
+# important, but let's remain on the safe side.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_INDEX_VERSION \
+    GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES GIT_NAMESPACE
