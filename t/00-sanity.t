@@ -45,9 +45,6 @@ rstcheck_file doc/gitolite.rst
 rstcheck_file doc/gerrit.rst
 rstcheck_file t/README
 
-# W503: line break before binary operator => could eventually be
-# removed, but at a moment where there are less pending PRs.
-#
 # E402: module level import not at top of file => we need this in the
 # tests.
 #
@@ -60,7 +57,7 @@ rstcheck_file t/README
 pep8_file () {
     f=$1
     test_expect_success pep8 "pep8 $f" '
-	pep8 "$D"/../"$f" --ignore=W503,E402,E501,E123
+	pep8 "$D"/../"$f" --ignore=E402,E501,E123
     '
 }
 pep8_file git-multimail/git_multimail.py
