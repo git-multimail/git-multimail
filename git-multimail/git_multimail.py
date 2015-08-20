@@ -1181,10 +1181,10 @@ class ReferenceChange(Change):
             yield '\n'
             yield 'Detailed log of new commits:\n\n'
             for line in read_git_lines(
-                    ['log', '--no-walk']
-                    + self.logopts
-                    + new_commits_list
-                    + ['--'],
+                    ['log', '--no-walk'] +
+                    self.logopts +
+                    new_commits_list +
+                    ['--'],
                     keepends=True,
                     ):
                 yield line
@@ -1338,9 +1338,9 @@ class ReferenceChange(Change):
             yield '\n'
             yield 'Summary of changes:\n'
             for line in read_git_lines(
-                    ['diff-tree']
-                    + self.diffopts
-                    + ['%s..%s' % (self.old.commit_sha1, self.new.commit_sha1,)],
+                    ['diff-tree'] +
+                    self.diffopts +
+                    ['%s..%s' % (self.old.commit_sha1, self.new.commit_sha1,)],
                     keepends=True,
                     ):
                 yield line
@@ -1485,9 +1485,9 @@ class BranchChange(ReferenceChange):
             # commit is a non-merge commit, though it may make sense to
             # combine if it is a merge as well.
             if not (
-                    len(new_commits) == 1
-                    and len(new_commits[0][1]) == 1
-                    and new_commits[0][0] in known_added_sha1s
+                    len(new_commits) == 1 and
+                    len(new_commits[0][1]) == 1 and
+                    new_commits[0][0] in known_added_sha1s
                     ):
                 return None
 
@@ -1781,9 +1781,9 @@ class SendMailer(Mailer):
             p = subprocess.Popen(self.command, stdin=subprocess.PIPE)
         except OSError, e:
             sys.stderr.write(
-                '*** Cannot execute command: %s\n' % ' '.join(self.command)
-                + '*** %s\n' % str(e)
-                + '*** Try setting multimailhook.mailer to "smtp"\n'
+                '*** Cannot execute command: %s\n' % ' '.join(self.command) +
+                '*** %s\n' % str(e) +
+                '*** Try setting multimailhook.mailer to "smtp"\n' +
                 '*** to send emails without using the sendmail command.\n'
                 )
             sys.exit(1)
@@ -2280,9 +2280,9 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         if commit_email_format is not None:
             if commit_email_format != "html" and commit_email_format != "text":
                 self.log_warning(
-                    '*** Unknown value for multimailhook.commitEmailFormat: %s\n'
-                    % commit_email_format
-                    + '*** Expected either "text" or "html".  Ignoring.\n'
+                    '*** Unknown value for multimailhook.commitEmailFormat: %s\n' %
+                    commit_email_format +
+                    '*** Expected either "text" or "html".  Ignoring.\n'
                     )
             else:
                 self.commit_email_format = commit_email_format
@@ -2294,8 +2294,8 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             except ValueError:
                 self.log_warning(
                     '*** Malformed value for multimailhook.maxCommitEmails: %s\n'
-                    % maxcommitemails
-                    + '*** Expected a number.  Ignoring.\n'
+                    % maxcommitemails +
+                    '*** Expected a number.  Ignoring.\n'
                     )
 
         diffopts = config.get('diffopts')
@@ -2337,15 +2337,15 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
     def get_administrator(self):
         return (
-            self.config.get('administrator')
-            or self.get_sender()
-            or super(ConfigOptionsEnvironmentMixin, self).get_administrator()
+            self.config.get('administrator') or
+            self.get_sender() or
+            super(ConfigOptionsEnvironmentMixin, self).get_administrator()
             )
 
     def get_repo_shortname(self):
         return (
-            self.config.get('reponame')
-            or super(ConfigOptionsEnvironmentMixin, self).get_repo_shortname()
+            self.config.get('reponame') or
+            super(ConfigOptionsEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_emailprefix(self):
@@ -2563,10 +2563,10 @@ class StaticRecipientsEnvironmentMixin(Environment):
         # actual *contents* of the change being reported, we only
         # choose based on the *type* of the change.  Therefore we can
         # compute them once and for all:
-        if not (refchange_recipients
-                or announce_recipients
-                or revision_recipients
-                or scancommitforcc):
+        if not (refchange_recipients or
+                announce_recipients or
+                revision_recipients or
+                scancommitforcc):
             raise ConfigurationException('No email recipients configured!')
         self.__refchange_recipients = refchange_recipients
         self.__announce_recipients = announce_recipients
@@ -2759,8 +2759,8 @@ class GitoliteEnvironmentMixin(Environment):
         # repo_shortname (though it's probably not as good as a value
         # the user might have explicitly put in his config).
         return (
-            self.osenv.get('GL_REPO', None)
-            or super(GitoliteEnvironmentMixin, self).get_repo_shortname()
+            self.osenv.get('GL_REPO', None) or
+            super(GitoliteEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_pusher(self):
@@ -3239,9 +3239,9 @@ class Push(object):
             max_emails = change.environment.maxcommitemails
             if max_emails and len(sha1s) > max_emails:
                 change.environment.log_warning(
-                    '*** Too many new commits (%d), not sending commit emails.\n' % len(sha1s)
-                    + '*** Try setting multimailhook.maxCommitEmails to a greater value\n'
-                    + '*** Currently, multimailhook.maxCommitEmails=%d\n' % max_emails
+                    '*** Too many new commits (%d), not sending commit emails.\n' % len(sha1s) +
+                    '*** Try setting multimailhook.maxCommitEmails to a greater value\n' +
+                    '*** Currently, multimailhook.maxCommitEmails=%d\n' % max_emails
                     )
                 return
 
@@ -3331,8 +3331,8 @@ def choose_mailer(config, environment):
         mailer = SendMailer(command=command, envelopesender=environment.get_sender())
     else:
         environment.log_error(
-            'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
-            + 'please use one of "smtp" or "sendmail".\n'
+            'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer +
+            'please use one of "smtp" or "sendmail".\n'
             )
         sys.exit(1)
     return mailer
