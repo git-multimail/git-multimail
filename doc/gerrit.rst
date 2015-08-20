@@ -27,6 +27,9 @@ this::
   #! /bin/sh
   exec /path/to/git_multimail.py "$@"
 
+In both cases, make sure the file is named exactly
+``$site_path/hooks/ref-updated`` and is executable.
+
 (Alternatively, you may configure the ``[hooks]`` section of
 gerrit.config)
 
