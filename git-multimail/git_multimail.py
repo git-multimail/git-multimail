@@ -2280,7 +2280,8 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         if commit_email_format is not None:
             if commit_email_format != "html" and commit_email_format != "text":
                 self.log_warning(
-                    '*** Unknown value for multimailhook.commitEmailFormat: %s\n' % commit_email_format
+                    '*** Unknown value for multimailhook.commitEmailFormat: %s\n'
+                    % commit_email_format
                     + '*** Expected either "text" or "html".  Ignoring.\n'
                     )
             else:
@@ -2292,7 +2293,8 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
                 self.maxcommitemails = int(maxcommitemails)
             except ValueError:
                 self.log_warning(
-                    '*** Malformed value for multimailhook.maxCommitEmails: %s\n' % maxcommitemails
+                    '*** Malformed value for multimailhook.maxCommitEmails: %s\n'
+                    % maxcommitemails
                     + '*** Expected a number.  Ignoring.\n'
                     )
 
