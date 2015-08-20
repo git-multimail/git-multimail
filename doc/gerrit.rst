@@ -5,13 +5,12 @@ Gerrit has its own email-sending system, but you may prefer using
 ``git-multimail`` instead. It supports Gerrit natively as a Gerrit
 ``ref-updated`` hook (Warning: `Gerrit hooks
 <https://gerrit-review.googlesource.com/Documentation/config-hooks.html>`__
-are distinct from Git hooks). supports gitolite natively. Setting up
-``git-multimail`` on a Gerrit installation can be done following the
-instructions below.
+are distinct from Git hooks). Setting up ``git-multimail`` on a Gerrit
+installation can be done following the instructions below.
 
 The explanations show an easy way to set up ``git-multimail``,
 but leave ``git-multimail`` installed and unconfigured for a while. If
-you run gitolite on a production server, it is advised that you
+you run Gerrit on a production server, it is advised that you
 execute the step "Set up the hook" last to avoid confusing your users
 in the meantime.
 
