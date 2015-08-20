@@ -96,8 +96,8 @@ test-repo.dump
 
 email-content.d/
 
-    This directory contains the expected output of email-content.t,
-    already filtered using filter-noise.  Please adjust this file if
+    This directory contains the expected outputs of email-content.t,
+    already filtered using filter-noise.  Please adjust these files if
     you make a change that intentionally alters the output of
     git-multimail.
 
