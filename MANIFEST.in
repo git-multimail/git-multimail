@@ -4,3 +4,4 @@ include git-multimail/CHANGES
 include git-multimail/README.migrate-from-post-receive-email
 include git-multimail/post-receive.example
 include git-multimail/migrate-mailhook-config
+include doc/*.rst
