@@ -60,6 +60,21 @@ Alternatively, you can set up the ``From:`` field on a per-user basis
 by adding a ``BEGIN USER EMAILS``/``END USER EMAILS`` section (see
 ``../README``).
 
+Specificities of Gitolite for Configuration
+-------------------------------------------
+
+Allowing Regular Expressions in Configuration
+.............................................
+
+gitolite has a mechanism to prevent unsafe configuration variable
+values, which prevent characters like ``|`` commonly used in regular
+expressions. If you do not need the safety feature of gitolite and
+need to use regular expressions in your configuration (e.g. for
+``multimailhook.refFilter*`` variables), set
+`UNSAFE_PATT
+<http://gitolite.com/gitolite/git-config.html#unsafe-patt>`__ to a
+less restrictive value.
+
 Troubleshooting
 ---------------
 
