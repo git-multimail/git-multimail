@@ -40,8 +40,11 @@ import os
 #LIBDIR = 'path/to/directory/containing/module'
 #sys.path.insert(0, LIBDIR)
 
-import git_multimail
-
+if sys.version_info >= (3, 0):
+    import git_multimail3
+    git_multimail = git_multimail3
+else:
+    import git_multimail
 
 # It is possible to modify the output templates here; e.g.:
 
@@ -61,8 +64,9 @@ config = git_multimail.Config('multimailhook')
 try:
     environment = git_multimail.GenericEnvironment(config=config)
     #environment = git_multimail.GitoliteEnvironment(config=config)
-except git_multimail.ConfigurationException, e:
-    sys.exit(str(e))
+except git_multimail.ConfigurationException:
+    sys.stderr.write('*** %s\n' % sys.exc_info()[1])
+    sys.exit(1)
 
 
 # Choose the method of sending emails based on the git config:
