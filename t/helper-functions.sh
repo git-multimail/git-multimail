@@ -109,7 +109,10 @@ test_hook() {
     OLDREV=$(git rev-parse "$2")
     NEWREV=$(git rev-parse "$REFNAME")
     shift 2
-    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE" "$@"
+    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$PYTHON" "$POST_RECEIVE" "$@" >output
+    RETCODE=$?
+    cat output
+    return $RETCODE
 }
 
 save_git_config() {
