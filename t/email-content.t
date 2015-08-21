@@ -115,6 +115,9 @@ test_expect_success 'refFilter inclusion/exclusion/doSend/DontSend' '
 
 		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/feature$ &&
 
+		echo "** Expected below: no output, we should match a substring anywhere in the ref" &&
+		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=master$ &&
+
 		echo "** Expected below: a refchange email with all commits marked as new" &&
 		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/master$ &&
 

@@ -6,6 +6,8 @@ $ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refF
 $ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/foo$' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/master$' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/bar$'
 $ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/foo$ ^refs/heads/master$ ^refs/heads/bar$'
 $ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterInclusionRegex=^refs/heads/feature$'
+** Expected below: no output, we should match a substring anywhere in the ref
+$ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterExclusionRegex=master$'
 ** Expected below: a refchange email with all commits marked as new
 $ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterInclusionRegex=^refs/heads/master$'
 Sending notification emails to: Refchange List <refchangelist@example.com>
