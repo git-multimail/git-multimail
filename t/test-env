@@ -36,7 +36,12 @@ class HelperTest(unittest.TestCase):
         'somelong.sampleaddr@example.com',
         ))
     SHORT_ASCII_ADDR = 'John Doe <john@example.com>'
-    SHORT_UNICODE_ADDR = u'Joël Doe <joel@example.com>'
+    SHORT_UNICODE_ADDR = [
+        u'Joël Doe <joel@example.com>',
+         'Joël Doe <joel@example.com>',
+        u'Joël Doe <joël@example.com>',
+         'Joël Doe <joël@example.com>'
+    ]
 
     def test_addr_header_encode_short_ascii(self):
         self.assertEqual(
@@ -47,8 +52,29 @@ class HelperTest(unittest.TestCase):
 
     def test_addr_header_encode_short_unicode(self):
         self.assertEqual(
-            addr_header_encode(self.SHORT_UNICODE_ADDR),
+            addr_header_encode(self.SHORT_UNICODE_ADDR[0]),
             "=?utf-8?b?Sm/Dq2wgRG9l?= <joel@example.com>",
+            "incorrect encoding or wrapping of short unicode address"
+            )
+
+    def test_addr_header_encode_short_unicode2(self):
+        self.assertEqual(
+            addr_header_encode(self.SHORT_UNICODE_ADDR[1]),
+            "=?utf-8?b?Sm/Dq2wgRG9l?= <joel@example.com>",
+            "incorrect encoding or wrapping of short unicode address"
+            )
+
+    def test_addr_header_encode_short_unicode3(self):
+        self.assertEqual(
+            addr_header_encode(self.SHORT_UNICODE_ADDR[2]),
+            "=?utf-8?b?Sm/Dq2wgRG9lIDxqb8OrbEBleGFtcGxlLmNvbT4=?=",
+            "incorrect encoding or wrapping of short unicode address"
+            )
+
+    def test_addr_header_encode_short_unicode4(self):
+        self.assertEqual(
+            addr_header_encode(self.SHORT_UNICODE_ADDR[3]),
+            "=?utf-8?b?Sm/Dq2wgRG9lIDxqb8OrbEBleGFtcGxlLmNvbT4=?=",
             "incorrect encoding or wrapping of short unicode address"
             )
 
