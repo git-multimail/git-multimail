@@ -63,6 +63,21 @@ by adding a ``BEGIN USER EMAILS``/``END USER EMAILS`` section (see
 Specificities of Gitolite for Configuration
 -------------------------------------------
 
+Empty configuration variables
+.............................
+
+With gitolite, the syntax ``config multimailhook.commitList = ""``
+unsets the variable instead of setting it to an empty string (see
+`here
+<http://gitolite.com/gitolite/git-config.html#an-important-warning-about-deleting-a-config-line>`__).
+As a result, there is no way to set a variable to the empty string. As
+a workaround, one can use ``" "`` (a single space) instead of ``""``.
+In most cases (in particular ``multimailhook.*List`` variables), this
+will be equivalent to an empty string.
+
+If you have a use-case where ``" "`` is not an acceptable value and
+you need ``""`` instead, please report it as a bug to git-multimail.
+
 Allowing Regular Expressions in Configuration
 .............................................
 
