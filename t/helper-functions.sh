@@ -58,9 +58,9 @@ test_email() {
     NEWREV="$3"
     shift 3
     pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL" "$@" >output
-    status=$?
+    RETCODE=$?
     cat output
-    return $status
+    return $RETCODE
 }
 
 test_create() {
