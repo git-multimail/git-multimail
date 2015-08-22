@@ -429,27 +429,27 @@ def git_log(spec, **kw):
 def header_encode(text, header_name=None):
     """Encode and line-wrap the value of an email header field."""
 
-    try:
-        if isinstance(text, str):
-            text = text.decode(ENCODING, 'replace')
-        return Header(text, header_name=header_name, charset=Charset(CHARSET)).encode()
-    except UnicodeEncodeError:
-        return Header(text, header_name=header_name, charset=Charset(CHARSET),
-                      errors='replace').encode()
+    # Convert to unicode, if required.
+    if not isinstance(text, unicode):
+        text = unicode(text, 'utf-8')
+
+    return Header(text, header_name=header_name, charset=Charset('utf-8')).encode()
 
 
 def addr_header_encode(text, header_name=None):
     """Encode and line-wrap the value of an email header field containing
     email addresses."""
 
-    return Header(
-        ', '.join(
-            formataddr((header_encode(name), emailaddr))
-            for name, emailaddr in getaddresses([text])
-            ),
-        header_name=header_name,
-        charset=Charset(CHARSET)
-        ).encode()
+    # Convert to unicode, if required.
+    if not isinstance(text, unicode):
+        text = unicode(text, 'utf-8')
+
+    text = ', '.join(
+        formataddr((header_encode(name), emailaddr))
+        for name, emailaddr in getaddresses([text])
+        )
+
+    return Header(text, header_name=header_name, charset=Charset('utf-8')).encode()
 
 
 class Config(object):
