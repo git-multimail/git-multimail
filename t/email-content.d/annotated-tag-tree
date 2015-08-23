@@ -1,0 +1,304 @@
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
+Subject: *test-repo* annotated tag tree-tag created (now df5bc27)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tree-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: df5bc274e13996487dbf1738ea2497549e9ece0e
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tree-tag
+in repository test-repo.
+
+        at  df5bc27   (tag)
+   tagging  1ee77c4aadec637071d45755613424514c82c76e (tag)
+    length  157 bytes
+ tagged by  Joe User
+        on  Thu Nov 22 04:00:00 2012 +0530
+
+- Log -----------------------------------------------------------------
+This annotated tag points at a tag that points at a tree.
+-----------------------------------------------------------------------
+
+This is an unusual reference change because the reference did not
+refer to a commit either before or after the change.  We do not know
+how to provide full information about this reference change.
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
+Subject: *test-repo* annotated tag tree-tag updated (902dfe1 -> df5bc27)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tree-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: df5bc274e13996487dbf1738ea2497549e9ece0e
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tree-tag
+in repository test-repo.
+
+*** WARNING: tag tree-tag was modified! ***
+
+      from  902dfe1   (commit)
+        to  df5bc27   (tag)
+   tagging  1ee77c4aadec637071d45755613424514c82c76e (tag)
+    length  157 bytes
+ tagged by  Joe User
+        on  Thu Nov 22 04:00:00 2012 +0530
+
+- Log -----------------------------------------------------------------
+This annotated tag points at a tag that points at a tree.
+-----------------------------------------------------------------------
+
+The revisions that were on this annotated tag are still contained in
+other references; therefore, this change does not discard any commits
+from the repository.
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
+Subject: *test-repo* annotated tag tree-tag deleted (was df5bc27)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/tree-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: df5bc274e13996487dbf1738ea2497549e9ece0e
+X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag tree-tag
+in repository test-repo.
+
+*** WARNING: tag tree-tag was deleted! ***
+
+   tag was  df5bc27
+
+This is an unusual reference change because the reference did not
+refer to a commit either before or after the change.  We do not know
+how to provide full information about this reference change.
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
+Subject: *test-repo* annotated tag recursive-tag created (now b56d4b8)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/recursive-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: b56d4b8564a5f3082eb493c9e765d7de3237014e
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag recursive-tag
+in repository test-repo.
+
+        at  b56d4b8   (tag)
+   tagging  bc4a4a6920231744413492b4084a96a3cd428ca6 (tag)
+    length  156 bytes
+ tagged by  Joe User
+        on  Thu Nov 22 02:00:00 2012 +0530
+
+- Log -----------------------------------------------------------------
+This annotated tag points at another annotated tag.
+-----------------------------------------------------------------------
+
+No new revisions were added by this update.
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
+Subject: *test-repo* annotated tag recursive-tag updated (902dfe1 -> b56d4b8)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/recursive-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: b56d4b8564a5f3082eb493c9e765d7de3237014e
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag recursive-tag
+in repository test-repo.
+
+*** WARNING: tag recursive-tag was modified! ***
+
+      from  902dfe1   (commit)
+        to  b56d4b8   (tag)
+   tagging  bc4a4a6920231744413492b4084a96a3cd428ca6 (tag)
+    length  156 bytes
+ tagged by  Joe User
+        on  Thu Nov 22 02:00:00 2012 +0530
+
+- Log -----------------------------------------------------------------
+This annotated tag points at another annotated tag.
+-----------------------------------------------------------------------
+
+     omits  902dfe1   a5
+     omits  d245c99   m1
+     omits  abb8baa   f3
+     omits  c742b15   f2
+     omits  f0e9a98   f1
+     omits  ebf40e1   a4
+     omits  012fc78   a3
+     omits  50d684a   a2
+      adds  205e528   r1
+      adds  1034ac6   r2
+
+This update added new revisions after undoing existing revisions.
+That is to say, some revisions that were in the old version of the
+annotated tag are not in the new version.  This situation occurs
+when a user --force pushes a change and generates a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O   (902dfe1)
+            \
+             N -- N -- N   refs/tags/recursive-tag (b56d4b8)
+
+You should already have received notification emails for all of the O
+revisions, and so the following emails describe only the N revisions
+from the common base, B.
+
+Any revisions marked "omits" are not gone; other references still
+refer to them.  Any revisions marked "discards" are gone forever.
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+Sending notification emails to: Announce List <announcelist@example.com>, Zébulon <zeb@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Announce List <announcelist@example.com>,
+ =?utf-8?q?Z=C3=A9bulon?= <zeb@example.com>
+Subject: *test-repo* annotated tag recursive-tag deleted (was b56d4b8)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/tags/recursive-tag
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: b56d4b8564a5f3082eb493c9e765d7de3237014e
+X-Git-Newrev: 0000000000000000000000000000000000000000
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to annotated tag recursive-tag
+in repository test-repo.
+
+*** WARNING: tag recursive-tag was deleted! ***
+
+   tag was  b56d4b8
+
+The revisions that were on this annotated tag are still contained in
+other references; therefore, this change does not discard any commits
+from the repository.
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################

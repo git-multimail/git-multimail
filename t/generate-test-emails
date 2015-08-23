@@ -1,105 +1,5 @@
-#! /bin/sh
-
-ZEROS=0000000000000000000000000000000000000000
-
-D=$(cd $(dirname "$0") && pwd)
-cd "$D" || exit 1
-. ./helper-functions.sh || exit 1
-MULTIMAIL="$D/../git-multimail/git_multimail.py"
-MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
-    sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
-POST_RECEIVE="$D/../git-multimail/post-receive.example"
-
-TESTREPO=$("$D/create-test-repo")
-
-HOME="$D"
-XDG_CONFIG_HOME="$D"
-GIT_CONFIG_NOSYSTEM=1
-export HOME XDG_CONFIG_HOME GIT_CONFIG_NOSYSTEM
-
-cd "$TESTREPO"
-
-test_email() {
-    REFNAME="$1"
-    OLDREV="$2"
-    NEWREV="$3"
-    shift 3
-    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL" "$@"
-}
-
-test_create() {
-    REFNAME="$1"
-    NEWREV=$(git rev-parse "$REFNAME")
-    shift
-    test_email "$REFNAME" "$ZEROS" "$NEWREV" "$@"
-}
-
-test_update() {
-    REFNAME="$1"
-    OLDREV=$(git rev-parse "$2")
-    NEWREV=$(git rev-parse "$REFNAME")
-    shift 2
-    test_email "$REFNAME" "$OLDREV" "$NEWREV" "$@"
-}
-
-test_delete() {
-    REFNAME="$1"
-    OLDREV=$(git rev-parse "$REFNAME")
-    shift
-    git update-ref -d "$REFNAME" "$OLDREV" &&
-    test_email "$REFNAME" "$OLDREV" "$ZEROS" "$@"
-    RETCODE=$?
-    git update-ref "$REFNAME" "$OLDREV" ||
-        error "Error replacing reference $REFNAME to $OLDREV"
-    return $RETCODE
-}
-
-test_rewind() {
-    REFNAME="$1"
-    OLDREV=$(git rev-parse "$REFNAME")
-    NEWREV=$(git rev-parse "$2")
-    shift 2
-    git update-ref "$REFNAME" "$NEWREV" "$OLDREV" &&
-    test_email "$REFNAME" "$OLDREV" "$NEWREV" "$@"
-    RETCODE=$?
-    git update-ref "$REFNAME" "$OLDREV" ||
-        error "Error replacing reference $REFNAME to $OLDREV"
-    return $RETCODE
-}
-
-# Like test_update, but using example post-receive script:
-test_hook() {
-    REFNAME="$1"
-    OLDREV=$(git rev-parse "$2")
-    NEWREV=$(git rev-parse "$REFNAME")
-    shift 2
-    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE" "$@"
-}
-
-verbose_do() {
-    if test $# -gt 1
-    then
-	(
-	    printf "\$ %s" "$1"
-	    shift
-	    # Show each argument quoted (e.g. to distinguish between
-	    # '' and nothing at all).
-	    printf " '%s'" "$@"
-	    printf '\n'
-	)
-    else
-	printf "\$ %s\n" "$*"
-    fi
-    "$@"
-}
-
-test_create refs/heads/master
-verbose_do git config multimailhook.refChangeShowGraph true
-verbose_do git config multimailhook.graphOpts '--oneline'
-test_update refs/heads/master refs/heads/master^^
-verbose_do git config multimailhook.refChangeShowGraph false
-verbose_do git config --unset multimailhook.graphOpts
-test_update refs/heads/master refs/heads/feature
+test_update refs/heads/master refs/heads/master^^ -c multimailhook.refChangeShowGraph=true -c multimailhook.graphOpts=--oneline
+test_update refs/heads/master refs/heads/feature -c multimailhook.from="John O'Connor <john@example.com>"
 test_delete refs/heads/master
 test_rewind refs/heads/master refs/heads/master^^
 test_rewind refs/heads/master refs/heads/feature
@@ -114,34 +14,12 @@ verbose_do git config multimailhook.refchangelist 'Commit List <commitlist@examp
 test_update refs/heads/release refs/heads/release^
 verbose_do git config multimailhook.refchangelist 'Refchange List <refchangelist@example.com>'
 
-verbose_do git config multimailhook.refChangeShowGraph true
-test_rewind refs/heads/release refs/heads/release^^
-verbose_do git config multimailhook.refChangeShowGraph false
+test_rewind refs/heads/release refs/heads/release^^ -c multimailhook.refChangeShowGraph=true
 
 test_create refs/heads/feature
 test_update refs/heads/feature refs/heads/feature^^^
 test_rewind refs/heads/feature refs/heads/feature^^^
 test_delete refs/heads/feature
-
-test_create refs/tags/tag
-test_update refs/tags/tag refs/heads/master
-test_delete refs/tags/tag
-
-test_create refs/tags/tag-annotated
-test_update refs/tags/tag-annotated refs/heads/master
-test_delete refs/tags/tag-annotated
-
-test_create refs/tags/tag-annotated-new-content
-test_update refs/tags/tag-annotated-new-content refs/heads/master
-test_delete refs/tags/tag-annotated-new-content
-
-test_create refs/tags/tree-tag
-test_update refs/tags/tree-tag refs/heads/master
-test_delete refs/tags/tree-tag
-
-test_create refs/tags/recursive-tag
-test_update refs/tags/recursive-tag refs/heads/master
-test_delete refs/tags/recursive-tag
 
 verbose_do git config multimailhook.fromCommit author
 test_create refs/remotes/remote
@@ -172,30 +50,7 @@ verbose_do git config multimailhook.commitList ''
 test_update refs/heads/master refs/heads/foo
 verbose_do git config multimailhook.refChangeShowGraph false
 git branch feature "$f"
-
 verbose_do git config multimailhook.commitList 'Commit List <commitlist@example.com>'
-# Should produce no output at all
-verbose_do git config multimailhook.refFilterExclusionRegex ^refs/heads/master$
-verbose_do git config multimailhook.refFilterInclusionRegex whatever
-# Errors out
-verbose_do test_update refs/heads/master refs/heads/master^^
-verbose_do git config --unset multimailhook.refFilterInclusionRegex
-verbose_do test_update refs/heads/master refs/heads/master^^
-
-verbose_do git config --unset multimailhook.refFilterExclusionRegex
-verbose_do git config multimailhook.refFilterInclusionRegex ^refs/heads/feature$
-verbose_do test_update refs/heads/master refs/heads/master^^
-
-# Should produce a refchange email with all commits marked as new
-verbose_do git config multimailhook.refFilterInclusionRegex ^refs/heads/master$
-verbose_do test_update refs/heads/master refs/heads/master^^
-verbose_do git config --unset multimailhook.refFilterInclusionRegex
-
-# Should produce a refchange email with m1 and a5 marked as new
-# and others as add
-verbose_do git config multimailhook.refFilterDoSendRegex ^refs/heads/master$
-verbose_do test_update refs/heads/master refs/heads/master^^
-verbose_do git config --unset multimailhook.refFilterDoSendRegex
 
 # Test for Gerrit environment
 # (no verbose_do since "$MULTIMAIL" changes from a machine to another)
@@ -208,6 +63,4 @@ for o in mailinglist refchangelist announcelist commitlist; do
     verbose_do git config multimailhook."$o" ''
 done
 test_update refs/heads/formatting refs/heads/formatting^^^
-
-rm -rf "$TESTREPO"
 

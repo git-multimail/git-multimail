@@ -58,6 +58,7 @@ import shlex
 import optparse
 import smtplib
 import time
+import cgi
 
 try:
     from email.charset import Charset
@@ -113,7 +114,7 @@ Date: %(send_date)s
 To: %(recipients)s
 Subject: %(subject)s
 MIME-Version: 1.0
-Content-Type: text/plain; charset=%(charset)s
+Content-Type: text/%(contenttype)s; charset=%(charset)s
 Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
@@ -244,7 +245,7 @@ To: %(recipients)s
 Cc: %(cc_recipients)s
 Subject: %(emailprefix)s%(num)02d/%(tot)02d: %(oneline)s
 MIME-Version: 1.0
-Content-Type: text/plain; charset=%(charset)s
+Content-Type: text/%(contenttype)s; charset=%(charset)s
 Content-Transfer-Encoding: 8bit
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
@@ -278,7 +279,7 @@ Date: %(send_date)s
 To: %(recipients)s
 Subject: %(subject)s
 MIME-Version: 1.0
-Content-Type: text/plain; charset=%(charset)s
+Content-Type: text/%(contenttype)s; charset=%(charset)s
 Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
@@ -672,6 +673,12 @@ class Change(object):
     def __init__(self, environment):
         self.environment = environment
         self._values = None
+        self._contains_html_diff = False
+
+    def _contains_diff(self):
+        # We do contain a diff, should it be rendered in HTML?
+        if self.environment.commit_email_format == "html":
+            self._contains_html_diff = True
 
     def _compute_values(self):
         """Return a dictionary {keyword: expansion} for this Change.
@@ -729,8 +736,10 @@ class Change(object):
         skip lines that contain references to unknown variables."""
 
         values = self.get_values(**extra_values)
+        values['contenttype'] = 'html' if self._contains_html_diff else 'plain'
+
         for line in template.splitlines():
-            (name, value) = line.split(':', 1)
+            (name, value) = line.split(': ', 1)
 
             try:
                 value = value % values
@@ -780,6 +789,24 @@ class Change(object):
 
         raise NotImplementedError()
 
+    def _wrap_for_html(self, lines):
+        """Wrap the lines in HTML <pre> tag when using HTML format.
+
+        Escape special HTML characters and add <pre> and </pre> tags around
+        the given lines if we should be generating HTML as indicated by
+        self._contains_html_diff being set to true.
+        """
+        if self._contains_html_diff:
+            yield "<pre style='margin:0'>\n"
+
+            for line in lines:
+                yield cgi.escape(line)
+
+            yield '</pre>\n'
+        else:
+            for line in lines:
+                yield line
+
     def generate_email(self, push, body_filter=None, extra_header_values={}):
         """Generate an email describing this change.
 
@@ -795,16 +822,51 @@ class Change(object):
         for line in self.generate_email_header(**extra_header_values):
             yield line
         yield '\n'
-        for line in self.generate_email_intro():
+        for line in self._wrap_for_html(self.generate_email_intro()):
             yield line
 
         body = self.generate_email_body(push)
         if body_filter is not None:
             body = body_filter(body)
+
+        diff_started = False
         for line in body:
+            if self._contains_html_diff:
+                # This is very, very naive. It would be much better to really
+                # parse the diff, i.e. look at how many lines do we have in
+                # the hunk headers instead of blindly highlighting everything
+                # that looks like it might be part of a diff.
+                color = ''
+                if line.startswith('--- a/'):
+                    diff_started = True
+                    color = 'e0e0ff'
+                elif diff_started:
+                    if line.startswith('+++ '):
+                        color = 'e0e0ff'
+                    elif line.startswith('@@'):
+                        color = 'e0e0e0'
+                    elif line.startswith('+'):
+                        color = 'e0ffe0'
+                    if line.startswith('-'):
+                        color = 'ffe0e0'
+
+                # Chop the trailing LF, we don't want it inside <pre>.
+                line = cgi.escape(line[:-1])
+                if line:
+                    line = "<pre style='margin:0'>%s</pre>" % line
+                else:
+                    # Empty <pre> is just ignored, so represent blank lines
+                    # otherwise.
+                    line = '<br>'
+
+                if color:
+                    line = "<div style='background:#%s'>%s</div>\n" % (color, line)
+                else:
+                    line = line + '\n'
+
             yield line
 
-        for line in self.generate_email_footer():
+        for line in self._wrap_for_html(self.generate_email_footer()):
             yield line
 
     def get_alt_fromaddr(self):
@@ -893,6 +955,10 @@ class Revision(Change):
 
     def generate_email_footer(self):
         return self.expand_lines(REVISION_FOOTER_TEMPLATE)
+
+    def generate_email(self, push, body_filter=None, extra_header_values={}):
+        self._contains_diff()
+        return Change.generate_email(self, push, body_filter, extra_header_values)
 
     def get_alt_fromaddr(self):
         return self.environment.from_commit
@@ -1118,10 +1184,10 @@ class ReferenceChange(Change):
             yield '\n'
             yield 'Detailed log of new commits:\n\n'
             for line in read_git_lines(
-                    ['log', '--no-walk']
-                    + self.logopts
-                    + new_commits_list
-                    + ['--'],
+                    ['log', '--no-walk'] +
+                    self.logopts +
+                    new_commits_list +
+                    ['--'],
                     keepends=True,
                     ):
                 yield line
@@ -1275,9 +1341,9 @@ class ReferenceChange(Change):
             yield '\n'
             yield 'Summary of changes:\n'
             for line in read_git_lines(
-                    ['diff-tree']
-                    + self.diffopts
-                    + ['%s..%s' % (self.old.commit_sha1, self.new.commit_sha1,)],
+                    ['diff-tree'] +
+                    self.diffopts +
+                    ['%s..%s' % (self.old.commit_sha1, self.new.commit_sha1,)],
                     keepends=True,
                     ):
                 yield line
@@ -1422,9 +1488,9 @@ class BranchChange(ReferenceChange):
             # commit is a non-merge commit, though it may make sense to
             # combine if it is a merge as well.
             if not (
-                    len(new_commits) == 1
-                    and len(new_commits[0][1]) == 1
-                    and new_commits[0][0] in known_added_sha1s
+                    len(new_commits) == 1 and
+                    len(new_commits[0][1]) == 1 and
+                    new_commits[0][0] in known_added_sha1s
                     ):
                 return None
 
@@ -1457,6 +1523,7 @@ class BranchChange(ReferenceChange):
             values['subject'] = self.expand(COMBINED_REFCHANGE_REVISION_SUBJECT_TEMPLATE, **values)
 
         self._single_revision = revision
+        self._contains_diff()
         self.header_template = COMBINED_HEADER_TEMPLATE
         self.intro_template = COMBINED_INTRO_TEMPLATE
         self.footer_template = COMBINED_FOOTER_TEMPLATE
@@ -1717,9 +1784,9 @@ class SendMailer(Mailer):
             p = subprocess.Popen(self.command, stdin=subprocess.PIPE)
         except OSError, e:
             sys.stderr.write(
-                '*** Cannot execute command: %s\n' % ' '.join(self.command)
-                + '*** %s\n' % str(e)
-                + '*** Try setting multimailhook.mailer to "smtp"\n'
+                '*** Cannot execute command: %s\n' % ' '.join(self.command) +
+                '*** %s\n' % str(e) +
+                '*** Try setting multimailhook.mailer to "smtp"\n' +
                 '*** to send emails without using the sendmail command.\n'
                 )
             sys.exit(1)
@@ -1946,6 +2013,11 @@ class Environment(object):
 
             True iff announce emails should include a shortlog.
 
+        commit_email_format (string)
+
+            If "html", generate commit emails in HTML instead of plain text
+            used by default.
+
         refchange_showgraph (bool)
 
             True iff refchanges emails should include a detailed graph.
@@ -2003,6 +2075,7 @@ class Environment(object):
     def __init__(self, osenv=None):
         self.osenv = osenv or os.environ
         self.announce_show_shortlog = False
+        self.commit_email_format = "text"
         self.maxcommitemails = 500
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.graphopts = ['--oneline', '--decorate']
@@ -2206,14 +2279,26 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             if val is not None:
                 setattr(self, var, val)
 
+        commit_email_format = config.get('commitEmailFormat')
+        if commit_email_format is not None:
+            if commit_email_format != "html" and commit_email_format != "text":
+                self.log_warning(
+                    '*** Unknown value for multimailhook.commitEmailFormat: %s\n' %
+                    commit_email_format +
+                    '*** Expected either "text" or "html".  Ignoring.\n'
+                    )
+            else:
+                self.commit_email_format = commit_email_format
+
         maxcommitemails = config.get('maxcommitemails')
         if maxcommitemails is not None:
             try:
                 self.maxcommitemails = int(maxcommitemails)
             except ValueError:
                 self.log_warning(
-                    '*** Malformed value for multimailhook.maxCommitEmails: %s\n' % maxcommitemails
-                    + '*** Expected a number.  Ignoring.\n'
+                    '*** Malformed value for multimailhook.maxCommitEmails: %s\n'
+                    % maxcommitemails +
+                    '*** Expected a number.  Ignoring.\n'
                     )
 
         diffopts = config.get('diffopts')
@@ -2255,15 +2340,15 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 
     def get_administrator(self):
         return (
-            self.config.get('administrator')
-            or self.get_sender()
-            or super(ConfigOptionsEnvironmentMixin, self).get_administrator()
+            self.config.get('administrator') or
+            self.get_sender() or
+            super(ConfigOptionsEnvironmentMixin, self).get_administrator()
             )
 
     def get_repo_shortname(self):
         return (
-            self.config.get('reponame')
-            or super(ConfigOptionsEnvironmentMixin, self).get_repo_shortname()
+            self.config.get('reponame') or
+            super(ConfigOptionsEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_emailprefix(self):
@@ -2481,10 +2566,10 @@ class StaticRecipientsEnvironmentMixin(Environment):
         # actual *contents* of the change being reported, we only
         # choose based on the *type* of the change.  Therefore we can
         # compute them once and for all:
-        if not (refchange_recipients
-                or announce_recipients
-                or revision_recipients
-                or scancommitforcc):
+        if not (refchange_recipients or
+                announce_recipients or
+                revision_recipients or
+                scancommitforcc):
             raise ConfigurationException('No email recipients configured!')
         self.__refchange_recipients = refchange_recipients
         self.__announce_recipients = announce_recipients
@@ -2600,13 +2685,29 @@ class ConfigRefFilterEnvironmentMixin(
         ):
     """Determine branch filtering statically based on config."""
 
+    def _get_regex(self, config, key):
+        """Get a list of whitespace-separated regex. The refFilter* config
+        variables are multivalued (hence the use of get_all), and we
+        allow each entry to be a whitespace-separated list (hence the
+        split on each line). The whole thing is glued into a single regex."""
+        values = config.get_all(key)
+        if values is None:
+            return values
+        items = []
+        for line in values:
+            for i in line.split():
+                items.append(i)
+        if items == []:
+            return None
+        return '|'.join(items)
+
     def __init__(self, config, **kw):
         super(ConfigRefFilterEnvironmentMixin, self).__init__(
             config=config,
-            ref_filter_incl_regex=config.get('refFilterInclusionRegex'),
-            ref_filter_excl_regex=config.get('refFilterExclusionRegex'),
-            ref_filter_do_send_regex=config.get('refFilterDoSendRegex'),
-            ref_filter_dont_send_regex=config.get('refFilterDontSendRegex'),
+            ref_filter_incl_regex=self._get_regex(config, 'refFilterInclusionRegex'),
+            ref_filter_excl_regex=self._get_regex(config, 'refFilterExclusionRegex'),
+            ref_filter_do_send_regex=self._get_regex(config, 'refFilterDoSendRegex'),
+            ref_filter_dont_send_regex=self._get_regex(config, 'refFilterDontSendRegex'),
             **kw
             )
 
@@ -2661,8 +2762,8 @@ class GitoliteEnvironmentMixin(Environment):
         # repo_shortname (though it's probably not as good as a value
         # the user might have explicitly put in his config).
         return (
-            self.osenv.get('GL_REPO', None)
-            or super(GitoliteEnvironmentMixin, self).get_repo_shortname()
+            self.osenv.get('GL_REPO', None) or
+            super(GitoliteEnvironmentMixin, self).get_repo_shortname()
             )
 
     def get_pusher(self):
@@ -3141,9 +3242,9 @@ class Push(object):
             max_emails = change.environment.maxcommitemails
             if max_emails and len(sha1s) > max_emails:
                 change.environment.log_warning(
-                    '*** Too many new commits (%d), not sending commit emails.\n' % len(sha1s)
-                    + '*** Try setting multimailhook.maxCommitEmails to a greater value\n'
-                    + '*** Currently, multimailhook.maxCommitEmails=%d\n' % max_emails
+                    '*** Too many new commits (%d), not sending commit emails.\n' % len(sha1s) +
+                    '*** Try setting multimailhook.maxCommitEmails to a greater value\n' +
+                    '*** Currently, multimailhook.maxCommitEmails=%d\n' % max_emails
                     )
                 return
 
@@ -3233,8 +3334,8 @@ def choose_mailer(config, environment):
         mailer = SendMailer(command=command, envelopesender=environment.get_sender())
     else:
         environment.log_error(
-            'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer
-            + 'please use one of "smtp" or "sendmail".\n'
+            'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer +
+            'please use one of "smtp" or "sendmail".\n'
             )
         sys.exit(1)
     return mailer
@@ -3437,6 +3538,14 @@ def main(args):
             ),
         )
     parser.add_option(
+        '-c', metavar="<name>=<value>", action='append',
+        help=(
+            'Pass a configuration parameter through to git.  The value given '
+            'will override values from configuration files.  See the -c option '
+            'of git(1) for more details.  (Only works with git >= 1.7.3)'
+            ),
+        )
+    parser.add_option(
         '--version', '-v', action='store_true', default=False,
         help=(
             "Display git-multimail's version"
@@ -3467,6 +3576,19 @@ def main(args):
     if options.version:
         sys.stdout.write('git-multimail version ' + get_version() + '\n')
         return
+
+    if options.c:
+        parameters = os.environ.get('GIT_CONFIG_PARAMETERS', '')
+        if parameters:
+            parameters += ' '
+        # git expects GIT_CONFIG_PARAMETERS to be of the form
+        #    "'name1=value1' 'name2=value2' 'name3=value3'"
+        # including everything inside the double quotes (but not the double
+        # quotes themselves).  Spacing is critical.  Also, if a value contains
+        # a literal single quote that quote must be represented using the
+        # four character sequence: '\''
+        parameters += ' '.join("'" + x.replace("'", "'\\''") + "'" for x in options.c)
+        os.environ['GIT_CONFIG_PARAMETERS'] = parameters
 
     config = Config('multimailhook')
 

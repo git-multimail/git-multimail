@@ -1,20 +1,23 @@
 Aids to testing git-multimail.
 
 This directory contains some scripts that can be used to help test
-git-multimail.  The tests are not very complete and not very
+git-multimail.  The tests are not very complete and not all of them are
 automated, but they do catch many errors.
 
 It is likely that the test scripts only work correctly on Linux/Unix,
 and it is quite possible that they require a newer version of Python
 than does the git-multimail script itself.
 
+The testsuite uses Sharness_. Tests scripts are ``*.t`` files.
+
+.. _Sharness: https://github.com/mlafeldt/sharness
 
 Short instructions
 ==================
 
-For an approximate test that you haven't broken anything, run
+For an approximate test that you haven't broken anything, run::
 
-    $ t/run-tests
+    $ verbose=t make
 
 , which runs all available tests.  The main test, test-email-content,
 simulates the sending of many notification emails for a test
@@ -34,13 +37,18 @@ b. Your change intentionally improved something.  Make absolutely sure
 Test scripts
 ============
 
+email-content.t:
+
+    This is the main test script, it calls git_multimail.py in various
+    conditions with --stdout, and checks that the output is the
+    expected one. Expected output is stored in ``email-content.d/*``.
+
 create-test-repo:
 
     Create a test repository "test-repo.git" that can be used for
     testing git-multimail.  Most of the repository is created by
     loading the dumpfile "test-repo.dump", then a few more weird tags
-    are created that point to objects other than commits.  This script
-    is invoked automatically by generate-test-emails.
+    are created that point to objects other than commits.
 
 fake-sendmail:
 
@@ -57,21 +65,14 @@ filter-noise:
 
 generate-test-emails:
 
+    **Warning:** The use of this file is deprecated. Use
+    email-content.t instead.
+
     Runs create-test-repo and then simulates a bunch of pushes to the
     repository, writing to stdout the emails that would normally be
     sent for those pushes.  The output of this script can be filtered
     using filter-noise then compared against multimail.expect by
     running test-email-content.
-
-run-tests:
-
-    Run all available tests.
-
-test-email-content:
-
-    Compare the output of generate-test-emails (filtered using
-    filter-noise) to the expected output that is recorded in
-    multimail.expect.
 
 test-env:
 
@@ -84,15 +85,19 @@ test-env:
 Other files
 ===========
 
+helper-functions.sh
+
+    A set of shell functions and variables used by other scripts.
+
 test-repo.dump
 
     A file that is read by create-test-repo (using "git fast-import")
     to create most of the test repository.
 
-multimail.expect
+email-content.d/
 
-    This file contains the expected output of generate-test-emails,
-    already filtered using filter-noise.  Please adjust this file if
+    This directory contains the expected outputs of email-content.t,
+    already filtered using filter-noise.  Please adjust these files if
     you make a change that intentionally alters the output of
     git-multimail.
 

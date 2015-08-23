@@ -38,8 +38,6 @@ git-multimail-v2
 Ideas for the future
 ====================
 
-* Allow branch-specific configuration.
-
 * Support LDAP, for example by adding an LDAP environment:
 
   * Use LDAP to convert pusher usernames to email addresses.

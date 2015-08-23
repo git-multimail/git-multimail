@@ -1,9 +1,7 @@
 Setting up git-multimail on gitolite
 ====================================
 
-``git-multimail`` supports gitolite natively. Setting up
-``git-multimail`` on a gitolite 3 installation can be done like this:
-
+``git-multimail`` supports gitolite 3 natively.
 The explanations below show an easy way to set up ``git-multimail``,
 but leave ``git-multimail`` installed and unconfigured for a while. If
 you run gitolite on a production server, it is advised that you
@@ -59,6 +57,36 @@ for repositories for which you want ``git-multimail``.
 Alternatively, you can set up the ``From:`` field on a per-user basis
 by adding a ``BEGIN USER EMAILS``/``END USER EMAILS`` section (see
 ``../README``).
+
+Specificities of Gitolite for Configuration
+-------------------------------------------
+
+Empty configuration variables
+.............................
+
+With gitolite, the syntax ``config multimailhook.commitList = ""``
+unsets the variable instead of setting it to an empty string (see
+`here
+<http://gitolite.com/gitolite/git-config.html#an-important-warning-about-deleting-a-config-line>`__).
+As a result, there is no way to set a variable to the empty string. As
+a workaround, one can use ``" "`` (a single space) instead of ``""``.
+In most cases (in particular ``multimailhook.*List`` variables), this
+will be equivalent to an empty string.
+
+If you have a use-case where ``" "`` is not an acceptable value and
+you need ``""`` instead, please report it as a bug to git-multimail.
+
+Allowing Regular Expressions in Configuration
+.............................................
+
+gitolite has a mechanism to prevent unsafe configuration variable
+values, which prevent characters like ``|`` commonly used in regular
+expressions. If you do not need the safety feature of gitolite and
+need to use regular expressions in your configuration (e.g. for
+``multimailhook.refFilter*`` variables), set
+`UNSAFE_PATT
+<http://gitolite.com/gitolite/git-config.html#unsafe-patt>`__ to a
+less restrictive value.
 
 Troubleshooting
 ---------------

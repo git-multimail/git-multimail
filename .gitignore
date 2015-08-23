@@ -1,5 +1,6 @@
 *.pyc
 *.pyo
+*.bak
 /build/
 /dist/
 /git-multimail/*.egg-info

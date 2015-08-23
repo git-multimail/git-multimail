@@ -2,13 +2,13 @@
 
 d=$(dirname "$0")
 cd "$d" || exit 1
-. ./helper-functions.sh || exit 1
 test_description="Quick sanity checks"
 . ./sharness.sh || exit 1
+. "$SHARNESS_TEST_DIRECTORY"/helper-functions.sh || exit 1
 D=$SHARNESS_TEST_DIRECTORY
 
 for c in \
-    python2 \
+    "$PYTHON" \
     pep8 \
     git \
     rstcheck \
@@ -42,10 +42,9 @@ rstcheck_file () {
 }
 rstcheck_file README.rst
 rstcheck_file doc/gitolite.rst
+rstcheck_file doc/gerrit.rst
+rstcheck_file t/README
 
-# W503: line break before binary operator => could eventually be
-# removed, but at a moment where there are less pending PRs.
-#
 # E402: module level import not at top of file => we need this in the
 # tests.
 #
@@ -58,20 +57,20 @@ rstcheck_file doc/gitolite.rst
 pep8_file () {
     f=$1
     test_expect_success pep8 "pep8 $f" '
-	pep8 "$D"/../"$f" --ignore=W503,E402,E501,E123
+	pep8 "$D"/../"$f" --ignore=E402,E501,E123
     '
 }
 pep8_file git-multimail/git_multimail.py
 pep8_file t/test-env
 
 test_expect_success 'Simple but verbose git-multimail run' '
-	if "$D"/../git-multimail/git_multimail.py --stdout \
+	if "$MULTIMAIL" --stdout \
 		HEAD HEAD^ HEAD \
 		 --recipient=recipient@example.com >out 2>err
 	then
 		echo "Command ran OK, now checking stderr"
 	else
-		echo "Error running git_multimail.py, output below:" &&
+		echo "Error running $MULTIMAIL, output below:" &&
 		cat out && cat err && false
 	fi &&
 	cat <<-\EOF >expect-err &&

@@ -3,6 +3,10 @@
 # Filter out strings that vary uninterestingly from one test run to
 # the next.
 
+perl -pe 'BEGIN{undef $/;}
+s/^(In-Reply-To|Message-ID|References|Date|X-Git-Host|X-Git-Multimail-Version|Subject): \n +/\1: /mg;
+s/^(In-Reply-To|Message-ID|References|Date|X-Git-Host|X-Git-Multimail-Version|Subject): (.*)\n +/\1: \2 /mg;
+' |
 sed \
     -e 's/^\(In-Reply-To\|Message-ID\|References\): <.*>$/\1: <...>/' \
     -e 's/^\(Date\): [^ ].*$/\1: .../' \

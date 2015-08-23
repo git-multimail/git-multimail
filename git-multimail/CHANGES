@@ -1,6 +1,9 @@
 Release 1.2.0
 =============
 
+* New commitEmailFormat option which can be set to "html" to generate
+  simple colorized diffs using HTML for the commit emails.
+
 * git-multimail can now be ran as a Gerrit ref-updated hook, or from
   Atlassian Stash.
 

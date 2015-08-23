@@ -270,6 +270,13 @@ multimailhook.announceShortlog
     not so straightforward, then the shortlog might be confusing
     rather than useful.  Default is false.
 
+multimailhook.commitEmailFormat
+
+    The format of email messages for the individual commits, can be "text" or
+    "html". In the latter case, the emails will include diffs using colorized
+    HTML instead of plain text used by default. Note that this  currently the
+    ref change emails are always sent in plain text.
+
 multimailhook.refchangeShowGraph
 
     If this option is set to true, then summary emails about reference
@@ -547,6 +554,14 @@ multimailhook.refFilterDontSendRegex
     environment, such as "^refs/notes" for most environments and
     "^refs/notes|^refs/changes" for the gerrit environment).
 
+    The expressions are matched against the complete refname, and is
+    considered to match if any substring matches. For example, to
+    filter-out all tags, set ``refFilterExclusionRegex`` to
+    ``^refs/tags/`` (note the leading ``^`` but no trailing ``$``). If
+    you set ``refFilterExclusionRegex`` to ``master``, then any ref
+    containing ``master`` will be excluded (the ``master`` branch, but
+    also ``refs/tags/master`` or ``refs/heads/foo-master-bar``).
+
     ``refFilterDoSendRegex`` and ``refFilterDontSendRegex`` are
     analogous to ``refFilterInclusionRegex`` and
     ``refFilterExclusionRegex`` with one difference: with
@@ -560,6 +575,22 @@ multimailhook.refFilterDontSendRegex
     ``refFilterExclusionRegex``, then at the time of merge, you will
     receive one commit email per commit in the branch.
 
+    These variables can be multi-valued, like::
+
+      [multimailhook]
+              refFilterExclusionRegex = ^refs/tags/
+              refFilterExclusionRegex = ^refs/heads/master$
+
+    You can also provide a whitespace-separated list like::
+
+      [multimailhook]
+              refFilterExclusionRegex = ^refs/tags/ ^refs/heads/master$
+
+    Both examples exclude tags and the master branch, and are
+    equivalent to::
+
+      [multimailhook]
+              refFilterExclusionRegex = ^refs/tags/|^refs/heads/master$
 
 Email filtering aids
 --------------------
