@@ -154,6 +154,23 @@ test_expect_success "test-email-content" '
 	check_email_content all email-content.d/all
 '
 
+# We don't yet handle accents in the address part.
+test_expect_failure 'Non-ascii characters in email (address part)' '
+	git checkout --detach master &&
+	test_when_finished "git checkout master" &&
+	echo "Contenu accentué" >fichier-accentué.txt &&
+	git add fichier-accentué.txt &&
+	git commit -m "Message accentué" --author="Sébastien <sébastien@example.com>" &&
+	log "Generating emails ..." &&
+	(
+		test_update HEAD HEAD^ -c multimailhook.from=author
+	) >accent 2>&1
+'
+
+test_expect_failure 'Non-ascii characters in email (address part): content check' '
+	check_email_content accent-address email-content.d/accent-address
+'
+
 test_expect_success 'cleanup' '
 	rm -rf "$TESTREPO"
 '
