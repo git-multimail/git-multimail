@@ -112,6 +112,11 @@ test_hook() {
     pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE" "$@"
 }
 
+save_git_config() {
+    cp .git/config .git/config.bak &&
+    test_when_finished 'cp .git/config.bak .git/config'
+}
+
 verbose_do() {
     if test $# -gt 1
     then

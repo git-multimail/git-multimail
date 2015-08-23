@@ -146,7 +146,8 @@ test_expect_success 'Non-ascii characters in email' '
 # script. Existing tests are kept there, but new tests should be added
 # with separate test_expect_success.
 test_expect_success "test-email-content" '
-	log "Generating emails ..."
+	log "Generating emails ..." &&
+	save_git_config &&
 	(
 		. "$SHARNESS_TEST_DIRECTORY"/generate-test-emails
 	) >all 2>&1 &&
