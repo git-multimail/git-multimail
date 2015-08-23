@@ -129,12 +129,12 @@ test_expect_success 'refFilter inclusion/exclusion/doSend/DontSend' '
 
 # Accents seem to be accepted everywhere except in the email part
 # (sébastien@example.com).
-test_expect_failure 'Non-ascii characters in email' '
+test_expect_success 'Non-ascii characters in email' '
 	git checkout --detach master &&
 	test_when_finished "git checkout master" &&
 	echo "Contenu accentué" >fichier-accentué.txt &&
 	git add fichier-accentué.txt &&
-	git commit -m "Message accentué" --author="Sébastien <sébastien@example.com>" &&
+	git commit -m "Message accentué" --author="Sébastien <sebastien@example.com>" &&
 	log "Generating emails ..." &&
 	(
 		test_update HEAD HEAD^ -c multimailhook.from=author
