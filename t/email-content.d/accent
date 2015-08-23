@@ -50,7 +50,7 @@ EOF
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Commit List <commitlist@example.com>
-Subject: =?utf-8?q?_*test-repo*_01/01=3A_Message_accentu=C3=A9?=
+Subject: =?utf-8?q?*test-repo*_01/01=3A_Message_accentu=C3=A9?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
