@@ -513,18 +513,6 @@ class Config(object):
             else:
                 raise
 
-    def get_recipients(self, name, default=None):
-        """Read a recipients list from the configuration.
-
-        Return the result as a comma-separated list of email
-        addresses, or default if the option is unset.  If the setting
-        has multiple values, concatenate them with comma separators."""
-
-        lines = self.get_all(name, default=None)
-        if lines is None:
-            return default
-        return ', '.join(line.strip() for line in lines)
-
     def set(self, name, value):
         read_git_output(
             ['config', '%s.%s' % (self.section, name), value],
@@ -2616,9 +2604,9 @@ class ConfigRecipientsEnvironmentMixin(
         found, raise a ConfigurationException."""
 
         for name in names:
-            retval = config.get_recipients(name)
-            if retval is not None:
-                return retval
+            lines = config.get_all(name)
+            if lines is not None:
+                return ', '.join(line.strip() for line in lines)
         else:
             return ''
 
