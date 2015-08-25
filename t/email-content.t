@@ -1,7 +1,5 @@
 #!/bin/sh
 
-d=$(dirname "$0")
-cd "$d" || exit 1
 test_description="Test email content"
 . ./sharness.sh || exit 1
 . "$SHARNESS_TEST_DIRECTORY"/helper-functions.sh || exit 1
@@ -169,10 +167,6 @@ test_expect_failure 'Non-ascii characters in email (address part)' '
 
 test_expect_failure 'Non-ascii characters in email (address part): content check' '
 	check_email_content accent-address email-content.d/accent-address
-'
-
-test_expect_success 'cleanup' '
-	rm -rf "$TESTREPO"
 '
 
 test_done
