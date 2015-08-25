@@ -42,7 +42,7 @@ rstcheck_file () {
 rstcheck_file README.rst
 rstcheck_file doc/gitolite.rst
 rstcheck_file doc/gerrit.rst
-rstcheck_file t/README
+rstcheck_file t/README.rst
 
 # E402: module level import not at top of file => we need this in the
 # tests.
