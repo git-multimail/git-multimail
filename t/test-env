@@ -107,6 +107,36 @@ class HelperTest(unittest.TestCase):
             )
 
 
+class ConfigTest(unittest.TestCase):
+    class ConfigMock():
+        """Trivial mock for a Config class. Just specify what get_all should
+        return for each argument."""
+        def __init__(self, values, all_values):
+            self.values = values
+            self.all_values = all_values
+
+        def get_all(self, key):
+            return self.all_values[key]
+
+        def get(self, key):
+            return self.values[key]
+
+    def test_get_recipients(self):
+        """Test get_recipients() method"""
+        config = self.ConfigMock({'scancommitforcc': None},
+                                 {'mailinglist': ('foo@example.com',),
+                                  'commitlist': (''),
+                                  'refchangelist': ('one@example.com', 'two@example.com'),
+                                  'announcelist': None})
+        cm = git_multimail.ConfigRecipientsEnvironmentMixin(config)
+        # Specificied explicitly => comma-separated value of given emails
+        self.assertEquals(cm.get_refchange_recipients(None), 'one@example.com, two@example.com')
+        # Not specified => fall back to commitlist
+        self.assertEquals(cm.get_announce_recipients(None), 'one@example.com, two@example.com')
+        # Empty string specified => result empty
+        self.assertEquals(cm.get_revision_recipients(None), '')
+
+
 class EnvTest(unittest.TestCase):
     def __init__(
             self,
@@ -349,6 +379,7 @@ def suite():
             ])
 
     suite.addTest(ProjectDescTest())
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(ConfigTest))
 
     return suite
 
