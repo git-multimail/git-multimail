@@ -3,7 +3,6 @@
 test_description="Command-line interface"
 . ./sharness.sh || exit 1
 . "$SHARNESS_TEST_DIRECTORY"/helper-functions.sh || exit 1
-D=$SHARNESS_TEST_DIRECTORY
 
 options='--stdout --recipients recipient@example.com'
 
