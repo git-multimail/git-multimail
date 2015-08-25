@@ -1,7 +1,5 @@
 #!/bin/sh
 
-d=$(dirname "$0")
-cd "$d" || exit 1
 test_description="Command-line interface"
 . ./sharness.sh || exit 1
 . "$SHARNESS_TEST_DIRECTORY"/helper-functions.sh || exit 1
