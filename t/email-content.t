@@ -8,7 +8,7 @@ test_description="Test email content"
 D=$SHARNESS_TEST_DIRECTORY
 
 test_expect_success 'Setup test repo' '
-	TESTREPO=$("$D/create-test-repo")
+	TESTREPO=$("$D/create-test-repo") &&
 
 	cd "$TESTREPO"
 '
