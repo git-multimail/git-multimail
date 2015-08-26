@@ -40,6 +40,7 @@ rstcheck_file () {
     '
 }
 rstcheck_file README.rst
+rstcheck_file CONTRIBUTING.rst
 rstcheck_file doc/gitolite.rst
 rstcheck_file doc/gerrit.rst
 rstcheck_file t/README.rst
