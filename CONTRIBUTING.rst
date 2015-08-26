@@ -17,8 +17,9 @@ project.
 We use the GitHub issue tracker to keep track of bugs and feature
 requests, and we use GitHub pull requests to exchange patches (though,
 if you prefer, you can send patches via the Git mailing list with CC
-to the maintainers). Please sign off your patches as per the Git
-project practice.
+to the maintainers). Please sign off your patches as per the `Git
+project practice
+<https://github.com/git/git/blob/master/Documentation/SubmittingPatches#L234>`__.
 
 General discussion of git-multimail can take place on the main Git
 mailing list,
