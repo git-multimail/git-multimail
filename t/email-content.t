@@ -36,16 +36,23 @@ and commit."
 
 test_email_content() {
 	prereq=
-	if test $# -eq 4
+	setup_cmd=
+	if test $# -ge 4
 	then
 		prereq=$1
+		shift
+	fi
+	if test $# -ge 4
+	then
+		setup_cmd="
+		$1 &&"
 		shift
 	fi
 	test_name=$1
 	file=$2
 	test_content=$3
 	test_expect_success $prereq "$test_name" "
-	log 'Generating emails ...' &&
+	log 'Generating emails ...' && $setup_cmd
 	( $test_content	) >$file 2>&1 &&
 	check_email_content $file email-content.d/$file
 	"
@@ -116,29 +123,23 @@ test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
 
 # Accents seem to be accepted everywhere except in the email part
 # (sébastien@example.com).
-test_expect_success 'Non-ascii characters in email' '
+test_expect_success 'Non-ascii characters in email (setup)' '
 	git checkout --detach master &&
-	test_when_finished "git checkout master" &&
 	echo "Contenu accentué" >fichier-accentué.txt &&
 	git add fichier-accentué.txt &&
-	git commit -m "Message accentué" --author="Sébastien <sebastien@example.com>" &&
-	log "Generating emails ..." &&
-	(
-		test_update HEAD HEAD^ -c multimailhook.from=author
-	) >accent 2>&1 &&
-	check_email_content accent email-content.d/accent
+	git commit -m "Message accentué" --author="Sébastien <sebastien@example.com>"
+'
+
+test_email_content '' 'test_when_finished "git checkout master"' \
+    'Non-ascii characters in email (test)' accent '
+	test_update HEAD HEAD^ -c multimailhook.from=author
 '
 
 # The old test infrastructure was using one big 'generate-test-emails'
 # script. Existing tests are kept there, but new tests should be added
 # with separate test_expect_success.
-test_expect_success "test-email-content" '
-	log "Generating emails ..." &&
-	save_git_config &&
-	(
-		. "$SHARNESS_TEST_DIRECTORY"/generate-test-emails
-	) >all 2>&1 &&
-	check_email_content all email-content.d/all
+test_email_content '' save_git_config 'Tests in generate-test-emails' all '
+	. "$SHARNESS_TEST_DIRECTORY"/generate-test-emails
 '
 
 # We don't yet handle accents in the address part.
