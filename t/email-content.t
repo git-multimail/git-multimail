@@ -34,94 +34,84 @@ and commit."
 	fi
 }
 
-test_expect_success 'Create a ref' '
-	log "Generating emails ..." &&
-	(
-		test_create refs/heads/master
-	) >create-master 2>&1 &&
-	check_email_content create-master email-content.d/create-master
+test_email_content() {
+	prereq=
+	if test $# -eq 4
+	then
+		prereq=$1
+		shift
+	fi
+	test_name=$1
+	file=$2
+	test_content=$3
+	test_expect_success $prereq "$test_name" "
+	log 'Generating emails ...' &&
+	( $test_content	) >$file 2>&1 &&
+	check_email_content $file email-content.d/$file
+	"
+}
+
+test_email_content 'Create a ref' create-master '
+	test_create refs/heads/master
 '
 
-test_expect_success 'HTML messages' '
-	log "Generating emails ..." &&
-	(
-		test_update refs/heads/master refs/heads/master^^ -c multimailhook.commitEmailFormat=html
-	) >html 2>&1 &&
-	check_email_content html email-content.d/html
+test_email_content 'HTML messages' html '
+	test_update refs/heads/master refs/heads/master^^ -c multimailhook.commitEmailFormat=html
 '
 
-test_expect_success 'tag create/update/delete' '
-	log "Generating emails ..." &&
-	(
-		test_create refs/tags/tag &&
-		test_update refs/tags/tag refs/heads/master &&
-		test_delete refs/tags/tag
-	) >simple-tag 2>&1 &&
-	check_email_content simple-tag email-content.d/simple-tag
+test_email_content 'tag create/update/delete' simple-tag '
+	test_create refs/tags/tag &&
+	test_update refs/tags/tag refs/heads/master &&
+	test_delete refs/tags/tag
 '
 
-test_expect_success PYTHON2 'annotated tag create/update/delete' '
-	log "Generating emails ..." &&
-	(
-		test_create refs/tags/tag-annotated &&
-		test_update refs/tags/tag-annotated refs/heads/master &&
-		test_delete refs/tags/tag-annotated
-	) >annotated-tag 2>&1 &&
-	check_email_content annotated-tag email-content.d/annotated-tag
+test_email_content PYTHON2 'annotated tag create/update/delete' annotated-tag '
+	test_create refs/tags/tag-annotated &&
+	test_update refs/tags/tag-annotated refs/heads/master &&
+	test_delete refs/tags/tag-annotated
 '
 
-test_expect_success PYTHON2 'annotated tag create/update/delete (new content)' '
-	log "Generating emails ..." &&
-	(
-		test_create refs/tags/tag-annotated-new-content &&
-		test_update refs/tags/tag-annotated-new-content refs/heads/master &&
-		test_delete refs/tags/tag-annotated-new-content
-	) >annotated-tag-content 2>&1 &&
-	check_email_content annotated-tag-content email-content.d/annotated-tag-content
+test_email_content PYTHON2 'annotated tag create/update/delete (new content)' \
+    annotated-tag-content '
+	test_create refs/tags/tag-annotated-new-content &&
+	test_update refs/tags/tag-annotated-new-content refs/heads/master &&
+	test_delete refs/tags/tag-annotated-new-content
 '
 
-test_expect_success PYTHON2 'annotated tag create/update/delete (tag to tree and recursive)' '
-	log "Generating emails ..." &&
-	(
-		test_create refs/tags/tree-tag &&
-		test_update refs/tags/tree-tag refs/heads/master &&
-		test_delete refs/tags/tree-tag &&
-		test_create refs/tags/recursive-tag &&
-		test_update refs/tags/recursive-tag refs/heads/master &&
-		test_delete refs/tags/recursive-tag
-
-	) >annotated-tag-tree 2>&1 &&
-	check_email_content annotated-tag-tree email-content.d/annotated-tag-tree
+test_email_content PYTHON2 'annotated tag create/update/delete (tag to tree and recursive)' \
+    annotated-tag-tree '
+	test_create refs/tags/tree-tag &&
+	test_update refs/tags/tree-tag refs/heads/master &&
+	test_delete refs/tags/tree-tag &&
+	test_create refs/tags/recursive-tag &&
+	test_update refs/tags/recursive-tag refs/heads/master &&
+	test_delete refs/tags/recursive-tag
 '
 
-test_expect_success 'refFilter inclusion/exclusion/doSend/DontSend' '
-	log "Generating emails ..." &&
-	(
-		echo "** Expected below: error" &&
-		verbose_do test_must_fail test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ -c multimailhook.refFilterInclusionRegex=whatever &&
-		echo "** Expected below: no output" &&
-		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ &&
+test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
+	echo "** Expected below: error" &&
+	verbose_do test_must_fail test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ -c multimailhook.refFilterInclusionRegex=whatever &&
+	echo "** Expected below: no output" &&
+	verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ &&
 
-		verbose_do test_update refs/heads/master refs/heads/master^^ \
-			-c multimailhook.refFilterExclusionRegex=^refs/heads/foo$ \
-			-c multimailhook.refFilterExclusionRegex=^refs/heads/master$ \
-			-c multimailhook.refFilterExclusionRegex=^refs/heads/bar$ &&
+	verbose_do test_update refs/heads/master refs/heads/master^^ \
+		-c multimailhook.refFilterExclusionRegex=^refs/heads/foo$ \
+		-c multimailhook.refFilterExclusionRegex=^refs/heads/master$ \
+		-c multimailhook.refFilterExclusionRegex=^refs/heads/bar$ &&
 
-		verbose_do test_update refs/heads/master refs/heads/master^^ \
-			-c multimailhook.refFilterExclusionRegex="^refs/heads/foo$ ^refs/heads/master$ ^refs/heads/bar$" \
+	verbose_do test_update refs/heads/master refs/heads/master^^ \
+		-c multimailhook.refFilterExclusionRegex="^refs/heads/foo$ ^refs/heads/master$ ^refs/heads/bar$" \
 
-		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/feature$ &&
+	verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/feature$ &&
 
-		echo "** Expected below: no output, we should match a substring anywhere in the ref" &&
-		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=master$ &&
+	echo "** Expected below: no output, we should match a substring anywhere in the ref" &&
+	verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=master$ &&
 
-		echo "** Expected below: a refchange email with all commits marked as new" &&
-		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/master$ &&
+	echo "** Expected below: a refchange email with all commits marked as new" &&
+	verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/master$ &&
 
-		echo "** Expected below: a refchange email with m1 and a5 marked as new and others as add" &&
-		verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterDoSendRegex=^refs/heads/master$
-	) >ref-filter 2>&1 &&
-	check_email_content ref-filter email-content.d/ref-filter
+	echo "** Expected below: a refchange email with m1 and a5 marked as new and others as add" &&
+	verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterDoSendRegex=^refs/heads/master$
 '
 
 # Accents seem to be accepted everywhere except in the email part
