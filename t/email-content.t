@@ -52,8 +52,15 @@ test_email_content() {
 	file=$2
 	test_content=$3
 	test_expect_success $prereq "$test_name" "
-	log 'Generating emails ...' && $setup_cmd
-	( $test_content	) >$file 2>&1 &&
+	log 'Generating emails to file $file ...' && $setup_cmd
+	if ( $test_content	) >$file 2>&1
+	then
+		echo 'Email content generated successfully.'
+	else
+		echo 'Error while generating email content:' &&
+		cat $file &&
+		false
+	fi &&
 	check_email_content $file email-content.d/$file
 	"
 }
