@@ -99,7 +99,7 @@ class ConfigTest(unittest.TestCase):
         """Test get_recipients() method"""
         config = self.ConfigMock({'scancommitforcc': None},
                                  {'mailinglist': ('foo@example.com',),
-                                  'commitlist': (''),
+                                  'commitlist': ('',),
                                   'refchangelist': ('one@example.com', 'two@example.com'),
                                   'announcelist': None})
         cm = git_multimail.ConfigRecipientsEnvironmentMixin(config)
@@ -109,6 +109,20 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(cm.get_announce_recipients(None), 'one@example.com, two@example.com')
         # Empty string specified => result empty
         self.assertEquals(cm.get_revision_recipients(None), '')
+
+    def test_get_recipients_none(self):
+        """Test get_recipients()'s handling of 'none' special value"""
+        config = self.ConfigMock({'scancommitforcc': None},
+                                 {'mailinglist': ('foo@example.com',),
+                                  'commitlist': ('none',),
+                                  'refchangelist': ('none', 'two@example.com'),
+                                  'announcelist': None})
+        cm = git_multimail.ConfigRecipientsEnvironmentMixin(config)
+
+        # 'none' string specified => result empty
+        self.assertEquals(cm.get_revision_recipients(None), '')
+        # But only single 'none' works this way
+        self.assertEquals(cm.get_refchange_recipients(None), 'none, two@example.com')
 
 
 class EnvTest(unittest.TestCase):

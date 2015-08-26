@@ -236,8 +236,8 @@ multimailhook.refchangeList
     reference changes should be sent, as RFC 2822 email addresses
     separated by commas.  This configuration option can be
     multivalued.  The default is the value in
-    multimailhook.mailingList.  Set this value to the empty string to
-    prevent reference change emails from being sent even if
+    multimailhook.mailingList.  Set this value to "none" (or the empty
+    string) to prevent reference change emails from being sent even if
     multimailhook.mailingList is set.
 
 multimailhook.announceList
@@ -246,9 +246,9 @@ multimailhook.announceList
     tags should be sent, as RFC 2822 email addresses separated by
     commas.  This configuration option can be multivalued.  The
     default is the value in multimailhook.refchangeList or
-    multimailhook.mailingList.  Set this value to the empty string to
-    prevent annotated tag announcement emails from being sent even if
-    one of the other values is set.
+    multimailhook.mailingList.  Set this value to "none" (or the empty
+    string) to prevent annotated tag announcement emails from being sent
+    even if one of the other values is set.
 
 multimailhook.commitList
 
@@ -256,7 +256,7 @@ multimailhook.commitList
     commits should be sent, as RFC 2822 email addresses separated by
     commas.  This configuration option can be multivalued.  The
     default is the value in multimailhook.mailingList.  Set this value
-    to the empty string to prevent notification emails about
+    to "none" (or the empty string) to prevent notification emails about
     individual commits from being sent even if
     multimailhook.mailingList is set.
 

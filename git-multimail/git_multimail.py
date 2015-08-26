@@ -2606,7 +2606,11 @@ class ConfigRecipientsEnvironmentMixin(
         for name in names:
             lines = config.get_all(name)
             if lines is not None:
-                return ', '.join(line.strip() for line in lines)
+                lines = [line.strip() for line in lines]
+                # Single "none" is a special value equivalen to empty string.
+                if lines == ['none']:
+                    lines = ['']
+                return ', '.join(lines)
         else:
             return ''
 
