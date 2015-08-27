@@ -92,6 +92,9 @@ else:
     def write_str(f, msg):
         f.write(msg)
 
+    def next(it):
+        return it.next()
+
 
 try:
     from email.charset import Charset
@@ -681,7 +684,7 @@ class GitObject(object):
         if not self.sha1:
             raise ValueError('Empty commit has no summary')
 
-        return iter(generate_summaries('--no-walk', self.sha1)).next()
+        return next(iter(generate_summaries('--no-walk', self.sha1)))
 
     def __eq__(self, other):
         return isinstance(other, GitObject) and self.sha1 == other.sha1
@@ -2859,8 +2862,9 @@ class IncrementalDateTime(object):
 
     def __init__(self):
         self.time = time.time()
+        self.next = self.__next__  # Python 2 backward compatibility
 
-    def next(self):
+    def __next__(self):
         formatted = formatdate(self.time, True)
         self.time += 1
         return formatted
@@ -3262,7 +3266,7 @@ class Push(object):
                 if not change.environment.quiet:
                     change.environment.log_msg(
                         'Sending notification emails to: %s\n' % (change.recipients,))
-                extra_values = {'send_date': send_date.next()}
+                extra_values = {'send_date': next(send_date)}
 
                 rev = change.send_single_combined_email(sha1s)
                 if rev:
@@ -3295,7 +3299,7 @@ class Push(object):
                     rev.recipients = rev.cc_recipients
                     rev.cc_recipients = None
                 if rev.recipients:
-                    extra_values = {'send_date': send_date.next()}
+                    extra_values = {'send_date': next(send_date)}
                     mailer.send(
                         rev.generate_email(self, body_filter, extra_values),
                         rev.recipients,
