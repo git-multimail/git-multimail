@@ -28,7 +28,7 @@ ZEROS=0000000000000000000000000000000000000000
 
 if [ -z "$PYTHON" ]
 then
-    PYTHON=python2
+    PYTHON=python
 fi
 
 if "$PYTHON" --version 2>&1 | grep -q "^Python 3"
