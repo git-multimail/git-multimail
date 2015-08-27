@@ -695,6 +695,10 @@ class GitObject(object):
     def __nonzero__(self):
         return bool(self.sha1)
 
+    def __bool__(self):
+        """Python 2 backward compatibility"""
+        return self.__nonzero__()
+
     def __str__(self):
         return self.sha1 or ZEROS
 
