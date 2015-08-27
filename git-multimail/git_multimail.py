@@ -1833,7 +1833,7 @@ class SendMailer(Mailer):
         try:
             lines = (str_to_bytes(line) for line in lines)
             p.stdin.writelines(lines)
-        except Exception, e:
+        except Exception:
             sys.stderr.write(
                 '*** Error while generating commit email\n'
                 '***  - mail sending aborted.\n'
@@ -1843,7 +1843,7 @@ class SendMailer(Mailer):
                 p.terminate()
             except AttributeError:
                 pass
-            raise e
+            raise
         else:
             p.stdin.close()
             retcode = p.wait()
