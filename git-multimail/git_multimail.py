@@ -556,7 +556,8 @@ class Config(object):
                 ['config', '--get-all', '--null', '%s.%s' % (self.section, name)],
                 env=self.env, keepends=True,
                 ))
-        except CommandError, e:
+        except CommandError:
+            t, e, traceback = sys.exc_info()
             if e.retcode == 1:
                 # "the section or key is invalid"; i.e., there is no
                 # value for the specified key.
@@ -590,7 +591,8 @@ class Config(object):
                 ['config', '--unset-all', '%s.%s' % (self.section, name)],
                 env=self.env,
                 )
-        except CommandError, e:
+        except CommandError:
+            t, e, traceback = sys.exc_info()
             if e.retcode == 5:
                 # The name doesn't exist, which is what we wanted anyway...
                 pass
@@ -783,7 +785,8 @@ class Change(object):
 
             try:
                 value = value % values
-            except KeyError, e:
+            except KeyError:
+                t, e, traceback = sys.exc_info()
                 if DEBUG:
                     self.environment.log_warning(
                         'Warning: unknown variable %r in the following line; line skipped:\n'
@@ -1822,10 +1825,10 @@ class SendMailer(Mailer):
     def send(self, lines, to_addrs):
         try:
             p = subprocess.Popen(self.command, stdin=subprocess.PIPE)
-        except OSError, e:
+        except OSError:
             sys.stderr.write(
                 '*** Cannot execute command: %s\n' % ' '.join(self.command) +
-                '*** %s\n' % str(e) +
+                '*** %s\n' % sys.exc_info()[1] +
                 '*** Try setting multimailhook.mailer to "smtp"\n' +
                 '*** to send emails without using the sendmail command.\n'
                 )
@@ -1903,11 +1906,11 @@ class SMTPMailer(Mailer):
                     "*** Setting debug on for SMTP server connection (%s) ***\n"
                     % self.smtpserverdebuglevel)
                 self.smtp.set_debuglevel(self.smtpserverdebuglevel)
-        except Exception, e:
+        except Exception:
             sys.stderr.write(
                 '*** Error establishing SMTP connection to %s ***\n'
                 % self.smtpserver)
-            sys.stderr.write('*** %s\n' % str(e))
+            sys.stderr.write('*** %s\n' % sys.exc_info()[1])
             sys.exit(1)
 
     def __del__(self):
@@ -1924,9 +1927,9 @@ class SMTPMailer(Mailer):
             if isinstance(to_addrs, basestring):
                 to_addrs = [email for (name, email) in getaddresses([to_addrs])]
             self.smtp.sendmail(self.envelopesender, to_addrs, msg)
-        except Exception, e:
+        except Exception:
             sys.stderr.write('*** Error sending email ***\n')
-            sys.stderr.write('*** %s\n' % str(e))
+            sys.stderr.write('*** %s\n' % sys.exc_info()[1])
             self.smtp.quit()
             sys.exit(1)
 
@@ -2694,9 +2697,9 @@ class StaticRefFilterEnvironmentMixin(Environment):
             ref_filter_regex = default_exclude
         try:
             self.__compiled_regex = re.compile(ref_filter_regex)
-        except Exception, e:
+        except Exception:
             raise ConfigurationException(
-                'Invalid Ref Filter Regex "%s": %s' % (ref_filter_regex, e.message))
+                'Invalid Ref Filter Regex "%s": %s' % (ref_filter_regex, sys.exc_info()[1]))
 
         if ref_filter_do_send_regex and ref_filter_dont_send_regex:
             raise ConfigurationException(
@@ -2712,9 +2715,9 @@ class StaticRefFilterEnvironmentMixin(Environment):
                 self.__is_do_send_filter = True
             try:
                 self.__send_compiled_regex = re.compile(ref_filter_send_regex)
-            except Exception, e:
+            except Exception:
                 raise ConfigurationException(
-                    'Invalid Ref Filter Regex "%s": %s' % (ref_filter_send_regex, e.message))
+                    'Invalid Ref Filter Regex "%s": %s' % (ref_filter_send_regex, sys.exc_info()[1]))
         else:
             self.__send_compiled_regex = self.__compiled_regex
             self.__is_do_send_filter = self.__is_inclusion_filter
@@ -3668,8 +3671,8 @@ def main(args):
             run_as_update_hook(environment, mailer, refname, oldrev, newrev, options.force_send)
         else:
             run_as_post_receive_hook(environment, mailer)
-    except ConfigurationException, e:
-        sys.exit(str(e))
+    except ConfigurationException:
+        sys.exit(sys.exc_info()[1])
 
 
 if __name__ == '__main__':
