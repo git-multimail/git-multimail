@@ -84,4 +84,25 @@ test_expect_success 'Simple but verbose git-multimail run' '
 	echo "Everything all right."
 '
 
+# Test that each documented variable appears at least once outside
+# comments in the testsuite. It does not give real coverage garantee,
+# and we have known untested variables in untested-variables.txt, but
+# this should ensure that new variables get a test.
+test_expect_success 'Tests for each configuration variable' '
+	variables=$(grep "^multimailhook." $D/../git-multimail/README |
+		sed "s/multimailhook\.//") &&
+	(
+	cd "$D" &&
+	status=0 &&
+	for v in $variables; do
+		if ! git grep -i "^[^#]*$v" >/dev/null
+		then
+			echo "No occurence of documented variable $v in testsuite" &&
+			status=1
+		fi
+	done
+	return $status
+	)
+'
+
 test_done
