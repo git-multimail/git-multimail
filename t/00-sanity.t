@@ -21,6 +21,17 @@ do
 	test_set_prereq "$c"
     fi
     log "# $c version: $ver"
+    if test "$ver" = unavailable
+    then
+	case "$c" in
+	    pep8|rstcheck)
+		log "#   (please install it with e.g. 'pep8 install ${c}' to allow sanity checks)"
+		;;
+	    *)
+		log "#   (please install it to run the complete testsuite)"
+		;;
+	esac
+    fi
 done
 
 log "#"
