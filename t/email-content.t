@@ -149,8 +149,9 @@ test_email_content '' save_git_config 'Tests in generate-test-emails' all '
 	. "$SHARNESS_TEST_DIRECTORY"/generate-test-emails
 '
 
-# We don't yet handle accents in the address part.
-test_expect_failure 'Non-ascii characters in email (address part)' '
+# We don't yet handle accents in the address part. It doesn't crash,
+# but produces invalid encoding.
+test_expect_success 'Non-ascii characters in email (address part)' '
 	git checkout --detach master &&
 	test_when_finished "git checkout master" &&
 	echo "Contenu accentué" >fichier-accentué.txt &&
