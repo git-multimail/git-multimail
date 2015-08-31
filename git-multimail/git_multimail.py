@@ -61,6 +61,7 @@ import time
 import cgi
 
 try:
+    from email.charset import Charset
     from email.utils import make_msgid
     from email.utils import getaddresses
     from email.utils import formataddr
@@ -68,6 +69,7 @@ try:
     from email.header import Header
 except ImportError:
     # Prior to Python 2.5, the email module used different names:
+    from email.Charset import Charset
     from email.Utils import make_msgid
     from email.Utils import getaddresses
     from email.Utils import formataddr
@@ -427,26 +429,27 @@ def git_log(spec, **kw):
 def header_encode(text, header_name=None):
     """Encode and line-wrap the value of an email header field."""
 
-    try:
-        if isinstance(text, str):
-            text = text.decode(ENCODING, 'replace')
-        return Header(text, header_name=header_name).encode()
-    except UnicodeEncodeError:
-        return Header(text, header_name=header_name, charset=CHARSET,
-                      errors='replace').encode()
+    # Convert to unicode, if required.
+    if not isinstance(text, unicode):
+        text = unicode(text, 'utf-8')
+
+    return Header(text, header_name=header_name, charset=Charset('utf-8')).encode()
 
 
 def addr_header_encode(text, header_name=None):
     """Encode and line-wrap the value of an email header field containing
     email addresses."""
 
-    return Header(
-        ', '.join(
-            formataddr((header_encode(name), emailaddr))
-            for name, emailaddr in getaddresses([text])
-            ),
-        header_name=header_name
-        ).encode()
+    # Convert to unicode, if required.
+    if not isinstance(text, unicode):
+        text = unicode(text, 'utf-8')
+
+    text = ', '.join(
+        formataddr((header_encode(name), emailaddr))
+        for name, emailaddr in getaddresses([text])
+        )
+
+    return Header(text, header_name=header_name, charset=Charset('utf-8')).encode()
 
 
 class Config(object):
