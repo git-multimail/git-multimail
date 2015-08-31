@@ -1945,9 +1945,10 @@ class OutputMailer(Mailer):
         self.f = f
 
     def send(self, lines, to_addrs):
-        self.f.write(self.SEPARATOR)
-        self.f.writelines(lines)
-        self.f.write(self.SEPARATOR)
+        write_str(self.f, self.SEPARATOR)
+        for line in lines:
+            write_str(self.f, line)
+        write_str(self.f, self.SEPARATOR)
 
 
 def get_git_dir():
