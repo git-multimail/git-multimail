@@ -62,6 +62,10 @@ import cgi
 
 PYTHON3 = sys.version_info >= (3, 0)
 
+
+def is_ascii(s):
+    return all(ord(c) < 128 and ord(c) > 0 for c in s)
+
 if PYTHON3:
     def str_to_bytes(s):
         return s.encode(ENCODING)
@@ -453,7 +457,12 @@ def header_encode(text, header_name=None):
     if not isinstance(text, unicode):
         text = unicode(text, 'utf-8')
 
-    return Header(text, header_name=header_name, charset=Charset('utf-8')).encode()
+    if is_ascii(text):
+        charset = 'ascii'
+    else:
+        charset = 'utf-8'
+
+    return Header(text, header_name=header_name, charset=Charset(charset)).encode()
 
 
 def addr_header_encode(text, header_name=None):
@@ -469,7 +478,12 @@ def addr_header_encode(text, header_name=None):
         for name, emailaddr in getaddresses([text])
         )
 
-    return Header(text, header_name=header_name, charset=Charset('utf-8')).encode()
+    if is_ascii(text):
+        charset = 'ascii'
+    else:
+        charset = 'utf-8'
+
+    return Header(text, header_name=header_name, charset=Charset(charset)).encode()
 
 
 class Config(object):
