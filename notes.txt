@@ -6,8 +6,12 @@ Notes
   copyright notice, since the script is mostly rewritten.
 
 
-git-multimail-v2
-================
+Ideas for the future
+====================
+
+Ideas are tracked on
+https://github.com/git-multimail/git-multimail/issues
+Below is an old, but hopefully still up to date list of ideas.
 
 * Are people happy with the convention of using configuration
   namespace "multimailhook.*", as opposed to something like
@@ -33,10 +37,6 @@ git-multimail-v2
 
 * Check for and reimplement any changes that have been made in
   post-receive-email since the last import.
-
-
-Ideas for the future
-====================
 
 * Support LDAP, for example by adding an LDAP environment:
 
