@@ -1,0 +1,13 @@
+refchangeShowLog
+emailMaxLines
+emailMaxLineLength
+maxCommitEmails
+emailStrictUTF8
+diffOpts
+logOpts
+commitLogOpts
+replyTo
+replyToCommit
+replyToRefchange
+combineWhenSingleCommit
+refFilterDontSendRegex

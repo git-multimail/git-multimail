@@ -68,13 +68,18 @@ With gitolite, the syntax ``config multimailhook.commitList = ""``
 unsets the variable instead of setting it to an empty string (see
 `here
 <http://gitolite.com/gitolite/git-config.html#an-important-warning-about-deleting-a-config-line>`__).
-As a result, there is no way to set a variable to the empty string. As
-a workaround, one can use ``" "`` (a single space) instead of ``""``.
+As a result, there is no way to set a variable to the empty string.
+In all most places where an empty value is required, git-multimail
+now allows to specify special ``"none"`` value (case-sensitive) to
+mean the same.
+
+Alternatively, one can use ``" "`` (a single space) instead of ``""``.
 In most cases (in particular ``multimailhook.*List`` variables), this
 will be equivalent to an empty string.
 
-If you have a use-case where ``" "`` is not an acceptable value and
-you need ``""`` instead, please report it as a bug to git-multimail.
+If you have a use-case where ``"none"`` is not an acceptable value and
+you need ``" "`` or  ``""`` instead, please report it as a bug to
+git-multimail.
 
 Allowing Regular Expressions in Configuration
 .............................................

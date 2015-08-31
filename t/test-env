@@ -15,7 +15,7 @@ except ImportError:
 
 TEST_DIR = os.path.abspath(os.path.dirname(sys.argv[0]))
 PROJ_DIR = os.path.dirname(TEST_DIR)
-REPO = os.path.realpath(os.path.join(TEST_DIR, 'env-repo.git'))
+REPO = os.path.realpath(os.path.join(os.getcwd(), 'env-repo.git'))
 
 sys.path.insert(0, os.path.join(PROJ_DIR, 'git-multimail'))
 
@@ -105,6 +105,50 @@ class HelperTest(unittest.TestCase):
             "incorrect encoding or wrapping of address list mixing " +
             "unicode and ascii"
             )
+
+
+class ConfigTest(unittest.TestCase):
+    class ConfigMock():
+        """Trivial mock for a Config class. Just specify what get_all should
+        return for each argument."""
+        def __init__(self, values, all_values):
+            self.values = values
+            self.all_values = all_values
+
+        def get_all(self, key):
+            return self.all_values[key]
+
+        def get(self, key):
+            return self.values[key]
+
+    def test_get_recipients(self):
+        """Test get_recipients() method"""
+        config = self.ConfigMock({'scancommitforcc': None},
+                                 {'mailinglist': ('foo@example.com',),
+                                  'commitlist': ('',),
+                                  'refchangelist': ('one@example.com', 'two@example.com'),
+                                  'announcelist': None})
+        cm = git_multimail.ConfigRecipientsEnvironmentMixin(config)
+        # Specificied explicitly => comma-separated value of given emails
+        self.assertEquals(cm.get_refchange_recipients(None), 'one@example.com, two@example.com')
+        # Not specified => fall back to commitlist
+        self.assertEquals(cm.get_announce_recipients(None), 'one@example.com, two@example.com')
+        # Empty string specified => result empty
+        self.assertEquals(cm.get_revision_recipients(None), '')
+
+    def test_get_recipients_none(self):
+        """Test get_recipients()'s handling of 'none' special value"""
+        config = self.ConfigMock({'scancommitforcc': None},
+                                 {'mailinglist': ('foo@example.com',),
+                                  'commitlist': ('none',),
+                                  'refchangelist': ('none', 'two@example.com'),
+                                  'announcelist': None})
+        cm = git_multimail.ConfigRecipientsEnvironmentMixin(config)
+
+        # 'none' string specified => result empty
+        self.assertEquals(cm.get_revision_recipients(None), '')
+        # But only single 'none' works this way
+        self.assertEquals(cm.get_refchange_recipients(None), 'none, two@example.com')
 
 
 class EnvTest(unittest.TestCase):
@@ -349,6 +393,7 @@ def suite():
             ])
 
     suite.addTest(ProjectDescTest())
+    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(ConfigTest))
 
     return suite
 

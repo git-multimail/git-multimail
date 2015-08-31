@@ -101,13 +101,12 @@ email-content.d/
     you make a change that intentionally alters the output of
     git-multimail.
 
-test-repo.git/
+$SHARNESS_TRASH_DIRECTORY/test-repo.git/
 
     Test repository created by create-test-repo and used for the
-    test-email-content test.  This directory is usually deleted
-    automatically at the end of the tests.
+    test-email-content test.
 
-env-repo.git/
+$SHARNESS_TRASH_DIRECTORY/env-repo.git/
 
     Test repository created and used by test-env.  This directory is
     usually deleted automatically at the end of the test.

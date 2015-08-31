@@ -1,9 +1,8 @@
 #! /bin/sh
 
 D=$(cd $(dirname "$0") && pwd)
-cd "$D" || exit 1
-. ./helper-functions.sh || exit 1
-T="$D/test-repo.git"
+. "$D"/helper-functions.sh || exit 1
+T="./test-repo.git"
 DUMPFILE="$D/test-repo.dump"
 
 test -d "$T" && rm -rf "$T"
