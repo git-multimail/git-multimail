@@ -1946,7 +1946,11 @@ class OutputMailer(Mailer):
 
     def send(self, lines, to_addrs):
         self.f.write(self.SEPARATOR)
-        self.f.writelines(lines)
+        for line in lines:
+            if is_ascii(line):
+                self.f.write(line)
+            else:
+                self.f.buffer.write(line.encode('utf-8'))
         self.f.write(self.SEPARATOR)
 
 
@@ -3507,6 +3511,9 @@ def compute_gerrit_options(options, args, required_gerrit_options):
         # The submitter argument is almost an RFC 2822 email address; change it
         # from 'User Name (email@domain)' to 'User Name <email@domain>' so it is
         options.submitter = options.submitter.replace('(', '<').replace(')', '>')
+        # Convert to unicode for Python3.
+        if PYTHON3:
+            options.submitter = options.submitter.encode('utf-8', 'surrogateescape').decode('utf-8', 'replace')
     else:
         update_method = 'submitted'
         # Gerrit knew who submitted this patchset, but threw that information
