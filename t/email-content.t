@@ -157,9 +157,12 @@ test_expect_failure 'Non-ascii characters in email (address part)' '
 	git add fichier-accentué.txt &&
 	git commit -m "Message accentué" --author="Sébastien <sébastien@example.com>" &&
 	log "Generating emails ..." &&
-	(
-		test_update HEAD HEAD^ -c multimailhook.from=author
-	) >accent 2>&1
+	if ! ( test_update HEAD HEAD^ -c multimailhook.from=author ) >accent 2>&1
+	then
+		log "Email generation failed:" &&
+		cat accent &&
+		false
+	fi
 '
 
 test_expect_failure 'Non-ascii characters in email (address part): content check' '
