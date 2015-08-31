@@ -79,20 +79,20 @@ test_email_content 'tag create/update/delete' simple-tag '
 	test_delete refs/tags/tag
 '
 
-test_email_content PYTHON2 'annotated tag create/update/delete' annotated-tag '
+test_email_content 'annotated tag create/update/delete' annotated-tag '
 	test_create refs/tags/tag-annotated &&
 	test_update refs/tags/tag-annotated refs/heads/master &&
 	test_delete refs/tags/tag-annotated
 '
 
-test_email_content PYTHON2 'annotated tag create/update/delete (new content)' \
+test_email_content 'annotated tag create/update/delete (new content)' \
     annotated-tag-content '
 	test_create refs/tags/tag-annotated-new-content &&
 	test_update refs/tags/tag-annotated-new-content refs/heads/master &&
 	test_delete refs/tags/tag-annotated-new-content
 '
 
-test_email_content PYTHON2 'annotated tag create/update/delete (tag to tree and recursive)' \
+test_email_content 'annotated tag create/update/delete (tag to tree and recursive)' \
     annotated-tag-tree '
 	test_create refs/tags/tree-tag &&
 	test_update refs/tags/tree-tag refs/heads/master &&
@@ -149,18 +149,20 @@ test_email_content '' save_git_config 'Tests in generate-test-emails' all '
 	. "$SHARNESS_TEST_DIRECTORY"/generate-test-emails
 '
 
-# We don't yet handle accents in the address part. It doesn't crash,
-# but produces invalid encoding.
-test_expect_success 'Non-ascii characters in email (address part)' '
+# We don't yet handle accents in the address part.
+test_expect_failure 'Non-ascii characters in email (address part)' '
 	git checkout --detach master &&
 	test_when_finished "git checkout master" &&
 	echo "Contenu accentué" >fichier-accentué.txt &&
 	git add fichier-accentué.txt &&
 	git commit -m "Message accentué" --author="Sébastien <sébastien@example.com>" &&
 	log "Generating emails ..." &&
-	(
-		test_update HEAD HEAD^ -c multimailhook.from=author
-	) >accent 2>&1
+	if ! ( test_update HEAD HEAD^ -c multimailhook.from=author ) >accent 2>&1
+	then
+		log "Email generation failed:" &&
+		cat accent &&
+		false
+	fi
 '
 
 test_expect_failure 'Non-ascii characters in email (address part): content check' '

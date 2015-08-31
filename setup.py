@@ -1,11 +1,11 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python
 
 import sys
 import os
 from setuptools import setup
 
-assert 0x02040000 <= sys.hexversion < 0x03000000, \
-    "Install Python 2, version 2.4 or greater"
+assert 0x02040000 <= sys.hexversion, \
+    "Install Python, version 2.4 or greater"
 
 def read_version():
     sys.path.insert(0, os.path.join('git-multimail'))
@@ -27,7 +27,8 @@ setup(
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2 :: Only',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
         'Topic :: Communications :: Email',
         'Topic :: Software Development :: Version Control',
         ],

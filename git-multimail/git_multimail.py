@@ -1,4 +1,4 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python
 
 __version__ = '1.2.dev'
 
@@ -59,6 +59,42 @@ import optparse
 import smtplib
 import time
 import cgi
+
+PYTHON3 = sys.version_info >= (3, 0)
+
+
+def is_ascii(s):
+    return all(ord(c) < 128 and ord(c) > 0 for c in s)
+
+if PYTHON3:
+    def str_to_bytes(s):
+        return s.encode(ENCODING)
+
+    def bytes_to_str(s):
+        return s.decode(ENCODING)
+
+    unicode = str
+
+    def write_str(f, msg):
+        # Try outputing with the default encoding. If it fails,
+        # try UTF-8.
+        try:
+            f.buffer.write(msg.encode(sys.getdefaultencoding()))
+        except UnicodeEncodeError:
+            f.buffer.write(msg.encode(ENCODING))
+else:
+    def str_to_bytes(s):
+        return s
+
+    def bytes_to_str(s):
+        return s
+
+    def write_str(f, msg):
+        f.write(msg)
+
+    def next(it):
+        return it.next()
+
 
 try:
     from email.charset import Charset
@@ -363,12 +399,14 @@ def read_git_output(args, input=None, keepends=False, **kw):
 def read_output(cmd, input=None, keepends=False, **kw):
     if input:
         stdin = subprocess.PIPE
+        input = str_to_bytes(input)
     else:
         stdin = None
     p = subprocess.Popen(
         cmd, stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kw
         )
     (out, err) = p.communicate(input)
+    out = bytes_to_str(out)
     retcode = p.wait()
     if retcode:
         raise CommandError(cmd, retcode)
@@ -433,7 +471,12 @@ def header_encode(text, header_name=None):
     if not isinstance(text, unicode):
         text = unicode(text, 'utf-8')
 
-    return Header(text, header_name=header_name, charset=Charset('utf-8')).encode()
+    if is_ascii(text):
+        charset = 'ascii'
+    else:
+        charset = 'utf-8'
+
+    return Header(text, header_name=header_name, charset=Charset(charset)).encode()
 
 
 def addr_header_encode(text, header_name=None):
@@ -449,7 +492,12 @@ def addr_header_encode(text, header_name=None):
         for name, emailaddr in getaddresses([text])
         )
 
-    return Header(text, header_name=header_name, charset=Charset('utf-8')).encode()
+    if is_ascii(text):
+        charset = 'ascii'
+    else:
+        charset = 'utf-8'
+
+    return Header(text, header_name=header_name, charset=Charset(charset)).encode()
 
 
 class Config(object):
@@ -508,7 +556,8 @@ class Config(object):
                 ['config', '--get-all', '--null', '%s.%s' % (self.section, name)],
                 env=self.env, keepends=True,
                 ))
-        except CommandError, e:
+        except CommandError:
+            t, e, traceback = sys.exc_info()
             if e.retcode == 1:
                 # "the section or key is invalid"; i.e., there is no
                 # value for the specified key.
@@ -542,7 +591,8 @@ class Config(object):
                 ['config', '--unset-all', '%s.%s' % (self.section, name)],
                 env=self.env,
                 )
-        except CommandError, e:
+        except CommandError:
+            t, e, traceback = sys.exc_info()
             if e.retcode == 5:
                 # The name doesn't exist, which is what we wanted anyway...
                 pass
@@ -636,7 +686,7 @@ class GitObject(object):
         if not self.sha1:
             raise ValueError('Empty commit has no summary')
 
-        return iter(generate_summaries('--no-walk', self.sha1)).next()
+        return next(iter(generate_summaries('--no-walk', self.sha1)))
 
     def __eq__(self, other):
         return isinstance(other, GitObject) and self.sha1 == other.sha1
@@ -646,6 +696,10 @@ class GitObject(object):
 
     def __nonzero__(self):
         return bool(self.sha1)
+
+    def __bool__(self):
+        """Python 2 backward compatibility"""
+        return self.__nonzero__()
 
     def __str__(self):
         return self.sha1 or ZEROS
@@ -731,7 +785,8 @@ class Change(object):
 
             try:
                 value = value % values
-            except KeyError, e:
+            except KeyError:
+                t, e, traceback = sys.exc_info()
                 if DEBUG:
                     self.environment.log_warning(
                         'Warning: unknown variable %r in the following line; line skipped:\n'
@@ -1770,17 +1825,18 @@ class SendMailer(Mailer):
     def send(self, lines, to_addrs):
         try:
             p = subprocess.Popen(self.command, stdin=subprocess.PIPE)
-        except OSError, e:
+        except OSError:
             sys.stderr.write(
                 '*** Cannot execute command: %s\n' % ' '.join(self.command) +
-                '*** %s\n' % str(e) +
+                '*** %s\n' % sys.exc_info()[1] +
                 '*** Try setting multimailhook.mailer to "smtp"\n' +
                 '*** to send emails without using the sendmail command.\n'
                 )
             sys.exit(1)
         try:
+            lines = (str_to_bytes(line) for line in lines)
             p.stdin.writelines(lines)
-        except Exception, e:
+        except Exception:
             sys.stderr.write(
                 '*** Error while generating commit email\n'
                 '***  - mail sending aborted.\n'
@@ -1790,7 +1846,7 @@ class SendMailer(Mailer):
                 p.terminate()
             except AttributeError:
                 pass
-            raise e
+            raise
         else:
             p.stdin.close()
             retcode = p.wait()
@@ -1850,11 +1906,11 @@ class SMTPMailer(Mailer):
                     "*** Setting debug on for SMTP server connection (%s) ***\n"
                     % self.smtpserverdebuglevel)
                 self.smtp.set_debuglevel(self.smtpserverdebuglevel)
-        except Exception, e:
+        except Exception:
             sys.stderr.write(
                 '*** Error establishing SMTP connection to %s ***\n'
                 % self.smtpserver)
-            sys.stderr.write('*** %s\n' % str(e))
+            sys.stderr.write('*** %s\n' % sys.exc_info()[1])
             sys.exit(1)
 
     def __del__(self):
@@ -1871,9 +1927,9 @@ class SMTPMailer(Mailer):
             if isinstance(to_addrs, basestring):
                 to_addrs = [email for (name, email) in getaddresses([to_addrs])]
             self.smtp.sendmail(self.envelopesender, to_addrs, msg)
-        except Exception, e:
+        except Exception:
             sys.stderr.write('*** Error sending email ***\n')
-            sys.stderr.write('*** %s\n' % str(e))
+            sys.stderr.write('*** %s\n' % sys.exc_info()[1])
             self.smtp.quit()
             sys.exit(1)
 
@@ -2210,19 +2266,19 @@ class Environment(object):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        sys.stderr.write(msg)
+        write_str(sys.stderr, msg)
 
     def log_warning(self, msg):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        sys.stderr.write(msg)
+        write_str(sys.stderr, msg)
 
     def log_error(self, msg):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        sys.stderr.write(msg)
+        write_str(sys.stderr, msg)
 
 
 class ConfigEnvironmentMixin(Environment):
@@ -2420,12 +2476,14 @@ class FilterLinesEnvironmentMixin(Environment):
     def filter_body(self, lines):
         lines = super(FilterLinesEnvironmentMixin, self).filter_body(lines)
         if self.__strict_utf8:
-            lines = (line.decode(ENCODING, 'replace') for line in lines)
+            if not PYTHON3:
+                lines = (line.decode(ENCODING, 'replace') for line in lines)
             # Limit the line length in Unicode-space to avoid
             # splitting characters:
             if self.__emailmaxlinelength:
                 lines = limit_linelength(lines, self.__emailmaxlinelength)
-            lines = (line.encode(ENCODING, 'replace') for line in lines)
+            if not PYTHON3:
+                lines = (line.encode(ENCODING, 'replace') for line in lines)
         elif self.__emailmaxlinelength:
             lines = limit_linelength(lines, self.__emailmaxlinelength)
 
@@ -2639,9 +2697,9 @@ class StaticRefFilterEnvironmentMixin(Environment):
             ref_filter_regex = default_exclude
         try:
             self.__compiled_regex = re.compile(ref_filter_regex)
-        except Exception, e:
+        except Exception:
             raise ConfigurationException(
-                'Invalid Ref Filter Regex "%s": %s' % (ref_filter_regex, e.message))
+                'Invalid Ref Filter Regex "%s": %s' % (ref_filter_regex, sys.exc_info()[1]))
 
         if ref_filter_do_send_regex and ref_filter_dont_send_regex:
             raise ConfigurationException(
@@ -2657,9 +2715,9 @@ class StaticRefFilterEnvironmentMixin(Environment):
                 self.__is_do_send_filter = True
             try:
                 self.__send_compiled_regex = re.compile(ref_filter_send_regex)
-            except Exception, e:
+            except Exception:
                 raise ConfigurationException(
-                    'Invalid Ref Filter Regex "%s": %s' % (ref_filter_send_regex, e.message))
+                    'Invalid Ref Filter Regex "%s": %s' % (ref_filter_send_regex, sys.exc_info()[1]))
         else:
             self.__send_compiled_regex = self.__compiled_regex
             self.__is_do_send_filter = self.__is_inclusion_filter
@@ -2811,8 +2869,9 @@ class IncrementalDateTime(object):
 
     def __init__(self):
         self.time = time.time()
+        self.next = self.__next__  # Python 2 backward compatibility
 
-    def next(self):
+    def __next__(self):
         formatted = formatdate(self.time, True)
         self.time += 1
         return formatted
@@ -3214,7 +3273,7 @@ class Push(object):
                 if not change.environment.quiet:
                     change.environment.log_msg(
                         'Sending notification emails to: %s\n' % (change.recipients,))
-                extra_values = {'send_date': send_date.next()}
+                extra_values = {'send_date': next(send_date)}
 
                 rev = change.send_single_combined_email(sha1s)
                 if rev:
@@ -3247,7 +3306,7 @@ class Push(object):
                     rev.recipients = rev.cc_recipients
                     rev.cc_recipients = None
                 if rev.recipients:
-                    extra_values = {'send_date': send_date.next()}
+                    extra_values = {'send_date': next(send_date)}
                     mailer.send(
                         rev.generate_email(self, body_filter, extra_values),
                         rev.recipients,
@@ -3500,7 +3559,7 @@ def main(args):
 
     parser.add_option(
         '--environment', '--env', action='store', type='choice',
-        choices=KNOWN_ENVIRONMENTS.keys(), default=None,
+        choices=list(KNOWN_ENVIRONMENTS.keys()), default=None,
         help=(
             'Choose type of environment is in use.  Default is taken from '
             'multimailhook.environment if set; otherwise "generic".'
@@ -3612,8 +3671,8 @@ def main(args):
             run_as_update_hook(environment, mailer, refname, oldrev, newrev, options.force_send)
         else:
             run_as_post_receive_hook(environment, mailer)
-    except ConfigurationException, e:
-        sys.exit(str(e))
+    except ConfigurationException:
+        sys.exit(sys.exc_info()[1])
 
 
 if __name__ == '__main__':

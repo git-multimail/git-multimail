@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # encoding=utf-8
 
 import sys
@@ -6,6 +6,15 @@ import os
 import shutil
 import subprocess
 import unittest
+
+PYTHON3 = sys.version_info >= (3, 0)
+
+if PYTHON3:
+    def u(s):
+        return s
+else:
+    def u(s):
+        return unicode(s, 'UTF-8')
 
 try:
     from email.utils import formataddr
@@ -32,14 +41,14 @@ class HelperTest(unittest.TestCase):
         'somelong.sampleaddr@example.com',
         ))
     LONG_UNICODE_ADDR = formataddr((
-        u'Raphaël Gilbert André Hertzog',
+        u('Raphaël Gilbert André Hertzog'),
         'somelong.sampleaddr@example.com',
         ))
     SHORT_ASCII_ADDR = 'John Doe <john@example.com>'
     SHORT_UNICODE_ADDR = [
-        u'Joël Doe <joel@example.com>',
+        u('Joël Doe <joel@example.com>'),
         'Joël Doe <joel@example.com>',
-        u'Joël Doe <joël@example.com>',
+        u('Joël Doe <joël@example.com>'),
         'Joël Doe <joël@example.com>'
         ]
 

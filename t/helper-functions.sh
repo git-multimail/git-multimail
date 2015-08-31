@@ -28,25 +28,24 @@ ZEROS=0000000000000000000000000000000000000000
 
 if [ -z "$PYTHON" ]
 then
-    PYTHON=python2
+    PYTHON=python
 fi
 
-# Calling git-multimail
 if "$PYTHON" --version 2>&1 | grep -q "^Python 3"
 then
-    (cd "$SHARNESS_TEST_DIRECTORY/../git-multimail/" && make git_multimail3.py) >/dev/null 2>&1
-    MULTIMAIL="$SHARNESS_TEST_DIRECTORY/../git-multimail/git_multimail3.py"
     if command -v test_set_prereq >/dev/null
     then
 	test_set_prereq PYTHON3
     fi
 else
-    MULTIMAIL="$SHARNESS_TEST_DIRECTORY/../git-multimail/git_multimail.py"
     if command -v test_set_prereq >/dev/null
     then
 	test_set_prereq PYTHON2
     fi
 fi
+
+# Calling git-multimail
+MULTIMAIL="$SHARNESS_TEST_DIRECTORY/../git-multimail/git_multimail.py"
 MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
     sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
 POST_RECEIVE="$SHARNESS_TEST_DIRECTORY/../git-multimail/post-receive.example"
@@ -58,9 +57,9 @@ test_email() {
     NEWREV="$3"
     shift 3
     pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL" "$@" >output
-    status=$?
+    RETCODE=$?
     cat output
-    return $status
+    return $RETCODE
 }
 
 test_create() {
@@ -109,7 +108,10 @@ test_hook() {
     OLDREV=$(git rev-parse "$2")
     NEWREV=$(git rev-parse "$REFNAME")
     shift 2
-    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$POST_RECEIVE" "$@"
+    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$PYTHON" "$POST_RECEIVE" "$@" >output
+    RETCODE=$?
+    cat output
+    return $RETCODE
 }
 
 save_git_config() {

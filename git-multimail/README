@@ -75,21 +75,8 @@ Requirements
 ------------
 
 * Python 2.x, version 2.4 or later.  No non-standard Python modules
-  are required.  git-multimail does *not* currently work with Python
-  3.x.
-
-  The example scripts invoke Python using the following shebang line
-  (following PEP 394 [1]_)::
-
-      #! /usr/bin/env python2
-
-  If your system's Python2 interpreter is not in your PATH or is not
-  called ``python2``, you can change the lines accordingly.  Or you can
-  invoke the Python interpreter explicitly, for example via a tiny
-  shell script like::
-
-      #! /bin/sh
-      /usr/local/bin/python /path/to/git_multimail.py "$@"
+  are required.  git-multimail has preliminary support for Python 3
+  (but it has been better tested with Python 2).
 
 * The ``git`` command must be in your PATH.  git-multimail is known to
   work with Git versions back to 1.7.1.  (Earlier versions have not
