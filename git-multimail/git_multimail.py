@@ -3500,7 +3500,7 @@ def main(args):
 
     parser.add_option(
         '--environment', '--env', action='store', type='choice',
-        choices=['generic', 'gitolite'], default=None,
+        choices=KNOWN_ENVIRONMENTS.keys(), default=None,
         help=(
             'Choose type of environment is in use.  Default is taken from '
             'multimailhook.environment if set; otherwise "generic".'
