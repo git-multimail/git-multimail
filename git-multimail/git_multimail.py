@@ -1946,7 +1946,11 @@ class OutputMailer(Mailer):
 
     def send(self, lines, to_addrs):
         self.f.write(self.SEPARATOR)
-        self.f.writelines(lines)
+        for line in lines:
+            if is_ascii(line):
+                self.f.write(line)
+            else:
+                self.f.buffer.write(line.encode('utf-8'))
         self.f.write(self.SEPARATOR)
 
 
