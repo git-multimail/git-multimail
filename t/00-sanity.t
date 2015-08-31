@@ -6,7 +6,7 @@ test_description="Quick sanity checks"
 D=$SHARNESS_TEST_DIRECTORY
 
 for c in \
-    "$PYTHON" \
+    python \
     pep8 \
     git \
     rstcheck \
@@ -14,9 +14,17 @@ for c in \
 do
     unset "${c}"_installed
     ver=unavailable
-    if command -v "${c}" >/dev/null 2>&1
+    case $c in
+	python)
+	    cmd=$PYTHON
+	    ;;
+	*)
+	    cmd=$c
+	    ;;
+    esac
+    if command -v "${cmd}" >/dev/null 2>&1
     then
-	ver=$("${c}" --version 2>&1)
+	ver=$("${cmd}" --version 2>&1)
 	ver=${ver##* }
 	test_set_prereq "$c"
     fi
