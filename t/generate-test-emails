@@ -54,8 +54,8 @@ verbose_do git config multimailhook.commitList 'Commit List <commitlist@example.
 
 # Test for Gerrit environment
 # (no verbose_do since "$MULTIMAIL" changes from a machine to another)
-echo \$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter 'Sub Mitter (sub.mitter@example.com)' &&
-  "$PYTHON" "$MULTIMAIL" --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter 'Sub Mitter (sub.mitter@example.com)' >out &&
+echo \$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter 'Sûb Mitter (sub.mitter@example.com)' &&
+  "$PYTHON" "$MULTIMAIL" --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter 'Sûb Mitter (sub.mitter@example.com)' >out &&
 RETCODE=$? &&
 cat out &&
 test $RETCODE = 0 &&

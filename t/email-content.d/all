@@ -2435,7 +2435,7 @@ EOF
 ######################################################################
 $ git 'config' 'multimailhook.refChangeShowGraph' 'false'
 $ git 'config' 'multimailhook.commitList' 'Commit List <commitlist@example.com>'
-$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter Sub Mitter (sub.mitter@example.com)
+$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter Sûb Mitter (sub.mitter@example.com)
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ===========================================================================
 Date: ...
@@ -2445,8 +2445,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: Sub Mitter <sub.mitter@example.com>
-Reply-To: Sub Mitter <sub.mitter@example.com>
+From: =?utf-8?q?S=C3=BBb_Mitter?= <sub.mitter@example.com>
+Reply-To: =?utf-8?q?S=C3=BBb_Mitter?= <sub.mitter@example.com>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: demo-project
 X-Git-Refname: refs/heads/master
@@ -2459,7 +2459,7 @@ Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
-Sub Mitter pushed a change to branch master
+Sûb Mitter pushed a change to branch master
 in repository demo-project.
 
       from  d245c99   m1
@@ -2486,7 +2486,7 @@ Subject: *test-repo* 01/01: a5
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: Sub Mitter <sub.mitter@example.com>
+From: =?utf-8?q?S=C3=BBb_Mitter?= <sub.mitter@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
@@ -2501,7 +2501,7 @@ Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
-Sub Mitter pushed a commit to branch master
+Sûb Mitter pushed a commit to branch master
 in repository demo-project.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
