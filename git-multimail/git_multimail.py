@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 __version__ = '1.2.dev'
 
@@ -3494,6 +3494,13 @@ def compute_gerrit_options(options, args, required_gerrit_options):
                                     options.refname))):
         options.refname = 'refs/heads/' + options.refname
 
+    # Convert each string option unicode for Python3.
+    if PYTHON3:
+        opts = ['environment', 'recipients', 'oldrev', 'newrev', 'refname', 'project', 'submitter', 'stash-user', 'stash-repo']
+        for opt in opts:
+            obj = getattr(options, opt)
+            setattr(options, opt, obj.encode('utf-8', 'surrogateescape').decode('utf-8', 'replace'))
+
     # New revisions can appear in a gerrit repository either due to someone
     # pushing directly (in which case options.submitter will be set), or they
     # can press "Submit this patchset" in the web UI for some CR (in which
@@ -3523,13 +3530,6 @@ def compute_gerrit_options(options, args, required_gerrit_options):
                                    '--format=%cN%n%aN <%aE>', options.newrev])
         if rev_info and rev_info[0] == 'Gerrit Code Review':
             options.submitter = rev_info[1]
-
-    # Convert each string option unicode for Python3.
-    if PYTHON3:
-        opts = ['environment', 'recipients', 'oldrev', 'newrev', 'refname', 'project', 'submitter', 'stash-user', 'stash-repo']
-        for opt in opts:
-            obj = getattr(options, opt)
-            setattr(options, opt, obj.encode('utf-8', 'surrogateescape').decode('utf-8', 'replace'))
 
     # We pass back refname, oldrev, newrev as args because then the
     # gerrit ref-updated hook is much like the git update hook
