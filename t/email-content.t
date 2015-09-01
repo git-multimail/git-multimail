@@ -142,6 +142,20 @@ test_email_content '' 'test_when_finished "git checkout master"' \
 	test_update HEAD HEAD^ -c multimailhook.from=author
 '
 
+test_email_content 'Gerrit environment' gerrit '
+	# (no verbose_do since "$MULTIMAIL" changes from a machine to another)
+	echo \$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter "Sûb Mitter (sub.mitter@example.com)" &&
+	  "$PYTHON" "$MULTIMAIL" --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter "Sûb Mitter (sub.mitter@example.com)" >out &&
+	RETCODE=$? &&
+	cat out &&
+	test $RETCODE = 0 &&
+	echo \$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter "Submitter without Email" &&
+	  "$PYTHON" "$MULTIMAIL" --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter "Submitter without Email" >out &&
+	RETCODE=$? &&
+	cat out &&
+	test $RETCODE = 0
+'
+
 # The old test infrastructure was using one big 'generate-test-emails'
 # script. Existing tests are kept there, but new tests should be added
 # with separate test_expect_success.
