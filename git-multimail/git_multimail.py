@@ -3493,6 +3493,16 @@ def compute_gerrit_options(options, args, required_gerrit_options):
                                     options.refname))):
         options.refname = 'refs/heads/' + options.refname
 
+    # Convert each string option unicode for Python3.
+    if PYTHON3:
+        opts = ['environment', 'recipients', 'oldrev', 'newrev', 'refname', 'project', 'submitter', 'stash-user', 'stash-repo']
+        for opt in opts:
+            if not hasattr(options, opt):
+                continue
+            obj = getattr(options, opt)
+            if obj:
+                setattr(options, opt, obj.encode('utf-8', 'surrogateescape').decode('utf-8', 'replace'))
+
     # New revisions can appear in a gerrit repository either due to someone
     # pushing directly (in which case options.submitter will be set), or they
     # can press "Submit this patchset" in the web UI for some CR (in which
@@ -3507,9 +3517,6 @@ def compute_gerrit_options(options, args, required_gerrit_options):
         # The submitter argument is almost an RFC 2822 email address; change it
         # from 'User Name (email@domain)' to 'User Name <email@domain>' so it is
         options.submitter = options.submitter.replace('(', '<').replace(')', '>')
-        # Convert to unicode for Python3.
-        if PYTHON3:
-            options.submitter = options.submitter.encode('utf-8', 'surrogateescape').decode('utf-8', 'replace')
     else:
         update_method = 'submitted'
         # Gerrit knew who submitted this patchset, but threw that information
