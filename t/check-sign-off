@@ -12,7 +12,7 @@ cleanup () {
 }
 
 # In shallow clones, we may not have all revisions ...
-negative_rev=$(git rev-parse 03f63a7422abfee45f2abc7af15affa48ffca666^0 2>/dev/null)
+negative_rev=$(git rev-parse 03f63a7422abfee45f2abc7af15affa48ffca666^0 -- 2>/dev/null)
 if test -n "$negative_rev"
 then
 	negative_rev="^$negative_rev"
