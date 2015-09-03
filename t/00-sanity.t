@@ -67,16 +67,13 @@ rstcheck_file t/README.rst
 # E402: module level import not at top of file => we need this in the
 # tests.
 #
-# E501: line too long (... characters) => we don't have _very_ long
-# lines, but we could get better.
-#
 # E123: closing bracket does not match indentation of opening bracket's line
 # => not raised on all pep8 version, and really constraining. We can
 # probably keep ignoring it forever.
 pep8_file () {
     f=$1
     test_expect_success pep8 "pep8 $f" '
-	pep8 "$D"/../"$f" --ignore=E402,E501,E123
+	pep8 "$D"/../"$f" --ignore=E402,E123 --max-line-length=99
     '
 }
 pep8_file git-multimail/git_multimail.py
