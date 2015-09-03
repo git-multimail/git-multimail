@@ -85,7 +85,7 @@ in repository test-repo.
 
 commit 8fe34ad1d135ff2d216e5b1b98be5817943c9622
 Author: Joe User <user@example.com>
-Date:   Sat Jun 30 13:46:41 2012 +0200
+AuthorDate: Sat Jun 30 13:46:41 2012 +0200
 
     t1
 ---
@@ -133,7 +133,7 @@ in repository test-repo.
 
 commit fe0ff82b4b647afd6aa5f85362f95207639e76b1
 Author: Joe User <user@example.com>
-Date:   Sat Jun 30 13:46:50 2012 +0200
+AuthorDate: Sat Jun 30 13:46:50 2012 +0200
 
     t2
 ---
@@ -270,7 +270,7 @@ in repository test-repo.
 
 commit 8fe34ad1d135ff2d216e5b1b98be5817943c9622
 Author: Joe User <user@example.com>
-Date:   Sat Jun 30 13:46:41 2012 +0200
+AuthorDate: Sat Jun 30 13:46:41 2012 +0200
 
     t1
 ---
@@ -318,7 +318,7 @@ in repository test-repo.
 
 commit fe0ff82b4b647afd6aa5f85362f95207639e76b1
 Author: Joe User <user@example.com>
-Date:   Sat Jun 30 13:46:50 2012 +0200
+AuthorDate: Sat Jun 30 13:46:50 2012 +0200
 
     t2
 ---

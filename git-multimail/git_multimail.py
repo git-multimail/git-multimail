@@ -991,10 +991,14 @@ class Revision(Change):
     def generate_email_body(self, push):
         """Show this revision."""
 
-        return read_git_lines(
-            ['log'] + self.environment.commitlogopts + ['-1', self.rev.sha1],
-            keepends=True,
-            )
+        for line in read_git_lines(
+                ['log'] + self.environment.commitlogopts + ['-1', self.rev.sha1],
+                keepends=True,
+                ):
+            if line.startswith('Date:   ') and self.environment.date_substitute:
+                yield self.environment.date_substitute + line[len('Date:   '):]
+            else:
+                yield line
 
     def generate_email_footer(self):
         return self.expand_lines(REVISION_FOOTER_TEMPLATE)
@@ -2094,6 +2098,11 @@ class Environment(object):
             commit mail.  The value should be a list of strings
             representing words to be passed to the command.
 
+        date_substitute (string)
+
+            String to be used in substitution for 'Date:' at start of
+            line in the output of 'git log'.
+
         quiet (bool)
             On success do not write to stderr
 
@@ -2127,6 +2136,7 @@ class Environment(object):
         self.refchange_showgraph = False
         self.refchange_showlog = False
         self.commitlogopts = ['-C', '--stat', '-p', '--cc']
+        self.date_substitute = 'AuthorDate: '
         self.quiet = False
         self.stdout = False
         self.combine_when_single_commit = True
@@ -2360,6 +2370,12 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         commitlogopts = config.get('commitlogopts')
         if commitlogopts is not None:
             self.commitlogopts = shlex.split(commitlogopts)
+
+        date_substitute = config.get('dateSubstitute')
+        if date_substitute == 'none':
+            self.date_substitute = None
+        elif date_substitute is not None:
+            self.date_substitute = date_substitute
 
         reply_to = config.get('replyTo')
         self.__reply_to_refchange = config.get('replyToRefchange', default=reply_to)

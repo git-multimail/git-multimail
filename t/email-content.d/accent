@@ -74,7 +74,7 @@ in repository test-repo.
 
 commit efcb618216061d6db40469f37a0ed520a81b0d75
 Author: Sébastien <sebastien@example.com>
-Date:   Sat Mar 3 11:46:40 1973 +0200
+AuthorDate: Sat Mar 3 11:46:40 1973 +0200
 
     Message accentué
 ---

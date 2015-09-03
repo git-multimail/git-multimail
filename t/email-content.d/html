@@ -78,7 +78,7 @@ in repository test-repo.
 <pre style='margin:0'>commit d245c99162aff6fff4879e5d5c17d454766b45db</pre>
 <pre style='margin:0'>Merge: ebf40e1 abb8baa</pre>
 <pre style='margin:0'>Author: Joe User &lt;user@example.com&gt;</pre>
-<pre style='margin:0'>Date:   Fri Feb 3 09:32:27 2012 +0100</pre>
+<pre style='margin:0'>AuthorDate: Fri Feb 3 09:32:27 2012 +0100</pre>
 <br>
 <pre style='margin:0'>    m1</pre>
 <br>
@@ -131,7 +131,7 @@ in repository test-repo.
 </pre>
 <pre style='margin:0'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d</pre>
 <pre style='margin:0'>Author: Joe User &lt;user@example.com&gt;</pre>
-<pre style='margin:0'>Date:   Fri Feb 3 09:32:50 2012 +0100</pre>
+<pre style='margin:0'>AuthorDate: Fri Feb 3 09:32:50 2012 +0100</pre>
 <br>
 <pre style='margin:0'>    a5</pre>
 <pre style='margin:0'>---</pre>

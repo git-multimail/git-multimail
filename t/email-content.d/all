@@ -82,7 +82,7 @@ in repository test-repo.
 commit d245c99162aff6fff4879e5d5c17d454766b45db
 Merge: ebf40e1 abb8baa
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:27 2012 +0100
+AuthorDate: Fri Feb 3 09:32:27 2012 +0100
 
     m1
 
@@ -131,7 +131,7 @@ in repository test-repo.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:50 2012 +0100
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 
     a5
 ---
@@ -246,7 +246,7 @@ in repository test-repo.
 
 commit 50d684ad4a020a5b356c12cde0bbce01014f90d5
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:26:47 2012 +0100
+AuthorDate: Fri Feb 3 09:26:47 2012 +0100
 
     a2
 ---
@@ -294,7 +294,7 @@ in repository test-repo.
 
 commit 012fc788c644eebb6f0dc54489d642dec24878db
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:26:54 2012 +0100
+AuthorDate: Fri Feb 3 09:26:54 2012 +0100
 
     a3
 ---
@@ -342,7 +342,7 @@ in repository test-repo.
 
 commit ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:27:31 2012 +0100
+AuthorDate: Fri Feb 3 09:27:31 2012 +0100
 
     a4
 ---
@@ -391,7 +391,7 @@ in repository test-repo.
 commit d245c99162aff6fff4879e5d5c17d454766b45db
 Merge: ebf40e1 abb8baa
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:27 2012 +0100
+AuthorDate: Fri Feb 3 09:32:27 2012 +0100
 
     m1
 
@@ -440,7 +440,7 @@ in repository test-repo.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:50 2012 +0100
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 
     a5
 ---
@@ -745,7 +745,7 @@ in repository test-repo.
 
 commit 5f26bd17b128b6f251334af774ba502a6f590fca
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:28:37 2012 +0100
+AuthorDate: Fri Feb 3 09:28:37 2012 +0100
 
     r3
 ---
@@ -793,7 +793,7 @@ in repository test-repo.
 
 commit cd654633ad4dfb51961a420fca63dca6e4e3d7ac
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:34:40 2012 +0100
+AuthorDate: Fri Feb 3 09:34:40 2012 +0100
 
     r4
 ---
@@ -886,7 +886,7 @@ in repository test-repo.
 
 commit cd654633ad4dfb51961a420fca63dca6e4e3d7ac
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:34:40 2012 +0100
+MyDate: Fri Feb 3 09:34:40 2012 +0100
 
     r4
 ---
@@ -1092,7 +1092,7 @@ in repository test-repo.
 
 commit 7a9800a4ba059cf9962b8a8d4d823a4e8f2cae2a
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:31:44 2012 +0100
+AuthorDate: Fri Feb 3 09:31:44 2012 +0100
 
     f4
 ---
@@ -1140,7 +1140,7 @@ in repository test-repo.
 
 commit 47ef1f8bb115409dc2d7ac878360df3823198d2b
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:33:08 2012 +0100
+AuthorDate: Fri Feb 3 09:33:08 2012 +0100
 
     f5
 ---
@@ -1235,7 +1235,7 @@ in repository test-repo.
 
 commit 7a9800a4ba059cf9962b8a8d4d823a4e8f2cae2a
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:31:44 2012 +0100
+AuthorDate: Fri Feb 3 09:31:44 2012 +0100
 
     f4
 ---
@@ -1283,7 +1283,7 @@ in repository test-repo.
 
 commit 47ef1f8bb115409dc2d7ac878360df3823198d2b
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:33:08 2012 +0100
+AuthorDate: Fri Feb 3 09:33:08 2012 +0100
 
     f5
 ---
@@ -1470,7 +1470,7 @@ in repository test-repo.
 
 commit 25d99c94a2fa9b1e1888faa63836f910fbfe773e
 Author: Joe User <user@example.com>
-Date:   Sat Jan 26 07:39:22 2013 +0100
+AuthorDate: Sat Jan 26 07:39:22 2013 +0100
 
     x1
 ---
@@ -1518,7 +1518,7 @@ in repository test-repo.
 
 commit cf3c5decbcf03c567cdcc48f054441943013e121
 Author: Joe User <user@example.com>
-Date:   Sat Jan 26 07:39:39 2013 +0100
+AuthorDate: Sat Jan 26 07:39:39 2013 +0100
 
     x2
 ---
@@ -1638,7 +1638,7 @@ in repository test-repo.
 
 commit 25d99c94a2fa9b1e1888faa63836f910fbfe773e
 Author: Joe User <user@example.com>
-Date:   Sat Jan 26 07:39:22 2013 +0100
+AuthorDate: Sat Jan 26 07:39:22 2013 +0100
 
     x1
 ---
@@ -1686,7 +1686,7 @@ in repository test-repo.
 
 commit cf3c5decbcf03c567cdcc48f054441943013e121
 Author: Joe User <user@example.com>
-Date:   Sat Jan 26 07:39:39 2013 +0100
+AuthorDate: Sat Jan 26 07:39:39 2013 +0100
 
     x2
 ---
@@ -1822,7 +1822,7 @@ in repository test-repo.
 
 commit ce88e4233b43b275d24695813d0bae1460a8f1b8
 Author: Joël User <user@example.com>
-Date:   Sat Jan 26 07:43:14 2013 +0100
+AuthorDate: Sat Jan 26 07:43:14 2013 +0100
 
     b1
 ---
@@ -1941,7 +1941,7 @@ in repository test-repo.
 
 commit ce88e4233b43b275d24695813d0bae1460a8f1b8
 Author: Joël User <user@example.com>
-Date:   Sat Jan 26 07:43:14 2013 +0100
+AuthorDate: Sat Jan 26 07:43:14 2013 +0100
 
     b1
 ---
@@ -2082,7 +2082,7 @@ in repository test-repo.
 commit d245c99162aff6fff4879e5d5c17d454766b45db
 Merge: ebf40e1 abb8baa
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:27 2012 +0100
+AuthorDate: Fri Feb 3 09:32:27 2012 +0100
 
     m1
 
@@ -2131,7 +2131,7 @@ in repository test-repo.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:50 2012 +0100
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 
     a5
 ---
@@ -2231,7 +2231,7 @@ in repository test-repo.
 
 commit 919426837aa07c18459a0acc0f789b6a8cd8fb80
 Author: Matthieu Moy <Matthieu.Moy@imag.fr>
-Date:   Sun May 24 19:57:13 2015 +0200
+AuthorDate: Sun May 24 19:57:13 2015 +0200
 
     Subject line
     
@@ -2284,7 +2284,7 @@ in repository test-repo.
 
 commit 850c489cf431841cf428e00fc8285456682a9d13
 Author: Matthieu Moy <Matthieu.Moy@imag.fr>
-Date:   Sun May 24 19:58:34 2015 +0200
+AuthorDate: Sun May 24 19:58:34 2015 +0200
 
     Another subject line
     
@@ -2337,7 +2337,7 @@ in repository test-repo.
 
 commit 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
 Author: Matthieu Moy <Matthieu.Moy@imag.fr>
-Date:   Sun May 24 20:19:12 2015 +0200
+AuthorDate: Sun May 24 20:19:12 2015 +0200
 
     Commit without Cc: line.
     
@@ -2474,7 +2474,7 @@ in repository test-repo.
 
 commit 919426837aa07c18459a0acc0f789b6a8cd8fb80
 Author: Matthieu Moy <Matthieu.Moy@imag.fr>
-Date:   Sun May 24 19:57:13 2015 +0200
+AuthorDate: Sun May 24 19:57:13 2015 +0200
 
     Subject line
     
@@ -2526,7 +2526,7 @@ in repository test-repo.
 
 commit 850c489cf431841cf428e00fc8285456682a9d13
 Author: Matthieu Moy <Matthieu.Moy@imag.fr>
-Date:   Sun May 24 19:58:34 2015 +0200
+AuthorDate: Sun May 24 19:58:34 2015 +0200
 
     Another subject line
     
