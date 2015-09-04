@@ -264,6 +264,13 @@ multimailhook.commitEmailFormat
     HTML instead of plain text used by default. Note that this  currently the
     ref change emails are always sent in plain text.
 
+    Note that when using "html", the formatting is done by parsing the
+    output of ``git log`` with ``-p``. When using
+    ``multimailhook.commitLogOpts`` to specify a ``--format`` for
+    ``git log``, one may get false positive (e.g. lines in the body of
+    the message starting with ``+++`` or ``---`` colored in red or
+    green).
+
 multimailhook.refchangeShowGraph
 
     If this option is set to true, then summary emails about reference
