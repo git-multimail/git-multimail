@@ -483,6 +483,15 @@ multimailhook.commitLogOpts
     --stat -p --cc``.  Shell quoting is allowed; see
     multimailhook.logOpts for details.
 
+multimailhook.dateSubstitute
+
+    String to use as a substitute for ``Date:`` in the output of ``git
+    log`` while formatting commit messages. This is usefull to avoid
+    emitting a line that can be interpreted by mailers as the start of
+    a cited message (Zimbra webmail in particular). Defaults to
+    ``CommitDate: ``. Set to an empty string or ``none`` to deactivate
+    the behavior.
+
 multimailhook.emailDomain
 
     Domain name appended to the username of the person doing the push

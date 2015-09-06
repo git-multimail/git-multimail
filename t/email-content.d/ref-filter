@@ -87,7 +87,7 @@ in repository test-repo.
 
 commit f0e9a982738fb14c0c66097353bf2404135624fb
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:29:08 2012 +0100
+AuthorDate: Fri Feb 3 09:29:08 2012 +0100
 
     f1
 ---
@@ -135,7 +135,7 @@ in repository test-repo.
 
 commit c742b15e5c9cbb174294c1b3efaa959413bf4137
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:29:13 2012 +0100
+AuthorDate: Fri Feb 3 09:29:13 2012 +0100
 
     f2
 ---
@@ -183,7 +183,7 @@ in repository test-repo.
 
 commit abb8baa7170a6d55bc4311cc819579a929eb0b04
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:31:22 2012 +0100
+AuthorDate: Fri Feb 3 09:31:22 2012 +0100
 
     f3
 ---
@@ -232,7 +232,7 @@ in repository test-repo.
 commit d245c99162aff6fff4879e5d5c17d454766b45db
 Merge: ebf40e1 abb8baa
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:27 2012 +0100
+AuthorDate: Fri Feb 3 09:32:27 2012 +0100
 
     m1
 
@@ -281,7 +281,7 @@ in repository test-repo.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:50 2012 +0100
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 
     a5
 ---
@@ -381,7 +381,7 @@ in repository test-repo.
 commit d245c99162aff6fff4879e5d5c17d454766b45db
 Merge: ebf40e1 abb8baa
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:27 2012 +0100
+AuthorDate: Fri Feb 3 09:32:27 2012 +0100
 
     m1
 
@@ -430,7 +430,7 @@ in repository test-repo.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:50 2012 +0100
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 
     a5
 ---

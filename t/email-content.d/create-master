@@ -74,7 +74,7 @@ in repository test-repo.
 
 commit 50d684ad4a020a5b356c12cde0bbce01014f90d5
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:26:47 2012 +0100
+AuthorDate: Fri Feb 3 09:26:47 2012 +0100
 
     a2
 ---
@@ -122,7 +122,7 @@ in repository test-repo.
 
 commit 012fc788c644eebb6f0dc54489d642dec24878db
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:26:54 2012 +0100
+AuthorDate: Fri Feb 3 09:26:54 2012 +0100
 
     a3
 ---
@@ -170,7 +170,7 @@ in repository test-repo.
 
 commit ebf40e1fe61e9b74334f80b1e8af506a36ddb57f
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:27:31 2012 +0100
+AuthorDate: Fri Feb 3 09:27:31 2012 +0100
 
     a4
 ---
@@ -219,7 +219,7 @@ in repository test-repo.
 commit d245c99162aff6fff4879e5d5c17d454766b45db
 Merge: ebf40e1 abb8baa
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:27 2012 +0100
+AuthorDate: Fri Feb 3 09:32:27 2012 +0100
 
     m1
 
@@ -268,7 +268,7 @@ in repository test-repo.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:50 2012 +0100
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 
     a5
 ---

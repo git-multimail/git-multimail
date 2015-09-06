@@ -69,7 +69,7 @@ in repository démo-project.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:50 2012 +0100
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 
     a5
 ---
@@ -159,7 +159,7 @@ in repository demo-project.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:50 2012 +0100
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 
     a5
 ---
