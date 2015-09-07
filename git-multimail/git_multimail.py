@@ -69,8 +69,10 @@ if sys.version_info <= (2, 5):
                 return False
             return True
 
+
 def is_ascii(s):
     return all(ord(c) < 128 and ord(c) > 0 for c in s)
+
 
 if PYTHON3:
     def str_to_bytes(s):
