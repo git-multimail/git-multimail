@@ -1,5 +1,10 @@
-Release 1.2.0 (in progress)
-=============
+Release 1.2.0 Alpha 1
+=====================
+
+This release has been well tested, but contains possibly controversial
+changes visible to the user. It is an alpha release in the sense that
+the user-interface may still change before the final release depending
+on the user feedback.
 
 * It is now possible to exclude some refs (e.g. exclude some branches
   or tags). See refFilterDoSendRegex, refFilterDontSendRegex,

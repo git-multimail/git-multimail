@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__version__ = '1.2.dev'
+__version__ = '1.2.a1'
 
 # Copyright (c) 2015 Matthieu Moy and others
 # Copyright (c) 2012-2014 Michael Haggerty and others
