@@ -62,6 +62,12 @@ import cgi
 
 PYTHON3 = sys.version_info >= (3, 0)
 
+if sys.version_info <= (2, 5):
+    def all(iterable):
+        for element in iterable:
+            if not element:
+                return False
+            return True
 
 def is_ascii(s):
     return all(ord(c) < 128 and ord(c) > 0 for c in s)
@@ -778,7 +784,10 @@ class Change(object):
         skip lines that contain references to unknown variables."""
 
         values = self.get_values(**extra_values)
-        values['contenttype'] = 'html' if self._contains_html_diff else 'plain'
+        if self._contains_html_diff:
+            values['contenttype'] = 'html'
+        else:
+            values['contenttype'] = 'plain'
 
         for line in template.splitlines():
             (name, value) = line.split(': ', 1)
@@ -3475,14 +3484,15 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
 def get_version():
     oldcwd = os.getcwd()
     try:
-        os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        git_version = read_git_output(['describe', '--tags', 'HEAD'])
-        if git_version == __version__:
-            return git_version
-        else:
-            return '%s (%s)' % (__version__, git_version)
-    except:
-        pass
+        try:
+            os.chdir(os.path.dirname(os.path.realpath(__file__)))
+            git_version = read_git_output(['describe', '--tags', 'HEAD'])
+            if git_version == __version__:
+                return git_version
+            else:
+                return '%s (%s)' % (__version__, git_version)
+        except:
+            pass
     finally:
         os.chdir(oldcwd)
     return __version__

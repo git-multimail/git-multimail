@@ -117,7 +117,7 @@ class HelperTest(unittest.TestCase):
 
 
 class ConfigTest(unittest.TestCase):
-    class ConfigMock():
+    class ConfigMock(object):
         """Trivial mock for a Config class. Just specify what get_all should
         return for each argument."""
         def __init__(self, values, all_values):

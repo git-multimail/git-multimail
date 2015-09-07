@@ -8,7 +8,7 @@ options='--stdout --recipients recipient@example.com'
 
 test_expect_success '--help' '
 	$MULTIMAIL --help >actual &&
-	grep -e ^Usage: -e ^Options: actual
+	grep -e ^Usage: -e ^[Oo]ptions: actual
 '
 
 test_expect_success '-v, --version' '
