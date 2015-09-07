@@ -413,4 +413,6 @@ if __name__ == '__main__':
     os.environ['HOME'] = TEST_DIR
     os.environ['XDG_CONFIG_HOME'] = TEST_DIR
     os.environ['GIT_CONFIG_NOSYSTEM'] = '1'
-    unittest.TextTestRunner().run(suite())
+    result = unittest.TextTestRunner().run(suite())
+    if not result.wasSuccessful():
+        sys.exit(1)
