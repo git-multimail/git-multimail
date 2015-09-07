@@ -3703,7 +3703,18 @@ def main(args):
             run_as_post_receive_hook(environment, mailer)
     except ConfigurationException:
         sys.exit(sys.exc_info()[1])
-
+    except Exception:
+        t, e, tb = sys.exc_info()
+        import traceback
+        sys.stdout.write('\n')
+        sys.stdout.write('Exception \'' + t.__name__ +
+                         '\' raised. Please report this as a bug to\n')
+        sys.stdout.write('https://github.com/git-multimail/git-multimail/issues\n')
+        sys.stdout.write('with the information below:\n\n')
+        sys.stdout.write('git-multimail version ' + get_version() + '\n')
+        sys.stdout.write('Python version ' + sys.version + '\n')
+        traceback.print_exc(file=sys.stdout)
+        sys.exit(1)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
