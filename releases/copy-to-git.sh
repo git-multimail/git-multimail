@@ -37,7 +37,11 @@ then
 fi
 
 
-cp $(git ls-files git-multimail/ | grep -v -e '/\.gitignore$') "$gitsrc"/contrib/hooks/multimail/
+cp $(git ls-files git-multimail/ | grep -v -e '/\.gitignore$') \
+   CONTRIBUTING.rst \
+   "$gitsrc"/contrib/hooks/multimail/
+mkdir "$gitsrc"/contrib/hooks/multimail/doc/
+cp $(git ls-files doc/ | grep -v -e '/\.gitignore$') "$gitsrc"/contrib/hooks/multimail/doc/
 
 cd "$gitsrc"/contrib/hooks/multimail/
 sed -e "s/@DATE@/$date/" -e "s/@SHA1@/$sha1 refs\/tags\/$tag/" README.Git.template \
