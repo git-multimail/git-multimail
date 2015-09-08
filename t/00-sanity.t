@@ -33,7 +33,7 @@ do
     then
 	case "$c" in
 	    pep8|rstcheck)
-		log "#   (please install it with e.g. 'pep8 install ${c}' to allow sanity checks)"
+		log "#   (please install it with e.g. 'pip install ${c}' to allow sanity checks)"
 		;;
 	    *)
 		log "#   (please install it to run the complete testsuite)"
