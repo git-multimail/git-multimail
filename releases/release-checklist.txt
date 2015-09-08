@@ -4,6 +4,15 @@ At each release:
 
 * Add version number in README
 
+* Test with various versions of Python and Git, add "This version has
+  been tested with Python ... and Git ..." to CHANGES.
+
+* Run manual tests:
+
+  - gerrit with vagrant: ../t/gerrit/README.rst
+
+  - smtp mailer: ../t/test-email-config
+
 * Commit and tag the result
 
 * push & release on GitHub
