@@ -532,6 +532,28 @@ class Config(object):
         assert words[-1] == ''
         return words[:-1]
 
+    @staticmethod
+    def add_config_parameters(c):
+        """Add configuration parameters to Git.
+
+        c is either an str or a list of str, each element being of the
+        form 'var=val' or 'var', with the same syntax and meaning as
+        the argument of 'git -c var=val'.
+        """
+        if isinstance(c, str):
+            c = (c,)
+        parameters = os.environ.get('GIT_CONFIG_PARAMETERS', '')
+        if parameters:
+            parameters += ' '
+        # git expects GIT_CONFIG_PARAMETERS to be of the form
+        #    "'name1=value1' 'name2=value2' 'name3=value3'"
+        # including everything inside the double quotes (but not the double
+        # quotes themselves).  Spacing is critical.  Also, if a value contains
+        # a literal single quote that quote must be represented using the
+        # four character sequence: '\''
+        parameters += ' '.join("'" + x.replace("'", "'\\''") + "'" for x in c)
+        os.environ['GIT_CONFIG_PARAMETERS'] = parameters
+
     def get(self, name, default=None):
         try:
             values = self._split(read_git_output(
@@ -3671,17 +3693,7 @@ def main(args):
         return
 
     if options.c:
-        parameters = os.environ.get('GIT_CONFIG_PARAMETERS', '')
-        if parameters:
-            parameters += ' '
-        # git expects GIT_CONFIG_PARAMETERS to be of the form
-        #    "'name1=value1' 'name2=value2' 'name3=value3'"
-        # including everything inside the double quotes (but not the double
-        # quotes themselves).  Spacing is critical.  Also, if a value contains
-        # a literal single quote that quote must be represented using the
-        # four character sequence: '\''
-        parameters += ' '.join("'" + x.replace("'", "'\\''") + "'" for x in options.c)
-        os.environ['GIT_CONFIG_PARAMETERS'] = parameters
+        Config.add_config_parameters(options.c)
 
     config = Config('multimailhook')
 
