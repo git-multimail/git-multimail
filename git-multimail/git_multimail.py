@@ -884,6 +884,13 @@ class Change(object):
             body = body_filter(body)
 
         diff_started = False
+        if self._contains_html_diff:
+            # "white-space: pre" is the default, but we need to
+            # specify it again in case the message is viewed in a
+            # webmail which wraps it in an element setting white-space
+            # to something else (Zimbra does this and sets
+            # white-space: pre-line).
+            yield '<pre style="white-space: pre">'
         for line in body:
             if self._contains_html_diff:
                 # This is very, very naive. It would be much better to really
@@ -906,19 +913,19 @@ class Change(object):
 
                 # Chop the trailing LF, we don't want it inside <pre>.
                 line = cgi.escape(line[:-1])
-                if line:
-                    line = "<pre style='margin:0'>%s</pre>" % line
-                else:
-                    # Empty <pre> is just ignored, so represent blank lines
-                    # otherwise.
-                    line = '<br>'
 
                 if color:
-                    line = "<div style='background:#%s'>%s</div>\n" % (color, line)
+                    # Use a <span style='display:block> to color the
+                    # whole line. The newline must be inside the span
+                    # to display properly both in Firefox and in
+                    # text-based browser.
+                    line = "<span style='display:block;background:#%s'>%s\n</span>" % (color, line)
                 else:
                     line = line + '\n'
 
             yield line
+        if self._contains_html_diff:
+            yield '</pre>'
 
         for line in self._wrap_for_html(self.generate_email_footer()):
             yield line
