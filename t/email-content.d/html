@@ -75,24 +75,24 @@ pushuser pushed a commit to branch master
 in repository test-repo.
 
 </pre>
-<pre style="white-space: pre">commit d245c99162aff6fff4879e5d5c17d454766b45db
-Merge: ebf40e1 abb8baa
+<pre style="white-space: pre"><span style='display:block; white-space:pre;color:#808000;'>commit d245c99162aff6fff4879e5d5c17d454766b45db
+</span>Merge: ebf40e1 abb8baa
 Author: Joe User &lt;user@example.com&gt;
 AuthorDate: Fri Feb 3 09:32:27 2012 +0100
 
-    m1
-
+<span style='display:block; white-space:pre;color:#404040;'>    m1
+</span>
  a.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --cc a.txt
-index b8626c4,45d9e0e..63a911f
-<span style='display:block;background:#e0e0ff'>--- a/a.txt
-</span><span style='display:block;background:#e0e0ff'>+++ b/a.txt
-</span><span style='display:block;background:#e0e0e0'>@@@ -1,1 -1,1 +1,1 @@@
-</span><span style='display:block;background:#ffe0e0'>- 4
+<span style='display:block; white-space:pre;color:#808080;'>diff --cc a.txt
+</span><span style='display:block; white-space:pre;color:#808080;'>index b8626c4,45d9e0e..63a911f
+</span><span style='display:block; white-space:pre;background:#e0e0ff;'>--- a/a.txt
+</span><span style='display:block; white-space:pre;background:#e0e0ff;'>+++ b/a.txt
+</span><span style='display:block; white-space:pre;background:#e0e0e0;'>@@@ -1,1 -1,1 +1,1 @@@
+</span><span style='display:block; white-space:pre;background:#ffe0e0;'>- 4
 </span> -f3
-<span style='display:block;background:#e0ffe0'>++m1
+<span style='display:block; white-space:pre;background:#e0ffe0;'>++m1
 </span></pre><pre style='margin:0'>
 
 -- 
@@ -129,22 +129,22 @@ pushuser pushed a commit to branch master
 in repository test-repo.
 
 </pre>
-<pre style="white-space: pre">commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
-Author: Joe User &lt;user@example.com&gt;
+<pre style="white-space: pre"><span style='display:block; white-space:pre;color:#808000;'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+</span>Author: Joe User &lt;user@example.com&gt;
 AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 
-    a5
----
+<span style='display:block; white-space:pre;color:#404040;'>    a5
+</span>---
  a.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/a.txt b/a.txt
-index 63a911f..7ed6ff8 100644
-<span style='display:block;background:#e0e0ff'>--- a/a.txt
-</span><span style='display:block;background:#e0e0ff'>+++ b/a.txt
-</span><span style='display:block;background:#e0e0e0'>@@ -1 +1 @@
-</span><span style='display:block;background:#ffe0e0'>-m1
-</span><span style='display:block;background:#e0ffe0'>+5
+<span style='display:block; white-space:pre;color:#808080;'>diff --git a/a.txt b/a.txt
+</span><span style='display:block; white-space:pre;color:#808080;'>index 63a911f..7ed6ff8 100644
+</span><span style='display:block; white-space:pre;background:#e0e0ff;'>--- a/a.txt
+</span><span style='display:block; white-space:pre;background:#e0e0ff;'>+++ b/a.txt
+</span><span style='display:block; white-space:pre;background:#e0e0e0;'>@@ -1 +1 @@
+</span><span style='display:block; white-space:pre;background:#ffe0e0;'>-m1
+</span><span style='display:block; white-space:pre;background:#e0ffe0;'>+5
 </span></pre><pre style='margin:0'>
 
 -- 

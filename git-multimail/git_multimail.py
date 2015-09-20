@@ -898,9 +898,13 @@ class Change(object):
                 # the hunk headers instead of blindly highlighting everything
                 # that looks like it might be part of a diff.
                 bgcolor = ''
+                fgcolor = ''
                 if line.startswith('--- a/'):
                     diff_started = True
                     bgcolor = 'e0e0ff'
+                elif line.startswith('diff ') or line.startswith('index '):
+                    diff_started = True
+                    fgcolor = '808080'
                 elif diff_started:
                     if line.startswith('+++ '):
                         bgcolor = 'e0e0ff'
@@ -908,18 +912,27 @@ class Change(object):
                         bgcolor = 'e0e0e0'
                     elif line.startswith('+'):
                         bgcolor = 'e0ffe0'
-                    if line.startswith('-'):
+                    elif line.startswith('-'):
                         bgcolor = 'ffe0e0'
+                elif line.startswith('commit '):
+                    fgcolor = '808000'
+                elif line.startswith('    '):
+                    fgcolor = '404040'
 
                 # Chop the trailing LF, we don't want it inside <pre>.
                 line = cgi.escape(line[:-1])
 
-                if bgcolor:
+                if bgcolor or fgcolor:
+                    style = 'display:block; white-space:pre;'
+                    if bgcolor:
+                        style += 'background:#' + bgcolor + ';'
+                    if fgcolor:
+                        style += 'color:#' + fgcolor + ';'
                     # Use a <span style='display:block> to color the
                     # whole line. The newline must be inside the span
                     # to display properly both in Firefox and in
                     # text-based browser.
-                    line = "<span style='display:block;background:#%s'>%s\n</span>" % (bgcolor, line)
+                    line = "<span style='%s'>%s\n</span>" % (style, line)
                 else:
                     line = line + '\n'
 
