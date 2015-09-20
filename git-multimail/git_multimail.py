@@ -897,29 +897,29 @@ class Change(object):
                 # parse the diff, i.e. look at how many lines do we have in
                 # the hunk headers instead of blindly highlighting everything
                 # that looks like it might be part of a diff.
-                color = ''
+                bgcolor = ''
                 if line.startswith('--- a/'):
                     diff_started = True
-                    color = 'e0e0ff'
+                    bgcolor = 'e0e0ff'
                 elif diff_started:
                     if line.startswith('+++ '):
-                        color = 'e0e0ff'
+                        bgcolor = 'e0e0ff'
                     elif line.startswith('@@'):
-                        color = 'e0e0e0'
+                        bgcolor = 'e0e0e0'
                     elif line.startswith('+'):
-                        color = 'e0ffe0'
+                        bgcolor = 'e0ffe0'
                     if line.startswith('-'):
-                        color = 'ffe0e0'
+                        bgcolor = 'ffe0e0'
 
                 # Chop the trailing LF, we don't want it inside <pre>.
                 line = cgi.escape(line[:-1])
 
-                if color:
+                if bgcolor:
                     # Use a <span style='display:block> to color the
                     # whole line. The newline must be inside the span
                     # to display properly both in Firefox and in
                     # text-based browser.
-                    line = "<span style='display:block;background:#%s'>%s\n</span>" % (color, line)
+                    line = "<span style='display:block;background:#%s'>%s\n</span>" % (bgcolor, line)
                 else:
                     line = line + '\n'
 
