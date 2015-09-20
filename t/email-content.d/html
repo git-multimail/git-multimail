@@ -75,7 +75,7 @@ pushuser pushed a commit to branch master
 in repository test-repo.
 
 </pre>
-<pre style="white-space: pre"><span style='display:block; white-space:pre;color:#808000;'>commit d245c99162aff6fff4879e5d5c17d454766b45db
+<pre style="white-space: pre; background: #F8F8F8"><span style='display:block; white-space:pre;color:#808000;'>commit d245c99162aff6fff4879e5d5c17d454766b45db
 </span>Merge: ebf40e1 abb8baa
 Author: Joe User &lt;user@example.com&gt;
 AuthorDate: Fri Feb 3 09:32:27 2012 +0100
@@ -129,7 +129,7 @@ pushuser pushed a commit to branch master
 in repository test-repo.
 
 </pre>
-<pre style="white-space: pre"><span style='display:block; white-space:pre;color:#808000;'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+<pre style="white-space: pre; background: #F8F8F8"><span style='display:block; white-space:pre;color:#808000;'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 </span>Author: Joe User &lt;user@example.com&gt;
 AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 

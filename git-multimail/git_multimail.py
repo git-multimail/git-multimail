@@ -890,7 +890,7 @@ class Change(object):
             # webmail which wraps it in an element setting white-space
             # to something else (Zimbra does this and sets
             # white-space: pre-line).
-            yield '<pre style="white-space: pre">'
+            yield '<pre style="white-space: pre; background: #F8F8F8">'
         for line in body:
             if self._contains_html_diff:
                 # This is very, very naive. It would be much better to really
