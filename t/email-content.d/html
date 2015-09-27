@@ -75,25 +75,25 @@ pushuser pushed a commit to branch master
 in repository test-repo.
 
 </pre>
-<pre style='margin:0'>commit d245c99162aff6fff4879e5d5c17d454766b45db</pre>
-<pre style='margin:0'>Merge: ebf40e1 abb8baa</pre>
-<pre style='margin:0'>Author: Joe User &lt;user@example.com&gt;</pre>
-<pre style='margin:0'>AuthorDate: Fri Feb 3 09:32:27 2012 +0100</pre>
-<br>
-<pre style='margin:0'>    m1</pre>
-<br>
-<pre style='margin:0'> a.txt | 2 +-</pre>
-<pre style='margin:0'> 1 file changed, 1 insertion(+), 1 deletion(-)</pre>
-<br>
-<pre style='margin:0'>diff --cc a.txt</pre>
-<pre style='margin:0'>index b8626c4,45d9e0e..63a911f</pre>
-<div style='background:#e0e0ff'><pre style='margin:0'>--- a/a.txt</pre></div>
-<div style='background:#e0e0ff'><pre style='margin:0'>+++ b/a.txt</pre></div>
-<div style='background:#e0e0e0'><pre style='margin:0'>@@@ -1,1 -1,1 +1,1 @@@</pre></div>
-<div style='background:#ffe0e0'><pre style='margin:0'>- 4</pre></div>
-<pre style='margin:0'> -f3</pre>
-<div style='background:#e0ffe0'><pre style='margin:0'>++m1</pre></div>
-<pre style='margin:0'>
+<pre style="white-space: pre; background: #F8F8F8"><span style='display:block; white-space:pre;color:#808000;'>commit d245c99162aff6fff4879e5d5c17d454766b45db
+</span>Merge: ebf40e1 abb8baa
+Author: Joe User &lt;user@example.com&gt;
+AuthorDate: Fri Feb 3 09:32:27 2012 +0100
+
+<span style='display:block; white-space:pre;color:#404040;'>    m1
+</span>
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+<span style='display:block; white-space:pre;color:#808080;'>diff --cc a.txt
+</span><span style='display:block; white-space:pre;color:#808080;'>index b8626c4,45d9e0e..63a911f
+</span><span style='display:block; white-space:pre;background:#e0e0ff;'>--- a/a.txt
+</span><span style='display:block; white-space:pre;background:#e0e0ff;'>+++ b/a.txt
+</span><span style='display:block; white-space:pre;background:#e0e0e0;'>@@@ -1,1 -1,1 +1,1 @@@
+</span><span style='display:block; white-space:pre;background:#ffe0e0;'>- 4
+</span> -f3
+<span style='display:block; white-space:pre;background:#e0ffe0;'>++m1
+</span></pre><pre style='margin:0'>
 
 -- 
 To stop receiving notification emails like this one, please contact
@@ -129,23 +129,23 @@ pushuser pushed a commit to branch master
 in repository test-repo.
 
 </pre>
-<pre style='margin:0'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d</pre>
-<pre style='margin:0'>Author: Joe User &lt;user@example.com&gt;</pre>
-<pre style='margin:0'>AuthorDate: Fri Feb 3 09:32:50 2012 +0100</pre>
-<br>
-<pre style='margin:0'>    a5</pre>
-<pre style='margin:0'>---</pre>
-<pre style='margin:0'> a.txt | 2 +-</pre>
-<pre style='margin:0'> 1 file changed, 1 insertion(+), 1 deletion(-)</pre>
-<br>
-<pre style='margin:0'>diff --git a/a.txt b/a.txt</pre>
-<pre style='margin:0'>index 63a911f..7ed6ff8 100644</pre>
-<div style='background:#e0e0ff'><pre style='margin:0'>--- a/a.txt</pre></div>
-<div style='background:#e0e0ff'><pre style='margin:0'>+++ b/a.txt</pre></div>
-<div style='background:#e0e0e0'><pre style='margin:0'>@@ -1 +1 @@</pre></div>
-<div style='background:#ffe0e0'><pre style='margin:0'>-m1</pre></div>
-<div style='background:#e0ffe0'><pre style='margin:0'>+5</pre></div>
-<pre style='margin:0'>
+<pre style="white-space: pre; background: #F8F8F8"><span style='display:block; white-space:pre;color:#808000;'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+</span>Author: Joe User &lt;user@example.com&gt;
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
+
+<span style='display:block; white-space:pre;color:#404040;'>    a5
+</span>---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+<span style='display:block; white-space:pre;color:#808080;'>diff --git a/a.txt b/a.txt
+</span><span style='display:block; white-space:pre;color:#808080;'>index 63a911f..7ed6ff8 100644
+</span><span style='display:block; white-space:pre;background:#e0e0ff;'>--- a/a.txt
+</span><span style='display:block; white-space:pre;background:#e0e0ff;'>+++ b/a.txt
+</span><span style='display:block; white-space:pre;background:#e0e0e0;'>@@ -1 +1 @@
+</span><span style='display:block; white-space:pre;background:#ffe0e0;'>-m1
+</span><span style='display:block; white-space:pre;background:#e0ffe0;'>+5
+</span></pre><pre style='margin:0'>
 
 -- 
 To stop receiving notification emails like this one, please contact

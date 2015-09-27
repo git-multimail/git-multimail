@@ -906,41 +906,61 @@ class Change(object):
             body = body_filter(body)
 
         diff_started = False
+        if self._contains_html_diff:
+            # "white-space: pre" is the default, but we need to
+            # specify it again in case the message is viewed in a
+            # webmail which wraps it in an element setting white-space
+            # to something else (Zimbra does this and sets
+            # white-space: pre-line).
+            yield '<pre style="white-space: pre; background: #F8F8F8">'
         for line in body:
             if self._contains_html_diff:
                 # This is very, very naive. It would be much better to really
                 # parse the diff, i.e. look at how many lines do we have in
                 # the hunk headers instead of blindly highlighting everything
                 # that looks like it might be part of a diff.
-                color = ''
+                bgcolor = ''
+                fgcolor = ''
                 if line.startswith('--- a/'):
                     diff_started = True
-                    color = 'e0e0ff'
+                    bgcolor = 'e0e0ff'
+                elif line.startswith('diff ') or line.startswith('index '):
+                    diff_started = True
+                    fgcolor = '808080'
                 elif diff_started:
                     if line.startswith('+++ '):
-                        color = 'e0e0ff'
+                        bgcolor = 'e0e0ff'
                     elif line.startswith('@@'):
-                        color = 'e0e0e0'
+                        bgcolor = 'e0e0e0'
                     elif line.startswith('+'):
-                        color = 'e0ffe0'
-                    if line.startswith('-'):
-                        color = 'ffe0e0'
+                        bgcolor = 'e0ffe0'
+                    elif line.startswith('-'):
+                        bgcolor = 'ffe0e0'
+                elif line.startswith('commit '):
+                    fgcolor = '808000'
+                elif line.startswith('    '):
+                    fgcolor = '404040'
 
                 # Chop the trailing LF, we don't want it inside <pre>.
                 line = cgi.escape(line[:-1])
-                if line:
-                    line = "<pre style='margin:0'>%s</pre>" % line
-                else:
-                    # Empty <pre> is just ignored, so represent blank lines
-                    # otherwise.
-                    line = '<br>'
 
-                if color:
-                    line = "<div style='background:#%s'>%s</div>\n" % (color, line)
+                if bgcolor or fgcolor:
+                    style = 'display:block; white-space:pre;'
+                    if bgcolor:
+                        style += 'background:#' + bgcolor + ';'
+                    if fgcolor:
+                        style += 'color:#' + fgcolor + ';'
+                    # Use a <span style='display:block> to color the
+                    # whole line. The newline must be inside the span
+                    # to display properly both in Firefox and in
+                    # text-based browser.
+                    line = "<span style='%s'>%s\n</span>" % (style, line)
                 else:
                     line = line + '\n'
 
             yield line
+        if self._contains_html_diff:
+            yield '</pre>'
 
         for line in self._wrap_for_html(self.generate_email_footer()):
             yield line

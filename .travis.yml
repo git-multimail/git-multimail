@@ -1,3 +1,4 @@
+sudo: false
 language: python
 python:
   - "2.6"
@@ -5,6 +6,7 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
+  - "3.5"
 install:
   - pip install pep8
   # latest version seems broken with Python 2.6, no version seem to work with 3.2

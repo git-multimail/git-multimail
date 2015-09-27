@@ -10,7 +10,10 @@ to=${1}
 
 d=$(cd "$(dirname "$0")" && pwd)
 cd "${d}" || exit 1
+SHARNESS_TEST_DIRECTORY=.
+oldHOME=$HOME
 . ./helper-functions.sh || exit 1
+HOME=$oldHOME
 
 # Copy templates (*.in) into config files for local customization.
 for config_in in *.config.in
@@ -30,6 +33,7 @@ then
     fatal "Please, set a recipient using $0 user@example.com"
 fi
 
+rm -fr test-repo-email.git
 git init test-repo-email.git
 cd test-repo-email.git
 git config include.path config.email
