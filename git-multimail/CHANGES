@@ -1,5 +1,5 @@
-Release 1.2.0 Alpha 1
-=====================
+Release 1.2.0 RC1
+=================
 
 This release has been well tested, but contains possibly controversial
 changes visible to the user. It is an alpha release in the sense that
@@ -43,6 +43,9 @@ This version has been tested with Python 2.4 and 2.6 to 3.5, and Git
 v1.7.10-406-gdc801e7, git-1.8.2.3 and 2.6.0-rc0. Git versions prior to
 v1.7.10-406-gdc801e7 probably work, but cannot run the testsuite
 properly.
+
+Changes since 1.2 Alpha 1: testsuite improvements and fixes, better
+HTML formatting.
 
 Release 1.1.1 (bugfix-only release)
 ===================================
