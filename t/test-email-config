@@ -33,6 +33,7 @@ then
     fatal "Please, set a recipient using $0 user@example.com"
 fi
 
+rm -fr test-repo-email.git
 git init test-repo-email.git
 cd test-repo-email.git
 git config include.path config.email
