@@ -40,7 +40,7 @@ fi
 cp $(git ls-files git-multimail/ | grep -v -e '/\.gitignore$') \
    CONTRIBUTING.rst \
    "$gitsrc"/contrib/hooks/multimail/
-mkdir "$gitsrc"/contrib/hooks/multimail/doc/
+mkdir -p "$gitsrc"/contrib/hooks/multimail/doc/
 cp $(git ls-files doc/ | grep -v -e '/\.gitignore$') "$gitsrc"/contrib/hooks/multimail/doc/
 
 cd "$gitsrc"/contrib/hooks/multimail/
