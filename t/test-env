@@ -266,13 +266,16 @@ class GitoliteEnvTest(EnvTest):
     PUSHER = 'gluser'
     REPONAME = 'gitolite-repo'
 
-    def __init__(self, description, user_config=None, extra_config=None, tests=None):
+    def __init__(self, description, user_config=None, extra_config=None, tests=None,
+                 osenv=None):
+        if osenv is None:
+            osenv=dict(GL_USER=self.PUSHER, GL_REPO=self.REPONAME)
         EnvTest.__init__(
             self,
             description,
             user_config=user_config,
             extra_config=extra_config,
-            extra_osenv=dict(GL_USER=self.PUSHER, GL_REPO=self.REPONAME),
+            extra_osenv=osenv,
             tests=tests,
             )
 
