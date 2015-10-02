@@ -269,7 +269,7 @@ class GitoliteEnvTest(EnvTest):
     def __init__(self, description, user_config=None, extra_config=None, tests=None,
                  osenv=None):
         if osenv is None:
-            osenv=dict(GL_USER=self.PUSHER, GL_REPO=self.REPONAME)
+            osenv = dict(GL_USER=self.PUSHER, GL_REPO=self.REPONAME)
         EnvTest.__init__(
             self,
             description,
@@ -319,6 +319,11 @@ GITOLITE_ENVIRONMENT.update(
     pusher=GitoliteEnvTest.PUSHER,
     )
 
+GITOLITE_RC_ENVIRONMENT = GITOLITE_ENVIRONMENT.copy()
+GITOLITE_RC_ENVIRONMENT.update(
+    fromaddr='Some Guy <some.guy@example.com>'
+    )
+
 FROM = 'From Fellow <from@example.com>'
 ADMIN = 'Admin Guy <admin@example.com>'
 ENVELOPE = 'Flat Stanley <stanley@example.com>'
@@ -332,6 +337,12 @@ def suite():
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(HelperTest))
     suite.addTest(GenericEnvTest('basic generic test', tests=GENERIC_ENVIRONMENT))
     suite.addTest(GitoliteEnvTest('basic gitolite test', tests=GITOLITE_ENVIRONMENT))
+    osenv = dict(GL_USER='gluser',
+                 GL_REPO=GitoliteEnvTest.REPONAME,
+                 GL_ADMINDIR=os.path.dirname(os.path.abspath(__file__)))
+    suite.addTest(GitoliteEnvTest('basic gitolite test',
+                                  osenv=osenv,
+                                  tests=GITOLITE_RC_ENVIRONMENT))
 
     for test in [GenericEnvTest, GitoliteEnvTest]:
         suite.addTests([
