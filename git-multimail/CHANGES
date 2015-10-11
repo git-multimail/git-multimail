@@ -3,13 +3,8 @@ Release 1.3.0 (in progress)
 
 
 
-Release 1.2.0 Alpha 1
-=====================
-
-This release has been well tested, but contains possibly controversial
-changes visible to the user. It is an alpha release in the sense that
-the user-interface may still change before the final release depending
-on the user feedback.
+Release 1.2.0
+=============
 
 * It is now possible to exclude some refs (e.g. exclude some branches
   or tags). See refFilterDoSendRegex, refFilterDontSendRegex,
@@ -19,7 +14,7 @@ on the user feedback.
   simple colorized diffs using HTML for the commit emails.
 
 * git-multimail can now be ran as a Gerrit ref-updated hook, or from
-  Atlassian Stash.
+  Atlassian BitBucket Server (formerly known as Atlassian Stash).
 
 * The From: field is now more customizeable. It can be set
   independently for refchange emails and commit emails (see
@@ -45,7 +40,7 @@ on the user feedback.
 Plus all the bugfixes from version 1.1.1.
 
 This version has been tested with Python 2.4 and 2.6 to 3.5, and Git
-v1.7.10-406-gdc801e7, git-1.8.2.3 and 2.6.0-rc0. Git versions prior to
+v1.7.10-406-gdc801e7, git-1.8.2.3 and 2.6.0. Git versions prior to
 v1.7.10-406-gdc801e7 probably work, but cannot run the testsuite
 properly.
 

@@ -2905,9 +2905,9 @@ class GitoliteEnvironmentMixin(Environment):
                 f = open(GL_CONF, 'rU')
                 try:
                     in_user_emails_section = False
-                    re_template = r'^\s*#\s*{}\s*$'
+                    re_template = r'^\s*#\s*%s\s*$'
                     re_begin, re_user, re_end = (
-                        re.compile(re_template.format(x))
+                        re.compile(re_template % x)
                         for x in (
                             r'BEGIN\s+USER\s+EMAILS',
                             re.escape(GL_USER) + r'\s+(.*)',

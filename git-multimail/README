@@ -156,6 +156,9 @@ multimailhook.environment
 
     * stash
 
+      Environment to use when ``git-multimail`` is ran as an Atlassian
+      BitBucket Server (formerly known as Atlassian Stash) hook.
+
       **Warning:** this mode was provided by a third-party contributor
       and never tested by the git-multimail maintainers. It is
       provided as-is and may or may not work for you.
