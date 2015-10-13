@@ -21,7 +21,8 @@ At each release:
 
  ./copy-to-git.sh <path-to-git>
 
-(and send to the Git mailing-list)
+(and send to the Git mailing-list, using ./list-contribs.sh for the
+commit message)
 
 * release on pypi::
 
