@@ -10,6 +10,7 @@ for c in \
     pep8 \
     git \
     rstcheck \
+    pyflakes pyflakes3 \
     ;
 do
     unset "${c}"_installed
@@ -78,6 +79,14 @@ pep8_file () {
 }
 pep8_file git-multimail/git_multimail.py
 pep8_file t/test-env
+
+test_expect_success 'pyflakes' '
+	pyflakes $D/..
+'
+
+test_expect_success 'pyflakes3' '
+	pyflakes3 $D/..
+'
 
 test_expect_success 'Simple but verbose git-multimail run' '
 	if "$MULTIMAIL" --stdout \
