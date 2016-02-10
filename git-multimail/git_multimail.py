@@ -75,6 +75,9 @@ def is_ascii(s):
 
 
 if PYTHON3:
+    def is_string(s):
+        return isinstance(s, str)
+
     def str_to_bytes(s):
         return s.encode(ENCODING)
 
@@ -91,6 +94,12 @@ if PYTHON3:
         except UnicodeEncodeError:
             f.buffer.write(msg.encode(ENCODING))
 else:
+    def is_string(s):
+        try:
+            return isinstance(s, basestring)
+        except NameError:  # Silence Pyflakes warning
+            raise
+
     def str_to_bytes(s):
         return s
 
@@ -1980,7 +1989,7 @@ class SMTPMailer(Mailer):
                 self.smtp.login(self.username, self.password)
             msg = ''.join(lines)
             # turn comma-separated list into Python list if needed.
-            if isinstance(to_addrs, basestring):
+            if is_string(to_addrs):
                 to_addrs = [email for (name, email) in getaddresses([to_addrs])]
             self.smtp.sendmail(self.envelopesender, to_addrs, msg)
         except Exception:
