@@ -84,7 +84,7 @@ test_expect_success 'pyflakes' '
 	pyflakes $D/..
 '
 
-test_expect_success 'pyflakes3' '
+test_expect_success pyflakes3 'pyflakes3' '
 	pyflakes3 $D/..
 '
 
