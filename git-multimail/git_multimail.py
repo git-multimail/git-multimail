@@ -2446,7 +2446,6 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
                                  ['author'])
         self.__reply_to_commit = config.get('replyToCommit', default=reply_to)
 
-        from_addr = self.config.get('from')
         self.from_refchange = config.get('fromRefchange')
         self.forbid_field_values('fromRefchange',
                                  self.from_refchange,
