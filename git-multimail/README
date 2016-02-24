@@ -274,6 +274,26 @@ multimailhook.commitEmailFormat
     the message starting with ``+++`` or ``---`` colored in red or
     green).
 
+    By default, all the message is HTML-escaped. See
+    ``multimailhook.htmlInIntro`` to change this behavior.
+
+multimailhook.htmlInIntro
+
+    When generating an HTML message, git-multimail escapes any HTML
+    sequence by default. This means that if a template contains HTML
+    like ``<a href="foo">link</a>``, the reader will see the HTML
+    source code and not a proper link.
+
+    Set ``multimailhook.htmlInIntro`` to true to allow writting HTML
+    formatting in introduction templates.
+
+    Variables expanded in the template are still escaped. For example,
+    if a repository's path contains a ``<``, it will be rendered as
+    such in the message.
+
+    Read `<doc/customizing-emails.rst>`__ for more details and
+    examples.
+
 multimailhook.refchangeShowGraph
 
     If this option is set to true, then summary emails about reference

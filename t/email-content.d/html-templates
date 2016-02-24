@@ -70,10 +70,12 @@ X-Git-Multimail-Version: ...
 Auto-Submitted: auto-generated
 
 <pre style='margin:0'>
-&lt;span style="color:#808080"&gt;This is an automated email from the git hooks/post-receive script.&lt;/span&gt;
+&lt;span style="color:#808080"&gt;This is an automated email from the git hooks/post-receive script.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;
 
 &lt;strong&gt;pushuser&lt;/strong&gt; pushed a commit to branch master
-in repository name&lt;with&gt;special&amp;chars;.git.
+in repository name&lt;with&gt;special&amp;chars;.git.&lt;br /&gt;
+
+&lt;a href="https://github.com/git-multimail/git-multimail/commit/d245c99162aff6fff4879e5d5c17d454766b45db"&gt;View on GitHub&lt;/a&gt;.
 
 </pre>
 <pre style="white-space: pre; background: #F8F8F8"><span style='display:block; white-space:pre;color:#808000;'>commit d245c99162aff6fff4879e5d5c17d454766b45db
@@ -124,10 +126,12 @@ X-Git-Multimail-Version: ...
 Auto-Submitted: auto-generated
 
 <pre style='margin:0'>
-&lt;span style="color:#808080"&gt;This is an automated email from the git hooks/post-receive script.&lt;/span&gt;
+&lt;span style="color:#808080"&gt;This is an automated email from the git hooks/post-receive script.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;
 
 &lt;strong&gt;pushuser&lt;/strong&gt; pushed a commit to branch master
-in repository name&lt;with&gt;special&amp;chars;.git.
+in repository name&lt;with&gt;special&amp;chars;.git.&lt;br /&gt;
+
+&lt;a href="https://github.com/git-multimail/git-multimail/commit/902dfe1c4025851d6b175c8f1efeee9ee1a0b74d"&gt;View on GitHub&lt;/a&gt;.
 
 </pre>
 <pre style="white-space: pre; background: #F8F8F8"><span style='display:block; white-space:pre;color:#808000;'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
@@ -225,13 +229,13 @@ X-Git-NotificationType: diff
 X-Git-Multimail-Version: ...
 Auto-Submitted: auto-generated
 
-<pre style='margin:0'>
-&lt;span style="color:#808080"&gt;This is an automated email from the git hooks/post-receive script.&lt;/span&gt;
+<span style="color:#808080">This is an automated email from the git hooks/post-receive script.</span><br /><br />
 
-&lt;strong&gt;pushuser&lt;/strong&gt; pushed a commit to branch master
-in repository name&lt;with&gt;special&amp;chars;.git.
+<strong>pushuser</strong> pushed a commit to branch master
+in repository name&lt;with&gt;special&amp;chars;.git.<br />
 
-</pre>
+<a href="https://github.com/git-multimail/git-multimail/commit/d245c99162aff6fff4879e5d5c17d454766b45db">View on GitHub</a>.
+
 <pre style="white-space: pre; background: #F8F8F8"><span style='display:block; white-space:pre;color:#808000;'>commit d245c99162aff6fff4879e5d5c17d454766b45db
 </span>Merge: ebf40e1 abb8baa
 Author: Joe User &lt;user@example.com&gt;
@@ -279,13 +283,13 @@ X-Git-NotificationType: diff
 X-Git-Multimail-Version: ...
 Auto-Submitted: auto-generated
 
-<pre style='margin:0'>
-&lt;span style="color:#808080"&gt;This is an automated email from the git hooks/post-receive script.&lt;/span&gt;
+<span style="color:#808080">This is an automated email from the git hooks/post-receive script.</span><br /><br />
 
-&lt;strong&gt;pushuser&lt;/strong&gt; pushed a commit to branch master
-in repository name&lt;with&gt;special&amp;chars;.git.
+<strong>pushuser</strong> pushed a commit to branch master
+in repository name&lt;with&gt;special&amp;chars;.git.<br />
 
-</pre>
+<a href="https://github.com/git-multimail/git-multimail/commit/902dfe1c4025851d6b175c8f1efeee9ee1a0b74d">View on GitHub</a>.
+
 <pre style="white-space: pre; background: #F8F8F8"><span style='display:block; white-space:pre;color:#808000;'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 </span>Author: Joe User &lt;user@example.com&gt;
 AuthorDate: Fri Feb 3 09:32:50 2012 +0100

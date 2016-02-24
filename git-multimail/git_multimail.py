@@ -803,10 +803,14 @@ class Change(object):
 
         return template % self.get_values(**extra_values)
 
-    def expand_lines(self, template, **extra_values):
+    def expand_lines(self, template, html_escape_val=False, **extra_values):
         """Break template into lines and expand each line."""
 
         values = self.get_values(**extra_values)
+        if html_escape_val:
+            for k in values:
+                if is_string(values[k]):
+                    values[k] = cgi.escape(values[k])
         for line in template.splitlines(True):
             yield line % values
 
@@ -850,7 +854,7 @@ class Change(object):
 
         raise NotImplementedError()
 
-    def generate_email_intro(self):
+    def generate_email_intro(self, html_escape_val=False):
         """Generate the email intro for this Change, a line at a time.
 
         The output will be used as the standard boilerplate at the top
@@ -907,7 +911,12 @@ class Change(object):
         for line in self.generate_email_header(**extra_header_values):
             yield line
         yield '\n'
-        for line in self._wrap_for_html(self.generate_email_intro()):
+        html_escape_val = (self.environment.html_in_intro and
+                           self._contains_html_diff)
+        intro = self.generate_email_intro(html_escape_val)
+        if not self.environment.html_in_intro:
+            intro = self._wrap_for_html(intro)
+        for line in intro:
             yield line
 
         body = self.generate_email_body(push)
@@ -1023,6 +1032,7 @@ class Revision(Change):
         values['rev_short'] = self.rev.short
         values['change_type'] = self.change_type
         values['refname'] = self.refname
+        values['newrev'] = self.rev.sha1
         values['short_refname'] = self.reference_change.short_refname
         values['refname_type'] = self.reference_change.refname_type
         values['reply_to_msgid'] = self.reference_change.msgid
@@ -1046,8 +1056,9 @@ class Revision(Change):
                 ):
             yield line
 
-    def generate_email_intro(self):
-        for line in self.expand_lines(REVISION_INTRO_TEMPLATE):
+    def generate_email_intro(self, html_escape_val=False):
+        for line in self.expand_lines(REVISION_INTRO_TEMPLATE,
+                                      html_escape_val=html_escape_val):
             yield line
 
     def generate_email_body(self, push):
@@ -1248,8 +1259,9 @@ class ReferenceChange(Change):
                 ):
             yield line
 
-    def generate_email_intro(self):
-        for line in self.expand_lines(self.intro_template):
+    def generate_email_intro(self, html_escape_val=False):
+        for line in self.expand_lines(self.intro_template,
+                                      html_escape_val=html_escape_val):
             yield line
 
     def generate_email_body(self, push):
@@ -2128,6 +2140,12 @@ class Environment(object):
             If "html", generate commit emails in HTML instead of plain text
             used by default.
 
+        html_in_intro (bool)
+
+            When generating HTML emails, the introduction will be
+            HTML-escaped iff html_in_intro is true. When false, only
+            the values used to expand the template are escaped.
+
         refchange_showgraph (bool)
 
             True iff refchanges emails should include a detailed graph.
@@ -2191,6 +2209,7 @@ class Environment(object):
         self.osenv = osenv or os.environ
         self.announce_show_shortlog = False
         self.commit_email_format = "text"
+        self.html_in_intro = False
         self.maxcommitemails = 500
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.graphopts = ['--oneline', '--decorate']
@@ -2405,6 +2424,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
                     )
             else:
                 self.commit_email_format = commit_email_format
+
+        html_in_intro = config.get_bool('htmlInIntro')
+        if html_in_intro is not None:
+            self.html_in_intro = html_in_intro
 
         maxcommitemails = config.get('maxcommitemails')
         if maxcommitemails is not None:
