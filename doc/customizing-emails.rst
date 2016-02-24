@@ -10,9 +10,13 @@ without changing the script itself, by defining a Python wrapper
 around it. The python wrapper should ``import git_multimail`` and then
 override the ``git_multimail.*`` strings like this::
 
+  import sys  # needed for sys.argv
+
+  # Import and customize git_multimail:
   import git_multimail
   git_multimail.REVISION_INTRO_TEMPLATE = """..."""
   git_multimail.COMBINED_INTRO_TEMPLATE = git_multimail.REVISION_INTRO_TEMPLATE
+
   # start git_multimail itself:
   git_multimail.main(sys.argv[1:])
 
