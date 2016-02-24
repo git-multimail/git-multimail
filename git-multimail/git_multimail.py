@@ -2013,7 +2013,12 @@ class SMTPMailer(Mailer):
         except Exception:
             sys.stderr.write('*** Error sending email ***\n')
             sys.stderr.write('*** %s\n' % sys.exc_info()[1])
-            self.smtp.quit()
+            try:
+                self.smtp.quit()
+            except:
+                sys.stderr.write('*** Error closing the SMTP connection ***\n')
+                sys.stderr.write('*** Exiting anyway ... ***\n')
+                sys.stderr.write('*** %s\n' % sys.exc_info()[1])
             sys.exit(1)
 
 
