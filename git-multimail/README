@@ -278,6 +278,7 @@ multimailhook.commitEmailFormat
     ``multimailhook.htmlInIntro`` to change this behavior.
 
 multimailhook.htmlInIntro
+multimailhook.htmlInFooter
 
     When generating an HTML message, git-multimail escapes any HTML
     sequence by default. This means that if a template contains HTML
@@ -285,7 +286,8 @@ multimailhook.htmlInIntro
     source code and not a proper link.
 
     Set ``multimailhook.htmlInIntro`` to true to allow writting HTML
-    formatting in introduction templates.
+    formatting in introduction templates. Similarly, set
+    ``multimailhook.htmlInFooter`` for HTML in the footer.
 
     Variables expanded in the template are still escaped. For example,
     if a repository's path contains a ``<``, it will be rendered as

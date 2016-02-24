@@ -23,4 +23,16 @@ in repository %(repo_shortname)s.<br />
 
 git_multimail.COMBINED_INTRO_TEMPLATE = git_multimail.REVISION_INTRO_TEMPLATE
 
+git_multimail.FOOTER_TEMPLATE = """\
+<br />
+<span style="color:#808080">-- <br />
+To stop receiving notification emails like this one, please contact
+%(administrator)s or <a href="http://example.com">click here</a>.
+</span>
+"""
+
+git_multimail.REVISION_FOOTER_TEMPLATE = git_multimail.FOOTER_TEMPLATE
+git_multimail.COMBINED_FOOTER_TEMPLATE = git_multimail.FOOTER_TEMPLATE
+
+
 git_multimail.main(sys.argv[1:])

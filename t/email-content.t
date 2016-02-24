@@ -74,7 +74,12 @@ test_email_content 'HTML message with template override' html-templates '
 	verbose_do test_update refs/heads/master \
 		refs/heads/master^^ -c multimailhook.commitEmailFormat=html &&
 	verbose_do test_update refs/heads/master \
-		refs/heads/master^^ -c multimailhook.commitEmailFormat=html -c multimailhook.htmlInIntro=true
+		refs/heads/master^^ -c multimailhook.commitEmailFormat=html \
+				    -c multimailhook.htmlInIntro=true
+	verbose_do test_update refs/heads/master \
+		refs/heads/master^^ -c multimailhook.commitEmailFormat=html \
+				    -c multimailhook.htmlInIntro=true \
+				    -c multimailhook.htmlInFooter=true
 '
 
 test_email_content 'tag create/update/delete' simple-tag '

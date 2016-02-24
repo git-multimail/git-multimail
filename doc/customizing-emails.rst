@@ -44,3 +44,6 @@ a format like::
 
 Note that the values expanded from ``%(variable)s`` in the format
 strings will still be escaped.
+
+Similarly, one can set ``multimailhook.htmlInFooter`` and override any
+of the ``*_FOOTER*`` template strings.

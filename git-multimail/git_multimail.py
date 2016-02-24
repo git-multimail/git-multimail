@@ -870,7 +870,7 @@ class Change(object):
 
         raise NotImplementedError()
 
-    def generate_email_footer(self):
+    def generate_email_footer(self, html_escape_val):
         """Generate the footer of the email, a line at a time.
 
         The footer is always included, irrespective of
@@ -979,8 +979,12 @@ class Change(object):
             yield line
         if self._contains_html_diff:
             yield '</pre>'
-
-        for line in self._wrap_for_html(self.generate_email_footer()):
+        html_escape_val = (self.environment.html_in_footer and
+                           self._contains_html_diff)
+        footer = self.generate_email_footer(html_escape_val)
+        if not self.environment.html_in_footer:
+            footer = self._wrap_for_html(footer)
+        for line in footer:
             yield line
 
     def get_alt_fromaddr(self):
@@ -1073,8 +1077,9 @@ class Revision(Change):
             else:
                 yield line
 
-    def generate_email_footer(self):
-        return self.expand_lines(REVISION_FOOTER_TEMPLATE)
+    def generate_email_footer(self, html_escape_val):
+        return self.expand_lines(REVISION_FOOTER_TEMPLATE,
+                                 html_escape_val=html_escape_val)
 
     def generate_email(self, push, body_filter=None, extra_header_values={}):
         self._contains_diff()
@@ -1281,8 +1286,9 @@ class ReferenceChange(Change):
         for line in self.generate_revision_change_summary(push):
             yield line
 
-    def generate_email_footer(self):
-        return self.expand_lines(self.footer_template)
+    def generate_email_footer(self, html_escape_val):
+        return self.expand_lines(self.footer_template,
+                                 html_escape_val=html_escape_val)
 
     def generate_revision_change_graph(self, push):
         if self.showgraph:
@@ -2141,10 +2147,12 @@ class Environment(object):
             used by default.
 
         html_in_intro (bool)
+        html_in_footer (bool)
 
-            When generating HTML emails, the introduction will be
-            HTML-escaped iff html_in_intro is true. When false, only
-            the values used to expand the template are escaped.
+            When generating HTML emails, the introduction (respectively,
+            the footer) will be HTML-escaped iff html_in_intro (respectively,
+            the footer) is true. When false, only the values used to expand
+            the template are escaped.
 
         refchange_showgraph (bool)
 
@@ -2210,6 +2218,7 @@ class Environment(object):
         self.announce_show_shortlog = False
         self.commit_email_format = "text"
         self.html_in_intro = False
+        self.html_in_footer = False
         self.maxcommitemails = 500
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.graphopts = ['--oneline', '--decorate']
@@ -2428,6 +2437,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         html_in_intro = config.get_bool('htmlInIntro')
         if html_in_intro is not None:
             self.html_in_intro = html_in_intro
+
+        html_in_footer = config.get_bool('htmlInFooter')
+        if html_in_footer is not None:
+            self.html_in_footer = html_in_footer
 
         maxcommitemails = config.get('maxcommitemails')
         if maxcommitemails is not None:
