@@ -69,6 +69,14 @@ test_email_content 'HTML messages' html '
 	test_update refs/heads/master refs/heads/master^^ -c multimailhook.commitEmailFormat=html
 '
 
+test_email_content 'HTML message with template override' html-templates '
+	MULTIMAIL=$SHARNESS_TEST_DIRECTORY/test_templates.py &&
+	verbose_do test_update refs/heads/master \
+		refs/heads/master^^ -c multimailhook.commitEmailFormat=html &&
+	verbose_do test_update refs/heads/master \
+		refs/heads/master^^ -c multimailhook.commitEmailFormat=html -c multimailhook.htmlInIntro=true
+'
+
 test_email_content 'tag create/update/delete' simple-tag '
 	test_create refs/tags/tag &&
 	test_update refs/tags/tag refs/heads/master &&
