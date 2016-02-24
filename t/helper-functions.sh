@@ -48,6 +48,7 @@ fi
 MULTIMAIL="$SHARNESS_TEST_DIRECTORY/../git-multimail/git_multimail.py"
 MULTIMAIL_VERSION_QUOTED=$("$MULTIMAIL" --version |
     sed -e 's/^git-multimail version //' -e 's@[/\\]@\\\0@g')
+export MULTIMAIL_VERSION_QUOTED
 POST_RECEIVE="$SHARNESS_TEST_DIRECTORY/../git-multimail/post-receive.example"
 
 
