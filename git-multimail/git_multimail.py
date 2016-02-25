@@ -2010,9 +2010,11 @@ class SMTPMailer(Mailer):
             if is_string(to_addrs):
                 to_addrs = [email for (name, email) in getaddresses([to_addrs])]
             self.smtp.sendmail(self.envelopesender, to_addrs, msg)
-        except Exception:
+        except smtplib.SMTPResponseException:
             sys.stderr.write('*** Error sending email ***\n')
-            sys.stderr.write('*** %s\n' % sys.exc_info()[1])
+            err = sys.exc_info()[1]
+            sys.stderr.write('*** Error %d: %s\n' % (err.smtp_code,
+                                                     bytes_to_str(err.smtp_error)))
             try:
                 self.smtp.quit()
             except:
