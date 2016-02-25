@@ -2000,6 +2000,7 @@ class SMTPMailer(Mailer):
     def __del__(self):
         if hasattr(self, 'smtp'):
             self.smtp.quit()
+            del self.smtp
 
     def send(self, lines, to_addrs):
         try:
@@ -3467,6 +3468,8 @@ def run_as_post_receive_hook(environment, mailer):
     if changes:
         push = Push(environment, changes)
         push.send_emails(mailer, body_filter=environment.filter_body)
+    if hasattr(mailer, '__del__'):
+        mailer.__del()
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=False):
@@ -3483,6 +3486,8 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=
         ]
     push = Push(environment, changes, force_send)
     push.send_emails(mailer, body_filter=environment.filter_body)
+    if hasattr(mailer, '__del__'):
+        mailer.__del__()
 
 
 def choose_mailer(config, environment):
