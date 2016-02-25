@@ -44,18 +44,25 @@ git commit -m "initial commit"
 
 run_config () {
     config=$1
-    log "*** $config ***"
+    log "*** $2 $config ***"
     cp "$config" .git/config.email
     pecho "$config" >file.txt
-    git commit -am "$config"
+    git commit -am "$2 $config"
     ../../git-multimail/git_multimail.py refs/heads/master HEAD^ HEAD
+}
+
+count_args () {
+    echo $#
 }
 
 if test -z "$2"
 then
+    n=$(count_args ../*.config)
+    i=0
     for config in ../*.config
     do
-	run_config "$config"
+	i=$((i + 1))
+	run_config "$config" "[$i / $n]"
     done
 else
     run_config ../"$2"
