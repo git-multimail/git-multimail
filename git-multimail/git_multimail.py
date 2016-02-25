@@ -2016,7 +2016,11 @@ class SMTPMailer(Mailer):
             sys.stderr.write('*** Error %d: %s\n' % (err.smtp_code,
                                                      bytes_to_str(err.smtp_error)))
             try:
-                self.smtp.quit()
+                smtp = self.smtp
+                # delete the field before quit() so that in case of
+                # error, self.smtp is deleted anyway.
+                del self.smtp
+                smtp.quit()
             except:
                 sys.stderr.write('*** Error closing the SMTP connection ***\n')
                 sys.stderr.write('*** Exiting anyway ... ***\n')
