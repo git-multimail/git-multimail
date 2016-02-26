@@ -18,6 +18,13 @@ then
 	negative_rev="^$negative_rev"
 fi
 
+# "git log --no-merges" still shows the last commit in shallow history.
+shallow=$(git rev-parse --git-dir)/shallow
+if test -f $shallow
+then
+	negative_rev="$negative_rev ^$(head -n 1 $shallow)"
+fi
+
 if ! git log --no-merges --invert-grep --grep '^Signed-off-by: ' \
     HEAD $negative_rev >"$tmp"/log-output.txt
 then
