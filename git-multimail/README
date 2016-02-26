@@ -394,7 +394,7 @@ multimailhook.fromRefchange
     - The value ``pusher``, in which case the pusher's address (if
       available) will be used.
 
-    - The value ``author`` (meaningful only for replyToCommit), in which
+    - The value ``author`` (meaningful only for ``fromCommit``), in which
       case the commit author's address will be used.
 
     If config values are unset, the value of the From: header is
