@@ -265,7 +265,7 @@ multimailhook.commitEmailFormat
     By default, all the message is HTML-escaped. See
     ``multimailhook.htmlInIntro`` to change this behavior.
 
-multimailhook.htmlInIntro; multimailhook.htmlInFooter
+multimailhook.htmlInIntro, multimailhook.htmlInFooter
     When generating an HTML message, git-multimail escapes any HTML
     sequence by default. This means that if a template contains HTML
     like ``<a href="foo">link</a>``, the reader will see the HTML

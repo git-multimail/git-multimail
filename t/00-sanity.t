@@ -115,6 +115,7 @@ test_expect_success 'Simple but verbose git-multimail run' '
 # this should ensure that new variables get a test.
 test_expect_success 'Tests for each configuration variable' '
 	variables=$(grep "^multimailhook." $D/../git-multimail/README |
+		sed "s/, /\n/g" |
 		sed "s/multimailhook\.//") &&
 	(
 	cd "$D" &&
