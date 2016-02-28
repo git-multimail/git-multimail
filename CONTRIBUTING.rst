@@ -9,7 +9,7 @@ and Matthieu Moy <matthieu.moy@grenoble-inp.fr>.
 
 Please note that although a copy of git-multimail is distributed in
 the "contrib" section of the main Git project, development takes place
-in a separate git-multimail repository on GitHub_.
+in a separate `git-multimail repository on GitHub`_.
 
 Whenever enough changes to git-multimail have accumulated, a new
 code-drop of git-multimail will be submitted for inclusion in the Git
@@ -29,5 +29,5 @@ Please CC emails regarding git-multimail to the maintainers so that we
 don't overlook them.
 
 
-.. _GitHub: https://github.com/git-multimail/git-multimail
+.. _`git-multimail repository on GitHub`: https://github.com/git-multimail/git-multimail
 .. _`Git mailing list`: git@vger.kernel.org
