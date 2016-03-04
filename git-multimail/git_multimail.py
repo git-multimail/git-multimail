@@ -3469,7 +3469,7 @@ def run_as_post_receive_hook(environment, mailer):
         push = Push(environment, changes)
         push.send_emails(mailer, body_filter=environment.filter_body)
     if hasattr(mailer, '__del__'):
-        mailer.__del()
+        mailer.__del__()
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=False):
