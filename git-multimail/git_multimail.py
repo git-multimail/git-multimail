@@ -776,6 +776,12 @@ class Change(object):
         values['multimail_version'] = get_version()
         return values
 
+    # Aliases usable in template strings. Tuple of pairs (destination,
+    # source).
+    VALUES_ALIAS = (
+        ("id", "newrev"),
+        )
+
     def get_values(self, **extra_values):
         """Return a dictionary {keyword: expansion} for this Change.
 
@@ -791,6 +797,9 @@ class Change(object):
         values = self._values.copy()
         if extra_values:
             values.update(extra_values)
+
+        for alias, val in self.VALUES_ALIAS:
+            values[alias] = values[val]
         return values
 
     def expand(self, template, **extra_values):

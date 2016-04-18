@@ -17,7 +17,7 @@ git_multimail.REVISION_INTRO_TEMPLATE = """\
 <strong>%(pusher)s</strong> pushed a commit to %(refname_type)s %(short_refname)s
 in repository %(repo_shortname)s.<br />
 
-<a href="https://github.com/git-multimail/git-multimail/commit/%(newrev)s">View on GitHub</a>.
+<a href="https://github.com/git-multimail/git-multimail/commit/%(id)s">View on GitHub</a>.
 
 """
 
