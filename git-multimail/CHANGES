@@ -11,6 +11,16 @@ Release 1.3.0 (in progress)
   without modifying the configuration files. See an example in
   post-receive.example.
 
+* Error handling for SMTP has been improved (we used to print Python
+  backtraces for legitimate errors).
+
+* Python 3 portability has been improved.
+
+* The documentation's formatting has been improved.
+
+* The testsuite has been improved (we now use pyflakes to check for
+  errors in the code).
+
 Release 1.2.0
 =============
 
