@@ -2317,7 +2317,7 @@ class Environment(object):
         The return value is always a new dictionary."""
 
         if self._values is None:
-            values = {}
+            values = {'': ''}  # %()s expands to the empty string.
 
             for key in self.COMPUTED_KEYS:
                 value = getattr(self, 'get_%s' % (key,))()
