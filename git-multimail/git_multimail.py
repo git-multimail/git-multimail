@@ -831,9 +831,10 @@ class Change(object):
 
         values = self.get_values(**extra_values)
         if self._contains_html_diff:
-            values['contenttype'] = 'html'
+            self._content_type = 'html'
         else:
-            values['contenttype'] = 'plain'
+            self._content_type = 'plain'
+        values['contenttype'] = self._content_type
 
         for line in template.splitlines():
             (name, value) = line.split(': ', 1)
