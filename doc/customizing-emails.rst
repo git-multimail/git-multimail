@@ -49,5 +49,8 @@ a format like::
 Note that the values expanded from ``%(variable)s`` in the format
 strings will still be escaped.
 
+For a less flexible but easier to set up way to add a link to commit
+emails, see ``multimailhook.commitBrowseURL``.
+
 Similarly, one can set ``multimailhook.htmlInFooter`` and override any
 of the ``*_FOOTER*`` template strings.

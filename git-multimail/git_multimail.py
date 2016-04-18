@@ -322,6 +322,16 @@ in repository %(repo_shortname)s.
 
 """
 
+LINK_TEXT_TEMPLATE = """\
+View the commit online:
+%(browse_url)s
+
+"""
+
+LINK_HTML_TEMPLATE = """\
+<p><a href="%(browse_url)s">View the commit online</a>.</p>
+"""
+
 
 REVISION_FOOTER_TEMPLATE = FOOTER_TEMPLATE
 
@@ -819,7 +829,7 @@ class Change(object):
         if html_escape_val:
             for k in values:
                 if is_string(values[k]):
-                    values[k] = cgi.escape(values[k])
+                    values[k] = cgi.escape(values[k], True)
         for line in template.splitlines(True):
             yield line % values
 
@@ -863,6 +873,10 @@ class Change(object):
         The output should not include the trailing blank line."""
 
         raise NotImplementedError()
+
+    def generate_browse_link(self, base_url):
+        """Generate a link to an online repository browser."""
+        return iter(())
 
     def generate_email_intro(self, html_escape_val=False):
         """Generate the email intro for this Change, a line at a time.
@@ -928,6 +942,10 @@ class Change(object):
             intro = self._wrap_for_html(intro)
         for line in intro:
             yield line
+
+        if self.environment.commitBrowseURL:
+            for line in self.generate_browse_link(self.environment.commitBrowseURL):
+                yield line
 
         body = self.generate_email_body(push)
         if body_filter is not None:
@@ -1069,6 +1087,23 @@ class Revision(Change):
                 REVISION_HEADER_TEMPLATE, **extra_values
                 ):
             yield line
+
+    def generate_browse_link(self, base_url):
+        if '%(' not in base_url:
+            base_url += '%(id)s'
+        url = "".join(self.expand_lines(base_url))
+        if self._content_type == 'html':
+            for line in self.expand_lines(LINK_HTML_TEMPLATE,
+                                          html_escape_val=True,
+                                          browse_url=url):
+                yield line
+        elif self._content_type == 'plain':
+            for line in self.expand_lines(LINK_TEXT_TEMPLATE,
+                                          html_escape_val=False,
+                                          browse_url=url):
+                yield line
+        else:
+            raise NotImplementedError("Content-type %s unsupported. Please report it as a bug.")
 
     def generate_email_intro(self, html_escape_val=False):
         for line in self.expand_lines(REVISION_INTRO_TEMPLATE,
@@ -2241,6 +2276,7 @@ class Environment(object):
         self.commit_email_format = "text"
         self.html_in_intro = False
         self.html_in_footer = False
+        self.commitBrowseURL = None
         self.maxcommitemails = 500
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.graphopts = ['--oneline', '--decorate']
@@ -2463,6 +2499,8 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         html_in_footer = config.get_bool('htmlInFooter')
         if html_in_footer is not None:
             self.html_in_footer = html_in_footer
+
+        self.commitBrowseURL = config.get('commitBrowseURL')
 
         maxcommitemails = config.get('maxcommitemails')
         if maxcommitemails is not None:

@@ -69,6 +69,21 @@ test_email_content 'HTML messages' html '
 	test_update refs/heads/master refs/heads/master^^ -c multimailhook.commitEmailFormat=html
 '
 
+test_email_content 'message including a URL' url '
+	test_update refs/heads/master refs/heads/master^ \
+		-c multimailhook.commitBrowseURL="https://github.com/git-multimail/git-multimail/commit/%(id)s" \
+		-c multimailhook.commitEmailFormat=html &&
+	test_update refs/heads/master refs/heads/master^ \
+		-c multimailhook.commitBrowseURL="https://github.com/git-multimail/git-multimail/commit/" \
+		-c multimailhook.commitEmailFormat=text &&
+	test_update refs/heads/master refs/heads/master^ \
+		-c multimailhook.commitBrowseURL="https://example.com/path\"with<spe\cial%%chars/%(newrev)s/this-comes-after-id" \
+		-c multimailhook.commitEmailFormat=html &&
+	test_update refs/heads/master refs/heads/master^ \
+		-c multimailhook.commitBrowseURL="https://example.com/path\"with<spe\cial\>chars/%()s" \
+		-c multimailhook.commitEmailFormat=text
+'
+
 test_email_content 'HTML message with template override' html-templates '
 	MULTIMAIL=$SHARNESS_TEST_DIRECTORY/test_templates.py &&
 	verbose_do test_update refs/heads/master \
