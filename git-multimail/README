@@ -265,6 +265,22 @@ multimailhook.commitEmailFormat
     By default, all the message is HTML-escaped. See
     ``multimailhook.htmlInIntro`` to change this behavior.
 
+multimailhook.commitBrowseURL
+    Used to generate a link to an online repository browser in commit
+    emails. This variable must be a string. Format directives like
+    ``%(<variable>)s`` will be expanded the same way as template
+    strings. In particular, ``%(id)s`` will be replaced by the full
+    Git commit identifier (40-chars hexadecimal).
+
+    If the string does not contain any format directive, then
+    ``%(id)s`` will be automatically added to the string. If you don't
+    want ``%(id)s`` to be automatically added, use the empty format
+    directive ``%()s`` anywhere in the string.
+
+    For example, a suitable value for the git-multimail project itself
+    would be
+    ``https://github.com/git-multimail/git-multimail/commit/%(id)s``.
+
 multimailhook.htmlInIntro, multimailhook.htmlInFooter
     When generating an HTML message, git-multimail escapes any HTML
     sequence by default. This means that if a template contains HTML
