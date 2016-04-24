@@ -2045,14 +2045,14 @@ class SMTPMailer(Mailer):
                 if self.smtpcacerts:
                     self.smtp.sock = ssl.wrap_socket(
                         self.smtp.sock,
-                        ca_certs = self.smtpcacerts,
-                        cert_reqs = ssl.CERT_REQUIRED
-                    )
+                        ca_certs=self.smtpcacerts,
+                        cert_reqs=ssl.CERT_REQUIRED
+                        )
                 else:
                     self.smtp.sock = ssl.wrap_socket(
                         self.smtp.sock,
-                        cert_reqs = ssl.CERT_NONE
-                    )
+                        cert_reqs=ssl.CERT_NONE
+                        )
                     sys.stderr.write(
                         '*** Warning, the server certificat is not verified (smtp) ***\n'
                         '***          set the option smtpCACerts                   ***\n'
