@@ -1,0 +1,7 @@
+[multimailhook]
+	mailer = smtp
+	smtpServer = smtp.gmail.com # Host that works with SSL
+	smtpencryption = tls
+	smtpUser = matthieu.moy
+	smtpPass = secret # Your password here
+	smtpCACerts = /etc/ssl/certs/ca-certificates.crt # For debian

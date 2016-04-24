@@ -57,6 +57,7 @@ import subprocess
 import shlex
 import optparse
 import smtplib
+import ssl
 import time
 import cgi
 
@@ -1990,6 +1991,7 @@ class SMTPMailer(Mailer):
                  smtpservertimeout=10.0, smtpserverdebuglevel=0,
                  smtpencryption='none',
                  smtpuser='', smtppass='',
+                 smtpcacerts=''
                  ):
         if not envelopesender:
             sys.stderr.write(
@@ -2009,6 +2011,7 @@ class SMTPMailer(Mailer):
         self.security = smtpencryption
         self.username = smtpuser
         self.password = smtppass
+        self.smtpcacerts = smtpcacerts
         try:
             def call(klass, server, timeout):
                 try:
@@ -2019,13 +2022,48 @@ class SMTPMailer(Mailer):
             if self.security == 'none':
                 self.smtp = call(smtplib.SMTP, self.smtpserver, timeout=self.smtpservertimeout)
             elif self.security == 'ssl':
+                if self.smtpcacerts:
+                    raise smtplib.SMTPException("Checking certificate is not supported for ssl, prefer starttls")
                 self.smtp = call(smtplib.SMTP_SSL, self.smtpserver, timeout=self.smtpservertimeout)
             elif self.security == 'tls':
                 if ':' not in self.smtpserver:
                     self.smtpserver += ':587'  # default port for TLS
                 self.smtp = call(smtplib.SMTP, self.smtpserver, timeout=self.smtpservertimeout)
+                # start: ehlo + starttls
+                # equivalent to
+                #     self.smtp.ehlo()
+                #     self.smtp.starttls()
+                # with acces to the ssl layer
                 self.smtp.ehlo()
-                self.smtp.starttls()
+                if not self.smtp.has_extn("starttls"):
+                    raise smtplib.SMTPException("STARTTLS extension not supported by server")
+                resp, reply = self.smtp.docmd("STARTTLS")
+                if resp != 220:
+                    raise smtplib.SMTPException("Wrong answer to the STARTTLS command")
+                if self.smtpcacerts:
+                    self.smtp.sock = ssl.wrap_socket(
+                        self.smtp.sock,
+                        ca_certs = self.smtpcacerts,
+                        cert_reqs = ssl.CERT_REQUIRED
+                    )
+                else:
+                    self.smtp.sock = ssl.wrap_socket(
+                        self.smtp.sock,
+                        cert_reqs = ssl.CERT_NONE
+                    )
+                    sys.stderr.write(
+                        '*** Warning, the server certificat is not verified (smtp) ***\n'
+                        '***          set the option smtpCACerts                   ***\n'
+                        )
+                if not hasattr(self.smtp.sock, "read"):
+                    # using httplib.FakeSocket with Python 2.5.x or earlier
+                    self.smtp.sock.read = self.smtp.sock.recv
+                self.smtp.file = smtplib.SSLFakeFile(self.smtp.sock)
+                self.smtp.helo_resp = None
+                self.smtp.ehlo_resp = None
+                self.smtp.esmtp_features = {}
+                self.smtp.does_esmtp = 0
+                # end:   ehlo + starttls
                 self.smtp.ehlo()
             else:
                 sys.stdout.write('*** Error: Control reached an invalid option. ***')
@@ -3548,6 +3586,7 @@ def choose_mailer(config, environment):
         smtpencryption = config.get('smtpencryption', default='none')
         smtpuser = config.get('smtpuser', default='')
         smtppass = config.get('smtppass', default='')
+        smtpcacerts = config.get('smtpcacerts', default='')
         mailer = SMTPMailer(
             envelopesender=(environment.get_sender() or environment.get_fromaddr()),
             smtpserver=smtpserver, smtpservertimeout=smtpservertimeout,
@@ -3555,6 +3594,7 @@ def choose_mailer(config, environment):
             smtpencryption=smtpencryption,
             smtpuser=smtpuser,
             smtppass=smtppass,
+            smtpcacerts=smtpcacerts
             )
     elif mailer == 'sendmail':
         command = config.get('sendmailcommand')
