@@ -377,9 +377,9 @@ multimailhook.mailer
 
             cd /usr/local/share/ca-certificates/
             openssl s_client -starttls smtp \
-                -connect mail.example.net:587 -showcerts \
-                </dev/null 2>/dev/null \
-                | openssl x509 -outform PEM > mail.example.net.crt
+            -connect mail.example.net:587 -showcerts \
+            </dev/null 2>/dev/null \
+            | openssl x509 -outform PEM > mail.example.net.crt
             update-ca-certificates
 
         and used the updated ``/etc/ssl/certs/ca-certificates.crt``. Or
