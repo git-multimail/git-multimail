@@ -2023,7 +2023,9 @@ class SMTPMailer(Mailer):
                 self.smtp = call(smtplib.SMTP, self.smtpserver, timeout=self.smtpservertimeout)
             elif self.security == 'ssl':
                 if self.smtpcacerts:
-                    raise smtplib.SMTPException("Checking certificate is not supported for ssl, prefer starttls")
+                    raise smtplib.SMTPException(
+                        "Checking certificate is not supported for ssl, prefer starttls"
+                        )
                 self.smtp = call(smtplib.SMTP_SSL, self.smtpserver, timeout=self.smtpservertimeout)
             elif self.security == 'tls':
                 if ':' not in self.smtpserver:
