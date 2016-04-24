@@ -1,0 +1,13 @@
+`orphan-certificate.pem` is a list of x509 certificates containing one
+expired certificate associated to a dropped key.
+
+If you use this file as list of trusted CA certificate, all your tls
+connections should terminate with an "certificate verification failed".
+
+Build `orphan-certificate.pem`:
+    openssl req -new -x509 -days 0 -newkey rsa:512 -nodes -subj "/" \
+        -outform PEM -out orphan-certificate.pem \
+        -keyout /dev/null 
+
+Informations about this certificate:
+    openssl x509 -in orphan-certificate.pem -noout -text
