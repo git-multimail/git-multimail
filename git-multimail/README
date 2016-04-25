@@ -369,8 +369,29 @@ multimailhook.mailer
         Timeout in seconds.
 
       multimailhook.smtpEncryption
-        Set the security type. Allowed values: none, ssl, tls.
+        Set the security type. Allowed values: none, ssl, tls (starttls).
         Default=none.
+
+      multimailhook.smtpCACerts
+        Set the path to a list of trusted CA certificate to verify the
+        server certificate, only supported for tls smtpEncryption. If
+        unset or empty, the server certificate is not verified. If it
+        targets a file containing a list of trusted CA certificates (PEM
+        format) these CAs will be used to verify the server certificate.
+        For debian, you can set ``/etc/ssl/certs/ca-certificates.crt``
+        for using the system trusted CAs. For self-signed server, you
+        can add your server certificate to the system store:
+
+            cd /usr/local/share/ca-certificates/
+            openssl s_client -starttls smtp \
+            -connect mail.example.net:587 -showcerts \
+            </dev/null 2>/dev/null \
+            | openssl x509 -outform PEM > mail.example.net.crt
+            update-ca-certificates
+
+        and used the updated ``/etc/ssl/certs/ca-certificates.crt``. Or
+        directly use your ``/path/to/mail.example.net.crt``. Default is
+        unset.
 
       multimailhook.smtpServerDebugLevel
         Integer number. Set to greater than 0 to activate debugging.
