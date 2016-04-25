@@ -127,6 +127,13 @@ changes of this type, please consider sharing them with the
 community.)
 
 
+Troubleshooting/FAQ
+-------------------
+
+Please read `<doc/troubleshooting.rst>`__ for frequently asked
+questions and common issues with git-multimail.
+
+
 Configuration
 -------------
 
