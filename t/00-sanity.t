@@ -80,7 +80,7 @@ pep8_file () {
 pep8_file git-multimail/git_multimail.py
 pep8_file t/test-env
 
-test_expect_success 'pyflakes' '
+test_expect_success pyflakes 'pyflakes' '
 	pyflakes $D/..
 '
 
