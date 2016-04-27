@@ -57,7 +57,11 @@ import subprocess
 import shlex
 import optparse
 import smtplib
-import ssl
+try:
+    import ssl
+except ImportError:
+    # Python < 2.6 do not have ssl, but that's OK if we don't use it.
+    pass
 import time
 import cgi
 
@@ -2028,6 +2032,12 @@ class SMTPMailer(Mailer):
                         )
                 self.smtp = call(smtplib.SMTP_SSL, self.smtpserver, timeout=self.smtpservertimeout)
             elif self.security == 'tls':
+                if 'ssl' not in sys.modules:
+                    sys.stderr.write(
+                        '*** Your Python version does not have the ssl library installed\n'
+                        '*** smtpEncryption=tls is not available.\n'
+                        '*** Either upgrade Python to 2.6 or later\n'
+                        '    or use git_multimail.py version 1.2.\n')
                 if ':' not in self.smtpserver:
                     self.smtpserver += ':587'  # default port for TLS
                 self.smtp = call(smtplib.SMTP, self.smtpserver, timeout=self.smtpservertimeout)
