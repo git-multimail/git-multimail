@@ -18,6 +18,9 @@ Release 1.3.0 (in progress)
 * Error handling for SMTP has been improved (we used to print Python
   backtraces for legitimate errors).
 
+* The SMTP mailer can now check TLS certificates when the newly added
+  configuration variable multimailhook.smtpCACerts.
+
 * Python 3 portability has been improved.
 
 * The documentation's formatting has been improved.
