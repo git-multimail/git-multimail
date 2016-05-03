@@ -27,3 +27,15 @@ commit message)
 * release on pypi::
 
  python setup.py sdist upload -r pypi
+
+After a stable release:
+
+* Create a branch for maintenance releases
+
+* Remove version number from README
+
+* Update version number to 1.x.dev in git_multimail.py
+
+* Create section for future release in git-multimail/CHANGES
+
+* git commit -m "Prepare for next release" && git push
