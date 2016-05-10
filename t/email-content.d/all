@@ -1964,6 +1964,7 @@ EOF
 $ git 'config' 'multimailhook.from' 'From <from@example.com>'
 $ git 'config' 'multimailhook.fromRefChange' 'pusher'
 $ git 'config' '--unset' 'multimailhook.fromCommit'
+$ test_delete 'refs/foo/bar'
 *** Push-update of strange reference 'refs/foo/bar'
 ***  - incomplete email generated.
 Sending notification emails to: Refchange List <refchangelist@example.com>
@@ -2004,6 +2005,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ test_hook 'refs/heads/master' 'refs/heads/master^^'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF

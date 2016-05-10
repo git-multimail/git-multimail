@@ -32,9 +32,9 @@ test_update refs/foo/bar refs/heads/master
 verbose_do git config multimailhook.from 'From <from@example.com>'
 verbose_do git config multimailhook.fromRefChange pusher
 verbose_do git config --unset multimailhook.fromCommit
-test_delete refs/foo/bar
+verbose_do test_delete refs/foo/bar
 
-test_hook refs/heads/master refs/heads/master^^
+verbose_do test_hook refs/heads/master refs/heads/master^^
 
 verbose_do git config multimailhook.scanCommitForCc true
 test_update refs/heads/formatting refs/heads/formatting^^^
