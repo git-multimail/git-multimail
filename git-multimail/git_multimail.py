@@ -56,6 +56,7 @@ import socket
 import subprocess
 import shlex
 import optparse
+import logging
 import smtplib
 try:
     import ssl
@@ -2341,6 +2342,15 @@ class Environment(object):
             multimailhook.fromRefchange and multimailhook.fromCommit
             by ConfigEnvironmentMixin.
 
+        log_file, error_log_file, debug_log_file (string)
+
+            Name of a file to which logs should be sent.
+
+        verbose (int)
+
+            How verbose the system should be.
+            - 0 (default): show info, errors, ...
+            - 1 : show basic debug info
     """
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -2363,6 +2373,7 @@ class Environment(object):
         self.quiet = False
         self.stdout = False
         self.combine_when_single_commit = True
+        self.logger = None
 
         self.COMPUTED_KEYS = [
             'administrator',
@@ -2376,6 +2387,12 @@ class Environment(object):
             ]
 
         self._values = None
+
+    def get_logger(self):
+        """Get (possibly creates) the logger associated to this environment."""
+        if self.logger is None:
+            self.logger = Logger(self)
+        return self.logger
 
     def get_repo_shortname(self):
         """Use the last part of the repo path, with ".git" stripped off if present."""
@@ -2629,6 +2646,11 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         combine = config.get_bool('combineWhenSingleCommit')
         if combine is not None:
             self.combine_when_single_commit = combine
+
+        self.log_file = config.get('logFile', default=None)
+        self.error_log_file = config.get('errorLogFile', default=None)
+        self.debug_log_file = config.get('debugLogFile', default=None)
+        self.verbose = 1 if config.get_bool('Verbose', default=False) else 0
 
     def get_administrator(self):
         return (
@@ -3586,6 +3608,10 @@ def run_as_post_receive_hook(environment, mailer):
         if line == '':
             break
         (oldrev, newrev, refname) = line.strip().split(' ', 2)
+        environment.get_logger().debug(
+            "run_as_update_hook: oldrev=%s, newrev=%s, refname=%s" %
+            (oldrev, newrev, refname))
+
         if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
             continue
         changes.append(
@@ -3823,6 +3849,68 @@ def check_hook_specific_args(options, args):
     return options, args, {}
 
 
+class Logger(object):
+    def parse_verbose(self, verbose):
+        if verbose > 0:
+            return logging.DEBUG
+        else:
+            return logging.INFO
+
+    def create_log_file(self, environment, name, path, verbosity):
+        log_file = logging.getLogger(name)
+        file_handler = logging.FileHandler(path)
+        log_fmt = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
+        file_handler.setFormatter(log_fmt)
+        log_file.addHandler(file_handler)
+        log_file.setLevel(verbosity)
+        return log_file
+
+    def __init__(self, environment):
+        self.environment = environment
+        self.loggers = []
+        stderr_log = logging.getLogger('git_multimail.stderr')
+
+        class EncodedStderr():
+            def write(self, x):
+                write_str(sys.stderr, x)
+
+        stderr_handler = logging.StreamHandler(EncodedStderr())
+        stderr_log.addHandler(stderr_handler)
+        stderr_log.setLevel(self.parse_verbose(environment.verbose))
+        self.loggers.append(stderr_log)
+
+        if environment.debug_log_file is not None:
+            debug_log_file = self.create_log_file(
+                environment, 'git_multimail.debug', environment.debug_log_file, logging.DEBUG)
+            self.loggers.append(debug_log_file)
+
+        if environment.log_file is not None:
+            log_file = self.create_log_file(
+                environment, 'git_multimail.file', environment.log_file, logging.INFO)
+            self.loggers.append(log_file)
+
+        if environment.error_log_file is not None:
+            error_log_file = self.create_log_file(
+                environment, 'git_multimail.error', environment.error_log_file, logging.ERROR)
+            self.loggers.append(error_log_file)
+
+    def info(self, msg):
+        for l in self.loggers:
+            l.info(msg)
+
+    def debug(self, msg):
+        for l in self.loggers:
+            l.debug(msg)
+
+    def warning(self, msg):
+        for l in self.loggers:
+            l.warning(msg)
+
+    def error(self, msg):
+        for l in self.loggers:
+            l.error(msg)
+
+
 def main(args):
     parser = optparse.OptionParser(
         description=__doc__,
@@ -3944,6 +4032,9 @@ def main(args):
             if len(args) != 3:
                 parser.error('Need zero or three non-option arguments')
             (refname, oldrev, newrev) = args
+            environment.get_logger().debug(
+                "run_as_update_hook: refname=%s, oldrev=%s, newrev=%s, force_send=%s" %
+                (refname, oldrev, newrev, options.force_send))
             run_as_update_hook(environment, mailer, refname, oldrev, newrev, options.force_send)
         else:
             run_as_post_receive_hook(environment, mailer)
