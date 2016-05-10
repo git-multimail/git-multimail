@@ -7,13 +7,21 @@ from setuptools import setup
 assert 0x02040000 <= sys.hexversion, \
     "Install Python, version 2.4 or greater"
 
+URL = 'https://github.com/git-multimail/git-multimail'
+
+
 def read_version():
     sys.path.insert(0, os.path.join('git-multimail'))
     import git_multimail
     return git_multimail.__version__
 
+
 def read_readme():
-    return open(os.path.join('git-multimail', 'README')).read()
+    readme = open(os.path.join('git-multimail', 'README')).read()
+    # Turn relative links into absolute ones
+    readme = readme.replace("`<doc/", "`<" + URL + "/blob/master/doc/")
+    readme = readme.replace("`<CONTRIBUTING.rst", "`<" + URL + "/blob/master/CONTRIBUTING.rst")
+    return readme
 
 setup(
     name='git-multimail',
@@ -33,7 +41,7 @@ setup(
         'Topic :: Software Development :: Version Control',
         ],
     keywords='git hook email',
-    url='https://github.com/git-multimail/git-multimail',
+    url=URL,
     author='Michael Haggerty',
     author_email='mhagger@alum.mit.edu',
     maintainer='Matthieu Moy',
