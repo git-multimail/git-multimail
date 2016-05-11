@@ -1989,7 +1989,7 @@ class SendMailer(Mailer):
         try:
             p = subprocess.Popen(self.command, stdin=subprocess.PIPE)
         except OSError:
-            sys.stderr.write(
+            self.environment.get_logger().error(
                 '*** Cannot execute command: %s\n' % ' '.join(self.command) +
                 '*** %s\n' % sys.exc_info()[1] +
                 '*** Try setting multimailhook.mailer to "smtp"\n' +
@@ -2000,7 +2000,7 @@ class SendMailer(Mailer):
             lines = (str_to_bytes(line) for line in lines)
             p.stdin.writelines(lines)
         except Exception:
-            sys.stderr.write(
+            self.environment.get_logger().error(
                 '*** Error while generating commit email\n'
                 '***  - mail sending aborted.\n'
                 )
@@ -2029,7 +2029,7 @@ class SMTPMailer(Mailer):
                  ):
         super(SMTPMailer, self).__init__(environment)
         if not envelopesender:
-            sys.stderr.write(
+            self.environment.get_logger().error(
                 'fatal: git_multimail: cannot use SMTPMailer without a sender address.\n'
                 'please set either multimailhook.envelopeSender or user.email\n'
                 )
@@ -2064,7 +2064,7 @@ class SMTPMailer(Mailer):
                 self.smtp = call(smtplib.SMTP_SSL, self.smtpserver, timeout=self.smtpservertimeout)
             elif self.security == 'tls':
                 if 'ssl' not in sys.modules:
-                    sys.stderr.write(
+                    self.environment.get_logger().error(
                         '*** Your Python version does not have the ssl library installed\n'
                         '*** smtpEncryption=tls is not available.\n'
                         '*** Either upgrade Python to 2.6 or later\n'
@@ -2094,7 +2094,7 @@ class SMTPMailer(Mailer):
                         self.smtp.sock,
                         cert_reqs=ssl.CERT_NONE
                         )
-                    sys.stderr.write(
+                    self.environment.get_logger().error(
                         '*** Warning, the server certificat is not verified (smtp) ***\n'
                         '***          set the option smtpCACerts                   ***\n'
                         )
@@ -2117,10 +2117,10 @@ class SMTPMailer(Mailer):
                     % self.smtpserverdebuglevel)
                 self.smtp.set_debuglevel(self.smtpserverdebuglevel)
         except Exception:
-            sys.stderr.write(
+            self.environment.get_logger().error(
                 '*** Error establishing SMTP connection to %s ***\n'
-                % self.smtpserver)
-            sys.stderr.write('*** %s\n' % sys.exc_info()[1])
+                '*** %s\n'
+                % (self.smtpserver, sys.exc_info()[1]))
             sys.exit(1)
 
     def __del__(self):
@@ -2138,10 +2138,11 @@ class SMTPMailer(Mailer):
                 to_addrs = [email for (name, email) in getaddresses([to_addrs])]
             self.smtp.sendmail(self.envelopesender, to_addrs, msg)
         except smtplib.SMTPResponseException:
-            sys.stderr.write('*** Error sending email ***\n')
             err = sys.exc_info()[1]
-            sys.stderr.write('*** Error %d: %s\n' % (err.smtp_code,
-                                                     bytes_to_str(err.smtp_error)))
+            self.environment.get_logger().error(
+                '*** Error sending email ***\n'
+                '*** Error %d: %s\n'
+                % (err.smtp_code, bytes_to_str(err.smtp_error)))
             try:
                 smtp = self.smtp
                 # delete the field before quit() so that in case of
@@ -2149,9 +2150,10 @@ class SMTPMailer(Mailer):
                 del self.smtp
                 smtp.quit()
             except:
-                sys.stderr.write('*** Error closing the SMTP connection ***\n')
-                sys.stderr.write('*** Exiting anyway ... ***\n')
-                sys.stderr.write('*** %s\n' % sys.exc_info()[1])
+                self.environment.get_logger().error(
+                    '*** Error closing the SMTP connection ***\n'
+                    '*** Exiting anyway ... ***\n'
+                    '*** %s\n' % sys.exc_info()[1])
             sys.exit(1)
 
 
