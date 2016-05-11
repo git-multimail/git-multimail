@@ -4013,6 +4013,7 @@ def main(args):
 
     config = Config('multimailhook')
 
+    environment = None
     try:
         environment = choose_environment(
             config, osenv=os.environ,
@@ -4052,14 +4053,19 @@ def main(args):
     except Exception:
         t, e, tb = sys.exc_info()
         import traceback
-        sys.stdout.write('\n')
-        sys.stdout.write('Exception \'' + t.__name__ +
-                         '\' raised. Please report this as a bug to\n')
-        sys.stdout.write('https://github.com/git-multimail/git-multimail/issues\n')
-        sys.stdout.write('with the information below:\n\n')
-        sys.stdout.write('git-multimail version ' + get_version() + '\n')
-        sys.stdout.write('Python version ' + sys.version + '\n')
-        traceback.print_exc(file=sys.stdout)
+        sys.stderr.write('\n')  # Avoid mixing message with previous output
+        msg = (
+            'Exception \'' + t.__name__ +
+            '\' raised. Please report this as a bug to\n'
+            'https://github.com/git-multimail/git-multimail/issues\n'
+            'with the information below:\n\n'
+            'git-multimail version ' + get_version() + '\n'
+            'Python version ' + sys.version + '\n' +
+            traceback.format_exc())
+        try:
+            environment.get_logger().error(msg)
+        except:
+            sys.stderr.write(msg)
         sys.exit(1)
 
 if __name__ == '__main__':
