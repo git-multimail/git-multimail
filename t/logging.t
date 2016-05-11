@@ -19,7 +19,9 @@ test_expect_success 'log to file' '
 		refs/heads/master HEAD^ HEAD >stdout 2>stderr &&
 	test -s stdout &&
 	! grep -F "[" stderr &&
-	grep "^Sending" stderr
+	grep "^Sending" stderr &&
+	! grep -F "[DEBUG]" logFile.txt &&
+	grep -F "[INFO ]  Sending notification emails to: foo@example.com" logFile.txt
 '
 
 test_expect_success 'log errors to file' '
@@ -29,7 +31,8 @@ test_expect_success 'log errors to file' '
 		-c multimailhook.errorLogFile=errorLogFile.txt \
 		refs/heads/master HEAD^ HEAD &&
 	! grep -F "[DEBUG]" errorLogFile.txt &&
-	! grep -F "[INFO]" errorLogFile.txt
+	! grep -F "[INFO]" errorLogFile.txt &&
+	grep -F "[ERROR]  fatal: multimailhook.mailer is set to an incorrect value: \"nosuchmailer\"" errorLogFile.txt
 '
 
 test_expect_success 'log errors to both file' '
@@ -42,7 +45,9 @@ test_expect_success 'log errors to both file' '
 	test -e stdout && ! test -s stdout &&
 	! grep -F "[" stderr &&
 	grep "^fatal: " stderr &&
-	! grep -F "[DEBUG]" errorLogFile.txt
+	! grep -F "[DEBUG]" errorLogFile.txt &&
+	grep -F "[ERROR]  fatal: multimailhook.mailer is set to an incorrect value: \"nosuchmailer\"" errorLogFile.txt &&
+	grep -F "[ERROR]  fatal: multimailhook.mailer is set to an incorrect value: \"nosuchmailer\"" logFile.txt
 '
 
 test_expect_success 'log debug to both file' '
@@ -52,7 +57,9 @@ test_expect_success 'log debug to both file' '
 		-c multimailhook.debugLogFile=debugLogFile.txt \
 		-c multimailhook.logFile=logFile.txt \
 		refs/heads/master HEAD^ HEAD &&
-	! grep -F "[DEBUG]" logFile.txt
+	! grep -F "[DEBUG]" logFile.txt &&
+	grep -F "[ERROR]  fatal: multimailhook.mailer is set to an incorrect value: \"nosuchmailer\"" debugLogFile.txt &&
+	grep -F "[ERROR]  fatal: multimailhook.mailer is set to an incorrect value: \"nosuchmailer\"" logFile.txt
 '
 
 test_expect_success 'verbose output' '
