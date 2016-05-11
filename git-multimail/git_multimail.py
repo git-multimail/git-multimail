@@ -1932,6 +1932,9 @@ class OtherReferenceChange(ReferenceChange):
 class Mailer(object):
     """An object that can send emails."""
 
+    def __init__(self, environment):
+        self.environment = environment
+
     def send(self, lines, to_addrs):
         """Send an email consisting of lines.
 
@@ -1966,14 +1969,14 @@ class SendMailer(Mailer):
                 'Try setting multimailhook.sendmailCommand.'
                 )
 
-    def __init__(self, command=None, envelopesender=None):
+    def __init__(self, environment, command=None, envelopesender=None):
         """Construct a SendMailer instance.
 
         command should be the command and arguments used to invoke
         sendmail, as a list of strings.  If an envelopesender is
         provided, it will also be passed to the command, via '-f
         envelopesender'."""
-
+        super(SendMailer, self).__init__(environment)
         if command:
             self.command = command[:]
         else:
@@ -2017,12 +2020,14 @@ class SendMailer(Mailer):
 class SMTPMailer(Mailer):
     """Send emails using Python's smtplib."""
 
-    def __init__(self, envelopesender, smtpserver,
+    def __init__(self, environment,
+                 envelopesender, smtpserver,
                  smtpservertimeout=10.0, smtpserverdebuglevel=0,
                  smtpencryption='none',
                  smtpuser='', smtppass='',
                  smtpcacerts=''
                  ):
+        super(SMTPMailer, self).__init__(environment)
         if not envelopesender:
             sys.stderr.write(
                 'fatal: git_multimail: cannot use SMTPMailer without a sender address.\n'
@@ -3654,6 +3659,7 @@ def choose_mailer(config, environment):
         smtppass = config.get('smtppass', default='')
         smtpcacerts = config.get('smtpcacerts', default='')
         mailer = SMTPMailer(
+            environment,
             envelopesender=(environment.get_sender() or environment.get_fromaddr()),
             smtpserver=smtpserver, smtpservertimeout=smtpservertimeout,
             smtpserverdebuglevel=smtpserverdebuglevel,
@@ -3666,7 +3672,8 @@ def choose_mailer(config, environment):
         command = config.get('sendmailcommand')
         if command:
             command = shlex.split(command)
-        mailer = SendMailer(command=command, envelopesender=environment.get_sender())
+        mailer = SendMailer(environment,
+                            command=command, envelopesender=environment.get_sender())
     else:
         environment.log_error(
             'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer +
