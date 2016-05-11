@@ -1063,7 +1063,7 @@ class Revision(Change):
             self.cc_recipients = ', '.join(to.strip() for to in self._cc_recipients())
             if self.cc_recipients:
                 self.environment.log_msg(
-                    'Add %s to CC for %s\n' % (self.cc_recipients, self.rev.sha1))
+                    'Add %s to CC for %s' % (self.cc_recipients, self.rev.sha1))
 
     def _cc_recipients(self):
         cc_recipients = []
@@ -1211,7 +1211,7 @@ class ReferenceChange(Change):
                 # Tracking branch:
                 environment.log_warning(
                     '*** Push-update of tracking branch %r\n'
-                    '***  - incomplete email generated.\n'
+                    '***  - incomplete email generated.'
                     % (refname,)
                     )
                 klass = OtherReferenceChange
@@ -1219,7 +1219,7 @@ class ReferenceChange(Change):
                 # Some other reference namespace:
                 environment.log_warning(
                     '*** Push-update of strange reference %r\n'
-                    '***  - incomplete email generated.\n'
+                    '***  - incomplete email generated.'
                     % (refname,)
                     )
                 klass = OtherReferenceChange
@@ -1227,7 +1227,7 @@ class ReferenceChange(Change):
             # Anything else (is there anything else?)
             environment.log_warning(
                 '*** Unknown type of update to %r (%s)\n'
-                '***  - incomplete email generated.\n'
+                '***  - incomplete email generated.'
                 % (refname, rev.type,)
                 )
             klass = OtherReferenceChange
@@ -2523,19 +2523,19 @@ class Environment(object):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        write_str(sys.stderr, msg)
+        write_str(sys.stderr, msg + '\n')
 
     def log_warning(self, msg):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        write_str(sys.stderr, msg)
+        write_str(sys.stderr, msg + '\n')
 
     def log_error(self, msg):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        write_str(sys.stderr, msg)
+        write_str(sys.stderr, msg + '\n')
 
 
 class ConfigEnvironmentMixin(Environment):
@@ -3544,13 +3544,13 @@ class Push(object):
             if not change.recipients:
                 change.environment.log_warning(
                     '*** no recipients configured so no email will be sent\n'
-                    '*** for %r update %s->%s\n'
+                    '*** for %r update %s->%s'
                     % (change.refname, change.old.sha1, change.new.sha1,)
                     )
             else:
                 if not change.environment.quiet:
                     change.environment.log_msg(
-                        'Sending notification emails to: %s\n' % (change.recipients,))
+                        'Sending notification emails to: %s' % (change.recipients,))
                 extra_values = {'send_date': next(send_date)}
 
                 rev = change.send_single_combined_email(sha1s)
@@ -3573,14 +3573,14 @@ class Push(object):
                 change.environment.log_warning(
                     '*** Too many new commits (%d), not sending commit emails.\n' % len(sha1s) +
                     '*** Try setting multimailhook.maxCommitEmails to a greater value\n' +
-                    '*** Currently, multimailhook.maxCommitEmails=%d\n' % max_emails
+                    '*** Currently, multimailhook.maxCommitEmails=%d' % max_emails
                     )
                 return
 
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num + 1, tot=len(sha1s))
                 if not rev.recipients and rev.cc_recipients:
-                    change.environment.log_msg('*** Replacing Cc: with To:\n')
+                    change.environment.log_msg('*** Replacing Cc: with To:')
                     rev.recipients = rev.cc_recipients
                     rev.cc_recipients = None
                 if rev.recipients:
@@ -3594,7 +3594,7 @@ class Push(object):
         if unhandled_sha1s:
             change.environment.log_error(
                 'ERROR: No emails were sent for the following new commits:\n'
-                '    %s\n'
+                '    %s'
                 % ('\n    '.join(sorted(unhandled_sha1s)),)
                 )
 
@@ -3679,7 +3679,7 @@ def choose_mailer(config, environment):
     else:
         environment.log_error(
             'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer +
-            'please use one of "smtp" or "sendmail".\n'
+            'please use one of "smtp" or "sendmail".'
             )
         sys.exit(1)
     return mailer
