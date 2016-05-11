@@ -1,0 +1,118 @@
+$ git 'config' 'multimailhook.refchangelist' 'Commit List <commitlist@example.com>'
+Sending notification emails to: Commit List <commitlist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* branch master updated: a5
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: d245c99162aff6fff4879e5d5c17d454766b45db
+X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: ref_changed_plus_diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+<pre style='margin:0'>
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+</pre>
+<p><a href="https://example.com/path&quot;with&lt;spe\cial%chars/902dfe1c4025851d6b175c8f1efeee9ee1a0b74d/this-comes-after-id">View the commit online</a>.</p>
+<pre style="white-space: pre; background: #F8F8F8">The following commit(s) were added to refs/heads/master by this push:
+<span style='display:block; white-space:pre;color:#404040;'>       new  902dfe1   a5
+</span>902dfe1 is described below
+
+<span style='display:block; white-space:pre;color:#808000;'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+</span>Author: Joe User &lt;user@example.com&gt;
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
+
+<span style='display:block; white-space:pre;color:#404040;'>    a5
+</span>---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+<span style='display:block; white-space:pre;color:#808080;'>diff --git a/a.txt b/a.txt
+</span><span style='display:block; white-space:pre;color:#808080;'>index 63a911f..7ed6ff8 100644
+</span><span style='display:block; white-space:pre;background:#e0e0ff;'>--- a/a.txt
+</span><span style='display:block; white-space:pre;background:#e0e0ff;'>+++ b/a.txt
+</span><span style='display:block; white-space:pre;background:#e0e0e0;'>@@ -1 +1 @@
+</span><span style='display:block; white-space:pre;background:#ffe0e0;'>-m1
+</span><span style='display:block; white-space:pre;background:#e0ffe0;'>+5
+</span></pre><pre style='margin:0'>
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator &lt;administrator@example.com&gt;.
+</pre>
+EOF
+######################################################################
+Sending notification emails to: Commit List <commitlist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* branch master updated: a5
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: d245c99162aff6fff4879e5d5c17d454766b45db
+X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: ref_changed_plus_diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch master
+in repository test-repo.
+
+View the commit online:
+https://example.com/path"with<spe\cial\>chars/
+
+The following commit(s) were added to refs/heads/master by this push:
+       new  902dfe1   a5
+902dfe1 is described below
+
+commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+Author: Joe User <user@example.com>
+AuthorDate: Fri Feb 3 09:32:50 2012 +0100
+
+    a5
+---
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/a.txt b/a.txt
+index 63a911f..7ed6ff8 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-m1
++5
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+$ git 'config' 'multimailhook.refchangelist' 'Refchange List <refchangelist@example.com>'

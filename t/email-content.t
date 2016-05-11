@@ -84,6 +84,17 @@ test_email_content 'message including a URL' url '
 		-c multimailhook.commitEmailFormat=text
 '
 
+test_email_content 'combined message including a URL' combined-url '
+	verbose_do git config multimailhook.refchangelist "Commit List <commitlist@example.com>"
+	test_update refs/heads/master refs/heads/master^ \
+		-c multimailhook.commitBrowseURL="https://example.com/path\"with<spe\cial%%chars/%(newrev)s/this-comes-after-id" \
+		-c multimailhook.commitEmailFormat=html &&
+	test_update refs/heads/master refs/heads/master^ \
+		-c multimailhook.commitBrowseURL="https://example.com/path\"with<spe\cial\>chars/%()s" \
+		-c multimailhook.commitEmailFormat=text
+	verbose_do git config multimailhook.refchangelist "Refchange List <refchangelist@example.com>"
+'
+
 test_email_content 'HTML message with template override' html-templates '
 	MULTIMAIL=$SHARNESS_TEST_DIRECTORY/test_templates.py &&
 	verbose_do test_update refs/heads/master \
