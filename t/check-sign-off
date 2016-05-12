@@ -22,7 +22,10 @@ fi
 shallow=$(git rev-parse --git-dir)/shallow
 if test -f $shallow
 then
-	negative_rev="$negative_rev ^$(head -n 1 $shallow)"
+	for id in $(cat "$shallow")
+	do
+		negative_rev="$negative_rev ^$id"
+	done
 fi
 
 if ! git log --no-merges --invert-grep --grep '^Signed-off-by: ' \
