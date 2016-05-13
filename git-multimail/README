@@ -5,7 +5,7 @@ git-multimail
     :target: https://travis-ci.org/git-multimail/git-multimail
 
 git-multimail is a tool for sending notification emails on pushes to a
-Git repository.  It includes a Python module called git_multimail.py,
+Git repository.  It includes a Python module called ``git_multimail.py``,
 which can either be used as a hook script directly or can be imported
 as a Python module into another script.
 
@@ -93,20 +93,20 @@ Requirements
 Invocation
 ----------
 
-git_multimail.py is designed to be used as a ``post-receive`` hook in a
+``git_multimail.py`` is designed to be used as a ``post-receive`` hook in a
 Git repository (see githooks(5)).  Link or copy it to
 $GIT_DIR/hooks/post-receive within the repository for which email
 notifications are desired.  Usually it should be installed on the
 central repository for a project, to which all commits are eventually
 pushed.
 
-For use on pre-v1.5.1 Git servers, git_multimail.py can also work as
+For use on pre-v1.5.1 Git servers, ``git_multimail.py`` can also work as
 an ``update`` hook, taking its arguments on the command line.  To use
 this script in this manner, link or copy it to $GIT_DIR/hooks/update.
 Please note that the script is not completely reliable in this mode
 [1]_.
 
-Alternatively, git_multimail.py can be imported as a Python module
+Alternatively, ``git_multimail.py`` can be imported as a Python module
 into your own Python post-receive script.  This method is a bit more
 work, but allows the behavior of the hook to be customized using
 arbitrary Python code.  For example, you can use a custom environment
@@ -122,7 +122,7 @@ arbitrary Python code.  For example, you can use a custom environment
 
 Or you can change how emails are sent by writing your own Mailer
 class.  The ``post-receive`` script in this directory demonstrates how
-to use git_multimail.py as a Python module.  (If you make interesting
+to use ``git_multimail.py`` as a Python module.  (If you make interesting
 changes of this type, please consider sharing them with the
 community.)
 
@@ -631,8 +631,8 @@ Customizing email contents
 
 git-multimail mostly generates emails by expanding templates.  The
 templates can be customized.  To avoid the need to edit
-git_multimail.py directly, the preferred way to change the templates
-is to write a separate Python script that imports git_multimail.py as
+``git_multimail.py`` directly, the preferred way to change the templates
+is to write a separate Python script that imports ``git_multimail.py`` as
 a module, then replaces the templates in place.  See the provided
 post-receive script for an example of how this is done.
 
@@ -665,7 +665,7 @@ option to the script.
 If you need to customize the script in ways that are not supported by
 the existing environments, you can define your own environment class
 class using arbitrary Python code.  To do so, you need to import
-git_multimail.py as a Python module, as demonstrated by the example
+``git_multimail.py`` as a Python module, as demonstrated by the example
 post-receive script.  Then implement your environment class; it should
 usually inherit from one of the existing Environment classes and
 possibly one or more of the EnvironmentMixin classes.  Then set the
