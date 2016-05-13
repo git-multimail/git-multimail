@@ -30,13 +30,13 @@ repository. You should see something like::
   remote: Reply-To: Auth Or <Foo.Bar@example.com>
   remote: X-Git-Host: example
   ...
-  remote: -- 
+  remote: --
   remote: To stop receiving notification emails like this one, please contact
   remote: the administrator of this repository.
   remote: ===========================================================================
   To /path/to/repo
      6278f04..e173f20  master -> master
-  
+
 Note: this does not include the sender (Return-Path: header), as it is
 not part of the message content but passed to the mailer. Some mailer
 show the ``Sender:`` field instead of the ``From:`` field (for
