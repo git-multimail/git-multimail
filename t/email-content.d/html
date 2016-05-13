@@ -26,15 +26,15 @@ pushuser pushed a change to branch master
 in repository test-repo.
 
       from  ebf40e1   a4
-      adds  f0e9a98   f1
-      adds  c742b15   f2
-      adds  abb8baa   f3
+       add  f0e9a98   f1
+       add  c742b15   f2
+       add  abb8baa   f3
        new  d245c99   m1
        new  902dfe1   a5
 
 The 2 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
-listed as "adds" were already present in the repository and have only
+listed as "add" were already present in the repository and have only
 been added to this reference.
 
 

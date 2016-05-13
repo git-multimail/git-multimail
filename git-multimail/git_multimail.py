@@ -213,8 +213,8 @@ reference pointing at a previous point in the repository history.
             \\
              O -- O -- O   (%(oldrev_short)s)
 
-Any revisions marked "omits" are not gone; other references still
-refer to them.  Any revisions marked "discards" are gone forever.
+Any revisions marked "omit" are not gone; other references still
+refer to them.  Any revisions marked "discard" are gone forever.
 """
 
 
@@ -233,8 +233,8 @@ You should already have received notification emails for all of the O
 revisions, and so the following emails describe only the N revisions
 from the common base, B.
 
-Any revisions marked "omits" are not gone; other references still
-refer to them.  Any revisions marked "discards" are gone forever.
+Any revisions marked "omit" are not gone; other references still
+refer to them.  Any revisions marked "discard" are gone forever.
 """
 
 
@@ -258,7 +258,7 @@ from the repository.
 NEW_REVISIONS_TEMPLATE = """\
 The %(tot)s revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
-listed as "adds" were already present in the repository and have only
+listed as "add" were already present in the repository and have only
 been added to this reference.
 
 """
@@ -1446,9 +1446,9 @@ class ReferenceChange(Change):
             if discards and adds:
                 for (sha1, subject) in discards:
                     if sha1 in discarded_commits:
-                        action = 'discards'
+                        action = 'discard'
                     else:
-                        action = 'omits'
+                        action = 'omit'
                     yield self.expand(
                         BRIEF_SUMMARY_TEMPLATE, action=action,
                         rev_short=sha1, text=subject,
@@ -1457,7 +1457,7 @@ class ReferenceChange(Change):
                     if sha1 in new_commits:
                         action = 'new'
                     else:
-                        action = 'adds'
+                        action = 'add'
                     yield self.expand(
                         BRIEF_SUMMARY_TEMPLATE, action=action,
                         rev_short=sha1, text=subject,
@@ -1469,9 +1469,9 @@ class ReferenceChange(Change):
             elif discards:
                 for (sha1, subject) in discards:
                     if sha1 in discarded_commits:
-                        action = 'discards'
+                        action = 'discard'
                     else:
-                        action = 'omits'
+                        action = 'omit'
                     yield self.expand(
                         BRIEF_SUMMARY_TEMPLATE, action=action,
                         rev_short=sha1, text=subject,
@@ -1490,7 +1490,7 @@ class ReferenceChange(Change):
                     if sha1 in new_commits:
                         action = 'new'
                     else:
-                        action = 'adds'
+                        action = 'add'
                     yield self.expand(
                         BRIEF_SUMMARY_TEMPLATE, action=action,
                         rev_short=sha1, text=subject,
@@ -1543,7 +1543,7 @@ class ReferenceChange(Change):
                 for r in discarded_revisions:
                     (sha1, subject) = r.rev.get_summary()
                     yield r.expand(
-                        BRIEF_SUMMARY_TEMPLATE, action='discards', text=subject,
+                        BRIEF_SUMMARY_TEMPLATE, action='discard', text=subject,
                         )
                 for line in self.generate_revision_change_graph(push):
                     yield line

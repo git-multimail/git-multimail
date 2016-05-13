@@ -42,8 +42,8 @@ test_expect_success 'setup test repo' '
 
 test_expect_success '--force-send does consider everything new' '
 	$MULTIMAIL $options refs/heads/master master^^ master >out &&
-	grep "adds .* three" out &&
-	grep "adds .* two" out &&
+	grep "add .* three" out &&
+	grep "add .* two" out &&
 	test $(grep -c Subject out) -eq 1 &&
 	$MULTIMAIL --force-send $options refs/heads/master master^^ master >out &&
 	grep "new .* three" out &&
