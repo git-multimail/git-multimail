@@ -1,7 +1,9 @@
 Release 1.4.0 (in progress)
 ===========================
 
-
+* Formatting of emails was made slightly more compact, to reduce the
+  odds of having long subject lines truncated or wrapped in short list
+  of commits.
 
 Release 1.3.1 (bugfix-only release)
 ===================================
