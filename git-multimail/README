@@ -151,7 +151,10 @@ multimailhook.environment
       the repository name is derived from the repository's path.
 
     gitolite
-      the username of the pusher is read from $GL_USER, the repository
+      Environment to use when ``git-multimail`` is ran as a gitolite_
+      hook.
+
+      The username of the pusher is read from $GL_USER, the repository
       name is read from $GL_REPO, and the From: header value is
       optionally read from gitolite.conf (see multimailhook.from).
 
@@ -645,8 +648,8 @@ GenericEnvironment
     a stand-alone Git repository.
 
 GitoliteEnvironment
-    a Git repository that is managed by gitolite
-    [3]_.  For such repositories, the identity of the pusher is read from
+    a Git repository that is managed by gitolite_.  For such
+    repositories, the identity of the pusher is read from
     environment variable $GL_USER, the name of the repository is read
     from $GL_REPO (if it is not overridden by multimailhook.reponame),
     and the From: header value is optionally read from gitolite.conf
@@ -700,4 +703,4 @@ Footnotes
        push. A workaround is to use --force-send to force sending the
        emails.
 
-.. [3] https://github.com/sitaramc/gitolite
+.. _gitolite: https://github.com/sitaramc/gitolite
