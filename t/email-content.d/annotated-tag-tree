@@ -26,11 +26,11 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to annotated tag tree-tag
 in repository test-repo.
 
-        at  df5bc27   (tag)
-   tagging  1ee77c4aadec637071d45755613424514c82c76e (tag)
-    length  157 bytes
- tagged by  Joe User
-        on  Thu Nov 22 04:00:00 2012 +0530
+      at df5bc27  (tag)
+ tagging 1ee77c4aadec637071d45755613424514c82c76e (tag)
+  length 157 bytes
+      by Joe User
+      on Thu Nov 22 04:00:00 2012 +0530
 
 - Log -----------------------------------------------------------------
 This annotated tag points at a tag that points at a tree.
@@ -75,12 +75,12 @@ in repository test-repo.
 
 *** WARNING: tag tree-tag was modified! ***
 
-      from  902dfe1   (commit)
-        to  df5bc27   (tag)
-   tagging  1ee77c4aadec637071d45755613424514c82c76e (tag)
-    length  157 bytes
- tagged by  Joe User
-        on  Thu Nov 22 04:00:00 2012 +0530
+    from 902dfe1  (commit)
+      to df5bc27  (tag)
+ tagging 1ee77c4aadec637071d45755613424514c82c76e (tag)
+  length 157 bytes
+      by Joe User
+      on Thu Nov 22 04:00:00 2012 +0530
 
 - Log -----------------------------------------------------------------
 This annotated tag points at a tag that points at a tree.
@@ -164,11 +164,11 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to annotated tag recursive-tag
 in repository test-repo.
 
-        at  b56d4b8   (tag)
-   tagging  bc4a4a6920231744413492b4084a96a3cd428ca6 (tag)
-    length  156 bytes
- tagged by  Joe User
-        on  Thu Nov 22 02:00:00 2012 +0530
+      at b56d4b8  (tag)
+ tagging bc4a4a6920231744413492b4084a96a3cd428ca6 (tag)
+  length 156 bytes
+      by Joe User
+      on Thu Nov 22 02:00:00 2012 +0530
 
 - Log -----------------------------------------------------------------
 This annotated tag points at another annotated tag.
@@ -211,27 +211,27 @@ in repository test-repo.
 
 *** WARNING: tag recursive-tag was modified! ***
 
-      from  902dfe1   (commit)
-        to  b56d4b8   (tag)
-   tagging  bc4a4a6920231744413492b4084a96a3cd428ca6 (tag)
-    length  156 bytes
- tagged by  Joe User
-        on  Thu Nov 22 02:00:00 2012 +0530
+    from 902dfe1  (commit)
+      to b56d4b8  (tag)
+ tagging bc4a4a6920231744413492b4084a96a3cd428ca6 (tag)
+  length 156 bytes
+      by Joe User
+      on Thu Nov 22 02:00:00 2012 +0530
 
 - Log -----------------------------------------------------------------
 This annotated tag points at another annotated tag.
 -----------------------------------------------------------------------
 
-      omit  902dfe1   a5
-      omit  d245c99   m1
-      omit  abb8baa   f3
-      omit  c742b15   f2
-      omit  f0e9a98   f1
-      omit  ebf40e1   a4
-      omit  012fc78   a3
-      omit  50d684a   a2
-       add  205e528   r1
-       add  1034ac6   r2
+    omit 902dfe1  a5
+    omit d245c99  m1
+    omit abb8baa  f3
+    omit c742b15  f2
+    omit f0e9a98  f1
+    omit ebf40e1  a4
+    omit 012fc78  a3
+    omit 50d684a  a2
+     add 205e528  r1
+     add 1034ac6  r2
 
 This update added new revisions after undoing existing revisions.
 That is to say, some revisions that were in the old version of the

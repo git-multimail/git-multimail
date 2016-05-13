@@ -265,15 +265,15 @@ been added to this reference.
 
 
 TAG_CREATED_TEMPLATE = """\
-        at  %(newrev_short)-9s (%(newrev_type)s)
+      at %(newrev_short)-8s (%(newrev_type)s)
 """
 
 
 TAG_UPDATED_TEMPLATE = """\
 *** WARNING: tag %(short_refname)s was modified! ***
 
-      from  %(oldrev_short)-9s (%(oldrev_type)s)
-        to  %(newrev_short)-9s (%(newrev_type)s)
+    from %(oldrev_short)-8s (%(oldrev_type)s)
+      to %(newrev_short)-8s (%(newrev_type)s)
 """
 
 
@@ -286,7 +286,7 @@ TAG_DELETED_TEMPLATE = """\
 # The template used in summary tables.  It looks best if this uses the
 # same alignment as TAG_CREATED_TEMPLATE and TAG_UPDATED_TEMPLATE.
 BRIEF_SUMMARY_TEMPLATE = """\
-%(action)10s  %(rev_short)-9s %(text)s
+%(action)8s %(rev_short)-8s %(text)s
 """
 
 
@@ -1791,13 +1791,13 @@ class AnnotatedTagChange(ReferenceChange):
             except CommandError:
                 prevtag = None
             if prevtag:
-                yield '  replaces  %s\n' % (prevtag,)
+                yield ' replaces %s\n' % (prevtag,)
         else:
             prevtag = None
-            yield '    length  %s bytes\n' % (read_git_output(['cat-file', '-s', tagobject]),)
+            yield '  length %s bytes\n' % (read_git_output(['cat-file', '-s', tagobject]),)
 
-        yield ' tagged by  %s\n' % (tagger,)
-        yield '        on  %s\n' % (tagged,)
+        yield '      by %s\n' % (tagger,)
+        yield '      on %s\n' % (tagged,)
         yield '\n'
 
         # Show the content of the tag message; this might contain a

@@ -25,7 +25,7 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to tag tag
 in repository test-repo.
 
-        at  1034ac6   (commit)
+      at 1034ac6  (commit)
 No new revisions were added by this update.
 
 -- 
@@ -62,18 +62,18 @@ in repository test-repo.
 
 *** WARNING: tag tag was modified! ***
 
-      from  902dfe1   (commit)
-        to  1034ac6   (commit)
-      omit  902dfe1   a5
-      omit  d245c99   m1
-      omit  abb8baa   f3
-      omit  c742b15   f2
-      omit  f0e9a98   f1
-      omit  ebf40e1   a4
-      omit  012fc78   a3
-      omit  50d684a   a2
-       add  205e528   r1
-       add  1034ac6   r2
+    from 902dfe1  (commit)
+      to 1034ac6  (commit)
+    omit 902dfe1  a5
+    omit d245c99  m1
+    omit abb8baa  f3
+    omit c742b15  f2
+    omit f0e9a98  f1
+    omit ebf40e1  a4
+    omit 012fc78  a3
+    omit 50d684a  a2
+     add 205e528  r1
+     add 1034ac6  r2
 
 This update added new revisions after undoing existing revisions.
 That is to say, some revisions that were in the old version of the
@@ -132,7 +132,7 @@ in repository test-repo.
 
 *** WARNING: tag tag was deleted! ***
 
-       was  1034ac6   r2
+     was 1034ac6  r2
 
 The revisions that were on this tag are still contained in
 other references; therefore, this change does not discard any commits

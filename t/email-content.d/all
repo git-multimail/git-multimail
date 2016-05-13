@@ -25,12 +25,12 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-      from  ebf40e1   a4
-       add  f0e9a98   f1
-       add  c742b15   f2
-       add  abb8baa   f3
-       new  d245c99   m1
-       new  902dfe1   a5
+    from ebf40e1  a4
+     add f0e9a98  f1
+     add c742b15  f2
+     add abb8baa  f3
+     new d245c99  m1
+     new 902dfe1  a5
 
 The 2 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -178,13 +178,13 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-      omit  47ef1f8   f5
-      omit  7a9800a   f4
-       new  50d684a   a2
-       new  012fc78   a3
-       new  ebf40e1   a4
-       new  d245c99   m1
-       new  902dfe1   a5
+    omit 47ef1f8  f5
+    omit 7a9800a  f4
+     new 50d684a  a2
+     new 012fc78  a3
+     new ebf40e1  a4
+     new d245c99  m1
+     new 902dfe1  a5
 
 This update added new revisions after undoing existing revisions.
 That is to say, some revisions that were in the old version of the
@@ -487,15 +487,15 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-       was  902dfe1   a5
+     was 902dfe1  a5
 
 This change permanently discards the following revisions:
 
-   discard  902dfe1   a5
-   discard  d245c99   m1
-   discard  ebf40e1   a4
-   discard  012fc78   a3
-   discard  50d684a   a2
+ discard 902dfe1  a5
+ discard d245c99  m1
+ discard ebf40e1  a4
+ discard 012fc78  a3
+ discard 50d684a  a2
 
 -- 
 To stop receiving notification emails like this one, please contact
@@ -529,11 +529,11 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-   discard  902dfe1   a5
-   discard  d245c99   m1
-      omit  abb8baa   f3
-      omit  c742b15   f2
-      omit  f0e9a98   f1
+ discard 902dfe1  a5
+ discard d245c99  m1
+    omit abb8baa  f3
+    omit c742b15  f2
+    omit f0e9a98  f1
 
 This update removed existing revisions from the reference, leaving the
 reference pointing at a previous point in the repository history.
@@ -583,13 +583,13 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-   discard  902dfe1   a5
-   discard  d245c99   m1
-   discard  ebf40e1   a4
-   discard  012fc78   a3
-   discard  50d684a   a2
-       add  7a9800a   f4
-       add  47ef1f8   f5
+ discard 902dfe1  a5
+ discard d245c99  m1
+ discard ebf40e1  a4
+ discard 012fc78  a3
+ discard 50d684a  a2
+     add 7a9800a  f4
+     add 47ef1f8  f5
 
 This update added new revisions after undoing existing revisions.
 That is to say, some revisions that were in the old version of the
@@ -646,7 +646,7 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-   discard  902dfe1   a5
+ discard 902dfe1  a5
 
 This update removed existing revisions from the reference, leaving the
 reference pointing at a previous point in the repository history.
@@ -696,11 +696,11 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch release
 in repository test-repo.
 
-      from  88ff896   a1
-       add  205e528   r1
-       add  1034ac6   r2
-       new  5f26bd1   r3
-       new  cd65463   r4
+    from 88ff896  a1
+     add 205e528  r1
+     add 1034ac6  r2
+     new 5f26bd1  r3
+     new cd65463  r4
 
 The 2 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -840,8 +840,8 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch release
 in repository test-repo.
 
-      from  5f26bd1   r3
-       new  cd65463   r4
+    from 5f26bd1  r3
+     new cd65463  r4
 
 The 1 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -936,7 +936,7 @@ pushuser pushed a commit to branch release
 in repository test-repo.
 
 The following commit(s) were added to refs/heads/release by this push:
-       new  cd65463   r4
+     new cd65463  r4
 cd65463 is described below
 
 commit cd654633ad4dfb51961a420fca63dca6e4e3d7ac
@@ -989,8 +989,8 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch release
 in repository test-repo.
 
-   discard  cd65463   r4
-   discard  5f26bd1   r3
+ discard cd65463  r4
+ discard 5f26bd1  r3
 
 This update removed existing revisions from the reference, leaving the
 reference pointing at a previous point in the repository history.
@@ -1046,12 +1046,12 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch feature
 in repository test-repo.
 
-        at  47ef1f8   f5
+      at 47ef1f8  f5
 
 This branch includes the following new commits:
 
-       new  7a9800a   f4
-       new  47ef1f8   f5
+     new 7a9800a  f4
+     new 47ef1f8  f5
 
 The 2 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -1187,10 +1187,10 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch feature
 in repository test-repo.
 
-      from  c742b15   f2
-       add  abb8baa   f3
-       new  7a9800a   f4
-       new  47ef1f8   f5
+    from c742b15  f2
+     add abb8baa  f3
+     new 7a9800a  f4
+     new 47ef1f8  f5
 
 The 2 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -1330,9 +1330,9 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch feature
 in repository test-repo.
 
-   discard  47ef1f8   f5
-   discard  7a9800a   f4
-      omit  abb8baa   f3
+ discard 47ef1f8  f5
+ discard 7a9800a  f4
+    omit abb8baa  f3
 
 This update removed existing revisions from the reference, leaving the
 reference pointing at a previous point in the repository history.
@@ -1382,12 +1382,12 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch feature
 in repository test-repo.
 
-       was  47ef1f8   f5
+     was 47ef1f8  f5
 
 This change permanently discards the following revisions:
 
-   discard  47ef1f8   f5
-   discard  7a9800a   f4
+ discard 47ef1f8  f5
+ discard 7a9800a  f4
 
 -- 
 To stop receiving notification emails like this one, please contact
@@ -1424,12 +1424,12 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to reference refs/remotes/remote
 in repository test-repo.
 
-        at  cf3c5de   x2
+      at cf3c5de  x2
 
 This reference includes the following new commits:
 
-       new  25d99c9   x1
-       new  cf3c5de   x2
+     new 25d99c9  x1
+     new cf3c5de  x2
 
 The 2 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -1567,16 +1567,16 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to reference refs/remotes/remote
 in repository test-repo.
 
-      omit  902dfe1   a5
-      omit  d245c99   m1
-      omit  abb8baa   f3
-      omit  c742b15   f2
-      omit  f0e9a98   f1
-      omit  ebf40e1   a4
-      omit  012fc78   a3
-      omit  50d684a   a2
-       new  25d99c9   x1
-       new  cf3c5de   x2
+    omit 902dfe1  a5
+    omit d245c99  m1
+    omit abb8baa  f3
+    omit c742b15  f2
+    omit f0e9a98  f1
+    omit ebf40e1  a4
+    omit 012fc78  a3
+    omit 50d684a  a2
+     new 25d99c9  x1
+     new cf3c5de  x2
 
 This update added new revisions after undoing existing revisions.
 That is to say, some revisions that were in the old version of the
@@ -1736,12 +1736,12 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to reference refs/remotes/remote
 in repository test-repo.
 
-       was  cf3c5de   x2
+     was cf3c5de  x2
 
 This change permanently discards the following revisions:
 
-   discard  cf3c5de   x2
-   discard  25d99c9   x1
+ discard cf3c5de  x2
+ discard 25d99c9  x1
 
 -- 
 To stop receiving notification emails like this one, please contact
@@ -1777,11 +1777,11 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to reference refs/foo/bar
 in repository test-repo.
 
-        at  ce88e42   b1
+      at ce88e42  b1
 
 This reference includes the following new commits:
 
-       new  ce88e42   b1
+     new ce88e42  b1
 
 The 1 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -1871,15 +1871,15 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to reference refs/foo/bar
 in repository test-repo.
 
-      omit  902dfe1   a5
-      omit  d245c99   m1
-      omit  abb8baa   f3
-      omit  c742b15   f2
-      omit  f0e9a98   f1
-      omit  ebf40e1   a4
-      omit  012fc78   a3
-      omit  50d684a   a2
-       new  ce88e42   b1
+    omit 902dfe1  a5
+    omit d245c99  m1
+    omit abb8baa  f3
+    omit c742b15  f2
+    omit f0e9a98  f1
+    omit ebf40e1  a4
+    omit 012fc78  a3
+    omit 50d684a  a2
+     new ce88e42  b1
 
 This update added new revisions after undoing existing revisions.
 That is to say, some revisions that were in the old version of the
@@ -1994,11 +1994,11 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to reference refs/foo/bar
 in repository test-repo.
 
-       was  ce88e42   b1
+     was ce88e42  b1
 
 This change permanently discards the following revisions:
 
-   discard  ce88e42   b1
+ discard ce88e42  b1
 
 -- 
 To stop receiving notification emails like this one, please contact
@@ -2033,12 +2033,12 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-      from  ebf40e1   a4
-       add  f0e9a98   f1
-       add  c742b15   f2
-       add  abb8baa   f3
-       new  d245c99   m1
-       new  902dfe1   a5
+    from ebf40e1  a4
+     add f0e9a98  f1
+     add c742b15  f2
+     add abb8baa  f3
+     new d245c99  m1
+     new 902dfe1  a5
 
 The 2 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -2183,10 +2183,10 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch formatting
 in repository test-repo.
 
-      from  6522cd3   Initial commit
-       new  9194268   Subject line
-       new  850c489   Another subject line
-       new  8e11f7c   Commit without Cc: line.
+    from 6522cd3  Initial commit
+     new 9194268  Subject line
+     new 850c489  Another subject line
+     new 8e11f7c  Commit without Cc: line.
 
 The 3 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -2397,15 +2397,15 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-      from  88ff896   a1
-       new  50d684a   a2
-       new  012fc78   a3
-       new  ebf40e1   a4
-       new  f0e9a98   f1
-       new  c742b15   f2
-       new  abb8baa   f3
-       new  d245c99   m1
-       new  902dfe1   a5
+    from 88ff896  a1
+     new 50d684a  a2
+     new 012fc78  a3
+     new ebf40e1  a4
+     new f0e9a98  f1
+     new c742b15  f2
+     new abb8baa  f3
+     new d245c99  m1
+     new 902dfe1  a5
 
 The 8 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions

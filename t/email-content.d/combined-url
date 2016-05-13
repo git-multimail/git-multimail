@@ -31,7 +31,7 @@ in repository test-repo.
 </pre>
 <p><a href="https://example.com/path&quot;with&lt;spe\cial%chars/902dfe1c4025851d6b175c8f1efeee9ee1a0b74d/this-comes-after-id">View the commit online</a>.</p>
 <pre style="white-space: pre; background: #F8F8F8">The following commit(s) were added to refs/heads/master by this push:
-<span style='display:block; white-space:pre;color:#404040;'>       new  902dfe1   a5
+<span style='display:block; white-space:pre;color:#404040;'>     new 902dfe1  a5
 </span>902dfe1 is described below
 
 <span style='display:block; white-space:pre;color:#808000;'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
@@ -90,7 +90,7 @@ View the commit online:
 https://example.com/path"with<spe\cial\>chars/
 
 The following commit(s) were added to refs/heads/master by this push:
-       new  902dfe1   a5
+     new 902dfe1  a5
 902dfe1 is described below
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d

@@ -37,12 +37,12 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-      from  ebf40e1   a4
-       new  f0e9a98   f1
-       new  c742b15   f2
-       new  abb8baa   f3
-       new  d245c99   m1
-       new  902dfe1   a5
+    from ebf40e1  a4
+     new f0e9a98  f1
+     new c742b15  f2
+     new abb8baa  f3
+     new d245c99  m1
+     new 902dfe1  a5
 
 The 5 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -330,12 +330,12 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-      from  ebf40e1   a4
-       add  f0e9a98   f1
-       add  c742b15   f2
-       add  abb8baa   f3
-       new  d245c99   m1
-       new  902dfe1   a5
+    from ebf40e1  a4
+     add f0e9a98  f1
+     add c742b15  f2
+     add abb8baa  f3
+     new d245c99  m1
+     new 902dfe1  a5
 
 The 2 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions

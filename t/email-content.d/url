@@ -25,8 +25,8 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-      from  d245c99   m1
-       new  902dfe1   a5
+    from d245c99  m1
+     new 902dfe1  a5
 
 The 1 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -123,8 +123,8 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-      from  d245c99   m1
-       new  902dfe1   a5
+    from d245c99  m1
+     new 902dfe1  a5
 
 The 1 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -219,8 +219,8 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-      from  d245c99   m1
-       new  902dfe1   a5
+    from d245c99  m1
+     new 902dfe1  a5
 
 The 1 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -317,8 +317,8 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-      from  d245c99   m1
-       new  902dfe1   a5
+    from d245c99  m1
+     new 902dfe1  a5
 
 The 1 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions

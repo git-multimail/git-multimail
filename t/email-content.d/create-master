@@ -25,15 +25,15 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch master
 in repository test-repo.
 
-        at  902dfe1   a5
+      at 902dfe1  a5
 
 This branch includes the following new commits:
 
-       new  50d684a   a2
-       new  012fc78   a3
-       new  ebf40e1   a4
-       new  d245c99   m1
-       new  902dfe1   a5
+     new 50d684a  a2
+     new 012fc78  a3
+     new ebf40e1  a4
+     new d245c99  m1
+     new 902dfe1  a5
 
 The 5 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
