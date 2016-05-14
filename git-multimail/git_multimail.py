@@ -98,6 +98,15 @@ if PYTHON3:
             f.buffer.write(msg.encode(sys.getdefaultencoding()))
         except UnicodeEncodeError:
             f.buffer.write(msg.encode(ENCODING))
+
+    def read_line(f):
+        # Try reading with the default encoding. If it fails,
+        # try UTF-8.
+        out = f.buffer.readline()
+        try:
+            return out.decode(sys.getdefaultencoding())
+        except UnicodeEncodeError:
+            return out.decode(ENCODING)
 else:
     def is_string(s):
         try:
@@ -113,6 +122,9 @@ else:
 
     def write_str(f, msg):
         f.write(msg)
+
+    def read_line(f):
+        return f.readline()
 
     def next(it):
         return it.next()
@@ -3565,7 +3577,10 @@ def include_ref(refname, ref_filter_regex, is_inclusion_filter):
 def run_as_post_receive_hook(environment, mailer):
     ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(True)
     changes = []
-    for line in sys.stdin:
+    while True:
+        line = read_line(sys.stdin)
+        if line == '':
+            break
         (oldrev, newrev, refname) = line.strip().split(' ', 2)
         if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
             continue
