@@ -178,6 +178,10 @@ test_email_content '' 'test_when_finished "git checkout master && git branch -D 
 	test_update refs/heads/mâstér refs/heads/mâstér^ -c multimailhook.from=author
 '
 
+test_email_content 'Push to HEAD' head '
+	test_update HEAD HEAD^
+'
+
 test_email_content 'Gerrit environment' gerrit '
 	# (no verbose_do since "$MULTIMAIL" changes from a machine to another)
 	test_when_finished "git checkout -b master && git branch -d mastèr" &&

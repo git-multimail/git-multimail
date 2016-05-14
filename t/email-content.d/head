@@ -1,0 +1,43 @@
+*** Push-update of strange reference 'HEAD'
+***  - incomplete email generated.
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* reference HEAD updated (d245c99 -> 902dfe1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: HEAD
+X-Git-Reftype: reference
+X-Git-Oldrev: d245c99162aff6fff4879e5d5c17d454766b45db
+X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to reference HEAD
+in repository test-repo.
+
+    from d245c99  m1
+     add 902dfe1  a5
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
