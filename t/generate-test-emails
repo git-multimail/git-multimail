@@ -15,7 +15,7 @@ test_update refs/heads/release refs/heads/release^ \
 	-c multimailhook.dateSubstitute=none
 test_update refs/heads/release refs/heads/release^ \
 	-c multimailhook.dateSubstitute=none \
-	-c multimailhook.combineWhenSingleCommit=true
+	-c multimailhook.combineWhenSingleCommit=false
 verbose_do git config multimailhook.refchangelist 'Refchange List <refchangelist@example.com>'
 
 test_rewind refs/heads/release refs/heads/release^^ -c multimailhook.refChangeShowGraph=true

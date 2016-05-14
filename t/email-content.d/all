@@ -966,21 +966,64 @@ Sending notification emails to: Commit List <commitlist@example.com>
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Commit List <commitlist@example.com>
-Subject: *test-repo* branch release updated: r4
+Subject: *test-repo* branch release updated (5f26bd1 -> cd65463)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
-Reply-To: Joe User <user@example.com>
+Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/release
 X-Git-Reftype: branch
 X-Git-Oldrev: 5f26bd17b128b6f251334af774ba502a6f590fca
 X-Git-Newrev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch release
+in repository test-repo.
+
+    from 5f26bd1  r3
+     new cd65463  r4
+
+The 1 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "add" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/01: r4
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Joe User <user@example.com>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/release
+X-Git-Reftype: branch
 X-Git-Rev: cd654633ad4dfb51961a420fca63dca6e4e3d7ac
-X-Git-NotificationType: ref_changed_plus_diff
+X-Git-NotificationType: diff
 X-Git-Multimail-Version: ...
 Auto-Submitted: auto-generated
 
@@ -988,10 +1031,6 @@ This is an automated email from the git hooks/post-receive script.
 
 pushuser pushed a commit to branch release
 in repository test-repo.
-
-The following commit(s) were added to refs/heads/release by this push:
-     new cd65463  r4
-cd65463 is described below
 
 commit cd654633ad4dfb51961a420fca63dca6e4e3d7ac
 Author: Joe User <user@example.com>
