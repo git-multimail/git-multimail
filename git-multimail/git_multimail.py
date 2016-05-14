@@ -435,7 +435,8 @@ def read_output(cmd, input=None, keepends=False, **kw):
     else:
         stdin = None
     p = subprocess.Popen(
-        cmd, stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kw
+        (str_to_bytes(w) for w in cmd),
+        stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kw
         )
     (out, err) = p.communicate(input)
     out = bytes_to_str(out)
