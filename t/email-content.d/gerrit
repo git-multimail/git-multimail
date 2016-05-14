@@ -1,9 +1,11 @@
-$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project démo-project --submitter Sûb Mitter (sub.mitter@example.com)
+Switched to a new branch 'mastèr'
+Deleted branch master (was 902dfe1).
+$ git_multimail.py --stdout --oldrev refs/heads/mastèr^ --newrev refs/heads/mastèr --refname mastèr --project démo-project --submitter Sûb Mitter (sub.mitter@example.com)
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ===========================================================================
 Date: ...
 To: Refchange List <refchangelist@example.com>
-Subject: *test-repo* branch master updated (d245c99 -> 902dfe1)
+Subject: =?utf-8?q?*test-repo*_branch_mast=C3=A8r_updated_=28d245c99_-=3E_902dfe1=29?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -12,7 +14,7 @@ From: =?utf-8?q?S=C3=BBb_Mitter?= <sub.mitter@example.com>
 Reply-To: =?utf-8?q?S=C3=BBb_Mitter?= <sub.mitter@example.com>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: =?utf-8?q?d=C3=A9mo-project?=
-X-Git-Refname: refs/heads/master
+X-Git-Refname: =?utf-8?q?refs/heads/mast=C3=A8r?=
 X-Git-Reftype: branch
 X-Git-Oldrev: d245c99162aff6fff4879e5d5c17d454766b45db
 X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
@@ -22,7 +24,7 @@ Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
-Sûb Mitter pushed a change to branch master
+Sûb Mitter pushed a change to branch mastèr
 in repository démo-project.
 
     from d245c99  m1
@@ -55,7 +57,7 @@ In-Reply-To: <...>
 References: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: =?utf-8?q?d=C3=A9mo-project?=
-X-Git-Refname: refs/heads/master
+X-Git-Refname: =?utf-8?q?refs/heads/mast=C3=A8r?=
 X-Git-Reftype: branch
 X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-NotificationType: diff
@@ -64,7 +66,7 @@ Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
-Sûb Mitter pushed a commit to branch master
+Sûb Mitter pushed a commit to branch mastèr
 in repository démo-project.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
@@ -88,6 +90,8 @@ index 63a911f..7ed6ff8 100644
 To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 ===========================================================================
+Switched to a new branch 'master'
+Deleted branch mastèr (was 902dfe1).
 $ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter Submitter without Email
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ===========================================================================

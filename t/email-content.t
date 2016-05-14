@@ -179,11 +179,14 @@ test_email_content '' 'test_when_finished "git checkout master"' \
 
 test_email_content 'Gerrit environment' gerrit '
 	# (no verbose_do since "$MULTIMAIL" changes from a machine to another)
-	echo \$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project démo-project --submitter "Sûb Mitter (sub.mitter@example.com)" &&
-	  "$PYTHON" "$MULTIMAIL" --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project démo-project --submitter "Sûb Mitter (sub.mitter@example.com)" >out &&
+	test_when_finished "git checkout -b master && git branch -d mastèr" &&
+	git checkout -b mastèr && git branch -d master &&
+	echo \$ git_multimail.py --stdout --oldrev refs/heads/mastèr^ --newrev refs/heads/mastèr --refname mastèr --project démo-project --submitter "Sûb Mitter (sub.mitter@example.com)" &&
+	  "$PYTHON" "$MULTIMAIL" --stdout --oldrev refs/heads/mastèr^ --newrev refs/heads/mastèr --refname mastèr --project démo-project --submitter "Sûb Mitter (sub.mitter@example.com)" >out &&
 	RETCODE=$? &&
 	cat out &&
 	test $RETCODE = 0 &&
+	git checkout -b master && git branch -d mastèr &&
 	echo \$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter "Submitter without Email" &&
 	  "$PYTHON" "$MULTIMAIL" --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter "Submitter without Email" >out &&
 	RETCODE=$? &&
