@@ -79,6 +79,7 @@ pep8_file () {
 }
 pep8_file git-multimail/git_multimail.py
 pep8_file t/test-env
+pep8_file setup.py
 
 test_expect_success pyflakes 'pyflakes' '
 	pyflakes $D/..
