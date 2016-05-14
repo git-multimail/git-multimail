@@ -1,11 +1,10 @@
-*** Push-update of strange reference 'HEAD'
-***  - incomplete email generated.
+Switched to a new branch 'mâstér'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Refchange List <refchangelist@example.com>
-Subject: *test-repo* reference HEAD updated (902dfe1 -> efcb618)
+Subject: =?utf-8?q?*test-repo*_branch_m=C3=A2st=C3=A9r_updated_=28902dfe1_-=3E_efcb618=29?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -14,8 +13,8 @@ From: Joe User <user@example.com>
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
-X-Git-Refname: HEAD
-X-Git-Reftype: reference
+X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
+X-Git-Reftype: branch
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-Newrev: efcb618216061d6db40469f37a0ed520a81b0d75
 X-Git-NotificationType: ref_changed
@@ -24,7 +23,7 @@ Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
-pushuser pushed a change to reference HEAD
+pushuser pushed a change to branch mâstér
 in repository test-repo.
 
     from 902dfe1  a5
@@ -60,8 +59,8 @@ In-Reply-To: <...>
 References: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
-X-Git-Refname: HEAD
-X-Git-Reftype: reference
+X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
+X-Git-Reftype: branch
 X-Git-Rev: efcb618216061d6db40469f37a0ed520a81b0d75
 X-Git-NotificationType: diff
 X-Git-Multimail-Version: ...
@@ -69,7 +68,7 @@ Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
-pushuser pushed a commit to reference HEAD
+pushuser pushed a commit to branch mâstér
 in repository test-repo.
 
 commit efcb618216061d6db40469f37a0ed520a81b0d75

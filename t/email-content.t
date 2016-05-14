@@ -172,9 +172,10 @@ test_expect_success 'Non-ascii characters in email (setup)' '
 	git commit -m "Message accentué" --author="Sébastien <sebastien@example.com>"
 '
 
-test_email_content '' 'test_when_finished "git checkout master"' \
+test_email_content '' 'test_when_finished "git checkout master && git branch -D mâstér"' \
     'Non-ascii characters in email (test)' accent '
-	test_update HEAD HEAD^ -c multimailhook.from=author
+	git checkout -b mâstér &&
+	test_update refs/heads/mâstér refs/heads/mâstér^ -c multimailhook.from=author
 '
 
 test_email_content 'Gerrit environment' gerrit '
