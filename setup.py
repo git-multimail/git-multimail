@@ -49,4 +49,5 @@ setup(
     license='GPLv2',
     package_dir={'': 'git-multimail'},
     py_modules=['git_multimail'],
+    scripts=['git-multimail/git_multimail.py'],
     )
