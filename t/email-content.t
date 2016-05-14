@@ -160,7 +160,15 @@ test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
 	verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterInclusionRegex=^refs/heads/master$ &&
 
 	echo "** Expected below: a refchange email with m1 and a5 marked as new and others as add" &&
-	verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterDoSendRegex=^refs/heads/master$
+	verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterDoSendRegex=^refs/heads/master$ &&
+
+	echo "** Expected below: a refchange email with f1, f2, f3 marked as add and others as new" &&
+	echo "   (f1, f2, f3 were made on a DontSend feature branch, hence completely excluded)" &&
+	verbose_do test_update refs/heads/master foo -c multimailhook.refFilterDontSendRegex=^refs/heads/feature$
+
+	echo "** Expected below: a refchange email with all marked as new" &&
+	echo "   (ExclusionRegex just ignores pushes to feature, but not commits made on feature)" &&
+	verbose_do test_update refs/heads/master foo -c multimailhook.refFilterExclusionRegex=^refs/heads/feature$
 '
 
 # Accents seem to be accepted everywhere except in the email part

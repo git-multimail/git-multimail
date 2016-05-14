@@ -9,4 +9,3 @@ commitLogOpts
 replyTo
 replyToCommit
 replyToRefchange
-refFilterDontSendRegex
