@@ -11,7 +11,11 @@ test_update refs/heads/release refs/heads/release^^^^
 test_update refs/heads/release refs/heads/release^ -c multimailhook.dateSubstitute='MyDate: '
 # Should send a combined email:
 verbose_do git config multimailhook.refchangelist 'Commit List <commitlist@example.com>'
-test_update refs/heads/release refs/heads/release^ -c multimailhook.dateSubstitute=none
+test_update refs/heads/release refs/heads/release^ \
+	-c multimailhook.dateSubstitute=none
+test_update refs/heads/release refs/heads/release^ \
+	-c multimailhook.dateSubstitute=none \
+	-c multimailhook.combineWhenSingleCommit=true
 verbose_do git config multimailhook.refchangelist 'Refchange List <refchangelist@example.com>'
 
 test_rewind refs/heads/release refs/heads/release^^ -c multimailhook.refChangeShowGraph=true
