@@ -88,7 +88,8 @@ test_email_content 'custom diff & log' diff-log '
 	test_update refs/heads/master refs/heads/master^^ \
 		-c multimailhook.refChangeShowLog=true \
 		-c multimailhook.logOpts="--format=short --stat" \
-		-c multimailhook.commitLogOpts="-p --raw"
+		-c multimailhook.commitLogOpts="-p --raw" \
+		-c multimailhook.diffOpts="-p" \
 '
 
 test_email_content 'HTML messages' html '

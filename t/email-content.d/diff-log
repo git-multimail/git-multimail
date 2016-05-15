@@ -55,8 +55,13 @@ Author: Joe User <user@example.com>
     m1
 
 Summary of changes:
- a.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+diff --git a/a.txt b/a.txt
+index b8626c4..7ed6ff8 100644
+--- a/a.txt
++++ b/a.txt
+@@ -1 +1 @@
+-4
++5
 
 -- 
 To stop receiving notification emails like this one, please contact
