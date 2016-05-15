@@ -86,8 +86,8 @@ if PYTHON3:
     def str_to_bytes(s):
         return s.encode(ENCODING)
 
-    def bytes_to_str(s):
-        return s.decode(ENCODING)
+    def bytes_to_str(s, errors='strict'):
+        return s.decode(ENCODING, errors)
 
     unicode = str
 
@@ -117,7 +117,7 @@ else:
     def str_to_bytes(s):
         return s
 
-    def bytes_to_str(s):
+    def bytes_to_str(s, errors='strict'):
         return s
 
     def write_str(f, msg):
@@ -446,12 +446,16 @@ def read_output(cmd, input=None, keepends=False, **kw):
         input = str_to_bytes(input)
     else:
         stdin = None
+    errors = 'strict'
+    if 'errors' in kw:
+        errors = kw['errors']
+        del kw['errors']
     p = subprocess.Popen(
         (str_to_bytes(w) for w in cmd),
         stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kw
         )
     (out, err) = p.communicate(input)
-    out = bytes_to_str(out)
+    out = bytes_to_str(out, errors=errors)
     retcode = p.wait()
     if retcode:
         raise CommandError(cmd, retcode)
@@ -1134,7 +1138,7 @@ class Revision(Change):
         for line in read_git_lines(
                 ['log'] + self.environment.commitlogopts + ['-1', self.rev.sha1],
                 keepends=True,
-                ):
+                errors='replace'):
             if line.startswith('Date:   ') and self.environment.date_substitute:
                 yield self.environment.date_substitute + line[len('Date:   '):]
             else:
