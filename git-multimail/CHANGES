@@ -5,6 +5,9 @@ Release 1.4.0 (in progress)
   odds of having long subject lines truncated or wrapped in short list
   of commits.
 
+* The coverage of the testsuite has been considerably improved. All
+  configuration variables now appear at least once in the testsuite.
+
 Release 1.3.1 (bugfix-only release)
 ===================================
 
