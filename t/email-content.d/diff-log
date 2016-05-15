@@ -42,14 +42,15 @@ Detailed log of new commits:
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:50 2012 +0100
 
     a5
+
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 commit d245c99162aff6fff4879e5d5c17d454766b45db
 Merge: ebf40e1 abb8baa
 Author: Joe User <user@example.com>
-Date:   Fri Feb 3 09:32:27 2012 +0100
 
     m1
 

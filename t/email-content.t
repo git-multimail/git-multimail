@@ -86,7 +86,8 @@ test_email_content 'To/From/Reply-to headers' headers-specific '
 
 test_email_content 'custom diff & log' diff-log '
 	test_update refs/heads/master refs/heads/master^^ \
-		-c multimailhook.refChangeShowLog=true
+		-c multimailhook.refChangeShowLog=true \
+		-c multimailhook.logOpts="--format=short --stat"
 '
 
 test_email_content 'HTML messages' html '

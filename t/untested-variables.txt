@@ -3,5 +3,4 @@ emailMaxLineLength
 maxCommitEmails
 emailStrictUTF8
 diffOpts
-logOpts
 commitLogOpts
