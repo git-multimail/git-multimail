@@ -165,9 +165,13 @@ test_email_content 'annotated tag create/update/delete (tag to tree and recursiv
 '
 
 test_email_content 'restrict email count and size' max '
-	test_update refs/heads/master foo \
+	verbose_do test_update refs/heads/master foo \
 		-c multimailhook.refFilterDontSendRegex=^refs/heads/feature$ \
-		-c multimailhook.maxCommitEmails=4
+		-c multimailhook.maxCommitEmails=4 &&
+	verbose_do test_update refs/heads/master foo \
+		-c multimailhook.refFilterDontSendRegex=^refs/heads/feature$ \
+		-c multimailhook.emailMaxLines=10 \
+		-c multimailhook.emailMaxLineLength=15
 '
 
 test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
