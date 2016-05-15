@@ -96,18 +96,6 @@ AuthorDate: Fri Feb 3 09:32:27 2012 +0100
 
     m1
 
- a.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --cc a.txt
-index b8626c4,45d9e0e..63a911f
---- a/a.txt
-+++ b/a.txt
-@@@ -1,1 -1,1 +1,1 @@@
-- 4
- -f3
-++m1
-
 -- 
 To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
@@ -144,9 +132,8 @@ Author: Joe User <user@example.com>
 AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 
     a5
----
- a.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+
+:100644 100644 63a911f... 7ed6ff8... M	a.txt
 
 diff --git a/a.txt b/a.txt
 index 63a911f..7ed6ff8 100644
