@@ -69,7 +69,8 @@ test_email_content 'To/From/Reply-to headers' headers '
 	test_update refs/heads/master refs/heads/master^^ \
 		-c multimailhook.mailingList=mailing-list-config@example.com \
 		-c multimailhook.replyTo=reply-to-config@example.com \
-		-c multimailhook.from=from-config@example.com
+		-c multimailhook.from=from-config@example.com --show-env 2>&1 |
+	sed "s/\(repo_path\|fqdn\) : .*/\1 : '"'"'...'"'"'/"
 '
 
 test_email_content 'To/From/Reply-to headers' headers-specific '

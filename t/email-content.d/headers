@@ -1,3 +1,15 @@
+Environment values:
+    administrator : 'Administrator <administrator@example.com>'
+    charset : 'utf-8'
+    emailprefix : '*test-repo* '
+    fqdn : '...'
+    projectdesc : 'UNNAMED PROJECT'
+    pusher : 'pushuser'
+    pusher_email : 'pushuser@example.com'
+    repo_path : '...'
+    repo_shortname : 'test-repo'
+    sender : 'Sender <sender@example.com>'
+
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF

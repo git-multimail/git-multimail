@@ -3927,8 +3927,11 @@ def main(args):
         if options.show_env:
             sys.stderr.write('Environment values:\n')
             for (k, v) in sorted(environment.get_values().items()):
-                sys.stderr.write('    %s : %r\n' % (k, v))
+                if k:  # Don't show the {'' : ''} pair.
+                    sys.stderr.write('    %s : %r\n' % (k, v))
             sys.stderr.write('\n')
+            # Flush to avoid interleaving with further log output
+            sys.stderr.flush()
 
         if options.stdout or environment.stdout:
             mailer = OutputMailer(sys.stdout)
