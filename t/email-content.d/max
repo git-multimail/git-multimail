@@ -1,0 +1,55 @@
+Sending notification emails to: Refchange List <refchangelist@example.com>
+*** Too many new commits (5), not sending commit emails.
+*** Try setting multimailhook.maxCommitEmails to a greater value
+*** Currently, multimailhook.maxCommitEmails=4
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch master updated (88ff896 -> 902dfe1)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: 88ff8966d0e43a97b88b249605af4c4b77ba8b8e
+X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch master
+in repository test-repo.
+
+    from 88ff896  a1
+     new 50d684a  a2
+     new 012fc78  a3
+     new ebf40e1  a4
+     add f0e9a98  f1
+     add c742b15  f2
+     add abb8baa  f3
+     new d245c99  m1
+     new 902dfe1  a5
+
+The 5 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "add" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ a.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################

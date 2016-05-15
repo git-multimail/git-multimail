@@ -1,4 +1,3 @@
 emailMaxLines
 emailMaxLineLength
-maxCommitEmails
 emailStrictUTF8

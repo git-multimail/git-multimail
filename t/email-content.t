@@ -164,6 +164,12 @@ test_email_content 'annotated tag create/update/delete (tag to tree and recursiv
 	test_delete refs/tags/recursive-tag
 '
 
+test_email_content 'restrict email count and size' max '
+	test_update refs/heads/master foo \
+		-c multimailhook.refFilterDontSendRegex=^refs/heads/feature$ \
+		-c multimailhook.maxCommitEmails=4
+'
+
 test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
 	echo "** Expected below: error" &&
 	verbose_do test_must_fail test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ -c multimailhook.refFilterInclusionRegex=whatever &&
