@@ -3849,7 +3849,7 @@ def main(args):
         '--show-env', action='store_true', default=False,
         help=(
             'Write to stderr the values determined for the environment '
-            '(intended for debugging purposes).'
+            '(intended for debugging purposes), then proceed normally.'
             ),
         )
     parser.add_option(
