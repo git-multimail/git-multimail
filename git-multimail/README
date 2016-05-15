@@ -482,7 +482,7 @@ multimailhook.diffOpts
     information for ReferenceChange emails.  Default is ``--stat
     --summary --find-copies-harder``.  Add -p to those options to
     include a unified diff of changes in addition to the usual summary
-    output.  Shell quoting is allowed; see multimailhook.logOpts for
+    output.  Shell quoting is allowed; see ``multimailhook.logOpts`` for
     details.
 
 multimailhook.graphOpts
