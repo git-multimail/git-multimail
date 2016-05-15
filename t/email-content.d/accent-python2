@@ -207,7 +207,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-$ test_update 'refs/heads/mâstér' 'refs/heads/mâstér^' '-c' 'multimailhook.from=author' '-c' 'multimailhook.emailMaxLineLength=10'
+$ test_update 'refs/heads/mâstér' 'refs/heads/mâstér^' '-c' 'multimailhook.from=author' '-c' 'multimailhook.emailMaxLineLength=10' '-c' 'multimailhook.emailStrictUTF8=false'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -297,12 +297,12 @@ ind [...]
 @@  [...]
 +Co [...]
 +é
-+1é [...]
++1� [...]
 +12 [...]
 +12 [...]
 +Non-UTF-8
-+�1 [...]
-+1� [...]
++�1 [...]
++1� [...]
 +12 [...]
 +12 [...]
 
