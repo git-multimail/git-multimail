@@ -1,10 +1,11 @@
 Switched to a new branch 'mâstér'
+$ test_update 'refs/heads/mâstér' 'refs/heads/mâstér^' '-c' 'multimailhook.from=author'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Refchange List <refchangelist@example.com>
-Subject: =?utf-8?q?*test-repo*_branch_m=C3=A2st=C3=A9r_updated_=28902dfe1_-=3E_efcb618=29?=
+Subject: =?utf-8?q?*test-repo*_branch_m=C3=A2st=C3=A9r_updated_=28902dfe1_-=3E_4010900=29?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -16,7 +17,7 @@ X-Git-Repo: test-repo
 X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
 X-Git-Reftype: branch
 X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
-X-Git-Newrev: efcb618216061d6db40469f37a0ed520a81b0d75
+X-Git-Newrev: 4010900d8cce02f0a49a6e1a4aa447509d05f0fb
 X-Git-NotificationType: ref_changed
 X-Git-Multimail-Version: ...
 Auto-Submitted: auto-generated
@@ -27,7 +28,7 @@ pushuser pushed a change to branch mâstér
 in repository test-repo.
 
     from 902dfe1  a5
-     new efcb618  Message accentué
+     new 4010900  Message accentué
 
 The 1 revisions listed above as "new" are entirely new to this
 repository and will be described in separate emails.  The revisions
@@ -36,8 +37,8 @@ been added to this reference.
 
 
 Summary of changes:
- "fichier-accentu\303\251.txt" | 1 +
- 1 file changed, 1 insertion(+)
+ "fichier-accentu\303\251.txt" | 5 +++++
+ 1 file changed, 5 insertions(+)
  create mode 100644 "fichier-accentu\303\251.txt"
 
 -- 
@@ -61,7 +62,7 @@ X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
 X-Git-Reftype: branch
-X-Git-Rev: efcb618216061d6db40469f37a0ed520a81b0d75
+X-Git-Rev: 4010900d8cce02f0a49a6e1a4aa447509d05f0fb
 X-Git-NotificationType: diff
 X-Git-Multimail-Version: ...
 Auto-Submitted: auto-generated
@@ -71,22 +72,125 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a commit to branch mâstér
 in repository test-repo.
 
-commit efcb618216061d6db40469f37a0ed520a81b0d75
+commit 4010900d8cce02f0a49a6e1a4aa447509d05f0fb
 Author: Sébastien <sebastien@example.com>
 AuthorDate: Sat Mar 3 11:46:40 1973 +0200
 
     Message accentué
 ---
- "fichier-accentu\303\251.txt" | 1 +
- 1 file changed, 1 insertion(+)
+ "fichier-accentu\303\251.txt" | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git "a/fichier-accentu\303\251.txt" "b/fichier-accentu\303\251.txt"
 new file mode 100644
-index 0000000..aa1180f
+index 0000000..c8e88b9
 --- /dev/null
 +++ "b/fichier-accentu\303\251.txt"
-@@ -0,0 +1 @@
+@@ -0,0 +1,5 @@
 +Contenu accentué
++é
++1é234567890
++12é34567890
++123é4567890
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+$ test_update 'refs/heads/mâstér' 'refs/heads/mâstér^' '-c' 'multimailhook.from=author'
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Refchange List <refchangelist@example.com>
+Subject: =?utf-8?q?*test-repo*_branch_m=C3=A2st=C3=A9r_updated_=28902dfe1_-=3E_4010900=29?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: Joe User <user@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
+X-Git-Reftype: branch
+X-Git-Oldrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
+X-Git-Newrev: 4010900d8cce02f0a49a6e1a4aa447509d05f0fb
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch mâstér
+in repository test-repo.
+
+    from 902dfe1  a5
+     new 4010900  Message accentué
+
+The 1 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "add" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ "fichier-accentu\303\251.txt" | 5 +++++
+ 1 file changed, 5 insertions(+)
+ create mode 100644 "fichier-accentu\303\251.txt"
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: =?utf-8?q?*test-repo*_01/01=3A_Message_accentu=C3=A9?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: =?utf-8?q?S=C3=A9bastien?= <sebastien@example.com>
+Reply-To: =?utf-8?q?S=C3=A9bastien?= <sebastien@example.com>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
+X-Git-Reftype: branch
+X-Git-Rev: 4010900d8cce02f0a49a6e1a4aa447509d05f0fb
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch mâstér
+in repository test-repo.
+
+commit 4010900d8cce02f0a49a6e1a4aa447509d05f0fb
+Author: Sébastien <sebastien@example.com>
+AuthorDate: Sat Mar 3 11:46:40 1973 +0200
+
+    Message accentué
+---
+ "fichier-accentu\303\251.txt" | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git "a/fichier-accentu\303\251.txt" "b/fichier-accentu\303\251.txt"
+new file mode 100644
+index 0000000..c8e88b9
+--- /dev/null
++++ "b/fichier-accentu\303\251.txt"
+@@ -0,0 +1,5 @@
++Contenu accentué
++é
++1é234567890
++12é34567890
++123é4567890
 
 -- 
 To stop receiving notification emails like this one, please contact

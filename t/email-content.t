@@ -212,7 +212,7 @@ test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
 # (sébastien@example.com).
 test_expect_success 'Non-ascii characters in email (setup)' '
 	git checkout --detach master &&
-	echo "Contenu accentué" >fichier-accentué.txt &&
+	echo "Contenu accentué\né\n1é234567890\n12é34567890\n123é4567890" >fichier-accentué.txt &&
 	git add fichier-accentué.txt &&
 	git commit -m "Message accentué" --author="Sébastien <sebastien@example.com>"
 '
@@ -220,7 +220,10 @@ test_expect_success 'Non-ascii characters in email (setup)' '
 test_email_content '' 'test_when_finished "git checkout master && git branch -D mâstér"' \
     'Non-ascii characters in email (test)' accent '
 	git checkout -b mâstér &&
-	test_update refs/heads/mâstér refs/heads/mâstér^ -c multimailhook.from=author
+	verbose_do test_update refs/heads/mâstér refs/heads/mâstér^ \
+		 -c multimailhook.from=author &&
+	verbose_do test_update refs/heads/mâstér refs/heads/mâstér^ \
+		-c multimailhook.from=author
 '
 
 test_email_content 'Push to HEAD' head '
