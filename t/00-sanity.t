@@ -132,4 +132,17 @@ test_expect_success 'Tests for each configuration variable' '
 	)
 '
 
+test_expect_success 'list of untested variables is accurate' '
+	cd "$D" &&
+	status=0 &&
+	for v in $(cat untested-variables.txt); do
+		if git grep -i "^[^#]*$v" $(git ls-files | grep -v untested-variables)>/dev/null
+		then
+			echo "$v appears in untested-variables.txt but also in the testsuite" &&
+			status=1
+		fi
+	done &&
+	return $status
+'
+
 test_done
