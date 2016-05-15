@@ -3870,6 +3870,13 @@ def main(args):
             "Display git-multimail's version"
             ),
         )
+
+    parser.add_option(
+        '--python-version', action='store_true', default=False,
+        help=(
+            "Display the version of Python used by git-multimail"
+            ),
+        )
     # The following options permit this script to be run as a gerrit
     # ref-updated hook.  See e.g.
     # code.google.com/p/gerrit/source/browse/Documentation/config-hooks.txt
@@ -3894,6 +3901,10 @@ def main(args):
 
     if options.version:
         sys.stdout.write('git-multimail version ' + get_version() + '\n')
+        return
+
+    if options.python_version:
+        sys.stdout.write('Python version ' + sys.version + '\n')
         return
 
     if options.c:
