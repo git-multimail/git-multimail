@@ -84,6 +84,11 @@ test_email_content 'To/From/Reply-to headers' headers-specific '
 		-c multimailhook.from=from-config@example.com
 '
 
+test_email_content 'custom diff & log' diff-log '
+	test_update refs/heads/master refs/heads/master^^ \
+		-c multimailhook.refChangeShowLog=true
+'
+
 test_email_content 'HTML messages' html '
 	test_update refs/heads/master refs/heads/master^^ -c multimailhook.commitEmailFormat=html
 '

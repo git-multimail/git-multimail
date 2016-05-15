@@ -1,4 +1,3 @@
-refchangeShowLog
 emailMaxLines
 emailMaxLineLength
 maxCommitEmails
