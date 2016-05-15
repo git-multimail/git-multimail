@@ -57,7 +57,7 @@ test_email() {
     OLDREV="$2"
     NEWREV="$3"
     shift 3
-    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$MULTIMAIL" "$@" >output
+    pecho "$OLDREV" "$NEWREV" "$REFNAME" | USER=pushuser "$PYTHON" "$MULTIMAIL" "$@" >output
     RETCODE=$?
     cat output
     return $RETCODE
