@@ -6,6 +6,5 @@ emailStrictUTF8
 diffOpts
 logOpts
 commitLogOpts
-replyTo
 replyToCommit
 replyToRefchange

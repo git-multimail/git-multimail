@@ -65,6 +65,13 @@ test_email_content 'Create a ref' create-master '
 	test_create refs/heads/master
 '
 
+test_email_content 'To/From/Reply-to headers' headers '
+	test_update refs/heads/master refs/heads/master^^ \
+		-c multimailhook.mailingList=mailing-list-config@example.com \
+		-c multimailhook.replyTo=reply-to-config@example.com \
+		-c multimailhook.from=from-config@example.com
+'
+
 test_email_content 'HTML messages' html '
 	test_update refs/heads/master refs/heads/master^^ -c multimailhook.commitEmailFormat=html
 '
