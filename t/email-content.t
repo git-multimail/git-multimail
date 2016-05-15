@@ -223,7 +223,8 @@ test_email_content '' 'test_when_finished "git checkout master && git branch -D 
 	verbose_do test_update refs/heads/mâstér refs/heads/mâstér^ \
 		 -c multimailhook.from=author &&
 	verbose_do test_update refs/heads/mâstér refs/heads/mâstér^ \
-		-c multimailhook.from=author
+		-c multimailhook.from=author \
+		-c multimailhook.emailMaxLineLength=10
 '
 
 test_email_content 'Push to HEAD' head '

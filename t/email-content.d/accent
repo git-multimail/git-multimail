@@ -98,7 +98,7 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
-$ test_update 'refs/heads/mâstér' 'refs/heads/mâstér^' '-c' 'multimailhook.from=author'
+$ test_update 'refs/heads/mâstér' 'refs/heads/mâstér^' '-c' 'multimailhook.from=author' '-c' 'multimailhook.emailMaxLineLength=10'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -126,19 +126,19 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a change to branch mâstér
 in repository test-repo.
 
-    from 902dfe1  a5
-     new 4010900  Message accentué
+    [...]
+    [...]
 
-The 1 revisions listed above as "new" are entirely new to this
-repository and will be described in separate emails.  The revisions
-listed as "add" were already present in the repository and have only
-been added to this reference.
+The [...]
+rep [...]
+lis [...]
+bee [...]
 
 
-Summary of changes:
- "fichier-accentu\303\251.txt" | 5 +++++
- 1 file changed, 5 insertions(+)
- create mode 100644 "fichier-accentu\303\251.txt"
+Sum [...]
+ "f [...]
+ 1  [...]
+ cr [...]
 
 -- 
 To stop receiving notification emails like this one, please contact
@@ -171,26 +171,26 @@ This is an automated email from the git hooks/post-receive script.
 pushuser pushed a commit to branch mâstér
 in repository test-repo.
 
-commit 4010900d8cce02f0a49a6e1a4aa447509d05f0fb
-Author: Sébastien <sebastien@example.com>
-AuthorDate: Sat Mar 3 11:46:40 1973 +0200
+com [...]
+Aut [...]
+Aut [...]
 
-    Message accentué
+    [...]
 ---
- "fichier-accentu\303\251.txt" | 5 +++++
- 1 file changed, 5 insertions(+)
+ "f [...]
+ 1  [...]
 
-diff --git "a/fichier-accentu\303\251.txt" "b/fichier-accentu\303\251.txt"
-new file mode 100644
-index 0000000..c8e88b9
---- /dev/null
-+++ "b/fichier-accentu\303\251.txt"
-@@ -0,0 +1,5 @@
-+Contenu accentué
+dif [...]
+new [...]
+ind [...]
+--- [...]
++++ [...]
+@@  [...]
++Co [...]
 +é
-+1é234567890
-+12é34567890
-+123é4567890
++1é [...]
++12 [...]
++12 [...]
 
 -- 
 To stop receiving notification emails like this one, please contact
