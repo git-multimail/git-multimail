@@ -212,7 +212,9 @@ test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
 # (sébastien@example.com).
 test_expect_success 'Non-ascii characters in email (setup)' '
 	git checkout --detach master &&
-	echo "Contenu accentué\né\n1é234567890\n12é34567890\n123é4567890" >fichier-accentué.txt &&
+	( echo "Contenu accentué\né\n1é234567890\n12é34567890\n123é4567890"
+	  printf "Non-UTF-8\n\3511234567890\n1\351234567890\n12\35134567890\n123\3514567890\n" ) \
+	   >fichier-accentué.txt &&
 	git add fichier-accentué.txt &&
 	git commit -m "Message accentué" --author="Sébastien <sebastien@example.com>"
 '
