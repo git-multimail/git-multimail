@@ -477,6 +477,9 @@ multimailhook.emailStrictUTF8
     not valid UTF-8 are converted to the Unicode replacement
     character, U+FFFD.  The default is `true`.
 
+    This option is ineffective with Python 3, where non-UTF-8
+    characters are unconditionally replaced.
+
 multimailhook.diffOpts
     Options passed to ``git diff-tree`` when generating the summary
     information for ReferenceChange emails.  Default is ``--stat

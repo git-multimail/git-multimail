@@ -219,8 +219,10 @@ test_expect_success 'Non-ascii characters in email (setup)' '
 	git commit -m "Message accentué" --author="Sébastien <sebastien@example.com>"
 '
 
+# In Python 3, we manipulate everything as UTF-8 internally, hence we
+# can't really deal with emailStrictUTF8=false
 test_email_content '' 'test_when_finished "git checkout master && git branch -D mâstér"' \
-    'Non-ascii characters in email (test)' accent '
+    'Non-ascii characters in email (test)' accent-python$PYTHON_VERSION '
 	git checkout -b mâstér &&
 	verbose_do test_update refs/heads/mâstér refs/heads/mâstér^ \
 		 -c multimailhook.from=author &&

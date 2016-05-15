@@ -33,11 +33,13 @@ fi
 
 if "$PYTHON" --version 2>&1 | grep -q "^Python 3"
 then
+    PYTHON_VERSION=3
     if command -v test_set_prereq >/dev/null
     then
 	test_set_prereq PYTHON3
     fi
 else
+    PYTHON_VERSION=2
     if command -v test_set_prereq >/dev/null
     then
 	test_set_prereq PYTHON2
