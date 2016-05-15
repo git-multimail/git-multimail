@@ -72,6 +72,18 @@ test_email_content 'To/From/Reply-to headers' headers '
 		-c multimailhook.from=from-config@example.com
 '
 
+test_email_content 'To/From/Reply-to headers' headers-specific '
+	test_update refs/heads/master refs/heads/master^^ \
+		-c multimailhook.mailingList=mailing-list-config@example.com \
+		-c multimailhook.refChangeList=refchange-list-config@example.com \
+		-c multimailhook.commitList=commit-list-config@example.com \
+		-c multimailhook.replyToCommit=reply-to-commit@example.com \
+		-c multimailhook.replyToRefChange=reply-to-refchange@example.com \
+		-c multimailhook.fromRefChange=from-refchange@example.com \
+		-c multimailhook.fromCommit=from-commit@example.com \
+		-c multimailhook.from=from-config@example.com
+'
+
 test_email_content 'HTML messages' html '
 	test_update refs/heads/master refs/heads/master^^ -c multimailhook.commitEmailFormat=html
 '
