@@ -56,6 +56,7 @@ import socket
 import subprocess
 import shlex
 import optparse
+import logging
 import smtplib
 try:
     import ssl
@@ -1062,7 +1063,7 @@ class Revision(Change):
             self.cc_recipients = ', '.join(to.strip() for to in self._cc_recipients())
             if self.cc_recipients:
                 self.environment.log_msg(
-                    'Add %s to CC for %s\n' % (self.cc_recipients, self.rev.sha1))
+                    'Add %s to CC for %s' % (self.cc_recipients, self.rev.sha1))
 
     def _cc_recipients(self):
         cc_recipients = []
@@ -1210,7 +1211,7 @@ class ReferenceChange(Change):
                 # Tracking branch:
                 environment.log_warning(
                     '*** Push-update of tracking branch %r\n'
-                    '***  - incomplete email generated.\n'
+                    '***  - incomplete email generated.'
                     % (refname,)
                     )
                 klass = OtherReferenceChange
@@ -1218,7 +1219,7 @@ class ReferenceChange(Change):
                 # Some other reference namespace:
                 environment.log_warning(
                     '*** Push-update of strange reference %r\n'
-                    '***  - incomplete email generated.\n'
+                    '***  - incomplete email generated.'
                     % (refname,)
                     )
                 klass = OtherReferenceChange
@@ -1226,7 +1227,7 @@ class ReferenceChange(Change):
             # Anything else (is there anything else?)
             environment.log_warning(
                 '*** Unknown type of update to %r (%s)\n'
-                '***  - incomplete email generated.\n'
+                '***  - incomplete email generated.'
                 % (refname, rev.type,)
                 )
             klass = OtherReferenceChange
@@ -1931,6 +1932,9 @@ class OtherReferenceChange(ReferenceChange):
 class Mailer(object):
     """An object that can send emails."""
 
+    def __init__(self, environment):
+        self.environment = environment
+
     def send(self, lines, to_addrs):
         """Send an email consisting of lines.
 
@@ -1965,14 +1969,14 @@ class SendMailer(Mailer):
                 'Try setting multimailhook.sendmailCommand.'
                 )
 
-    def __init__(self, command=None, envelopesender=None):
+    def __init__(self, environment, command=None, envelopesender=None):
         """Construct a SendMailer instance.
 
         command should be the command and arguments used to invoke
         sendmail, as a list of strings.  If an envelopesender is
         provided, it will also be passed to the command, via '-f
         envelopesender'."""
-
+        super(SendMailer, self).__init__(environment)
         if command:
             self.command = command[:]
         else:
@@ -1985,7 +1989,7 @@ class SendMailer(Mailer):
         try:
             p = subprocess.Popen(self.command, stdin=subprocess.PIPE)
         except OSError:
-            sys.stderr.write(
+            self.environment.get_logger().error(
                 '*** Cannot execute command: %s\n' % ' '.join(self.command) +
                 '*** %s\n' % sys.exc_info()[1] +
                 '*** Try setting multimailhook.mailer to "smtp"\n' +
@@ -1996,7 +2000,7 @@ class SendMailer(Mailer):
             lines = (str_to_bytes(line) for line in lines)
             p.stdin.writelines(lines)
         except Exception:
-            sys.stderr.write(
+            self.environment.get_logger().error(
                 '*** Error while generating commit email\n'
                 '***  - mail sending aborted.\n'
                 )
@@ -2016,14 +2020,16 @@ class SendMailer(Mailer):
 class SMTPMailer(Mailer):
     """Send emails using Python's smtplib."""
 
-    def __init__(self, envelopesender, smtpserver,
+    def __init__(self, environment,
+                 envelopesender, smtpserver,
                  smtpservertimeout=10.0, smtpserverdebuglevel=0,
                  smtpencryption='none',
                  smtpuser='', smtppass='',
                  smtpcacerts=''
                  ):
+        super(SMTPMailer, self).__init__(environment)
         if not envelopesender:
-            sys.stderr.write(
+            self.environment.get_logger().error(
                 'fatal: git_multimail: cannot use SMTPMailer without a sender address.\n'
                 'please set either multimailhook.envelopeSender or user.email\n'
                 )
@@ -2058,7 +2064,7 @@ class SMTPMailer(Mailer):
                 self.smtp = call(smtplib.SMTP_SSL, self.smtpserver, timeout=self.smtpservertimeout)
             elif self.security == 'tls':
                 if 'ssl' not in sys.modules:
-                    sys.stderr.write(
+                    self.environment.get_logger().error(
                         '*** Your Python version does not have the ssl library installed\n'
                         '*** smtpEncryption=tls is not available.\n'
                         '*** Either upgrade Python to 2.6 or later\n'
@@ -2088,7 +2094,7 @@ class SMTPMailer(Mailer):
                         self.smtp.sock,
                         cert_reqs=ssl.CERT_NONE
                         )
-                    sys.stderr.write(
+                    self.environment.get_logger().error(
                         '*** Warning, the server certificat is not verified (smtp) ***\n'
                         '***          set the option smtpCACerts                   ***\n'
                         )
@@ -2111,10 +2117,10 @@ class SMTPMailer(Mailer):
                     % self.smtpserverdebuglevel)
                 self.smtp.set_debuglevel(self.smtpserverdebuglevel)
         except Exception:
-            sys.stderr.write(
+            self.environment.get_logger().error(
                 '*** Error establishing SMTP connection to %s ***\n'
-                % self.smtpserver)
-            sys.stderr.write('*** %s\n' % sys.exc_info()[1])
+                '*** %s\n'
+                % (self.smtpserver, sys.exc_info()[1]))
             sys.exit(1)
 
     def __del__(self):
@@ -2132,10 +2138,11 @@ class SMTPMailer(Mailer):
                 to_addrs = [email for (name, email) in getaddresses([to_addrs])]
             self.smtp.sendmail(self.envelopesender, to_addrs, msg)
         except smtplib.SMTPResponseException:
-            sys.stderr.write('*** Error sending email ***\n')
             err = sys.exc_info()[1]
-            sys.stderr.write('*** Error %d: %s\n' % (err.smtp_code,
-                                                     bytes_to_str(err.smtp_error)))
+            self.environment.get_logger().error(
+                '*** Error sending email ***\n'
+                '*** Error %d: %s\n'
+                % (err.smtp_code, bytes_to_str(err.smtp_error)))
             try:
                 smtp = self.smtp
                 # delete the field before quit() so that in case of
@@ -2143,9 +2150,10 @@ class SMTPMailer(Mailer):
                 del self.smtp
                 smtp.quit()
             except:
-                sys.stderr.write('*** Error closing the SMTP connection ***\n')
-                sys.stderr.write('*** Exiting anyway ... ***\n')
-                sys.stderr.write('*** %s\n' % sys.exc_info()[1])
+                self.environment.get_logger().error(
+                    '*** Error closing the SMTP connection ***\n'
+                    '*** Exiting anyway ... ***\n'
+                    '*** %s\n' % sys.exc_info()[1])
             sys.exit(1)
 
 
@@ -2341,6 +2349,15 @@ class Environment(object):
             multimailhook.fromRefchange and multimailhook.fromCommit
             by ConfigEnvironmentMixin.
 
+        log_file, error_log_file, debug_log_file (string)
+
+            Name of a file to which logs should be sent.
+
+        verbose (int)
+
+            How verbose the system should be.
+            - 0 (default): show info, errors, ...
+            - 1 : show basic debug info
     """
 
     REPO_NAME_RE = re.compile(r'^(?P<name>.+?)(?:\.git)$')
@@ -2363,6 +2380,7 @@ class Environment(object):
         self.quiet = False
         self.stdout = False
         self.combine_when_single_commit = True
+        self.logger = None
 
         self.COMPUTED_KEYS = [
             'administrator',
@@ -2376,6 +2394,12 @@ class Environment(object):
             ]
 
         self._values = None
+
+    def get_logger(self):
+        """Get (possibly creates) the logger associated to this environment."""
+        if self.logger is None:
+            self.logger = Logger(self)
+        return self.logger
 
     def get_repo_shortname(self):
         """Use the last part of the repo path, with ".git" stripped off if present."""
@@ -2499,19 +2523,19 @@ class Environment(object):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        write_str(sys.stderr, msg)
+        self.get_logger().info(msg)
 
     def log_warning(self, msg):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        write_str(sys.stderr, msg)
+        self.get_logger().warning(msg)
 
     def log_error(self, msg):
         """Write the string msg on a log file or on stderr.
 
         Sends the text to stderr by default, override to change the behavior."""
-        write_str(sys.stderr, msg)
+        self.get_logger().error(msg)
 
 
 class ConfigEnvironmentMixin(Environment):
@@ -2629,6 +2653,11 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         combine = config.get_bool('combineWhenSingleCommit')
         if combine is not None:
             self.combine_when_single_commit = combine
+
+        self.log_file = config.get('logFile', default=None)
+        self.error_log_file = config.get('errorLogFile', default=None)
+        self.debug_log_file = config.get('debugLogFile', default=None)
+        self.verbose = 1 if config.get_bool('Verbose', default=False) else 0
 
     def get_administrator(self):
         return (
@@ -3515,13 +3544,13 @@ class Push(object):
             if not change.recipients:
                 change.environment.log_warning(
                     '*** no recipients configured so no email will be sent\n'
-                    '*** for %r update %s->%s\n'
+                    '*** for %r update %s->%s'
                     % (change.refname, change.old.sha1, change.new.sha1,)
                     )
             else:
                 if not change.environment.quiet:
                     change.environment.log_msg(
-                        'Sending notification emails to: %s\n' % (change.recipients,))
+                        'Sending notification emails to: %s' % (change.recipients,))
                 extra_values = {'send_date': next(send_date)}
 
                 rev = change.send_single_combined_email(sha1s)
@@ -3544,14 +3573,14 @@ class Push(object):
                 change.environment.log_warning(
                     '*** Too many new commits (%d), not sending commit emails.\n' % len(sha1s) +
                     '*** Try setting multimailhook.maxCommitEmails to a greater value\n' +
-                    '*** Currently, multimailhook.maxCommitEmails=%d\n' % max_emails
+                    '*** Currently, multimailhook.maxCommitEmails=%d' % max_emails
                     )
                 return
 
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num + 1, tot=len(sha1s))
                 if not rev.recipients and rev.cc_recipients:
-                    change.environment.log_msg('*** Replacing Cc: with To:\n')
+                    change.environment.log_msg('*** Replacing Cc: with To:')
                     rev.recipients = rev.cc_recipients
                     rev.cc_recipients = None
                 if rev.recipients:
@@ -3565,7 +3594,7 @@ class Push(object):
         if unhandled_sha1s:
             change.environment.log_error(
                 'ERROR: No emails were sent for the following new commits:\n'
-                '    %s\n'
+                '    %s'
                 % ('\n    '.join(sorted(unhandled_sha1s)),)
                 )
 
@@ -3586,6 +3615,10 @@ def run_as_post_receive_hook(environment, mailer):
         if line == '':
             break
         (oldrev, newrev, refname) = line.strip().split(' ', 2)
+        environment.get_logger().debug(
+            "run_as_update_hook: oldrev=%s, newrev=%s, refname=%s" %
+            (oldrev, newrev, refname))
+
         if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
             continue
         changes.append(
@@ -3628,6 +3661,7 @@ def choose_mailer(config, environment):
         smtppass = config.get('smtppass', default='')
         smtpcacerts = config.get('smtpcacerts', default='')
         mailer = SMTPMailer(
+            environment,
             envelopesender=(environment.get_sender() or environment.get_fromaddr()),
             smtpserver=smtpserver, smtpservertimeout=smtpservertimeout,
             smtpserverdebuglevel=smtpserverdebuglevel,
@@ -3640,11 +3674,12 @@ def choose_mailer(config, environment):
         command = config.get('sendmailcommand')
         if command:
             command = shlex.split(command)
-        mailer = SendMailer(command=command, envelopesender=environment.get_sender())
+        mailer = SendMailer(environment,
+                            command=command, envelopesender=environment.get_sender())
     else:
         environment.log_error(
             'fatal: multimailhook.mailer is set to an incorrect value: "%s"\n' % mailer +
-            'please use one of "smtp" or "sendmail".\n'
+            'please use one of "smtp" or "sendmail".'
             )
         sys.exit(1)
     return mailer
@@ -3823,6 +3858,68 @@ def check_hook_specific_args(options, args):
     return options, args, {}
 
 
+class Logger(object):
+    def parse_verbose(self, verbose):
+        if verbose > 0:
+            return logging.DEBUG
+        else:
+            return logging.INFO
+
+    def create_log_file(self, environment, name, path, verbosity):
+        log_file = logging.getLogger(name)
+        file_handler = logging.FileHandler(path)
+        log_fmt = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
+        file_handler.setFormatter(log_fmt)
+        log_file.addHandler(file_handler)
+        log_file.setLevel(verbosity)
+        return log_file
+
+    def __init__(self, environment):
+        self.environment = environment
+        self.loggers = []
+        stderr_log = logging.getLogger('git_multimail.stderr')
+
+        class EncodedStderr():
+            def write(self, x):
+                write_str(sys.stderr, x)
+
+        stderr_handler = logging.StreamHandler(EncodedStderr())
+        stderr_log.addHandler(stderr_handler)
+        stderr_log.setLevel(self.parse_verbose(environment.verbose))
+        self.loggers.append(stderr_log)
+
+        if environment.debug_log_file is not None:
+            debug_log_file = self.create_log_file(
+                environment, 'git_multimail.debug', environment.debug_log_file, logging.DEBUG)
+            self.loggers.append(debug_log_file)
+
+        if environment.log_file is not None:
+            log_file = self.create_log_file(
+                environment, 'git_multimail.file', environment.log_file, logging.INFO)
+            self.loggers.append(log_file)
+
+        if environment.error_log_file is not None:
+            error_log_file = self.create_log_file(
+                environment, 'git_multimail.error', environment.error_log_file, logging.ERROR)
+            self.loggers.append(error_log_file)
+
+    def info(self, msg):
+        for l in self.loggers:
+            l.info(msg)
+
+    def debug(self, msg):
+        for l in self.loggers:
+            l.debug(msg)
+
+    def warning(self, msg):
+        for l in self.loggers:
+            l.warning(msg)
+
+    def error(self, msg):
+        for l in self.loggers:
+            l.error(msg)
+
+
 def main(args):
     parser = optparse.OptionParser(
         description=__doc__,
@@ -3916,6 +4013,7 @@ def main(args):
 
     config = Config('multimailhook')
 
+    environment = None
     try:
         environment = choose_environment(
             config, osenv=os.environ,
@@ -3944,6 +4042,9 @@ def main(args):
             if len(args) != 3:
                 parser.error('Need zero or three non-option arguments')
             (refname, oldrev, newrev) = args
+            environment.get_logger().debug(
+                "run_as_update_hook: refname=%s, oldrev=%s, newrev=%s, force_send=%s" %
+                (refname, oldrev, newrev, options.force_send))
             run_as_update_hook(environment, mailer, refname, oldrev, newrev, options.force_send)
         else:
             run_as_post_receive_hook(environment, mailer)
@@ -3952,14 +4053,19 @@ def main(args):
     except Exception:
         t, e, tb = sys.exc_info()
         import traceback
-        sys.stdout.write('\n')
-        sys.stdout.write('Exception \'' + t.__name__ +
-                         '\' raised. Please report this as a bug to\n')
-        sys.stdout.write('https://github.com/git-multimail/git-multimail/issues\n')
-        sys.stdout.write('with the information below:\n\n')
-        sys.stdout.write('git-multimail version ' + get_version() + '\n')
-        sys.stdout.write('Python version ' + sys.version + '\n')
-        traceback.print_exc(file=sys.stdout)
+        sys.stderr.write('\n')  # Avoid mixing message with previous output
+        msg = (
+            'Exception \'' + t.__name__ +
+            '\' raised. Please report this as a bug to\n'
+            'https://github.com/git-multimail/git-multimail/issues\n'
+            'with the information below:\n\n'
+            'git-multimail version ' + get_version() + '\n'
+            'Python version ' + sys.version + '\n' +
+            traceback.format_exc())
+        try:
+            environment.get_logger().error(msg)
+        except:
+            sys.stderr.write(msg)
         sys.exit(1)
 
 if __name__ == '__main__':
