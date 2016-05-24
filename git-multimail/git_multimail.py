@@ -2677,11 +2677,20 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         if emailprefix is not None:
             emailprefix = emailprefix.strip()
             if emailprefix:
-                return emailprefix + ' '
-            else:
-                return ''
+                emailprefix += ' '
         else:
-            return '[%s] ' % (self.get_repo_shortname(),)
+            emailprefix = '[%(repo_shortname)s] '
+        try:
+            return emailprefix % {'repo_shortname': self.get_repo_shortname()}
+        except:
+            self.get_logger().error(
+                '*** Invalid multimailhook.emailPrefix: %s\n' % emailprefix +
+                '*** %s\n' % sys.exc_info()[1] +
+                "*** Only the '%(repo_shortname)s' placeholder is allowed\n"
+                )
+            raise ConfigurationException(
+                '"%s" is not an allowed setting for emailPrefix' % emailprefix
+                )
 
     def get_sender(self):
         return self.config.get('envelopesender')
