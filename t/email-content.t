@@ -86,8 +86,10 @@ test_email_content 'To/From/Reply-to headers' headers-specific '
 '
 
 test_email_content 'emailPrefix' emailprefix '
-	test_update refs/heads/master refs/heads/master^^ \
-		-c multimailhook.emailPrefix="XXX{%(repo_shortname)s}YYY<%(repo_shortname)s>ZZZ"
+	verbose_do test_update refs/heads/master refs/heads/master^^ \
+		-c multimailhook.emailPrefix="XXX{%(repo_shortname)s}YYY<%(repo_shortname)s>ZZZ" &&
+	test_must_fail verbose_do test_update refs/heads/master refs/heads/master^^ \
+		-c multimailhook.emailPrefix="XXX{%(repo_shortnam)s}YYY<%(repo_shortname)s>ZZZ"
 '
 
 test_email_content 'custom diff & log' diff-log '

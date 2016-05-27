@@ -1,3 +1,4 @@
+$ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.emailPrefix=XXX{%(repo_shortname)s}YYY<%(repo_shortname)s>ZZZ'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
@@ -145,3 +146,15 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.emailPrefix=XXX{%(repo_shortnam)s}YYY<%(repo_shortname)s>ZZZ'
+Sending notification emails to: Refchange List <refchangelist@example.com>
+*** Invalid multimailhook.emailPrefix: XXX{%(repo_shortnam)s}YYY<%(repo_shortname)s>ZZZ 
+*** 'repo_shortnam'
+*** Only the '%(repo_shortname)s' placeholder is allowed
+
+*** Error while generating commit email
+***  - mail sending aborted.
+
+"XXX{%(repo_shortnam)s}YYY<%(repo_shortname)s>ZZZ " is not an allowed setting for emailPrefix
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
