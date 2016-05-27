@@ -85,6 +85,11 @@ test_email_content 'To/From/Reply-to headers' headers-specific '
 		-c multimailhook.from=from-config@example.com
 '
 
+test_email_content 'emailPrefix' emailprefix '
+	test_update refs/heads/master refs/heads/master^^ \
+		-c multimailhook.emailPrefix="XXX{%(repo_shortname)s}YYY<%(repo_shortname)s>ZZZ"
+'
+
 test_email_content 'custom diff & log' diff-log '
 	test_update refs/heads/master refs/heads/master^^ \
 		-c multimailhook.refChangeShowLog=true \

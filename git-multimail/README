@@ -447,7 +447,9 @@ multimailhook.emailPrefix
     email filtering (though filtering based on the X-Git-* email
     headers is probably more robust).  Default is the short name of
     the repository in square brackets; e.g., ``[myrepo]``.  Set this
-    value to the empty string to suppress the email prefix.
+    value to the empty string to suppress the email prefix. You may
+    use the placeholder %(repo_shortname)s for the short name of the
+    repository.
 
 multimailhook.emailMaxLines
     The maximum number of lines that should be included in the body of
