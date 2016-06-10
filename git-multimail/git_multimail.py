@@ -3250,10 +3250,10 @@ class GerritEnvironmentMixin(Environment):
             return super(GerritEnvironmentMixin, self).get_pusher_email()
 
     def get_fromaddr(self, change=None):
-        if self.__submitter and self.__submitter.find('<') != -1:
+        f = super(GerritEnvironmentMixin, self).get_fromaddr(change)
+        if not f and self.__submitter and self.__submitter.find('<') != -1:
             return self.__submitter
-        else:
-            return super(GerritEnvironmentMixin, self).get_fromaddr(change)
+        return f
 
     def get_default_ref_ignore_regex(self):
         default = super(GerritEnvironmentMixin, self).get_default_ref_ignore_regex()
