@@ -803,7 +803,12 @@ class Change(object):
         dictionary."""
 
         values = self.environment.get_values()
-        fromaddr = self.environment.get_fromaddr(change=self)
+
+        # multimailhook.from is a global override, superceding any
+        # environment-specific mechanisms.
+        config = Config('multimailhook')
+        fromaddr = config.get('from') or \
+            self.environment.get_fromaddr(change=self)
         if fromaddr is not None:
             values['fromaddr'] = fromaddr
         values['multimail_version'] = get_version()
