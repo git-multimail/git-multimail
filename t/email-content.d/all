@@ -1488,6 +1488,7 @@ Administrator <administrator@example.com>.
 EOF
 ######################################################################
 $ git 'config' 'multimailhook.fromCommit' 'author'
+$ git 'config' '--unset' 'multimailhook.from'
 *** Push-update of tracking branch 'refs/remotes/remote'
 ***  - incomplete email generated.
 Sending notification emails to: Refchange List <refchangelist@example.com>
@@ -1500,7 +1501,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: From <from@example.com>
+From: Joe User <user@example.com>
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -1643,7 +1644,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: From <from@example.com>
+From: Joe User <user@example.com>
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -2070,7 +2071,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: pushuser@example.com
+From: From <from@example.com>
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -2109,7 +2110,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: pushuser@example.com
+From: From <from@example.com>
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -2259,7 +2260,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: pushuser@example.com
+From: From <from@example.com>
 Reply-To: pushuser@example.com
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
@@ -2458,11 +2459,13 @@ Administrator <administrator@example.com>.
 EOF
 ######################################################################
 $ git 'config' '--unset' 'multimailhook.fromRefChange'
+$ git 'config' '--unset' 'multimailhook.from'
 $ git 'config' 'multimailhook.refChangeShowGraph' 'true'
 $ git 'branch' '-D' 'feature'
 Deleted branch feature (was 47ef1f8).
 $ git 'update-ref' '--no-deref' 'HEAD' 'HEAD'
 $ git 'config' 'multimailhook.commitList' ''
+$ git 'config' 'multimailhook.from' 'From <from@example.com>'
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ######################################################################
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF

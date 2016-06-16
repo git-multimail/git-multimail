@@ -82,7 +82,7 @@ test_email_content 'To/From/Reply-to headers' headers-specific '
 		-c multimailhook.replyToRefChange=reply-to-refchange@example.com \
 		-c multimailhook.fromRefChange=from-refchange@example.com \
 		-c multimailhook.fromCommit=from-commit@example.com \
-		-c multimailhook.from=from-config@example.com
+		-c multimailhook.from=
 '
 
 test_email_content 'emailPrefix' emailprefix '
@@ -233,12 +233,12 @@ test_email_content '' 'test_when_finished "git checkout master && git branch -D 
     'Non-ascii characters in email (test)' accent-python$PYTHON_VERSION '
 	git checkout -b mâstér &&
 	verbose_do test_update refs/heads/mâstér refs/heads/mâstér^ \
-		 -c multimailhook.from=author &&
+		 -c multimailhook.from= &&
 	verbose_do test_update refs/heads/mâstér refs/heads/mâstér^ \
-		-c multimailhook.from=author \
+		-c multimailhook.from= \
 		-c multimailhook.emailMaxLineLength=10 &&
 	verbose_do test_update refs/heads/mâstér refs/heads/mâstér^ \
-		-c multimailhook.from=author \
+		-c multimailhook.from= \
 		-c multimailhook.emailMaxLineLength=10 \
 		-c multimailhook.emailStrictUTF8=false
 '
@@ -252,7 +252,7 @@ test_email_content 'Gerrit environment' gerrit '
 	test_when_finished "git checkout -b master && git branch -d mastèr" &&
 	git checkout -b mastèr && git branch -d master &&
 	echo \$ git_multimail.py --stdout --oldrev refs/heads/mastèr^ --newrev refs/heads/mastèr --refname mastèr --project démo-project --submitter "Sûb Mitter (sub.mitter@example.com)" &&
-	{ "$PYTHON" "$MULTIMAIL" --stdout --oldrev refs/heads/mastèr^ --newrev refs/heads/mastèr --refname mastèr --project démo-project --submitter "Sûb Mitter (sub.mitter@example.com)" >out ; RETCODE=$? ; } &&
+	{ "$PYTHON" "$MULTIMAIL" -c multimailhook.from= --stdout --oldrev refs/heads/mastèr^ --newrev refs/heads/mastèr --refname mastèr --project démo-project --submitter "Sûb Mitter (sub.mitter@example.com)" >out ; RETCODE=$? ; } &&
 	cat out &&
 	test $RETCODE = 0 &&
 	git checkout -b master && git branch -d mastèr &&
