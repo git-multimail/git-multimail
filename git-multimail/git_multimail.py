@@ -1038,7 +1038,9 @@ class Change(object):
         for line in footer:
             yield line
 
-    def get_alt_fromaddr(self):
+    def get_specific_fromaddr(self):
+        """For kinds of Changes which specify it, return the kind-specific
+        From address to use."""
         return None
 
 
@@ -1153,7 +1155,7 @@ class Revision(Change):
         self._contains_diff()
         return Change.generate_email(self, push, body_filter, extra_header_values)
 
-    def get_alt_fromaddr(self):
+    def get_specific_fromaddr(self):
         return self.environment.from_commit
 
 
@@ -1599,7 +1601,7 @@ class ReferenceChange(Change):
             )
         yield '\n'
 
-    def get_alt_fromaddr(self):
+    def get_specific_fromaddr(self):
         return self.environment.from_refchange
 
 
@@ -2711,9 +2713,9 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
     def get_fromaddr(self, change=None):
         fromaddr = self.config.get('from')
         if change:
-            alt_fromaddr = change.get_alt_fromaddr()
-            if alt_fromaddr:
-                fromaddr = alt_fromaddr
+            specific_fromaddr = change.get_specific_fromaddr()
+            if specific_fromaddr:
+                fromaddr = specific_fromaddr
         if fromaddr:
             fromaddr = self.process_addr(fromaddr, change)
         if fromaddr:
