@@ -18,12 +18,19 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/ .
 
 # Public: Current version of Sharness.
-SHARNESS_VERSION="0.3.0"
+SHARNESS_VERSION="1.0.0"
 export SHARNESS_VERSION
 
 # Public: The file extension for tests.  By default, it is set to "t".
 : ${SHARNESS_TEST_EXTENSION:=t}
 export SHARNESS_TEST_EXTENSION
+
+#  Reset TERM to original terminal if found, otherwise save orignal TERM
+[ "x" = "x$SHARNESS_ORIG_TERM" ] &&
+		SHARNESS_ORIG_TERM="$TERM" ||
+		TERM="$SHARNESS_ORIG_TERM"
+# Public: The unsanitized TERM under which sharness is originally run
+export SHARNESS_ORIG_TERM
 
 # Export SHELL_PATH
 : ${SHELL_PATH:=$SHELL}
@@ -59,6 +66,8 @@ while test "$#" -ne 0; do
 		immediate=t; shift ;;
 	-l|--l|--lo|--lon|--long|--long-|--long-t|--long-te|--long-tes|--long-test|--long-tests)
 		TEST_LONG=t; export TEST_LONG; shift ;;
+	--in|--int|--inte|--inter|--intera|--interac|--interact|--interacti|--interactiv|--interactive|--interactive-|--interactive-t|--interactive-te|--interactive-tes|--interactive-test|--interactive-tests):
+		TEST_INTERACTIVE=t; export TEST_INTERACTIVE; verbose=t; shift ;;
 	-h|--h|--he|--hel|--help)
 		help=t; shift ;;
 	-v|--v|--ve|--ver|--verb|--verbo|--verbos|--verbose)
@@ -309,7 +318,14 @@ test_pause() {
 test_eval_() {
 	# This is a separate function because some tests use
 	# "return" to end a test_expect_success block early.
-	eval </dev/null >&3 2>&4 "$*"
+	case ",$test_prereq," in
+	*,INTERACTIVE,*)
+		eval "$*"
+		;;
+	*)
+		eval </dev/null >&3 2>&4 "$*"
+		;;
+	esac
 }
 
 test_run_() {
@@ -749,6 +765,12 @@ test_done() {
 : ${SHARNESS_TEST_DIRECTORY:=$(pwd)}
 export SHARNESS_TEST_DIRECTORY
 
+# Public: Source directory of test code and sharness library.
+# This directory may be different from the directory in which tests are
+# being run.
+: ${SHARNESS_TEST_SRCDIR:=$(cd $(dirname $0) && pwd)}
+export SHARNESS_TEST_SRCDIR
+
 # Public: Build directory that will be added to PATH. By default, it is set to
 # the parent directory of SHARNESS_TEST_DIRECTORY.
 : ${SHARNESS_BUILD_DIRECTORY:="$SHARNESS_TEST_DIRECTORY/.."}
@@ -760,18 +782,42 @@ SHARNESS_TEST_FILE="$0"
 export SHARNESS_TEST_FILE
 
 # Prepare test area.
-test_dir="trash directory.$(basename "$SHARNESS_TEST_FILE" ".$SHARNESS_TEST_EXTENSION")"
-test -n "$root" && test_dir="$root/$test_dir"
-case "$test_dir" in
-/*) SHARNESS_TRASH_DIRECTORY="$test_dir" ;;
- *) SHARNESS_TRASH_DIRECTORY="$SHARNESS_TEST_DIRECTORY/$test_dir" ;;
+SHARNESS_TRASH_DIRECTORY="trash directory.$(basename "$SHARNESS_TEST_FILE" ".$SHARNESS_TEST_EXTENSION")"
+test -n "$root" && SHARNESS_TRASH_DIRECTORY="$root/$SHARNESS_TRASH_DIRECTORY"
+case "$SHARNESS_TRASH_DIRECTORY" in
+/*) ;; # absolute path is good
+ *) SHARNESS_TRASH_DIRECTORY="$SHARNESS_TEST_DIRECTORY/$SHARNESS_TRASH_DIRECTORY" ;;
 esac
 test "$debug" = "t" || remove_trash="$SHARNESS_TRASH_DIRECTORY"
-rm -rf "$test_dir" || {
+rm -rf "$SHARNESS_TRASH_DIRECTORY" || {
 	EXIT_OK=t
 	echo >&5 "FATAL: Cannot prepare test area"
 	exit 1
 }
+
+
+#
+#  Load any extensions in $srcdir/sharness.d/*.sh
+#
+if test -d "${SHARNESS_TEST_SRCDIR}/sharness.d"
+then
+	for file in "${SHARNESS_TEST_SRCDIR}"/sharness.d/*.sh
+	do
+		# Ensure glob was not an empty match:
+		test -e "${file}" || break
+
+		if test -n "$debug"
+		then
+			echo >&5 "sharness: loading extensions from ${file}"
+		fi
+		. "${file}"
+		if test $? != 0
+		then
+			echo >&5 "sharness: Error loading ${file}. Aborting."
+			exit 1
+		fi
+	done
+fi
 
 # Public: Empty trash directory, the test area, provided for each test. The HOME
 # variable is set to that directory too.
@@ -780,10 +826,10 @@ export SHARNESS_TRASH_DIRECTORY
 HOME="$SHARNESS_TRASH_DIRECTORY"
 export HOME
 
-mkdir -p "$test_dir" || exit 1
+mkdir -p "$SHARNESS_TRASH_DIRECTORY" || exit 1
 # Use -P to resolve symlinks in our working directory so that the cwd
 # in subprocesses like git equals our $PWD (for pathname comparisons).
-cd -P "$test_dir" || exit 1
+cd -P "$SHARNESS_TRASH_DIRECTORY" || exit 1
 
 this_test=${SHARNESS_TEST_FILE##*/}
 this_test=${this_test%.$SHARNESS_TEST_EXTENSION}
@@ -795,5 +841,11 @@ for skp in $SKIP_TESTS; do
 		test_done
 	esac
 done
+
+test -n "$TEST_LONG" && test_set_prereq EXPENSIVE
+test -n "$TEST_INTERACTIVE" && test_set_prereq INTERACTIVE
+
+# Make sure this script ends with code 0
+:
 
 # vi: set ts=4 sw=4 noet :
