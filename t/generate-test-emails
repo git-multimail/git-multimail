@@ -26,6 +26,7 @@ test_rewind refs/heads/feature refs/heads/feature^^^
 test_delete refs/heads/feature
 
 verbose_do git config multimailhook.fromCommit author
+verbose_do git config --unset multimailhook.from
 test_create refs/remotes/remote
 test_update refs/remotes/remote refs/heads/master
 verbose_do git config multimailhook.fromRefChange 'From RefChange <from@example.com>'
@@ -44,6 +45,8 @@ verbose_do git config multimailhook.scanCommitForCc true
 test_update refs/heads/formatting refs/heads/formatting^^^
 verbose_do git config --unset multimailhook.fromRefChange
 
+verbose_do git config --unset multimailhook.from
+
 verbose_do git config multimailhook.refChangeShowGraph true
 f=$(git rev-parse feature)
 verbose_do git branch -D feature
@@ -51,6 +54,7 @@ verbose_do git branch -D feature
 # on non-detached HEAD
 verbose_do git update-ref --no-deref HEAD HEAD
 verbose_do git config multimailhook.commitList ''
+verbose_do git config multimailhook.from 'From <from@example.com>'
 test_update refs/heads/master refs/heads/foo
 verbose_do git config multimailhook.refChangeShowGraph false
 git branch feature "$f"
