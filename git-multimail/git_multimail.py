@@ -2935,6 +2935,33 @@ class StaticRecipientsEnvironmentMixin(Environment):
         return self.__revision_recipients
 
 
+class CLIRecipientsEnvironmentMixin(Environment):
+    """Mixin storing recipients information comming from the
+    command-line."""
+
+    def __init__(self, cli_recipients=None, **kw):
+        super(CLIRecipientsEnvironmentMixin, self).__init__(**kw)
+        self.__cli_recipients = cli_recipients
+
+    def get_refchange_recipients(self, refchange):
+        if self.__cli_recipients is None:
+            return super(CLIRecipientsEnvironmentMixin,
+                         self).get_refchange_recipients(refchange)
+        return self.__cli_recipients
+
+    def get_announce_recipients(self, annotated_tag_change):
+        if self.__cli_recipients is None:
+            return super(CLIRecipientsEnvironmentMixin,
+                         self).get_announce_recipients(annotated_tag_change)
+        return self.__cli_recipients
+
+    def get_revision_recipients(self, revision):
+        if self.__cli_recipients is None:
+            return super(CLIRecipientsEnvironmentMixin,
+                         self).get_revision_recipients(revision)
+        return self.__cli_recipients
+
+
 class ConfigRecipientsEnvironmentMixin(
         ConfigEnvironmentMixin,
         StaticRecipientsEnvironmentMixin
@@ -3728,6 +3755,8 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
         osenv = os.environ
 
     environment_mixins = [
+        ConfigRecipientsEnvironmentMixin,
+        CLIRecipientsEnvironmentMixin,
         ConfigRefFilterEnvironmentMixin,
         ProjectdescEnvironmentMixin,
         ConfigMaxlinesEnvironmentMixin,
@@ -3760,14 +3789,7 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
         environment_kw['submitter'] = hook_info['submitter']
         environment_kw['update_method'] = hook_info['update_method']
 
-    if recipients:
-        environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
-        environment_kw['refchange_recipients'] = recipients
-        environment_kw['announce_recipients'] = recipients
-        environment_kw['revision_recipients'] = recipients
-        environment_kw['scancommitforcc'] = config.get('scancommitforcc')
-    else:
-        environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
+    environment_kw['cli_recipients'] = recipients
 
     environment_klass = type(
         'EffectiveEnvironment',
