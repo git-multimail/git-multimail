@@ -3742,10 +3742,10 @@ def choose_mailer(config, environment):
 
 
 KNOWN_ENVIRONMENTS = {
-    'generic': GenericEnvironmentMixin,
-    'gitolite': GitoliteEnvironmentMixin,
-    'stash': StashEnvironmentMixin,
-    'gerrit': GerritEnvironmentMixin,
+    'generic': {'mixin': GenericEnvironmentMixin},
+    'gitolite': {'mixin': GitoliteEnvironmentMixin},
+    'stash': {'mixin': StashEnvironmentMixin},
+    'gerrit': {'mixin': GerritEnvironmentMixin},
     }
 
 
@@ -3779,7 +3779,7 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
         else:
             env = 'generic'
 
-    environment_mixins.insert(0, KNOWN_ENVIRONMENTS[env])
+    environment_mixins.insert(0, KNOWN_ENVIRONMENTS[env]['mixin'])
 
     if env == 'stash':
         environment_kw['user'] = hook_info['stash_user']
