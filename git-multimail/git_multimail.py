@@ -2539,6 +2539,9 @@ class Environment(object):
         Sends the text to stderr by default, override to change the behavior."""
         self.get_logger().error(msg)
 
+    def check(self):
+        pass
+
 
 class ConfigEnvironmentMixin(Environment):
     """A mixin that sets self.config to its constructor's config argument.
@@ -2901,14 +2904,17 @@ class StaticRecipientsEnvironmentMixin(Environment):
         # actual *contents* of the change being reported, we only
         # choose based on the *type* of the change.  Therefore we can
         # compute them once and for all:
-        if not (refchange_recipients or
-                announce_recipients or
-                revision_recipients or
-                scancommitforcc):
-            raise ConfigurationException('No email recipients configured!')
         self.__refchange_recipients = refchange_recipients
         self.__announce_recipients = announce_recipients
         self.__revision_recipients = revision_recipients
+
+    def check(self):
+        if not (self.get_refchange_recipients(None) or
+                self.get_announce_recipients(None) or
+                self.get_revision_recipients(None) or
+                self.get_scancommitforcc()):
+            raise ConfigurationException('No email recipients configured!')
+        super(StaticRecipientsEnvironmentMixin, self).check()
 
     def get_refchange_recipients(self, refchange):
         if self.__refchange_recipients is None:
@@ -3629,6 +3635,7 @@ def include_ref(refname, ref_filter_regex, is_inclusion_filter):
 
 
 def run_as_post_receive_hook(environment, mailer):
+    environment.check()
     ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(True)
     changes = []
     while True:
@@ -3653,6 +3660,7 @@ def run_as_post_receive_hook(environment, mailer):
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=False):
+    environment.check()
     ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(True)
     if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
         return
