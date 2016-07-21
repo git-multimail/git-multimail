@@ -2911,12 +2911,21 @@ class StaticRecipientsEnvironmentMixin(Environment):
         self.__revision_recipients = revision_recipients
 
     def get_refchange_recipients(self, refchange):
+        if self.__refchange_recipients is None:
+            return super(StaticRecipientsEnvironmentMixin,
+                         self).get_refchange_recipients(refchange)
         return self.__refchange_recipients
 
     def get_announce_recipients(self, annotated_tag_change):
+        if self.__announce_recipients is None:
+            return super(StaticRecipientsEnvironmentMixin,
+                         self).get_refchange_recipients(annotated_tag_change)
         return self.__announce_recipients
 
     def get_revision_recipients(self, revision):
+        if self.__revision_recipients is None:
+            return super(StaticRecipientsEnvironmentMixin,
+                         self).get_refchange_recipients(revision)
         return self.__revision_recipients
 
 
