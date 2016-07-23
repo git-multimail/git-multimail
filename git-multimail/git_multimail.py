@@ -3123,21 +3123,6 @@ class GenericEnvironmentMixin(Environment):
         return self.osenv.get('USER', self.osenv.get('USERNAME', 'unknown user'))
 
 
-class GenericEnvironment(
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ComputeFQDNEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        ConfigRecipientsEnvironmentMixin,
-        ConfigRefFilterEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        GenericEnvironmentMixin,
-        Environment,
-        ):
-    pass
-
-
 class GitoliteEnvironmentHighPrecMixin(Environment):
     def get_pusher(self):
         return self.osenv.get('GL_USER', 'unknown user')
@@ -3211,22 +3196,6 @@ class IncrementalDateTime(object):
         return formatted
 
 
-class GitoliteEnvironment(
-        GitoliteEnvironmentHighPrecMixin,
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ComputeFQDNEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        ConfigRecipientsEnvironmentMixin,
-        ConfigRefFilterEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        GitoliteEnvironmentLowPrecMixin,
-        Environment,
-        ):
-    pass
-
-
 class StashEnvironmentMixin(Environment):
     def __init__(self, user=None, repo=None, **kw):
         super(StashEnvironmentMixin, self).__init__(**kw)
@@ -3244,21 +3213,6 @@ class StashEnvironmentMixin(Environment):
 
     def get_fromaddr(self, change=None):
         return self.__user
-
-
-class StashEnvironment(
-        StashEnvironmentMixin,
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ComputeFQDNEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        ConfigRecipientsEnvironmentMixin,
-        ConfigRefFilterEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        Environment,
-        ):
-    pass
 
 
 class GerritEnvironmentHighPrecMixin(Environment):
@@ -3321,21 +3275,6 @@ class GerritEnvironmentHighPrecMixin(Environment):
 
     def get_update_method(self):
         return self.__update_method
-
-
-class GerritEnvironment(
-        GerritEnvironmentHighPrecMixin,
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ComputeFQDNEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        ConfigRecipientsEnvironmentMixin,
-        ConfigRefFilterEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        Environment,
-        ):
-    pass
 
 
 class GerritEnvironmentLowPrecMixin(Environment):
@@ -3818,6 +3757,12 @@ def build_environment_klass(env_name):
         )
     KNOWN_ENVIRONMENTS[env_name]['class'] = environment_klass
     return environment_klass
+
+
+GerritEnvironment = build_environment_klass('gerrit')
+StashEnvironment = build_environment_klass('stash')
+GitoliteEnvironment = build_environment_klass('gitolite')
+GenericEnvironment = build_environment_klass('generic')
 
 
 def build_environment(environment_klass, env, config,
