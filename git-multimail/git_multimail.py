@@ -3751,9 +3751,29 @@ KNOWN_ENVIRONMENTS = {
 
 def choose_environment(config, osenv=None, env=None, recipients=None,
                        hook_info=None):
+    env_name = choose_environment_name(config, env, osenv)
+    environment_klass = build_environment_klass(env_name)
+    env = build_environment(environment_klass, env_name, config,
+                            osenv, recipients, hook_info)
+    return env
+
+
+def choose_environment_name(config, env, osenv):
     if not osenv:
         osenv = os.environ
 
+    if not env:
+        env = config.get('environment')
+
+    if not env:
+        if 'GL_USER' in osenv and 'GL_REPO' in osenv:
+            env = 'gitolite'
+        else:
+            env = 'generic'
+    return env
+
+
+def build_environment_klass(env_name):
     environment_mixins = [
         ConfigRecipientsEnvironmentMixin,
         CLIRecipientsEnvironmentMixin,
@@ -3765,21 +3785,21 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
         PusherDomainEnvironmentMixin,
         ConfigOptionsEnvironmentMixin,
         ]
+    environment_mixins.insert(0, KNOWN_ENVIRONMENTS[env_name]['mixin'])
+    environment_klass = type(
+        'EffectiveEnvironment',
+        tuple(environment_mixins) + (Environment,),
+        {},
+        )
+    return environment_klass
+
+
+def build_environment(environment_klass, env, config,
+                      osenv, recipients, hook_info):
     environment_kw = {
         'osenv': osenv,
         'config': config,
         }
-
-    if not env:
-        env = config.get('environment')
-
-    if not env:
-        if 'GL_USER' in osenv and 'GL_REPO' in osenv:
-            env = 'gitolite'
-        else:
-            env = 'generic'
-
-    environment_mixins.insert(0, KNOWN_ENVIRONMENTS[env]['mixin'])
 
     if env == 'stash':
         environment_kw['user'] = hook_info['stash_user']
@@ -3791,11 +3811,6 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
 
     environment_kw['cli_recipients'] = recipients
 
-    environment_klass = type(
-        'EffectiveEnvironment',
-        tuple(environment_mixins) + (Environment,),
-        {},
-        )
     return environment_klass(**environment_kw)
 
 
