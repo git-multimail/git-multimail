@@ -3777,7 +3777,8 @@ def get_version():
     return __version__
 
 
-def compute_gerrit_options(options, args, required_gerrit_options):
+def compute_gerrit_options(options, args, required_gerrit_options,
+                           raw_refname):
     if None in required_gerrit_options:
         raise SystemExit("Error: Specify all of --oldrev, --newrev, --refname, "
                          "and --project; or none of them.")
@@ -3794,23 +3795,10 @@ def compute_gerrit_options(options, args, required_gerrit_options):
     # Gerrit oddly omits 'refs/heads/' in the refname when calling
     # ref-updated hook; put it back.
     git_dir = get_git_dir()
-    if (not os.path.exists(os.path.join(git_dir, options.refname)) and
+    if (not os.path.exists(os.path.join(git_dir, raw_refname)) and
         os.path.exists(os.path.join(git_dir, 'refs', 'heads',
-                                    options.refname))):
+                                    raw_refname))):
         options.refname = 'refs/heads/' + options.refname
-
-    # Convert each string option unicode for Python3.
-    if PYTHON3:
-        opts = ['environment', 'recipients', 'oldrev', 'newrev', 'refname',
-                'project', 'submitter', 'stash-user', 'stash-repo']
-        for opt in opts:
-            if not hasattr(options, opt):
-                continue
-            obj = getattr(options, opt)
-            if obj:
-                enc = obj.encode('utf-8', 'surrogateescape')
-                dec = enc.decode('utf-8', 'replace')
-                setattr(options, opt, dec)
 
     # New revisions can appear in a gerrit repository either due to someone
     # pushing directly (in which case options.submitter will be set), or they
@@ -3851,6 +3839,20 @@ def compute_gerrit_options(options, args, required_gerrit_options):
 
 
 def check_hook_specific_args(options, args):
+    raw_refname = options.refname
+    # Convert each string option unicode for Python3.
+    if PYTHON3:
+        opts = ['environment', 'recipients', 'oldrev', 'newrev', 'refname',
+                'project', 'submitter', 'stash-user', 'stash-repo']
+        for opt in opts:
+            if not hasattr(options, opt):
+                continue
+            obj = getattr(options, opt)
+            if obj:
+                enc = obj.encode('utf-8', 'surrogateescape')
+                dec = enc.decode('utf-8', 'replace')
+                setattr(options, opt, dec)
+
     # First check for stash arguments
     if (options.stash_user is None) != (options.stash_repo is None):
         raise SystemExit("Error: Specify both of --stash-user and "
@@ -3864,7 +3866,8 @@ def check_hook_specific_args(options, args):
     required_gerrit_options = (options.oldrev, options.newrev, options.refname,
                                options.project)
     if required_gerrit_options != (None,) * 4:
-        return compute_gerrit_options(options, args, required_gerrit_options)
+        return compute_gerrit_options(options, args, required_gerrit_options,
+                                      raw_refname)
 
     # No special options in use, just return what we started with
     return options, args, {}
