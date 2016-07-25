@@ -3198,12 +3198,10 @@ class IncrementalDateTime(object):
 
 class StashEnvironmentHighPrecMixin(Environment):
     def __init__(self, user=None, repo=None, **kw):
-        super(StashEnvironmentHighPrecMixin, self).__init__(user=user, **kw)
+        super(StashEnvironmentHighPrecMixin,
+              self).__init__(user=user, repo=repo, **kw)
         self.__user = user
         self.__repo = repo
-
-    def get_repo_shortname(self):
-        return self.__repo
 
     def get_pusher(self):
         return re.match('(.*?)\s*<', self.__user).group(1)
@@ -3213,9 +3211,13 @@ class StashEnvironmentHighPrecMixin(Environment):
 
 
 class StashEnvironmentLowPrecMixin(Environment):
-    def __init__(self, user=None, **kw):
+    def __init__(self, user=None, repo=None, **kw):
         super(StashEnvironmentLowPrecMixin, self).__init__(**kw)
+        self.__repo = repo
         self.__user = user
+
+    def get_repo_shortname(self):
+        return self.__repo
 
     def get_fromaddr(self, change=None):
         return self.__user
@@ -3224,7 +3226,7 @@ class StashEnvironmentLowPrecMixin(Environment):
 class GerritEnvironmentHighPrecMixin(Environment):
     def __init__(self, project=None, submitter=None, update_method=None, **kw):
         super(GerritEnvironmentHighPrecMixin,
-              self).__init__(submitter=submitter, **kw)
+              self).__init__(submitter=submitter, project=project, **kw)
         self.__project = project
         self.__submitter = submitter
         self.__update_method = update_method
@@ -3279,8 +3281,9 @@ class GerritEnvironmentHighPrecMixin(Environment):
 
 
 class GerritEnvironmentLowPrecMixin(Environment):
-    def __init__(self, submitter=None, **kw):
+    def __init__(self, project=None, submitter=None, **kw):
         super(GerritEnvironmentLowPrecMixin, self).__init__(**kw)
+        self.__project = project
         self.__submitter = submitter
 
     def get_fromaddr(self, change=None):
