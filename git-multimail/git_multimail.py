@@ -3233,9 +3233,6 @@ class GerritEnvironmentHighPrecMixin(Environment):
         "Make an 'update_method' value available for templates."
         self.COMPUTED_KEYS += ['update_method']
 
-    def get_repo_shortname(self):
-        return self.__project
-
     def get_pusher(self):
         if self.__submitter:
             if self.__submitter.find('<') != -1:
@@ -3285,6 +3282,9 @@ class GerritEnvironmentLowPrecMixin(Environment):
         super(GerritEnvironmentLowPrecMixin, self).__init__(**kw)
         self.__project = project
         self.__submitter = submitter
+
+    def get_repo_shortname(self):
+        return self.__project
 
     def get_fromaddr(self, change=None):
         if self.__submitter and self.__submitter.find('<') != -1:

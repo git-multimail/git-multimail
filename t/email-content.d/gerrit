@@ -13,7 +13,7 @@ Message-ID: <...>
 From: From <from@example.com>
 Reply-To: =?utf-8?q?S=C3=BBb_Mitter?= <sub.mitter@example.com>
 X-Git-Host: fqdn.example.org
-X-Git-Repo: =?utf-8?q?d=C3=A9mo-project?=
+X-Git-Repo: test-repo
 X-Git-Refname: =?utf-8?q?refs/heads/mast=C3=A8r?=
 X-Git-Reftype: branch
 X-Git-Oldrev: d245c99162aff6fff4879e5d5c17d454766b45db
@@ -25,7 +25,7 @@ Auto-Submitted: auto-generated
 This is an automated email from the git hooks/post-receive script.
 
 Sûb Mitter pushed a change to branch mastèr
-in repository démo-project.
+in repository test-repo.
 
     from d245c99  m1
      new 902dfe1  a5
@@ -56,7 +56,7 @@ Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
 X-Git-Host: fqdn.example.org
-X-Git-Repo: =?utf-8?q?d=C3=A9mo-project?=
+X-Git-Repo: test-repo
 X-Git-Refname: =?utf-8?q?refs/heads/mast=C3=A8r?=
 X-Git-Reftype: branch
 X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
@@ -67,7 +67,7 @@ Auto-Submitted: auto-generated
 This is an automated email from the git hooks/post-receive script.
 
 Sûb Mitter pushed a commit to branch mastèr
-in repository démo-project.
+in repository test-repo.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
@@ -195,7 +195,7 @@ Message-ID: <...>
 From: Joe User <user@example.com>
 Reply-To: Submitter
 X-Git-Host: fqdn.example.org
-X-Git-Repo: demo-project
+X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: d245c99162aff6fff4879e5d5c17d454766b45db
@@ -207,7 +207,7 @@ Auto-Submitted: auto-generated
 This is an automated email from the git hooks/post-receive script.
 
 Submitter without Email pushed a change to branch master
-in repository demo-project.
+in repository test-repo.
 
     from d245c99  m1
      new 902dfe1  a5
@@ -238,7 +238,7 @@ Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
 X-Git-Host: fqdn.example.org
-X-Git-Repo: demo-project
+X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
@@ -249,7 +249,7 @@ Auto-Submitted: auto-generated
 This is an automated email from the git hooks/post-receive script.
 
 Submitter without Email pushed a commit to branch master
-in repository demo-project.
+in repository test-repo.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>
