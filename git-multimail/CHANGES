@@ -1,6 +1,13 @@
 Release 1.4.0 (in progress)
 ===========================
 
+* The management of precedence when a setting can be computed in
+  multiple ways has been considerably refactored and modified.
+  multimailhook.from and multimailhook.reponame now have precedence
+  over the environment-specific settings ($GL_REPO/$GL_USER for
+  gitolite, --stash-user/repo for Stash, --submitter/--project for
+  Gerrit).
+
 * Formatting of emails was made slightly more compact, to reduce the
   odds of having long subject lines truncated or wrapped in short list
   of commits.
