@@ -3843,7 +3843,7 @@ def check_hook_specific_args(options, args):
     # Convert each string option unicode for Python3.
     if PYTHON3:
         opts = ['environment', 'recipients', 'oldrev', 'newrev', 'refname',
-                'project', 'submitter', 'stash-user', 'stash-repo']
+                'project', 'submitter', 'stash_user', 'stash_repo']
         for opt in opts:
             if not hasattr(options, opt):
                 continue
