@@ -3138,16 +3138,7 @@ class GenericEnvironment(
     pass
 
 
-class GitoliteEnvironmentMixin(Environment):
-    def get_repo_shortname(self):
-        # The gitolite environment variable $GL_REPO is a pretty good
-        # repo_shortname (though it's probably not as good as a value
-        # the user might have explicitly put in his config).
-        return (
-            self.osenv.get('GL_REPO', None) or
-            super(GitoliteEnvironmentMixin, self).get_repo_shortname()
-            )
-
+class GitoliteEnvironmentHighPrecMixin(Environment):
     def get_pusher(self):
         return self.osenv.get('GL_USER', 'unknown user')
 
@@ -3188,7 +3179,18 @@ class GitoliteEnvironmentMixin(Environment):
                             return m.group(1)
                 finally:
                     f.close()
-        return super(GitoliteEnvironmentMixin, self).get_fromaddr(change)
+        return super(GitoliteEnvironmentHighPrecMixin, self).get_fromaddr(change)
+
+
+class GitoliteEnvironmentLowPrecMixin(Environment):
+    def get_repo_shortname(self):
+        # The gitolite environment variable $GL_REPO is a pretty good
+        # repo_shortname (though it's probably not as good as a value
+        # the user might have explicitly put in his config).
+        return (
+            self.osenv.get('GL_REPO', None) or
+            super(GitoliteEnvironmentLowPrecMixin, self).get_repo_shortname()
+            )
 
 
 class IncrementalDateTime(object):
@@ -3210,6 +3212,7 @@ class IncrementalDateTime(object):
 
 
 class GitoliteEnvironment(
+        GitoliteEnvironmentHighPrecMixin,
         ProjectdescEnvironmentMixin,
         ConfigMaxlinesEnvironmentMixin,
         ComputeFQDNEnvironmentMixin,
@@ -3218,7 +3221,7 @@ class GitoliteEnvironment(
         ConfigRefFilterEnvironmentMixin,
         PusherDomainEnvironmentMixin,
         ConfigOptionsEnvironmentMixin,
-        GitoliteEnvironmentMixin,
+        GitoliteEnvironmentLowPrecMixin,
         Environment,
         ):
     pass
@@ -3258,9 +3261,9 @@ class StashEnvironment(
     pass
 
 
-class GerritEnvironmentMixin(Environment):
+class GerritEnvironmentHighPrecMixin(Environment):
     def __init__(self, project=None, submitter=None, update_method=None, **kw):
-        super(GerritEnvironmentMixin, self).__init__(**kw)
+        super(GerritEnvironmentHighPrecMixin, self).__init__(**kw)
         self.__project = project
         self.__submitter = submitter
         self.__update_method = update_method
@@ -3292,16 +3295,16 @@ class GerritEnvironmentMixin(Environment):
         if self.__submitter:
             return self.__submitter
         else:
-            return super(GerritEnvironmentMixin, self).get_pusher_email()
+            return super(GerritEnvironmentHighPrecMixin, self).get_pusher_email()
 
     def get_fromaddr(self, change=None):
         if self.__submitter and self.__submitter.find('<') != -1:
             return self.__submitter
         else:
-            return super(GerritEnvironmentMixin, self).get_fromaddr(change)
+            return super(GerritEnvironmentHighPrecMixin, self).get_fromaddr(change)
 
     def get_default_ref_ignore_regex(self):
-        default = super(GerritEnvironmentMixin, self).get_default_ref_ignore_regex()
+        default = super(GerritEnvironmentHighPrecMixin, self).get_default_ref_ignore_regex()
         return default + '|^refs/changes/|^refs/cache-automerge/|^refs/meta/'
 
     def get_revision_recipients(self, revision):
@@ -3314,14 +3317,14 @@ class GerritEnvironmentMixin(Environment):
         if committer == 'Gerrit Code Review':
             return []
         else:
-            return super(GerritEnvironmentMixin, self).get_revision_recipients(revision)
+            return super(GerritEnvironmentHighPrecMixin, self).get_revision_recipients(revision)
 
     def get_update_method(self):
         return self.__update_method
 
 
 class GerritEnvironment(
-        GerritEnvironmentMixin,
+        GerritEnvironmentHighPrecMixin,
         ProjectdescEnvironmentMixin,
         ConfigMaxlinesEnvironmentMixin,
         ComputeFQDNEnvironmentMixin,
@@ -3333,6 +3336,11 @@ class GerritEnvironment(
         Environment,
         ):
     pass
+
+
+class GerritEnvironmentLowPrecMixin(Environment):
+    def __init__(self, **kw):
+        super(GerritEnvironmentLowPrecMixin, self).__init__(**kw)
 
 
 class Push(object):
@@ -3742,10 +3750,12 @@ def choose_mailer(config, environment):
 
 
 KNOWN_ENVIRONMENTS = {
-    'generic': {'mixin': GenericEnvironmentMixin},
-    'gitolite': {'mixin': GitoliteEnvironmentMixin},
-    'stash': {'mixin': StashEnvironmentMixin},
-    'gerrit': {'mixin': GerritEnvironmentMixin},
+    'generic': {'highprec': GenericEnvironmentMixin},
+    'gitolite': {'highprec': GitoliteEnvironmentHighPrecMixin,
+                 'lowprec': GitoliteEnvironmentLowPrecMixin},
+    'stash': {'highprec': StashEnvironmentMixin},
+    'gerrit': {'highprec': GerritEnvironmentHighPrecMixin,
+               'lowprec': GerritEnvironmentLowPrecMixin},
     }
 
 
@@ -3773,24 +3783,40 @@ def choose_environment_name(config, env, osenv):
     return env
 
 
+COMMON_ENVIRONMENT_MIXINS = [
+    ConfigRecipientsEnvironmentMixin,
+    CLIRecipientsEnvironmentMixin,
+    ConfigRefFilterEnvironmentMixin,
+    ProjectdescEnvironmentMixin,
+    ConfigMaxlinesEnvironmentMixin,
+    ComputeFQDNEnvironmentMixin,
+    ConfigFilterLinesEnvironmentMixin,
+    PusherDomainEnvironmentMixin,
+    ConfigOptionsEnvironmentMixin,
+    ]
+
+
 def build_environment_klass(env_name):
-    environment_mixins = [
-        ConfigRecipientsEnvironmentMixin,
-        CLIRecipientsEnvironmentMixin,
-        ConfigRefFilterEnvironmentMixin,
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ComputeFQDNEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        ]
-    environment_mixins.insert(0, KNOWN_ENVIRONMENTS[env_name]['mixin'])
+    if 'class' in KNOWN_ENVIRONMENTS[env_name]:
+        return KNOWN_ENVIRONMENTS[env_name]['class']
+
+    environment_mixins = []
+    known_env = KNOWN_ENVIRONMENTS[env_name]
+    if 'highprec' in known_env:
+        high_prec_mixin = known_env['highprec']
+        environment_mixins.append(high_prec_mixin)
+    environment_mixins = environment_mixins + COMMON_ENVIRONMENT_MIXINS
+    if 'lowprec' in known_env:
+        low_prec_mixin = known_env['lowprec']
+        environment_mixins.append(low_prec_mixin)
+    environment_mixins.append(Environment)
+    klass_name = env_name.capitalize() + 'Environement'
     environment_klass = type(
-        'EffectiveEnvironment',
-        tuple(environment_mixins) + (Environment,),
+        klass_name,
+        tuple(environment_mixins),
         {},
         )
+    KNOWN_ENVIRONMENTS[env_name]['class'] = environment_klass
     return environment_klass
 
 
