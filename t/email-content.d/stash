@@ -8,7 +8,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: =?utf-8?q?Stash_S=C3=BBb_Mitter?= <sub.mitter@example.com>
+From: From <from@example.com>
 Reply-To: =?utf-8?q?Stash_S=C3=BBb_Mitter?= <sub.mitter@example.com>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: =?utf-8?q?d=C3=A9mo-project?=
@@ -49,7 +49,7 @@ Subject: *test-repo* 01/01: a5
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: =?utf-8?q?Stash_S=C3=BBb_Mitter?= <sub.mitter@example.com>
+From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>

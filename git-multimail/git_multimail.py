@@ -3127,6 +3127,17 @@ class GitoliteEnvironmentHighPrecMixin(Environment):
     def get_pusher(self):
         return self.osenv.get('GL_USER', 'unknown user')
 
+
+class GitoliteEnvironmentLowPrecMixin(Environment):
+    def get_repo_shortname(self):
+        # The gitolite environment variable $GL_REPO is a pretty good
+        # repo_shortname (though it's probably not as good as a value
+        # the user might have explicitly put in his config).
+        return (
+            self.osenv.get('GL_REPO', None) or
+            super(GitoliteEnvironmentLowPrecMixin, self).get_repo_shortname()
+            )
+
     def get_fromaddr(self, change=None):
         GL_USER = self.osenv.get('GL_USER')
         if GL_USER is not None:
@@ -3164,18 +3175,7 @@ class GitoliteEnvironmentHighPrecMixin(Environment):
                             return m.group(1)
                 finally:
                     f.close()
-        return super(GitoliteEnvironmentHighPrecMixin, self).get_fromaddr(change)
-
-
-class GitoliteEnvironmentLowPrecMixin(Environment):
-    def get_repo_shortname(self):
-        # The gitolite environment variable $GL_REPO is a pretty good
-        # repo_shortname (though it's probably not as good as a value
-        # the user might have explicitly put in his config).
-        return (
-            self.osenv.get('GL_REPO', None) or
-            super(GitoliteEnvironmentLowPrecMixin, self).get_repo_shortname()
-            )
+        return super(GitoliteEnvironmentLowPrecMixin, self).get_fromaddr(change)
 
 
 class IncrementalDateTime(object):
@@ -3196,9 +3196,9 @@ class IncrementalDateTime(object):
         return formatted
 
 
-class StashEnvironmentMixin(Environment):
+class StashEnvironmentHighPrecMixin(Environment):
     def __init__(self, user=None, repo=None, **kw):
-        super(StashEnvironmentMixin, self).__init__(**kw)
+        super(StashEnvironmentHighPrecMixin, self).__init__(user=user, **kw)
         self.__user = user
         self.__repo = repo
 
@@ -3211,13 +3211,20 @@ class StashEnvironmentMixin(Environment):
     def get_pusher_email(self):
         return self.__user
 
+
+class StashEnvironmentLowPrecMixin(Environment):
+    def __init__(self, user=None, **kw):
+        super(StashEnvironmentLowPrecMixin, self).__init__(**kw)
+        self.__user = user
+
     def get_fromaddr(self, change=None):
         return self.__user
 
 
 class GerritEnvironmentHighPrecMixin(Environment):
     def __init__(self, project=None, submitter=None, update_method=None, **kw):
-        super(GerritEnvironmentHighPrecMixin, self).__init__(**kw)
+        super(GerritEnvironmentHighPrecMixin,
+              self).__init__(submitter=submitter, **kw)
         self.__project = project
         self.__submitter = submitter
         self.__update_method = update_method
@@ -3251,12 +3258,6 @@ class GerritEnvironmentHighPrecMixin(Environment):
         else:
             return super(GerritEnvironmentHighPrecMixin, self).get_pusher_email()
 
-    def get_fromaddr(self, change=None):
-        if self.__submitter and self.__submitter.find('<') != -1:
-            return self.__submitter
-        else:
-            return super(GerritEnvironmentHighPrecMixin, self).get_fromaddr(change)
-
     def get_default_ref_ignore_regex(self):
         default = super(GerritEnvironmentHighPrecMixin, self).get_default_ref_ignore_regex()
         return default + '|^refs/changes/|^refs/cache-automerge/|^refs/meta/'
@@ -3278,8 +3279,15 @@ class GerritEnvironmentHighPrecMixin(Environment):
 
 
 class GerritEnvironmentLowPrecMixin(Environment):
-    def __init__(self, **kw):
+    def __init__(self, submitter=None, **kw):
         super(GerritEnvironmentLowPrecMixin, self).__init__(**kw)
+        self.__submitter = submitter
+
+    def get_fromaddr(self, change=None):
+        if self.__submitter and self.__submitter.find('<') != -1:
+            return self.__submitter
+        else:
+            return super(GerritEnvironmentLowPrecMixin, self).get_fromaddr(change)
 
 
 class Push(object):
@@ -3692,7 +3700,8 @@ KNOWN_ENVIRONMENTS = {
     'generic': {'highprec': GenericEnvironmentMixin},
     'gitolite': {'highprec': GitoliteEnvironmentHighPrecMixin,
                  'lowprec': GitoliteEnvironmentLowPrecMixin},
-    'stash': {'highprec': StashEnvironmentMixin},
+    'stash': {'highprec': StashEnvironmentHighPrecMixin,
+              'lowprec': StashEnvironmentLowPrecMixin},
     'gerrit': {'highprec': GerritEnvironmentHighPrecMixin,
                'lowprec': GerritEnvironmentLowPrecMixin},
     }
