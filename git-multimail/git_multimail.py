@@ -2682,8 +2682,9 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
                 emailprefix += ' '
         else:
             emailprefix = '[%(repo_shortname)s] '
+        short_name = self.get_repo_shortname()
         try:
-            return emailprefix % {'repo_shortname': self.get_repo_shortname()}
+            return emailprefix % {'repo_shortname': short_name}
         except:
             self.get_logger().error(
                 '*** Invalid multimailhook.emailPrefix: %s\n' % emailprefix +
