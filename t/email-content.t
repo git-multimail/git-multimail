@@ -263,6 +263,19 @@ test_email_content 'Gerrit environment' gerrit '
 	test $RETCODE = 0
 '
 
+test_email_content 'Stash environment' stash '
+	# (no verbose_do since "$MULTIMAIL" changes from a machine to another)
+	echo \$ git_multimail.py --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo démo-project --stash-user "Stash Sûb Mitter <sub.mitter@example.com>" &&
+	{ "$PYTHON" "$MULTIMAIL" --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo démo-project --stash-user "Stash Sûb Mitter <sub.mitter@example.com>" >out ; RETCODE=$? ; } &&
+	cat out &&
+	test $RETCODE = 0 &&
+	echo \$ git_multimail.py -c multimailhook.from= --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo stash-démo-project --stash-user "Stash Sub Mîtter <sub.mitter@example.com>" &&
+	{ "$PYTHON" "$MULTIMAIL" -c multimailhook.from= --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo stash-démo-project --stash-user "Stash Sub Mîtter <sub.mitter@example.com>" >out ; RETCODE=$? ; } &&
+	RETCODE=$? &&
+	cat out &&
+	test $RETCODE = 0
+'
+
 # The old test infrastructure was using one big 'generate-test-emails'
 # script. Existing tests are kept there, but new tests should be added
 # with separate test_expect_success.
