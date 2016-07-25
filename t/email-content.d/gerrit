@@ -92,7 +92,7 @@ Administrator <administrator@example.com>.
 ===========================================================================
 Switched to a new branch 'master'
 Deleted branch mastèr (was 902dfe1).
-$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter Sub Mîtter (sub.mitter@example.com)
+$ git_multimail.py -c multimailhook.from= --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter Sub Mîtter (sub.mitter@example.com)
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ===========================================================================
 Date: ...
@@ -182,7 +182,7 @@ index 63a911f..7ed6ff8 100644
 To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 ===========================================================================
-$ git_multimail.py --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter Submitter without Email
+$ git_multimail.py -c multimailhook.from= --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter Submitter without Email
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ===========================================================================
 Date: ...
@@ -192,7 +192,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: From <from@example.com>
+From: Joe User <user@example.com>
 Reply-To: Submitter
 X-Git-Host: fqdn.example.org
 X-Git-Repo: demo-project
@@ -233,7 +233,7 @@ Subject: *test-repo* 01/01: a5
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: From <from@example.com>
+From: Joe User <user@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
