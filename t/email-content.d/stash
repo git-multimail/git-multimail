@@ -88,7 +88,7 @@ index 63a911f..7ed6ff8 100644
 To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 ===========================================================================
-$ git_multimail.py -c multimailhook.from= --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo stash-démo-project --stash-user Stash Sub Mîtter <sub.mitter@example.com>
+$ git_multimail.py -c multimailhook.from= -c multimailhook.reponame= --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo stash-démo-project --stash-user Stash Sub Mîtter <sub.mitter@example.com>
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ===========================================================================
 Date: ...

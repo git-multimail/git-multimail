@@ -256,8 +256,8 @@ test_email_content 'Gerrit environment' gerrit '
 	cat out &&
 	test $RETCODE = 0 &&
 	git checkout -b master && git branch -d mastèr &&
-	echo \$ git_multimail.py -c multimailhook.from= --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter "Sub Mîtter (sub.mitter@example.com)" &&
-	{ "$PYTHON" "$MULTIMAIL" -c multimailhook.from= --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter "Sub Mîtter (sub.mitter@example.com)" >out ; RETCODE=$? ; } &&
+	echo \$ git_multimail.py -c multimailhook.from= -c multimailhook.reponame= --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter "Sub Mîtter (sub.mitter@example.com)" &&
+	{ "$PYTHON" "$MULTIMAIL" -c multimailhook.from= -c multimailhook.reponame= --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter "Sub Mîtter (sub.mitter@example.com)" >out ; RETCODE=$? ; } &&
 	RETCODE=$? &&
 	cat out &&
 	test $RETCODE = 0 &&
@@ -274,8 +274,8 @@ test_email_content 'Stash environment' stash '
 	{ "$PYTHON" "$MULTIMAIL" --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo démo-project --stash-user "Stash Sûb Mitter <sub.mitter@example.com>" >out ; RETCODE=$? ; } &&
 	cat out &&
 	test $RETCODE = 0 &&
-	echo \$ git_multimail.py -c multimailhook.from= --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo stash-démo-project --stash-user "Stash Sub Mîtter <sub.mitter@example.com>" &&
-	{ "$PYTHON" "$MULTIMAIL" -c multimailhook.from= --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo stash-démo-project --stash-user "Stash Sub Mîtter <sub.mitter@example.com>" >out ; RETCODE=$? ; } &&
+	echo \$ git_multimail.py -c multimailhook.from= -c multimailhook.reponame= --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo stash-démo-project --stash-user "Stash Sub Mîtter <sub.mitter@example.com>" &&
+	{ "$PYTHON" "$MULTIMAIL" -c multimailhook.from= -c multimailhook.reponame= --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo stash-démo-project --stash-user "Stash Sub Mîtter <sub.mitter@example.com>" >out ; RETCODE=$? ; } &&
 	RETCODE=$? &&
 	cat out &&
 	test $RETCODE = 0
