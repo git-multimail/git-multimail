@@ -2539,6 +2539,9 @@ class Environment(object):
         Sends the text to stderr by default, override to change the behavior."""
         self.get_logger().error(msg)
 
+    def check(self):
+        pass
+
 
 class ConfigEnvironmentMixin(Environment):
     """A mixin that sets self.config to its constructor's config argument.
@@ -2901,23 +2904,62 @@ class StaticRecipientsEnvironmentMixin(Environment):
         # actual *contents* of the change being reported, we only
         # choose based on the *type* of the change.  Therefore we can
         # compute them once and for all:
-        if not (refchange_recipients or
-                announce_recipients or
-                revision_recipients or
-                scancommitforcc):
-            raise ConfigurationException('No email recipients configured!')
         self.__refchange_recipients = refchange_recipients
         self.__announce_recipients = announce_recipients
         self.__revision_recipients = revision_recipients
 
+    def check(self):
+        if not (self.get_refchange_recipients(None) or
+                self.get_announce_recipients(None) or
+                self.get_revision_recipients(None) or
+                self.get_scancommitforcc()):
+            raise ConfigurationException('No email recipients configured!')
+        super(StaticRecipientsEnvironmentMixin, self).check()
+
     def get_refchange_recipients(self, refchange):
+        if self.__refchange_recipients is None:
+            return super(StaticRecipientsEnvironmentMixin,
+                         self).get_refchange_recipients(refchange)
         return self.__refchange_recipients
 
     def get_announce_recipients(self, annotated_tag_change):
+        if self.__announce_recipients is None:
+            return super(StaticRecipientsEnvironmentMixin,
+                         self).get_refchange_recipients(annotated_tag_change)
         return self.__announce_recipients
 
     def get_revision_recipients(self, revision):
+        if self.__revision_recipients is None:
+            return super(StaticRecipientsEnvironmentMixin,
+                         self).get_refchange_recipients(revision)
         return self.__revision_recipients
+
+
+class CLIRecipientsEnvironmentMixin(Environment):
+    """Mixin storing recipients information comming from the
+    command-line."""
+
+    def __init__(self, cli_recipients=None, **kw):
+        super(CLIRecipientsEnvironmentMixin, self).__init__(**kw)
+        self.__cli_recipients = cli_recipients
+
+    def get_refchange_recipients(self, refchange):
+        if self.__cli_recipients is None:
+            return super(CLIRecipientsEnvironmentMixin,
+                         self).get_refchange_recipients(refchange)
+        return self.__cli_recipients
+
+    def get_announce_recipients(self, annotated_tag_change):
+        if self.__cli_recipients is None:
+            return super(CLIRecipientsEnvironmentMixin,
+                         self).get_announce_recipients(annotated_tag_change)
+        return self.__cli_recipients
+
+    def get_revision_recipients(self, revision):
+        if self.__cli_recipients is None:
+            return super(CLIRecipientsEnvironmentMixin,
+                         self).get_revision_recipients(revision)
+        return self.__cli_recipients
 
 
 class ConfigRecipientsEnvironmentMixin(
@@ -3081,33 +3123,20 @@ class GenericEnvironmentMixin(Environment):
         return self.osenv.get('USER', self.osenv.get('USERNAME', 'unknown user'))
 
 
-class GenericEnvironment(
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ComputeFQDNEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        ConfigRecipientsEnvironmentMixin,
-        ConfigRefFilterEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        GenericEnvironmentMixin,
-        Environment,
-        ):
-    pass
+class GitoliteEnvironmentHighPrecMixin(Environment):
+    def get_pusher(self):
+        return self.osenv.get('GL_USER', 'unknown user')
 
 
-class GitoliteEnvironmentMixin(Environment):
+class GitoliteEnvironmentLowPrecMixin(Environment):
     def get_repo_shortname(self):
         # The gitolite environment variable $GL_REPO is a pretty good
         # repo_shortname (though it's probably not as good as a value
         # the user might have explicitly put in his config).
         return (
             self.osenv.get('GL_REPO', None) or
-            super(GitoliteEnvironmentMixin, self).get_repo_shortname()
+            super(GitoliteEnvironmentLowPrecMixin, self).get_repo_shortname()
             )
-
-    def get_pusher(self):
-        return self.osenv.get('GL_USER', 'unknown user')
 
     def get_fromaddr(self, change=None):
         GL_USER = self.osenv.get('GL_USER')
@@ -3146,7 +3175,7 @@ class GitoliteEnvironmentMixin(Environment):
                             return m.group(1)
                 finally:
                     f.close()
-        return super(GitoliteEnvironmentMixin, self).get_fromaddr(change)
+        return super(GitoliteEnvironmentLowPrecMixin, self).get_fromaddr(change)
 
 
 class IncrementalDateTime(object):
@@ -3167,29 +3196,12 @@ class IncrementalDateTime(object):
         return formatted
 
 
-class GitoliteEnvironment(
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ComputeFQDNEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        ConfigRecipientsEnvironmentMixin,
-        ConfigRefFilterEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        GitoliteEnvironmentMixin,
-        Environment,
-        ):
-    pass
-
-
-class StashEnvironmentMixin(Environment):
+class StashEnvironmentHighPrecMixin(Environment):
     def __init__(self, user=None, repo=None, **kw):
-        super(StashEnvironmentMixin, self).__init__(**kw)
+        super(StashEnvironmentHighPrecMixin,
+              self).__init__(user=user, repo=repo, **kw)
         self.__user = user
         self.__repo = repo
-
-    def get_repo_shortname(self):
-        return self.__repo
 
     def get_pusher(self):
         return re.match('(.*?)\s*<', self.__user).group(1)
@@ -3197,36 +3209,29 @@ class StashEnvironmentMixin(Environment):
     def get_pusher_email(self):
         return self.__user
 
+
+class StashEnvironmentLowPrecMixin(Environment):
+    def __init__(self, user=None, repo=None, **kw):
+        super(StashEnvironmentLowPrecMixin, self).__init__(**kw)
+        self.__repo = repo
+        self.__user = user
+
+    def get_repo_shortname(self):
+        return self.__repo
+
     def get_fromaddr(self, change=None):
         return self.__user
 
 
-class StashEnvironment(
-        StashEnvironmentMixin,
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ComputeFQDNEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        ConfigRecipientsEnvironmentMixin,
-        ConfigRefFilterEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        Environment,
-        ):
-    pass
-
-
-class GerritEnvironmentMixin(Environment):
+class GerritEnvironmentHighPrecMixin(Environment):
     def __init__(self, project=None, submitter=None, update_method=None, **kw):
-        super(GerritEnvironmentMixin, self).__init__(**kw)
+        super(GerritEnvironmentHighPrecMixin,
+              self).__init__(submitter=submitter, project=project, **kw)
         self.__project = project
         self.__submitter = submitter
         self.__update_method = update_method
         "Make an 'update_method' value available for templates."
         self.COMPUTED_KEYS += ['update_method']
-
-    def get_repo_shortname(self):
-        return self.__project
 
     def get_pusher(self):
         if self.__submitter:
@@ -3250,16 +3255,10 @@ class GerritEnvironmentMixin(Environment):
         if self.__submitter:
             return self.__submitter
         else:
-            return super(GerritEnvironmentMixin, self).get_pusher_email()
-
-    def get_fromaddr(self, change=None):
-        if self.__submitter and self.__submitter.find('<') != -1:
-            return self.__submitter
-        else:
-            return super(GerritEnvironmentMixin, self).get_fromaddr(change)
+            return super(GerritEnvironmentHighPrecMixin, self).get_pusher_email()
 
     def get_default_ref_ignore_regex(self):
-        default = super(GerritEnvironmentMixin, self).get_default_ref_ignore_regex()
+        default = super(GerritEnvironmentHighPrecMixin, self).get_default_ref_ignore_regex()
         return default + '|^refs/changes/|^refs/cache-automerge/|^refs/meta/'
 
     def get_revision_recipients(self, revision):
@@ -3272,25 +3271,26 @@ class GerritEnvironmentMixin(Environment):
         if committer == 'Gerrit Code Review':
             return []
         else:
-            return super(GerritEnvironmentMixin, self).get_revision_recipients(revision)
+            return super(GerritEnvironmentHighPrecMixin, self).get_revision_recipients(revision)
 
     def get_update_method(self):
         return self.__update_method
 
 
-class GerritEnvironment(
-        GerritEnvironmentMixin,
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ComputeFQDNEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        ConfigRecipientsEnvironmentMixin,
-        ConfigRefFilterEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        Environment,
-        ):
-    pass
+class GerritEnvironmentLowPrecMixin(Environment):
+    def __init__(self, project=None, submitter=None, **kw):
+        super(GerritEnvironmentLowPrecMixin, self).__init__(**kw)
+        self.__project = project
+        self.__submitter = submitter
+
+    def get_repo_shortname(self):
+        return self.__project
+
+    def get_fromaddr(self, change=None):
+        if self.__submitter and self.__submitter.find('<') != -1:
+            return self.__submitter
+        else:
+            return super(GerritEnvironmentLowPrecMixin, self).get_fromaddr(change)
 
 
 class Push(object):
@@ -3620,6 +3620,7 @@ def include_ref(refname, ref_filter_regex, is_inclusion_filter):
 
 
 def run_as_post_receive_hook(environment, mailer):
+    environment.check()
     ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(True)
     changes = []
     while True:
@@ -3644,6 +3645,7 @@ def run_as_post_receive_hook(environment, mailer):
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=False):
+    environment.check()
     ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(True)
     if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
         return
@@ -3698,31 +3700,28 @@ def choose_mailer(config, environment):
 
 
 KNOWN_ENVIRONMENTS = {
-    'generic': GenericEnvironmentMixin,
-    'gitolite': GitoliteEnvironmentMixin,
-    'stash': StashEnvironmentMixin,
-    'gerrit': GerritEnvironmentMixin,
+    'generic': {'highprec': GenericEnvironmentMixin},
+    'gitolite': {'highprec': GitoliteEnvironmentHighPrecMixin,
+                 'lowprec': GitoliteEnvironmentLowPrecMixin},
+    'stash': {'highprec': StashEnvironmentHighPrecMixin,
+              'lowprec': StashEnvironmentLowPrecMixin},
+    'gerrit': {'highprec': GerritEnvironmentHighPrecMixin,
+               'lowprec': GerritEnvironmentLowPrecMixin},
     }
 
 
 def choose_environment(config, osenv=None, env=None, recipients=None,
                        hook_info=None):
+    env_name = choose_environment_name(config, env, osenv)
+    environment_klass = build_environment_klass(env_name)
+    env = build_environment(environment_klass, env_name, config,
+                            osenv, recipients, hook_info)
+    return env
+
+
+def choose_environment_name(config, env, osenv):
     if not osenv:
         osenv = os.environ
-
-    environment_mixins = [
-        ConfigRefFilterEnvironmentMixin,
-        ProjectdescEnvironmentMixin,
-        ConfigMaxlinesEnvironmentMixin,
-        ComputeFQDNEnvironmentMixin,
-        ConfigFilterLinesEnvironmentMixin,
-        PusherDomainEnvironmentMixin,
-        ConfigOptionsEnvironmentMixin,
-        ]
-    environment_kw = {
-        'osenv': osenv,
-        'config': config,
-        }
 
     if not env:
         env = config.get('environment')
@@ -3732,8 +3731,58 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
             env = 'gitolite'
         else:
             env = 'generic'
+    return env
 
-    environment_mixins.insert(0, KNOWN_ENVIRONMENTS[env])
+
+COMMON_ENVIRONMENT_MIXINS = [
+    ConfigRecipientsEnvironmentMixin,
+    CLIRecipientsEnvironmentMixin,
+    ConfigRefFilterEnvironmentMixin,
+    ProjectdescEnvironmentMixin,
+    ConfigMaxlinesEnvironmentMixin,
+    ComputeFQDNEnvironmentMixin,
+    ConfigFilterLinesEnvironmentMixin,
+    PusherDomainEnvironmentMixin,
+    ConfigOptionsEnvironmentMixin,
+    ]
+
+
+def build_environment_klass(env_name):
+    if 'class' in KNOWN_ENVIRONMENTS[env_name]:
+        return KNOWN_ENVIRONMENTS[env_name]['class']
+
+    environment_mixins = []
+    known_env = KNOWN_ENVIRONMENTS[env_name]
+    if 'highprec' in known_env:
+        high_prec_mixin = known_env['highprec']
+        environment_mixins.append(high_prec_mixin)
+    environment_mixins = environment_mixins + COMMON_ENVIRONMENT_MIXINS
+    if 'lowprec' in known_env:
+        low_prec_mixin = known_env['lowprec']
+        environment_mixins.append(low_prec_mixin)
+    environment_mixins.append(Environment)
+    klass_name = env_name.capitalize() + 'Environement'
+    environment_klass = type(
+        klass_name,
+        tuple(environment_mixins),
+        {},
+        )
+    KNOWN_ENVIRONMENTS[env_name]['class'] = environment_klass
+    return environment_klass
+
+
+GerritEnvironment = build_environment_klass('gerrit')
+StashEnvironment = build_environment_klass('stash')
+GitoliteEnvironment = build_environment_klass('gitolite')
+GenericEnvironment = build_environment_klass('generic')
+
+
+def build_environment(environment_klass, env, config,
+                      osenv, recipients, hook_info):
+    environment_kw = {
+        'osenv': osenv,
+        'config': config,
+        }
 
     if env == 'stash':
         environment_kw['user'] = hook_info['stash_user']
@@ -3743,20 +3792,8 @@ def choose_environment(config, osenv=None, env=None, recipients=None,
         environment_kw['submitter'] = hook_info['submitter']
         environment_kw['update_method'] = hook_info['update_method']
 
-    if recipients:
-        environment_mixins.insert(0, StaticRecipientsEnvironmentMixin)
-        environment_kw['refchange_recipients'] = recipients
-        environment_kw['announce_recipients'] = recipients
-        environment_kw['revision_recipients'] = recipients
-        environment_kw['scancommitforcc'] = config.get('scancommitforcc')
-    else:
-        environment_mixins.insert(0, ConfigRecipientsEnvironmentMixin)
+    environment_kw['cli_recipients'] = recipients
 
-    environment_klass = type(
-        'EffectiveEnvironment',
-        tuple(environment_mixins) + (Environment,),
-        {},
-        )
     return environment_klass(**environment_kw)
 
 

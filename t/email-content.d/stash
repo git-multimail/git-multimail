@@ -1,20 +1,18 @@
-Switched to a new branch 'mastèr'
-Deleted branch master (was 902dfe1).
-$ git_multimail.py --stdout --oldrev refs/heads/mastèr^ --newrev refs/heads/mastèr --refname mastèr --project démo-project --submitter Sûb Mitter (sub.mitter@example.com)
+$ git_multimail.py --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo démo-project --stash-user Stash Sûb Mitter <sub.mitter@example.com>
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ===========================================================================
 Date: ...
 To: Refchange List <refchangelist@example.com>
-Subject: =?utf-8?q?*test-repo*_branch_mast=C3=A8r_updated_=28d245c99_-=3E_902dfe1=29?=
+Subject: *test-repo* branch master updated (d245c99 -> 902dfe1)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
-Reply-To: =?utf-8?q?S=C3=BBb_Mitter?= <sub.mitter@example.com>
+Reply-To: =?utf-8?q?Stash_S=C3=BBb_Mitter?= <sub.mitter@example.com>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
-X-Git-Refname: =?utf-8?q?refs/heads/mast=C3=A8r?=
+X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: d245c99162aff6fff4879e5d5c17d454766b45db
 X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
@@ -24,7 +22,7 @@ Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
-Sûb Mitter pushed a change to branch mastèr
+Stash Sûb Mitter pushed a change to branch master
 in repository test-repo.
 
     from d245c99  m1
@@ -57,7 +55,7 @@ In-Reply-To: <...>
 References: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
-X-Git-Refname: =?utf-8?q?refs/heads/mast=C3=A8r?=
+X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 X-Git-NotificationType: diff
@@ -66,7 +64,7 @@ Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
-Sûb Mitter pushed a commit to branch mastèr
+Stash Sûb Mitter pushed a commit to branch master
 in repository test-repo.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
@@ -90,9 +88,7 @@ index 63a911f..7ed6ff8 100644
 To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 ===========================================================================
-Switched to a new branch 'master'
-Deleted branch mastèr (was 902dfe1).
-$ git_multimail.py -c multimailhook.from= -c multimailhook.reponame= --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter Sub Mîtter (sub.mitter@example.com)
+$ git_multimail.py -c multimailhook.from= -c multimailhook.reponame= --stdout refs/heads/master refs/heads/master^ refs/heads/master --stash-repo stash-démo-project --stash-user Stash Sub Mîtter <sub.mitter@example.com>
 Sending notification emails to: Refchange List <refchangelist@example.com>
 ===========================================================================
 Date: ...
@@ -102,10 +98,10 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Message-ID: <...>
-From: =?utf-8?q?Sub_M=C3=AEtter?= <sub.mitter@example.com>
-Reply-To: =?utf-8?q?Sub_M=C3=AEtter?= <sub.mitter@example.com>
+From: =?utf-8?q?Stash_Sub_M=C3=AEtter?= <sub.mitter@example.com>
+Reply-To: =?utf-8?q?Stash_Sub_M=C3=AEtter?= <sub.mitter@example.com>
 X-Git-Host: fqdn.example.org
-X-Git-Repo: demo-project
+X-Git-Repo: =?utf-8?q?stash-d=C3=A9mo-project?=
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: d245c99162aff6fff4879e5d5c17d454766b45db
@@ -116,8 +112,8 @@ Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
-Sub Mîtter pushed a change to branch master
-in repository demo-project.
+Stash Sub Mîtter pushed a change to branch master
+in repository stash-démo-project.
 
     from d245c99  m1
      new 902dfe1  a5
@@ -143,12 +139,12 @@ Subject: *test-repo* 01/01: a5
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-From: =?utf-8?q?Sub_M=C3=AEtter?= <sub.mitter@example.com>
+From: =?utf-8?q?Stash_Sub_M=C3=AEtter?= <sub.mitter@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
 X-Git-Host: fqdn.example.org
-X-Git-Repo: demo-project
+X-Git-Repo: =?utf-8?q?stash-d=C3=A9mo-project?=
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
@@ -158,98 +154,8 @@ Auto-Submitted: auto-generated
 
 This is an automated email from the git hooks/post-receive script.
 
-Sub Mîtter pushed a commit to branch master
-in repository demo-project.
-
-commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
-Author: Joe User <user@example.com>
-AuthorDate: Fri Feb 3 09:32:50 2012 +0100
-
-    a5
----
- a.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/a.txt b/a.txt
-index 63a911f..7ed6ff8 100644
---- a/a.txt
-+++ b/a.txt
-@@ -1 +1 @@
--m1
-+5
-
--- 
-To stop receiving notification emails like this one, please contact
-Administrator <administrator@example.com>.
-===========================================================================
-$ git_multimail.py -c multimailhook.from= --stdout --oldrev refs/heads/master^ --newrev refs/heads/master --refname master --project demo-project --submitter Submitter without Email
-Sending notification emails to: Refchange List <refchangelist@example.com>
-===========================================================================
-Date: ...
-To: Refchange List <refchangelist@example.com>
-Subject: *test-repo* branch master updated (d245c99 -> 902dfe1)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Message-ID: <...>
-From: Joe User <user@example.com>
-Reply-To: Submitter
-X-Git-Host: fqdn.example.org
-X-Git-Repo: test-repo
-X-Git-Refname: refs/heads/master
-X-Git-Reftype: branch
-X-Git-Oldrev: d245c99162aff6fff4879e5d5c17d454766b45db
-X-Git-Newrev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
-X-Git-NotificationType: ref_changed
-X-Git-Multimail-Version: ...
-Auto-Submitted: auto-generated
-
-This is an automated email from the git hooks/post-receive script.
-
-Submitter without Email pushed a change to branch master
-in repository test-repo.
-
-    from d245c99  m1
-     new 902dfe1  a5
-
-The 1 revisions listed above as "new" are entirely new to this
-repository and will be described in separate emails.  The revisions
-listed as "add" were already present in the repository and have only
-been added to this reference.
-
-
-Summary of changes:
- a.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
--- 
-To stop receiving notification emails like this one, please contact
-Administrator <administrator@example.com>.
-===========================================================================
-===========================================================================
-Date: ...
-To: Commit List <commitlist@example.com>
-Subject: *test-repo* 01/01: a5
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-From: Joe User <user@example.com>
-Reply-To: Joe User <user@example.com>
-In-Reply-To: <...>
-References: <...>
-X-Git-Host: fqdn.example.org
-X-Git-Repo: test-repo
-X-Git-Refname: refs/heads/master
-X-Git-Reftype: branch
-X-Git-Rev: 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
-X-Git-NotificationType: diff
-X-Git-Multimail-Version: ...
-Auto-Submitted: auto-generated
-
-This is an automated email from the git hooks/post-receive script.
-
-Submitter without Email pushed a commit to branch master
-in repository test-repo.
+Stash Sub Mîtter pushed a commit to branch master
+in repository stash-démo-project.
 
 commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
 Author: Joe User <user@example.com>

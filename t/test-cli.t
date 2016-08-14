@@ -51,4 +51,9 @@ test_expect_success '--force-send does consider everything new' '
 	test $(grep -c Subject out) -eq 3
 '
 
+test_expect_success 'error if no recipient is configured' '
+	test_must_fail $MULTIMAIL --stdout refs/heads/master master^^ master 2>err &&
+	grep "No email recipients configured" err
+'
+
 test_done
