@@ -33,6 +33,10 @@ and commit."
 test_email_content() {
 	prereq=
 	setup_cmd=
+	if test -z "$test_expect_x"
+	then
+	    test_expect_x=test_expect_success
+	fi
 	if test $# -ge 4
 	then
 		prereq=$1
@@ -47,7 +51,7 @@ test_email_content() {
 	test_name=$1
 	file=$2
 	test_content=$3
-	test_expect_success $prereq "$test_name" "
+	$test_expect_x $prereq "$test_name" "
 	log 'Generating emails to file $file ...' && $setup_cmd
 	if ( $test_content	) >$file 2>&1
 	then
@@ -182,6 +186,7 @@ test_email_content 'restrict email count and size' max '
 		-c multimailhook.emailMaxLineLength=15
 '
 
+test_expect_x=test_expect_failure \
 test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
 	echo "** Expected below: error" &&
 	verbose_do test_must_fail test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ -c multimailhook.refFilterInclusionRegex=whatever &&
@@ -212,6 +217,12 @@ test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
 	echo "** Expected below: a refchange email with f1, f2, f3 marked as add and others as new" &&
 	echo "   (f1, f2, f3 were made on a DontSend feature branch, hence completely excluded)" &&
 	verbose_do test_update refs/heads/master foo -c multimailhook.refFilterDontSendRegex=^refs/heads/feature$
+
+	echo "** Expected below: nothing, the branch is marked as dontSend" &&
+	verbose_do test_update refs/heads/master foo -c multimailhook.refFilterDontSendRegex=^refs/heads/master$
+
+	echo "** Expected below: nothing, the branch is not marked as doSend" &&
+	verbose_do test_update refs/heads/master foo -c multimailhook.refFilterDoSendRegex=^refs/heads/feature$
 
 	echo "** Expected below: a refchange email with all marked as new" &&
 	echo "   (ExclusionRegex just ignores pushes to feature, but not commits made on feature)" &&

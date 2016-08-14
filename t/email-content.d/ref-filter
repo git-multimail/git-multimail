@@ -750,6 +750,10 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+** Expected below: nothing, the branch is marked as dontSend
+$ test_update 'refs/heads/master' 'foo' '-c' 'multimailhook.refFilterDontSendRegex=^refs/heads/master$'
+** Expected below: nothing, the branch is not marked as doSend
+$ test_update 'refs/heads/master' 'foo' '-c' 'multimailhook.refFilterDoSendRegex=^refs/heads/feature$'
 ** Expected below: a refchange email with all marked as new
    (ExclusionRegex just ignores pushes to feature, but not commits made on feature)
 $ test_update 'refs/heads/master' 'foo' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/feature$'
