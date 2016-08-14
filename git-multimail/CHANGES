@@ -1,6 +1,9 @@
 Release 1.4.0 (in progress)
 ===========================
 
+* A new option --check-ref-filter is now available to help debugging
+  the refFilter* options.
+
 * Options refFilterDoSendRegex and refFilterDontSendRegex were
   essentially broken. They should work now.
 

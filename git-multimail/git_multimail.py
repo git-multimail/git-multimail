@@ -3665,6 +3665,46 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=
         mailer.__del__()
 
 
+def check_ref_filter(environment):
+    send_filter_regex, send_is_inclusion = environment.get_ref_filter_regex(True)
+    ref_filter_regex, ref_is_inclusion = environment.get_ref_filter_regex(False)
+    if send_filter_regex:
+        sys.stdout.write("DoSend/DontSend filter regex (" +
+                         ('inclusion' if send_is_inclusion else 'exclusion') +
+                         '): ' + send_filter_regex.pattern +
+                         '\n')
+    if send_filter_regex:
+        sys.stdout.write("Include/Exclude filter regex (" +
+                         ('inclusion' if ref_is_inclusion else 'exclusion') +
+                         '): ' + ref_filter_regex.pattern +
+                         '\n')
+    sys.stdout.write(os.linesep)
+
+    sys.stdout.write(
+        "Refs marked as EXCLUDE are excluded by either refFilterInclusionRegex\n"
+        "or refFilterExclusionRegex. No emails will be sent for commits included\n"
+        "in these refs.\n"
+        "Refs marked as DONT-SEND are excluded by either refFilterDoSendRegex or\n"
+        "refFilterDontSendRegex, but not by either refFilterInclusionRegex or\n"
+        "refFilterExclusionRegex. Emails will be sent for commits included in these\n"
+        "refs only when the commit reaches a ref which isn't excluded.\n"
+        "Refs marked as DO-SEND are not excluded by any filter. Emails will\n"
+        "be sent normally for commits included in these refs.\n")
+
+    sys.stdout.write(os.linesep)
+
+    for refname in read_git_lines(['for-each-ref', '--format', '%(refname)']):
+        sys.stdout.write(refname)
+        if not include_ref(refname, ref_filter_regex, ref_is_inclusion):
+            sys.stdout.write(' EXCLUDE')
+        elif not include_ref(refname, send_filter_regex, send_is_inclusion):
+            sys.stdout.write(' DONT-SEND')
+        else:
+            sys.stdout.write(' DO-SEND')
+
+        sys.stdout.write(os.linesep)
+
+
 def choose_mailer(config, environment):
     mailer = config.get('mailer', default='sendmail')
 
@@ -4032,6 +4072,15 @@ def main(args):
             "Display the version of Python used by git-multimail"
             ),
         )
+
+    parser.add_option(
+        '--check-ref-filter', action='store_true', default=False,
+        help=(
+            'List refs and show information on how git-multimail '
+            'will process them.'
+            )
+        )
+
     # The following options permit this script to be run as a gerrit
     # ref-updated hook.  See e.g.
     # code.google.com/p/gerrit/source/browse/Documentation/config-hooks.txt
@@ -4090,9 +4139,11 @@ def main(args):
         else:
             mailer = choose_mailer(config, environment)
 
+        if options.check_ref_filter:
+            check_ref_filter(environment)
         # Dual mode: if arguments were specified on the command line, run
         # like an update hook; otherwise, run as a post-receive hook.
-        if args:
+        elif args:
             if len(args) != 3:
                 parser.error('Need zero or three non-option arguments')
             (refname, oldrev, newrev) = args
