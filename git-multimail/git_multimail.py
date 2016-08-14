@@ -3705,6 +3705,16 @@ def check_ref_filter(environment):
         sys.stdout.write(os.linesep)
 
 
+def show_env(environment, out):
+    out.write('Environment values:\n')
+    for (k, v) in sorted(environment.get_values().items()):
+        if k:  # Don't show the {'' : ''} pair.
+            out.write('    %s : %r\n' % (k, v))
+    out.write('\n')
+    # Flush to avoid interleaving with further log output
+    out.flush()
+
+
 def choose_mailer(config, environment):
     mailer = config.get('mailer', default='sendmail')
 
@@ -4126,13 +4136,7 @@ def main(args):
             )
 
         if options.show_env:
-            sys.stderr.write('Environment values:\n')
-            for (k, v) in sorted(environment.get_values().items()):
-                if k:  # Don't show the {'' : ''} pair.
-                    sys.stderr.write('    %s : %r\n' % (k, v))
-            sys.stderr.write('\n')
-            # Flush to avoid interleaving with further log output
-            sys.stderr.flush()
+            show_env(environment, sys.stderr)
 
         if options.stdout or environment.stdout:
             mailer = OutputMailer(sys.stdout)
