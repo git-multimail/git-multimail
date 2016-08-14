@@ -4,6 +4,11 @@ Release 1.4.0 (in progress)
 * Options refFilterDoSendRegex and refFilterDontSendRegex were
   essentially broken. They should work now.
 
+* The behavior when both refFilter{Do,Dont}SendRegex and
+  refFilter{Exclusion,Inclusion}Regex are set have been slightly
+  changed. Exclusion/Inclusion is now strictly stronger than
+  DoSend/DontSend.
+
 * The management of precedence when a setting can be computed in
   multiple ways has been considerably refactored and modified.
   multimailhook.from and multimailhook.reponame now have precedence

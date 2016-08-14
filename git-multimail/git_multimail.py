@@ -3035,24 +3035,20 @@ class StaticRefFilterEnvironmentMixin(Environment):
         if ref_filter_do_send_regex and ref_filter_dont_send_regex:
             raise ConfigurationException(
                 "Cannot specify both a ref doSend and dontSend regex.")
-        if ref_filter_do_send_regex or ref_filter_dont_send_regex:
-            self.__is_do_send_filter = bool(ref_filter_do_send_regex)
-            if ref_filter_do_send_regex:
-                ref_filter_send_regex = ref_filter_do_send_regex
-            elif ref_filter_dont_send_regex:
-                ref_filter_send_regex = ref_filter_dont_send_regex
-            else:
-                ref_filter_send_regex = '.*'
-                self.__is_do_send_filter = True
-            try:
-                self.__send_compiled_regex = re.compile(ref_filter_send_regex)
-            except Exception:
-                raise ConfigurationException(
-                    'Invalid Ref Filter Regex "%s": %s' %
-                    (ref_filter_send_regex, sys.exc_info()[1]))
+        self.__is_do_send_filter = bool(ref_filter_do_send_regex)
+        if ref_filter_do_send_regex:
+            ref_filter_send_regex = ref_filter_do_send_regex
+        elif ref_filter_dont_send_regex:
+            ref_filter_send_regex = ref_filter_dont_send_regex
         else:
-            self.__send_compiled_regex = self.__compiled_regex
-            self.__is_do_send_filter = self.__is_inclusion_filter
+            ref_filter_send_regex = '.*'
+            self.__is_do_send_filter = True
+        try:
+            self.__send_compiled_regex = re.compile(ref_filter_send_regex)
+        except Exception:
+            raise ConfigurationException(
+                'Invalid Ref Filter Regex "%s": %s' %
+                (ref_filter_send_regex, sys.exc_info()[1]))
 
     def get_ref_filter_regex(self, send_filter=False):
         if send_filter:
@@ -3621,7 +3617,8 @@ def include_ref(refname, ref_filter_regex, is_inclusion_filter):
 
 def run_as_post_receive_hook(environment, mailer):
     environment.check()
-    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(True)
+    send_filter_regex, send_is_inclusion_filter = environment.get_ref_filter_regex(True)
+    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(False)
     changes = []
     while True:
         line = read_line(sys.stdin)
@@ -3629,10 +3626,12 @@ def run_as_post_receive_hook(environment, mailer):
             break
         (oldrev, newrev, refname) = line.strip().split(' ', 2)
         environment.get_logger().debug(
-            "run_as_update_hook: oldrev=%s, newrev=%s, refname=%s" %
+            "run_as_post_receive_hook: oldrev=%s, newrev=%s, refname=%s" %
             (oldrev, newrev, refname))
 
         if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
+            continue
+        if not include_ref(refname, send_filter_regex, send_is_inclusion_filter):
             continue
         changes.append(
             ReferenceChange.create(environment, oldrev, newrev, refname)
@@ -3646,8 +3645,11 @@ def run_as_post_receive_hook(environment, mailer):
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=False):
     environment.check()
-    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(True)
+    send_filter_regex, send_is_inclusion_filter = environment.get_ref_filter_regex(True)
+    ref_filter_regex, is_inclusion_filter = environment.get_ref_filter_regex(False)
     if not include_ref(refname, ref_filter_regex, is_inclusion_filter):
+        return
+    if not include_ref(refname, send_filter_regex, send_is_inclusion_filter):
         return
     changes = [
         ReferenceChange.create(

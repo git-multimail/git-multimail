@@ -623,6 +623,12 @@ multimailhook.refFilterInclusionRegex, multimailhook.refFilterExclusionRegex, mu
       [multimailhook]
               refFilterExclusionRegex = ^refs/tags/|^refs/heads/master$
 
+    ``refFilterInclusionRegex`` and ``refFilterExclusionRegex`` are
+    strictly stronger than ``refFilterDoSendRegex`` and
+    ``refFilterDontSendRegex``. In other words, adding a ref to a
+    DoSend/DontSend regex has no effect if it is already excluded by a
+    Exclusion/Inclusion regex.
+
 multimailhook.logFile, multimailhook.errorLogFile, multimailhook.debugLogFile
 
     When set, these variable designate path to files where
