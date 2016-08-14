@@ -57,7 +57,10 @@ test_expect_success 'error if no recipient is configured' '
 '
 
 test_expect_success 'GIT_MULTIMAIL_CHECK_SETUP' "
-	echo some-text | GIT_MULTIMAIL_CHECK_SETUP=true $MULTIMAIL -c multimailhook.mailingList=list@example.com >actual &&
+	echo some-text | GIT_MULTIMAIL_CHECK_SETUP=true $MULTIMAIL \
+		-c multimailhook.mailingList=list@example.com \
+		-c multimailhook.sendmailCommand=config-sendmail-command \
+		>actual &&
 	cat <<-EOF >expected &&
 	Environment values:
 	    administrator : 'the administrator of this repository'
