@@ -1,6 +1,9 @@
 ** Expected below: error
 $ test_must_fail 'test_update' 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/master$' '-c' 'multimailhook.refFilterInclusionRegex=whatever'
 Cannot specify both a ref inclusion and exclusion regex.
+** Expected below: error
+$ test_must_fail 'test_update' 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterDontSendRegex=^refs/heads/master$' '-c' 'multimailhook.refFilterDoSendRegex=whatever'
+Cannot specify both a ref doSend and dontSend regex.
 ** Expected below: no output
 $ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/master$'
 $ test_update 'refs/heads/master' 'refs/heads/master^^' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/foo$' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/master$' '-c' 'multimailhook.refFilterExclusionRegex=^refs/heads/bar$'

@@ -185,6 +185,8 @@ test_email_content 'restrict email count and size' max '
 test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
 	echo "** Expected below: error" &&
 	verbose_do test_must_fail test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ -c multimailhook.refFilterInclusionRegex=whatever &&
+	echo "** Expected below: error" &&
+	verbose_do test_must_fail test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterDontSendRegex=^refs/heads/master$ -c multimailhook.refFilterDoSendRegex=whatever &&
 	echo "** Expected below: no output" &&
 	verbose_do test_update refs/heads/master refs/heads/master^^ -c multimailhook.refFilterExclusionRegex=^refs/heads/master$ &&
 
