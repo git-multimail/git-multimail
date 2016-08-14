@@ -3037,10 +3037,10 @@ class StaticRefFilterEnvironmentMixin(Environment):
                 "Cannot specify both a ref doSend and dontSend regex.")
         if ref_filter_do_send_regex or ref_filter_dont_send_regex:
             self.__is_do_send_filter = bool(ref_filter_do_send_regex)
-            if ref_filter_incl_regex:
-                ref_filter_send_regex = ref_filter_incl_regex
-            elif ref_filter_excl_regex:
-                ref_filter_send_regex = ref_filter_excl_regex
+            if ref_filter_do_send_regex:
+                ref_filter_send_regex = ref_filter_do_send_regex
+            elif ref_filter_dont_send_regex:
+                ref_filter_send_regex = ref_filter_dont_send_regex
             else:
                 ref_filter_send_regex = '.*'
                 self.__is_do_send_filter = True
