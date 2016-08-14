@@ -60,16 +60,17 @@ test_expect_success 'GIT_MULTIMAIL_CHECK_SETUP' "
 	echo some-text | GIT_MULTIMAIL_CHECK_SETUP=true $MULTIMAIL \
 		-c multimailhook.mailingList=list@example.com \
 		-c multimailhook.sendmailCommand=config-sendmail-command \
+		| sed -e 's/\(    \(fqdn\|pusher\|repo_path\) : \).*/\1.../' \
 		>actual &&
 	cat <<-EOF >expected &&
 	Environment values:
 	    administrator : 'the administrator of this repository'
 	    charset : 'utf-8'
 	    emailprefix : '[test-repo-cli] '
-	    fqdn : 'anie'
+	    fqdn : ...
 	    projectdesc : 'UNNAMED PROJECT'
-	    pusher : 'moy'
-	    repo_path : '/home/moy/dev/git-multimail/t/trash directory.test-cli/test-repo-cli.git'
+	    pusher : ...
+	    repo_path : ...
 	    repo_shortname : 'test-repo-cli'
 
 	Now, checking that git-multimail's standard input is properly set ...
