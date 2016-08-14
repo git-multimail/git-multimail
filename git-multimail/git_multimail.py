@@ -3715,6 +3715,18 @@ def show_env(environment, out):
     out.flush()
 
 
+def check_setup(environment):
+    environment.check()
+    show_env(environment, sys.stdout)
+    sys.stdout.write("Now, checking that git-multimail's standard input "
+                     "is properly set ..." + os.linesep)
+    sys.stdout.write("Please type some text and then press Return" + os.linesep)
+    stdin = sys.stdin.readline()
+    sys.stdout.write("You have just entered:" + os.linesep)
+    sys.stdout.write(stdin)
+    sys.stdout.write("git-multimail seems properly set up." + os.linesep)
+
+
 def choose_mailer(config, environment):
     mailer = config.get('mailer', default='sendmail')
 
@@ -4143,8 +4155,13 @@ def main(args):
         else:
             mailer = choose_mailer(config, environment)
 
+        must_check_setup = os.environ.get('GIT_MULTIMAIL_CHECK_SETUP')
+        if must_check_setup == '':
+            must_check_setup = False
         if options.check_ref_filter:
             check_ref_filter(environment)
+        elif must_check_setup:
+            check_setup(environment)
         # Dual mode: if arguments were specified on the command line, run
         # like an update hook; otherwise, run as a post-receive hook.
         elif args:

@@ -1,6 +1,11 @@
 Release 1.4.0 (in progress)
 ===========================
 
+* One can now perform a basic check of git-multimail's setup by
+  running the hook with the environment variable
+  GIT_MULTIMAIL_CHECK_SETUP set to a non-empty string. See
+  doc/troubleshooting.rst for details.
+
 * A new option --check-ref-filter is now available to help debugging
   the refFilter* options.
 

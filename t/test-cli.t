@@ -56,4 +56,26 @@ test_expect_success 'error if no recipient is configured' '
 	grep "No email recipients configured" err
 '
 
+test_expect_success 'GIT_MULTIMAIL_CHECK_SETUP' "
+	echo some-text | GIT_MULTIMAIL_CHECK_SETUP=true $MULTIMAIL -c multimailhook.mailingList=list@example.com >actual &&
+	cat <<-EOF >expected &&
+	Environment values:
+	    administrator : 'the administrator of this repository'
+	    charset : 'utf-8'
+	    emailprefix : '[test-repo-cli] '
+	    fqdn : 'anie'
+	    projectdesc : 'UNNAMED PROJECT'
+	    pusher : 'moy'
+	    repo_path : '/home/moy/dev/git-multimail/t/trash directory.test-cli/test-repo-cli.git'
+	    repo_shortname : 'test-repo-cli'
+
+	Now, checking that git-multimail's standard input is properly set ...
+	Please type some text and then press Return
+	You have just entered:
+	some-text
+	git-multimail seems properly set up.
+	EOF
+	test_cmp actual expected
+"
+
 test_done
