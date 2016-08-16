@@ -192,9 +192,9 @@ test_email_content 'restrict email count and size' max '
 		-c multimailhook.emailMaxLineLength=15 \
 		-c multimailhook.subjectMaxLength=20 &&
 	verbose_do test_update refs/heads/formatting formatting^^ \
-		-c multimailhook.emailMaxLines=1 \
-		-c multimailhook.emailMaxLineLength=10 \
-		-c multimailhook.subjectMaxLength=10
+		-c multimailhook.emailMaxLines=0 \
+		-c multimailhook.emailMaxLineLength=0 \
+		-c multimailhook.subjectMaxLength=0
 '
 
 test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
