@@ -4033,6 +4033,9 @@ class Logger(object):
             def write(self, x):
                 write_str(sys.stderr, x)
 
+            def flush(self):
+                sys.stderr.flush()
+
         stderr_handler = logging.StreamHandler(EncodedStderr())
         stderr_log.addHandler(stderr_handler)
         stderr_log.setLevel(self.parse_verbose(environment.verbose))
