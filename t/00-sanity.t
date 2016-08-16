@@ -45,42 +45,6 @@ done
 
 log "#"
 
-test_expect_success git "sign-off" '
-    "$D"/check-sign-off
-'
-
-rstcheck_file () {
-    f=$1
-    test_expect_success rstcheck "rstcheck $f" '
-	status=0 &&
-	rstcheck "$D"/../"$f" >rstcheck.out 2>&1 || status=$? &&
-	cat rstcheck.out &&
-	! test -s rstcheck.out &&
-	return $status
-    '
-}
-rstcheck_file README.rst
-rstcheck_file CONTRIBUTING.rst
-rstcheck_file doc/gitolite.rst
-rstcheck_file doc/gerrit.rst
-rstcheck_file t/README.rst
-
-# E402: module level import not at top of file => we need this in the
-# tests.
-#
-# E123: closing bracket does not match indentation of opening bracket's line
-# => not raised on all pep8 version, and really constraining. We can
-# probably keep ignoring it forever.
-pep8_file () {
-    f=$1
-    test_expect_success pep8 "pep8 $f" '
-	pep8 "$D"/../"$f" --ignore=E402,E123 --max-line-length=99
-    '
-}
-pep8_file git-multimail/git_multimail.py
-pep8_file t/test-env
-pep8_file setup.py
-
 test_expect_success pyflakes 'pyflakes' '
 	pyflakes $D/..
 '
@@ -108,6 +72,42 @@ test_expect_success 'Simple but verbose git-multimail run' '
 	echo "stderr OK, now checking stdout" &&
 	grep "^To: recipient@example.com" out &&
 	echo "Everything all right."
+'
+
+# E402: module level import not at top of file => we need this in the
+# tests.
+#
+# E123: closing bracket does not match indentation of opening bracket's line
+# => not raised on all pep8 version, and really constraining. We can
+# probably keep ignoring it forever.
+pep8_file () {
+    f=$1
+    test_expect_success pep8 "pep8 $f" '
+	pep8 "$D"/../"$f" --ignore=E402,E123 --max-line-length=99
+    '
+}
+pep8_file git-multimail/git_multimail.py
+pep8_file t/test-env
+pep8_file setup.py
+
+rstcheck_file () {
+    f=$1
+    test_expect_success rstcheck "rstcheck $f" '
+	status=0 &&
+	rstcheck "$D"/../"$f" >rstcheck.out 2>&1 || status=$? &&
+	cat rstcheck.out &&
+	! test -s rstcheck.out &&
+	return $status
+    '
+}
+rstcheck_file README.rst
+rstcheck_file CONTRIBUTING.rst
+rstcheck_file doc/gitolite.rst
+rstcheck_file doc/gerrit.rst
+rstcheck_file t/README.rst
+
+test_expect_success git "sign-off" '
+    "$D"/check-sign-off
 '
 
 # Test that each documented variable appears at least once outside
