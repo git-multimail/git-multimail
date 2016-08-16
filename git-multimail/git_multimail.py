@@ -2676,7 +2676,10 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
         self.log_file = config.get('logFile', default=None)
         self.error_log_file = config.get('errorLogFile', default=None)
         self.debug_log_file = config.get('debugLogFile', default=None)
-        self.verbose = 1 if config.get_bool('Verbose', default=False) else 0
+        if config.get_bool('Verbose', default=False):
+            self.verbose = 1
+        else:
+            self.verbose = 0
 
     def get_administrator(self):
         return (
@@ -3692,14 +3695,21 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=
 def check_ref_filter(environment):
     send_filter_regex, send_is_inclusion = environment.get_ref_filter_regex(True)
     ref_filter_regex, ref_is_inclusion = environment.get_ref_filter_regex(False)
+
+    def inc_exc_lusion(b):
+        if b:
+            return 'inclusion'
+        else:
+            return 'exclusion'
+
     if send_filter_regex:
         sys.stdout.write("DoSend/DontSend filter regex (" +
-                         ('inclusion' if send_is_inclusion else 'exclusion') +
+                         (inc_exc_lusion(send_is_inclusion)) +
                          '): ' + send_filter_regex.pattern +
                          '\n')
     if send_filter_regex:
         sys.stdout.write("Include/Exclude filter regex (" +
-                         ('inclusion' if ref_is_inclusion else 'exclusion') +
+                         (inc_exc_lusion(ref_is_inclusion)) +
                          '): ' + ref_filter_regex.pattern +
                          '\n')
     sys.stdout.write(os.linesep)
