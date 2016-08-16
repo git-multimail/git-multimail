@@ -354,7 +354,7 @@ EOF
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Commit List <commitlist@example.com>
-Subject: *test-repo* 01/02: Another subject line
+Subject: *test-repo* 01/02: Another s [...]
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -388,7 +388,7 @@ EOF
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Commit List <commitlist@example.com>
-Subject: *test-repo* 02/02: Commit without Cc: line.
+Subject: *test-repo* 02/02: Commit wi [...]
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -492,7 +492,7 @@ EOF
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Commit List <commitlist@example.com>
-Subject: *test-repo* 02/02: Commit without Cc: line.
+Subject: *test-repo* 02/02: Commit without [...]
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -562,7 +562,7 @@ EOF
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Commit List <commitlist@example.com>
-Subject: *test-repo* 01/02: Another subject line
+Subject: *test-repo* 01/02: Anot [...]
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -596,7 +596,7 @@ EOF
 /usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
 Date: ...
 To: Commit List <commitlist@example.com>
-Subject: *test-repo* 02/02: Commit without Cc: line.
+Subject: *test-repo* 02/02: Comm [...]
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
