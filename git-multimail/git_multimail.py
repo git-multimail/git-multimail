@@ -2772,7 +2772,7 @@ class FilterLinesEnvironmentMixin(Environment):
                 lines = (line.decode(ENCODING, 'replace') for line in lines)
             # Limit the line length in Unicode-space to avoid
             # splitting characters:
-            if self.__email_max_line_length:
+            if self.__email_max_line_length > 0:
                 lines = limit_linelength(lines, self.__email_max_line_length)
             if not PYTHON3:
                 lines = (line.encode(ENCODING, 'replace') for line in lines)
@@ -2811,7 +2811,7 @@ class MaxlinesEnvironmentMixin(Environment):
 
     def filter_body(self, lines):
         lines = super(MaxlinesEnvironmentMixin, self).filter_body(lines)
-        if self.__emailmaxlines:
+        if self.__emailmaxlines > 0:
             lines = limit_lines(lines, self.__emailmaxlines)
         return lines
 
