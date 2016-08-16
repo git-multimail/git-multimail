@@ -2745,7 +2745,7 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
 class FilterLinesEnvironmentMixin(Environment):
     """Handle encoding and maximum line length of body lines.
 
-        emailmaxlinelength (int or None)
+        email_max_line_length (int or None)
 
             The maximum length of any single line in the email body.
             Longer lines are truncated at that length with ' [...]'
@@ -2760,10 +2760,10 @@ class FilterLinesEnvironmentMixin(Environment):
 
     """
 
-    def __init__(self, strict_utf8=True, emailmaxlinelength=500, **kw):
+    def __init__(self, strict_utf8=True, email_max_line_length=500, **kw):
         super(FilterLinesEnvironmentMixin, self).__init__(**kw)
         self.__strict_utf8 = strict_utf8
-        self.__emailmaxlinelength = emailmaxlinelength
+        self.__email_max_line_length = email_max_line_length
 
     def filter_body(self, lines):
         lines = super(FilterLinesEnvironmentMixin, self).filter_body(lines)
@@ -2772,12 +2772,12 @@ class FilterLinesEnvironmentMixin(Environment):
                 lines = (line.decode(ENCODING, 'replace') for line in lines)
             # Limit the line length in Unicode-space to avoid
             # splitting characters:
-            if self.__emailmaxlinelength:
-                lines = limit_linelength(lines, self.__emailmaxlinelength)
+            if self.__email_max_line_length:
+                lines = limit_linelength(lines, self.__email_max_line_length)
             if not PYTHON3:
                 lines = (line.encode(ENCODING, 'replace') for line in lines)
-        elif self.__emailmaxlinelength:
-            lines = limit_linelength(lines, self.__emailmaxlinelength)
+        elif self.__email_max_line_length:
+            lines = limit_linelength(lines, self.__email_max_line_length)
 
         return lines
 
@@ -2793,9 +2793,9 @@ class ConfigFilterLinesEnvironmentMixin(
         if strict_utf8 is not None:
             kw['strict_utf8'] = strict_utf8
 
-        emailmaxlinelength = config.get('emailmaxlinelength')
-        if emailmaxlinelength is not None:
-            kw['emailmaxlinelength'] = int(emailmaxlinelength)
+        email_max_line_length = config.get('emailmaxlinelength')
+        if email_max_line_length is not None:
+            kw['email_max_line_length'] = int(email_max_line_length)
 
         super(ConfigFilterLinesEnvironmentMixin, self).__init__(
             config=config, **kw
