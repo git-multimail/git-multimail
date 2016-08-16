@@ -4214,6 +4214,8 @@ def main(args):
             run_as_post_receive_hook(environment, mailer)
     except ConfigurationException:
         sys.exit(sys.exc_info()[1])
+    except SystemExit:
+        raise
     except Exception:
         t, e, tb = sys.exc_info()
         import traceback
