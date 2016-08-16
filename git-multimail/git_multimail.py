@@ -452,7 +452,7 @@ def read_output(cmd, input=None, keepends=False, **kw):
         errors = kw['errors']
         del kw['errors']
     p = subprocess.Popen(
-        (str_to_bytes(w) for w in cmd),
+        tuple(str_to_bytes(w) for w in cmd),
         stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kw
         )
     (out, err) = p.communicate(input)
