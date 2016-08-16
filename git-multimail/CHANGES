@@ -1,13 +1,35 @@
 Release 1.4.0 (in progress)
 ===========================
 
+New features to troubleshoot a git-multimail installation
+---------------------------------------------------------
+
 * One can now perform a basic check of git-multimail's setup by
   running the hook with the environment variable
   GIT_MULTIMAIL_CHECK_SETUP set to a non-empty string. See
   doc/troubleshooting.rst for details.
 
+* A new log files system was added. See the multimailhook.logFile,
+  multimailhook.errorLogFile and multimailhook.debugLogFile variables.
+
+* git_multimail.py can now be made more verbose using
+  multimailhook.verbose.
+
 * A new option --check-ref-filter is now available to help debugging
   the refFilter* options.
+
+Formatting emails
+-----------------
+
+* Formatting of emails was made slightly more compact, to reduce the
+  odds of having long subject lines truncated or wrapped in short list
+  of commits.
+
+* multimailhook.emailPrefix may now use the '%(repo_shortname)s'
+  placeholder for the repository's short name.
+
+Bug fixes and minor changes
+---------------------------
 
 * Options refFilterDoSendRegex and refFilterDontSendRegex were
   essentially broken. They should work now.
@@ -24,21 +46,8 @@ Release 1.4.0 (in progress)
   gitolite, --stash-user/repo for Stash, --submitter/--project for
   Gerrit).
 
-* Formatting of emails was made slightly more compact, to reduce the
-  odds of having long subject lines truncated or wrapped in short list
-  of commits.
-
 * The coverage of the testsuite has been considerably improved. All
   configuration variables now appear at least once in the testsuite.
-
-* A new log files system was added. See the multimailhook.logFile,
-  multimailhook.errorLogFile and multimailhook.debugLogFile variables.
-
-* git_multimail.py can now be made more verbose using
-  multimailhook.verbose.
-
-* multimailhook.emailPrefix may now use the '%(repo_shortname)s'
-  placeholder for the repository's short name.
 
 Release 1.3.1 (bugfix-only release)
 ===================================
