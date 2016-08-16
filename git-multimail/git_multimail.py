@@ -4029,7 +4029,7 @@ class Logger(object):
         self.loggers = []
         stderr_log = logging.getLogger('git_multimail.stderr')
 
-        class EncodedStderr():
+        class EncodedStderr(object):
             def write(self, x):
                 write_str(sys.stderr, x)
 
