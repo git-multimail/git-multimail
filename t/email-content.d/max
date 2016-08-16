@@ -314,3 +314,364 @@ To stop receiving notification emails like this one, please contact
 Administrator <administrator@example.com>.
 EOF
 ######################################################################
+$ test_update 'refs/heads/formatting' 'formatting^^' '-c' 'multimailhook.emailMaxLines=1' '-c' 'multimailhook.emailMaxLineLength=15'
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch formatting updated (9194268 -> 8e11f7c)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Oldrev: 919426837aa07c18459a0acc0f789b6a8cd8fb80
+X-Git-Newrev: 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch formatting
+in repository test-repo.
+
+    from [...]
+... 12 lines suppressed ...
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: Another s [...]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Rev: 850c489cf431841cf428e00fc8285456682a9d13
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch formatting
+in repository test-repo.
+
+commit 8 [...]
+... 20 lines suppressed ...
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: Commit wi [...]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Rev: 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch formatting
+in repository test-repo.
+
+commit 8 [...]
+... 20 lines suppressed ...
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+$ test_update 'refs/heads/formatting' 'formatting^^' '-c' 'multimailhook.emailMaxLines=1' '-c' 'multimailhook.emailMaxLineLength=15' '-c' 'multimailhook.subjectMaxLength=20'
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch formatting updated (9194268 -> 8e11f7c)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Oldrev: 919426837aa07c18459a0acc0f789b6a8cd8fb80
+X-Git-Newrev: 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch formatting
+in repository test-repo.
+
+    from [...]
+... 12 lines suppressed ...
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: Another subject line
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Rev: 850c489cf431841cf428e00fc8285456682a9d13
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch formatting
+in repository test-repo.
+
+commit 8 [...]
+... 20 lines suppressed ...
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: Commit without [...]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Rev: 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch formatting
+in repository test-repo.
+
+commit 8 [...]
+... 20 lines suppressed ...
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+$ test_update 'refs/heads/formatting' 'formatting^^' '-c' 'multimailhook.emailMaxLines=0' '-c' 'multimailhook.emailMaxLineLength=0' '-c' 'multimailhook.subjectMaxLength=0'
+Sending notification emails to: Refchange List <refchangelist@example.com>
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Refchange List <refchangelist@example.com>
+Subject: *test-repo* branch formatting updated (9194268 -> 8e11f7c)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Message-ID: <...>
+From: From <from@example.com>
+Reply-To: pushuser@example.com
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Oldrev: 919426837aa07c18459a0acc0f789b6a8cd8fb80
+X-Git-Newrev: 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+X-Git-NotificationType: ref_changed
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a change to branch formatting
+in repository test-repo.
+
+    from 9194268  Subject line
+     new 850c489  Another subject line
+     new 8e11f7c  Commit without Cc: line.
+
+The 2 revisions listed above as "new" are entirely new to this
+repository and will be described in separate emails.  The revisions
+listed as "add" were already present in the repository and have only
+been added to this reference.
+
+
+Summary of changes:
+ foo.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 01/02: Another subject line
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Rev: 850c489cf431841cf428e00fc8285456682a9d13
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch formatting
+in repository test-repo.
+
+commit 850c489cf431841cf428e00fc8285456682a9d13
+Author: Matthieu Moy <Matthieu.Moy@imag.fr>
+AuthorDate: Sun May 24 19:58:34 2015 +0200
+
+    Another subject line
+    
+    This is the body.
+    And below is the Cc: line.
+    Cc: me@example.com
+---
+ foo.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/foo.txt b/foo.txt
+index eec8bfc..f601cee 100644
+--- a/foo.txt
++++ b/foo.txt
+@@ -1,2 +1,3 @@
+ foo
+ new-content
++new-content
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################
+######################################################################
+/usr/sbin/sendmail -oi -t -f Sender <sender@example.com> <<EOF
+Date: ...
+To: Commit List <commitlist@example.com>
+Subject: *test-repo* 02/02: Commit without Cc: line.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+From: From <from@example.com>
+Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
+In-Reply-To: <...>
+References: <...>
+X-Git-Host: fqdn.example.org
+X-Git-Repo: test-repo
+X-Git-Refname: refs/heads/formatting
+X-Git-Reftype: branch
+X-Git-Rev: 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+X-Git-NotificationType: diff
+X-Git-Multimail-Version: ...
+Auto-Submitted: auto-generated
+
+This is an automated email from the git hooks/post-receive script.
+
+pushuser pushed a commit to branch formatting
+in repository test-repo.
+
+commit 8e11f7c6a6a86d37ac1f3e9ce6ec7d1399412c17
+Author: Matthieu Moy <Matthieu.Moy@imag.fr>
+AuthorDate: Sun May 24 20:19:12 2015 +0200
+
+    Commit without Cc: line.
+    
+    This commit contains Cc: within the text, but has to proper
+    CC: line.
+---
+ foo.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/foo.txt b/foo.txt
+index f601cee..5167925 100644
+--- a/foo.txt
++++ b/foo.txt
+@@ -1,3 +1,4 @@
+ foo
+ new-content
+ new-content
++new-content
+
+-- 
+To stop receiving notification emails like this one, please contact
+Administrator <administrator@example.com>.
+EOF
+######################################################################

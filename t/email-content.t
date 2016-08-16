@@ -183,7 +183,18 @@ test_email_content 'restrict email count and size' max '
 	verbose_do test_update refs/heads/master foo \
 		-c multimailhook.refFilterDontSendRegex=^refs/heads/feature$ \
 		-c multimailhook.emailMaxLines=10 \
-		-c multimailhook.emailMaxLineLength=15
+		-c multimailhook.emailMaxLineLength=15 &&
+	verbose_do test_update refs/heads/formatting formatting^^ \
+		-c multimailhook.emailMaxLines=1 \
+		-c multimailhook.emailMaxLineLength=15 &&
+	verbose_do test_update refs/heads/formatting formatting^^ \
+		-c multimailhook.emailMaxLines=1 \
+		-c multimailhook.emailMaxLineLength=15 \
+		-c multimailhook.subjectMaxLength=20 &&
+	verbose_do test_update refs/heads/formatting formatting^^ \
+		-c multimailhook.emailMaxLines=0 \
+		-c multimailhook.emailMaxLineLength=0 \
+		-c multimailhook.subjectMaxLength=0
 '
 
 test_email_content 'refFilter inclusion/exclusion/doSend/DontSend' ref-filter '
@@ -248,10 +259,12 @@ test_email_content '' 'test_when_finished "git checkout master && git branch -D 
 		 -c multimailhook.from=author &&
 	verbose_do test_update refs/heads/mâstér refs/heads/mâstér^ \
 		-c multimailhook.from=author \
-		-c multimailhook.emailMaxLineLength=10 &&
+		-c multimailhook.emailMaxLineLength=10 \
+		-c multimailhook.subjectMaxLength=0 &&
 	verbose_do test_update refs/heads/mâstér refs/heads/mâstér^ \
 		-c multimailhook.from=author \
 		-c multimailhook.emailMaxLineLength=10 \
+		-c multimailhook.subjectMaxLength=0 \
 		-c multimailhook.emailStrictUTF8=false
 '
 

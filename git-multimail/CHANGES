@@ -28,6 +28,9 @@ Formatting emails
 * multimailhook.emailPrefix may now use the '%(repo_shortname)s'
   placeholder for the repository's short name.
 
+* A new option multimailhook.subjectMaxLength is available to truncate
+  overly long subject lines.
+
 Bug fixes and minor changes
 ---------------------------
 

@@ -466,6 +466,17 @@ multimailhook.emailMaxLineLength
     lines, the diffs are probably unreadable anyway.  To disable line
     truncation, set this option to 0.
 
+multimailhook.subjectMaxLength
+    The maximum length of the subject line (i.e. the ``oneline`` field
+    in templates, not including the prefix). Lines longer than this
+    limit are truncated to this length with a trailing ``[...]`` added
+    to indicate the missing text. This option The default is to use
+    ``multimailhook.emailMaxLineLength``. This option avoids sending
+    emails with overly long subject lines, but should not be needed if
+    the commit messages follow the Git convention (one short subject
+    line, then a blank line, then the message body). To disable line
+    truncation, set this option to 0.
+
 multimailhook.maxCommitEmails
     The maximum number of commit emails to send for a given change.
     When the number of patches is larger that this value, only the

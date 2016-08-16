@@ -1085,6 +1085,10 @@ class Revision(Change):
             ['log', '--format=%s', '--no-walk', self.rev.sha1]
             )
 
+        max_subject_length = self.environment.get_max_subject_length()
+        if max_subject_length > 0 and len(oneline) > max_subject_length:
+            oneline = oneline[:max_subject_length - 6] + ' [...]'
+
         values['rev'] = self.rev.sha1
         values['rev_short'] = self.rev.short
         values['change_type'] = self.change_type
@@ -2277,6 +2281,11 @@ class Environment(object):
             to send and when computing what commits are considered new
             to the repository.  Default is "^refs/notes/".
 
+        get_max_subject_length()
+
+            Return an int giving the maximal length for the subject
+            (git log --oneline).
+
     They should also define the following attributes:
 
         announce_show_shortlog (bool)
@@ -2509,6 +2518,11 @@ class Environment(object):
         # of git notes in order for them to be of benefit for users,
         # which we simply do not have right now.
         return "^refs/notes/"
+
+    def get_max_subject_length(self):
+        """Return the maximal subject line (git log --oneline) length.
+        Longer subject lines will be truncated."""
+        raise NotImplementedError()
 
     def filter_body(self, lines):
         """Filter the lines intended for an email body.
@@ -2760,10 +2774,13 @@ class FilterLinesEnvironmentMixin(Environment):
 
     """
 
-    def __init__(self, strict_utf8=True, email_max_line_length=500, **kw):
+    def __init__(self, strict_utf8=True,
+                 email_max_line_length=500, max_subject_length=500,
+                 **kw):
         super(FilterLinesEnvironmentMixin, self).__init__(**kw)
         self.__strict_utf8 = strict_utf8
         self.__email_max_line_length = email_max_line_length
+        self.__max_subject_length = max_subject_length
 
     def filter_body(self, lines):
         lines = super(FilterLinesEnvironmentMixin, self).filter_body(lines)
@@ -2781,6 +2798,9 @@ class FilterLinesEnvironmentMixin(Environment):
 
         return lines
 
+    def get_max_subject_length(self):
+        return self.__max_subject_length
+
 
 class ConfigFilterLinesEnvironmentMixin(
         ConfigEnvironmentMixin,
@@ -2796,6 +2816,10 @@ class ConfigFilterLinesEnvironmentMixin(
         email_max_line_length = config.get('emailmaxlinelength')
         if email_max_line_length is not None:
             kw['email_max_line_length'] = int(email_max_line_length)
+
+        max_subject_length = config.get('subjectMaxLength', default=email_max_line_length)
+        if max_subject_length is not None:
+            kw['max_subject_length'] = int(max_subject_length)
 
         super(ConfigFilterLinesEnvironmentMixin, self).__init__(
             config=config, **kw
