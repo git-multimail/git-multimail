@@ -20,8 +20,8 @@ GPLv2 (see the COPYING file for details).
 
 Please note: although, as a convenience, git-multimail may be
 distributed along with the main Git project, development of
-git-multimail takes place in its own, separate project.  See section
-"Getting involved" below for more information.
+git-multimail takes place in its own, separate project.  Please, read
+`<CONTRIBUTING.rst>`__ for more information.
 
 
 By default, for each push received by the repository, git-multimail:
