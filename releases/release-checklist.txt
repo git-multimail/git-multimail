@@ -1,11 +1,13 @@
 At each release:
 
+* Test with various versions of Python and Git, add "This version has
+  been tested with Python ... and Git ..." to CHANGES.
+
 * Update version number in git_multimail.py
 
 * Add version number in README
 
-* Test with various versions of Python and Git, add "This version has
-  been tested with Python ... and Git ..." to CHANGES.
+* Remove "In progress" from CHANGES
 
 * Run manual tests:
 
