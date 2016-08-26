@@ -89,6 +89,10 @@ Requirements
   the multimailhook.mailer configuration variable below for how to
   configure git-multimail to send emails via an SMTP server.
 
+* git-multimail is currently tested only on Linux. It may or may not
+  work on other platforms such as Windows and Mac OS. See
+  `<CONTRIBUTING.rst>`__ to improve the situation.
+
 
 Invocation
 ----------
