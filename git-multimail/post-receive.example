@@ -86,6 +86,7 @@ mailer = git_multimail.choose_mailer(config, environment)
 
 # Use Python's smtplib to send emails.  Both arguments are required.
 #mailer = git_multimail.SMTPMailer(
+#    environment=environment,
 #    envelopesender='git-repo@example.com',
 #    # The smtpserver argument can also include a port number; e.g.,
 #    #     smtpserver='mail.example.com:25'
