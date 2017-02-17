@@ -3228,7 +3228,7 @@ class StashEnvironmentHighPrecMixin(Environment):
         self.__repo = repo
 
     def get_pusher(self):
-        return re.match('(.*?)\s*<', self.__user).group(1)
+        return re.match(r'(.*?)\s*<', self.__user).group(1)
 
     def get_pusher_email(self):
         return self.__user
@@ -3262,7 +3262,7 @@ class GerritEnvironmentHighPrecMixin(Environment):
             if self.__submitter.find('<') != -1:
                 # Submitter has a configured email, we transformed
                 # __submitter into an RFC 2822 string already.
-                return re.match('(.*?)\s*<', self.__submitter).group(1)
+                return re.match(r'(.*?)\s*<', self.__submitter).group(1)
             else:
                 # Submitter has no configured email, it's just his name.
                 return self.__submitter
