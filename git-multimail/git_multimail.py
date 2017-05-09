@@ -2054,6 +2054,7 @@ class SMTPMailer(Mailer):
         self.username = smtpuser
         self.password = smtppass
         self.smtpcacerts = smtpcacerts
+        self.loggedin = ''
         try:
             def call(klass, server, timeout):
                 try:
@@ -2138,7 +2139,9 @@ class SMTPMailer(Mailer):
     def send(self, lines, to_addrs):
         try:
             if self.username or self.password:
-                self.smtp.login(self.username, self.password)
+                if not self.loggedin:
+                    self.smtp.login(self.username, self.password)
+                    self.loggedin = 'true'
             msg = ''.join(lines)
             # turn comma-separated list into Python list if needed.
             if is_string(to_addrs):
