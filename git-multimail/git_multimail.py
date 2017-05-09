@@ -2141,7 +2141,7 @@ class SMTPMailer(Mailer):
             if self.username or self.password:
                 if not self.loggedin:
                     self.smtp.login(self.username, self.password)
-                    self.loggedin = 'true'
+                    self.loggedin = True
             msg = ''.join(lines)
             # turn comma-separated list into Python list if needed.
             if is_string(to_addrs):
