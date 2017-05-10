@@ -2054,7 +2054,7 @@ class SMTPMailer(Mailer):
         self.username = smtpuser
         self.password = smtppass
         self.smtpcacerts = smtpcacerts
-        self.loggedin = ''
+        self.loggedin = False
         try:
             def call(klass, server, timeout):
                 try:
