@@ -45,7 +45,7 @@ setup(
     author='Michael Haggerty',
     author_email='mhagger@alum.mit.edu',
     maintainer='Matthieu Moy',
-    maintainer_email='Matthieu.Moy@imag.fr',
+    maintainer_email='git@matthieu-moy.fr',
     license='GPLv2',
     package_dir={'': 'git-multimail'},
     py_modules=['git_multimail'],
