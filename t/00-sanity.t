@@ -115,9 +115,9 @@ test_expect_success git "sign-off" '
 # and we have known untested variables in untested-variables.txt, but
 # this should ensure that new variables get a test.
 test_expect_success 'Tests for each configuration variable' '
-	variables=$(grep "^multimailhook." $D/../git-multimail/README |
-		sed "s/, /\n/g" |
-		sed "s/multimailhook\.//") &&
+	grep "^multimailhook." $D/../git-multimail/README.rst >variables-lines.txt &&
+	variables=$(sed "s/, /\n/g" <variables-lines.txt |
+		    sed "s/multimailhook\.//") &&
 	(
 	cd "$D" &&
 	status=0 &&
