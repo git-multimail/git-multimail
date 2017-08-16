@@ -4,8 +4,8 @@ Contributing
 git-multimail is an open-source project, built by volunteers. We would
 welcome your help!
 
-The current maintainers are [Matthieu Moy](http://matthieu-moy.fr) and
-[Michael Haggerty](https://github.com/mhagger).
+The current maintainers are `Matthieu Moy <http://matthieu-moy.fr>`__ and
+`Michael Haggerty <https://github.com/mhagger>`__.
 
 Please note that although a copy of git-multimail is distributed in
 the "contrib" section of the main Git project, development takes place
