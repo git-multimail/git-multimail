@@ -32,7 +32,7 @@ import git_multimail
 from git_multimail import Config
 from git_multimail import GenericEnvironment
 from git_multimail import GitoliteEnvironment
-from git_multimail import addr_header_encode, header_encode
+from git_multimail import addr_header_encode
 
 
 class HelperTest(unittest.TestCase):
