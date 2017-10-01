@@ -23,6 +23,7 @@ def read_readme():
     readme = readme.replace("`<CONTRIBUTING.rst", "`<" + URL + "/blob/master/CONTRIBUTING.rst")
     return readme
 
+
 setup(
     name='git-multimail',
     version=read_version(),

@@ -14,7 +14,8 @@ if PYTHON3:
         return s
 else:
     def u(s):
-        return unicode(s, 'UTF-8')
+        # Don't use unicode directly to avoid a pyflakes3 warning.
+        return __builtins__.unicode(s, 'UTF-8')
 
 try:
     from email.utils import formataddr

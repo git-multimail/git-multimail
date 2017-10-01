@@ -110,11 +110,12 @@ def is_section_empty(section, local):
 
     try:
         read_output(
-            ['git', 'config']
-            + local_option
-            + ['--get-regexp', '^%s\.' % (section,)]
+            ['git', 'config'] +
+            local_option +
+            ['--get-regexp', '^%s\.' % (section,)]
             )
-    except CommandError, e:
+    except CommandError:
+        t, e, traceback = sys.exc_info()
         if e.retcode == 1:
             # This means that no settings were found.
             return True
