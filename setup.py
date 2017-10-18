@@ -17,7 +17,10 @@ def read_version():
 
 
 def read_readme():
-    readme = open(os.path.join('git-multimail', 'README')).read()
+    readme = open(os.path.join('git-multimail', 'README.rst')).read()
+    if hasattr(readme, 'decode'):
+        # In Python 3, turn bytes into str.
+        readme = readme.decode('utf8')
     # Turn relative links into absolute ones
     readme = readme.replace("`<doc/", "`<" + URL + "/blob/master/doc/")
     readme = readme.replace("`<CONTRIBUTING.rst", "`<" + URL + "/blob/master/CONTRIBUTING.rst")
