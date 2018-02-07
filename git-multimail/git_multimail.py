@@ -73,7 +73,7 @@ if sys.version_info <= (2, 5):
         for element in iterable:
             if not element:
                 return False
-            return True
+        return True
 
 
 def is_ascii(s):
