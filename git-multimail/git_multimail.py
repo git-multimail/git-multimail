@@ -2156,6 +2156,11 @@ class SMTPMailer(Mailer):
             if is_string(to_addrs):
                 to_addrs = [email for (name, email) in getaddresses([to_addrs])]
             self.smtp.sendmail(self.envelopesender, to_addrs, msg)
+        except socket.timeout:
+            self.environment.get_logger().error(
+                '*** Error sending email ***\n'
+                '*** SMTP server timed out (timeout is %s)\n'
+                % self.smtpservertimeout)
         except smtplib.SMTPResponseException:
             err = sys.exc_info()[1]
             self.environment.get_logger().error(
