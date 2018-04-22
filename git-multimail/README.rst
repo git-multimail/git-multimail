@@ -373,7 +373,7 @@ multimailhook.mailer
         unset, then the value of multimailhook.from is used.
 
       multimailhook.smtpServerTimeout
-        Timeout in seconds.
+        Timeout in seconds. Default is 10.
 
       multimailhook.smtpEncryption
         Set the security type. Allowed values: ``none``, ``ssl``, ``tls`` (starttls).
