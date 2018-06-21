@@ -3877,7 +3877,7 @@ def build_environment_klass(env_name):
         low_prec_mixin = known_env['lowprec']
         environment_mixins.append(low_prec_mixin)
     environment_mixins.append(Environment)
-    klass_name = env_name.capitalize() + 'Environement'
+    klass_name = env_name.capitalize() + 'Environment'
     environment_klass = type(
         klass_name,
         tuple(environment_mixins),
