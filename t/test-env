@@ -325,6 +325,11 @@ GITOLITE_RC_ENVIRONMENT.update(
     fromaddr='Some Guy <some.guy@example.com>'
     )
 
+GITOLITE_MAP_ENVIRONMENT = GITOLITE_ENVIRONMENT.copy()
+GITOLITE_MAP_ENVIRONMENT.update(
+    fromaddr='Some Guy In Map <some.guy.in.map@example.com>'
+    )
+
 FROM = 'From Fellow <from@example.com>'
 ADMIN = 'Admin Guy <admin@example.com>'
 ENVELOPE = 'Flat Stanley <stanley@example.com>'
@@ -344,6 +349,12 @@ def suite():
     suite.addTest(GitoliteEnvTest('basic gitolite test',
                                   osenv=osenv,
                                   tests=GITOLITE_RC_ENVIRONMENT))
+
+    mailmap_config = {'MailaddressMap': 'user-mailaddress-map'}
+    suite.addTest(GitoliteEnvTest('gitolite test with multimailhook.MailaddressMap',
+                                  osenv=osenv,
+                                  extra_config=mailmap_config,
+                                  tests=GITOLITE_MAP_ENVIRONMENT))
 
     for test in [GenericEnvTest, GitoliteEnvTest]:
         suite.addTests([
