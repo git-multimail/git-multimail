@@ -3194,7 +3194,10 @@ class GitoliteEnvironmentHighPrecMixin(Environment):
         return self.osenv.get('GL_USER', 'unknown user')
 
 
-class GitoliteEnvironmentLowPrecMixin(Environment):
+class GitoliteEnvironmentLowPrecMixin(
+        ConfigEnvironmentMixin,
+        Environment):
+
     def get_repo_shortname(self):
         # The gitolite environment variable $GL_REPO is a pretty good
         # repo_shortname (though it's probably not as good as a value
@@ -3226,6 +3229,36 @@ class GitoliteEnvironmentLowPrecMixin(Environment):
             GL_CONF = self.osenv.get(
                 'GL_CONF',
                 os.path.join(GL_ADMINDIR, 'conf', 'gitolite.conf'))
+
+            mailaddress_map = self.config.get('MailaddressMap')
+            # If relative, consider relative to GL_CONF:
+            if mailaddress_map:
+                mailaddress_map = os.path.join(os.path.dirname(GL_CONF),
+                                               mailaddress_map)
+                if os.path.isfile(mailaddress_map):
+                    f = open(mailaddress_map, 'rU')
+                    try:
+                        # Leading '#' is optional
+                        re_begin, re_user, re_end = self._compile_regex(
+                            r'^(?:\s*#)?\s*%s\s*$')
+                        for l in f:
+                            l = l.rstrip('\n')
+                            if re_begin.match(l) or re_end.match(l):
+                                continue  # Ignore these lines
+                            m = re_user.match(l)
+                            if m:
+                                if m.group(1) == GL_USER:
+                                    return m.group(2)
+                                else:
+                                    continue  # Not this user, but not an error
+                            raise ConfigurationException(
+                                "Syntax error in mail address map.\n"
+                                "Check file {}.\n"
+                                "Line: {}".format(mailaddress_map, l))
+
+                    finally:
+                        f.close()
+
             if os.path.isfile(GL_CONF):
                 f = open(GL_CONF, 'rU')
                 try:

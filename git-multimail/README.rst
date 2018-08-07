@@ -423,8 +423,20 @@ multimailhook.from, multimailhook.fromCommit, multimailhook.fromRefchange
     If config values are unset, the value of the From: header is
     determined as follows:
 
-    1. (gitolite environment only) Parse gitolite.conf, looking for a
-       block of comments that looks like this::
+    1. (gitolite environment only)
+       1.a) If ``multimailhook.MailaddressMap`` is set, and is a path
+       to an existing file (if relative, it is considered relative to
+       the place where ``gitolite.conf`` is located), then this file
+       should contain lines like::
+
+           username Firstname Lastname <email@example.com>
+
+       git-multimail will then look for a line where ``$GL_USER``
+       matches the ``username`` part, and use the rest of the line for
+       the ``From:`` header.
+
+       1.b) Parse gitolite.conf, looking for a block of comments that
+       looks like this::
 
            # BEGIN USER EMAILS
            # username Firstname Lastname <email@example.com>
@@ -439,6 +451,11 @@ multimailhook.from, multimailhook.fromCommit, multimailhook.fromRefchange
        (and the value of user.name, if set).
 
     3. Use the value of multimailhook.envelopeSender.
+
+multimailhook.MailaddressMap
+    (gitolite environment only)
+    File to look for a ``From:`` address based on the user doing the
+    push. Defaults to unset. See ``multimailhook.from`` for details.
 
 multimailhook.administrator
     The name and/or email address of the administrator of the Git
