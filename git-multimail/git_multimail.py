@@ -3204,6 +3204,16 @@ class GitoliteEnvironmentLowPrecMixin(Environment):
             super(GitoliteEnvironmentLowPrecMixin, self).get_repo_shortname()
             )
 
+    @staticmethod
+    def _compile_regex(re_template):
+        return (
+            re.compile(re_template % x)
+            for x in (
+                r'BEGIN\s+USER\s+EMAILS',
+                '([^\s]+)\s+(.*)',
+                r'END\s+USER\s+EMAILS',
+                ))
+
     def get_fromaddr(self, change=None):
         GL_USER = self.osenv.get('GL_USER')
         if GL_USER is not None:
@@ -3220,14 +3230,8 @@ class GitoliteEnvironmentLowPrecMixin(Environment):
                 f = open(GL_CONF, 'rU')
                 try:
                     in_user_emails_section = False
-                    re_template = r'^\s*#\s*%s\s*$'
-                    re_begin, re_user, re_end = (
-                        re.compile(re_template % x)
-                        for x in (
-                            r'BEGIN\s+USER\s+EMAILS',
-                            re.escape(GL_USER) + r'\s+(.*)',
-                            r'END\s+USER\s+EMAILS',
-                            ))
+                    re_begin, re_user, re_end = self._compile_regex(
+                        r'^\s*#\s*%s\s*$')
                     for l in f:
                         l = l.rstrip('\n')
                         if not in_user_emails_section:
@@ -3237,8 +3241,8 @@ class GitoliteEnvironmentLowPrecMixin(Environment):
                         if re_end.match(l):
                             break
                         m = re_user.match(l)
-                        if m:
-                            return m.group(1)
+                        if m and m.group(1) == GL_USER:
+                            return m.group(2)
                 finally:
                     f.close()
         return super(GitoliteEnvironmentLowPrecMixin, self).get_fromaddr(change)
