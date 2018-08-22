@@ -7,6 +7,17 @@ Backward-incompatible change
 The name of classes for environment was misnamed as `*Environement`.
 It is now `*Environment`.
 
+New features
+------------
+
+* A Thread-Index header is now added to each email sent (except for
+  combined emails where it would not make sense), so that MS Outlook
+  properly groups messages by threads even though they have a
+  different subject line. Unfortunately, even adding this header the
+  threading still seems to be unreliable, but it is unclear whether
+  this is an issue on our side or on MS Outlook's side (see discussion
+  here: https://github.com/git-multimail/git-multimail/pull/194).
+
 Internal changes
 ----------------
 
