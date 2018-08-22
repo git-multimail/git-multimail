@@ -11,6 +11,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated
@@ -61,6 +62,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated
@@ -146,6 +148,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/tags/tag-annotated

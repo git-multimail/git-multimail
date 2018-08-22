@@ -65,6 +65,9 @@ except ImportError:
     pass
 import time
 
+import uuid
+import base64
+
 PYTHON3 = sys.version_info >= (3, 0)
 
 if sys.version_info <= (2, 5):
@@ -199,6 +202,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
+Thread-Index: %(thread_index)s
 X-Git-Host: %(fqdn)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -331,6 +335,7 @@ From: %(fromaddr)s
 Reply-To: %(reply_to)s
 In-Reply-To: %(reply_to_msgid)s
 References: %(reply_to_msgid)s
+Thread-Index: %(thread_index)s
 X-Git-Host: %(fqdn)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -2239,6 +2244,11 @@ class Environment(object):
             Return a string that will be prefixed to every email's
             subject.
 
+        get_thread_index()
+
+            Return a string appropriate for the Thread-Index header,
+            needed by MS Outlook to get threading right.
+
         get_pusher()
 
             Return the username of the person who pushed the changes.
@@ -2410,11 +2420,13 @@ class Environment(object):
         self.stdout = False
         self.combine_when_single_commit = True
         self.logger = None
+        self.thread_index = None
 
         self.COMPUTED_KEYS = [
             'administrator',
             'charset',
             'emailprefix',
+            'thread_index',
             'pusher',
             'pusher_email',
             'repo_path',
@@ -2459,6 +2471,13 @@ class Environment(object):
 
     def get_emailprefix(self):
         return ''
+
+    def get_thread_index(self):
+        if self.thread_index:
+            return self.thread_index
+        thread_index = b'\x01\x00\x00\x12\x34\x56' + uuid.uuid4().bytes
+        self.thread_index = base64.standard_b64encode(thread_index).decode('ascii')
+        return self.thread_index
 
     def get_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':

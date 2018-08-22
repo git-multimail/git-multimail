@@ -10,6 +10,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: =?utf-8?q?Stash_S=C3=BBb_Mitter?= <sub.mitter@example.com>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -53,6 +54,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -100,6 +102,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: =?utf-8?q?Stash_Sub_M=C3=AEtter?= <sub.mitter@example.com>
 Reply-To: =?utf-8?q?Stash_Sub_M=C3=AEtter?= <sub.mitter@example.com>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: =?utf-8?q?stash-d=C3=A9mo-project?=
 X-Git-Refname: refs/heads/master
@@ -143,6 +146,7 @@ From: =?utf-8?q?Stash_Sub_M=C3=AEtter?= <sub.mitter@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: =?utf-8?q?stash-d=C3=A9mo-project?=
 X-Git-Refname: refs/heads/master

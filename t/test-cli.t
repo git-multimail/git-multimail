@@ -60,7 +60,7 @@ test_expect_success 'GIT_MULTIMAIL_CHECK_SETUP' "
 	echo some-text | GIT_MULTIMAIL_CHECK_SETUP=true $MULTIMAIL \
 		-c multimailhook.mailingList=list@example.com \
 		-c multimailhook.sendmailCommand=config-sendmail-command \
-		| sed -e 's/\(    \(fqdn\|pusher\|repo_path\) : \).*/\1.../' \
+		| sed -e 's/\(    \(fqdn\|pusher\|repo_path\|thread_index\) : \).*/\1.../' \
 		>actual &&
 	cat <<-EOF >expected &&
 	Environment values:
@@ -72,6 +72,7 @@ test_expect_success 'GIT_MULTIMAIL_CHECK_SETUP' "
 	    pusher : ...
 	    repo_path : ...
 	    repo_shortname : 'test-repo-cli'
+	    thread_index : ...
 
 	Now, checking that git-multimail's standard input is properly set ...
 	Please type some text and then press Return
