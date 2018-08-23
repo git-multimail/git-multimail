@@ -4074,21 +4074,21 @@ class Logger(object):
                 environment, 'git_multimail.error', environment.error_log_file, logging.ERROR)
             self.loggers.append(error_log_file)
 
-    def info(self, msg):
+    def info(self, msg, *args, **kwargs):
         for l in self.loggers:
-            l.info(msg)
+            l.info(msg, *args, **kwargs)
 
-    def debug(self, msg):
+    def debug(self, msg, *args, **kwargs):
         for l in self.loggers:
-            l.debug(msg)
+            l.debug(msg, *args, **kwargs)
 
-    def warning(self, msg):
+    def warning(self, msg, *args, **kwargs):
         for l in self.loggers:
-            l.warning(msg)
+            l.warning(msg, *args, **kwargs)
 
-    def error(self, msg):
+    def error(self, msg, *args, **kwargs):
         for l in self.loggers:
-            l.error(msg)
+            l.error(msg, *args, **kwargs)
 
 
 def main(args):
