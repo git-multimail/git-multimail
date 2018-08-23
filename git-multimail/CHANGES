@@ -7,6 +7,27 @@ Backward-incompatible change
 The name of classes for environment was misnamed as `*Environement`.
 It is now `*Environment`.
 
+Internal changes
+----------------
+
+* The testsuite now uses GIT_PRINT_SHA1_ELLIPSIS where needed for
+  compatibility with recent Git versions. Only tests are affected.
+
+* We don't try to install pyflakes for old Python versions where it's
+  no longer available.
+
+* Stop using the deprecated cgi.escape in Python 3.
+
+* New flake8 warnings have been fixed.
+
+* Python 3.6 is now tested against on Travis-CI.
+
+Bug fixes
+---------
+
+* SMTPMailer logs in only once now. It used to re-login for each email
+  sent which triggered errors for some SMTP servers.
+
 Release 1.4.0
 =============
 
