@@ -4,11 +4,12 @@
 # the next.
 
 perl -pe 'BEGIN{undef $/;}
-s/^(In-Reply-To|Message-ID|References|Date|X-Git-Host|X-Git-Multimail-Version|Subject): \n +/\1: /mg;
-s/^(In-Reply-To|Message-ID|References|Date|X-Git-Host|X-Git-Multimail-Version|Subject): (.*)\n +/\1: \2 /mg;
+s/^(In-Reply-To|Message-ID|References|Date|X-Git-Host|X-Git-Multimail-Version|Subject|Thread-Index): \n +/\1: /mg;
+s/^(In-Reply-To|Message-ID|References|Date|X-Git-Host|X-Git-Multimail-Version|Subject|Thread-Index): (.*)\n +/\1: \2 /mg;
 ' |
 sed \
     -e 's/^\(In-Reply-To\|Message-ID\|References\): <.*>$/\1: <...>/' \
+    -e 's/^\(Thread-Index:\) .*$/\1 <...>/' \
     -e 's/^\(Date\): [^ ].*$/\1: .../' \
     -e "s/^\(X-Git-Host\): `hostname --fqdn`\$/\1: fqdn.example.org/" \
     -e "s/^\(X-Git-Multimail-Version\): $MULTIMAIL_VERSION_QUOTED/\1: .../" \

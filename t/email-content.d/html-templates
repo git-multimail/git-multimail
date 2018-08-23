@@ -11,6 +11,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: name<with>special&chars;.git
 X-Git-Refname: refs/heads/master
@@ -61,6 +62,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: name<with>special&chars;.git
 X-Git-Refname: refs/heads/master
@@ -71,12 +73,12 @@ X-Git-Multimail-Version: ...
 Auto-Submitted: auto-generated
 
 <pre style='margin:0'>
-&lt;span style="color:#808080"&gt;This is an automated email from the git hooks/post-receive script.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;span style=&quot;color:#808080&quot;&gt;This is an automated email from the git hooks/post-receive script.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;
 
 &lt;strong&gt;pushuser&lt;/strong&gt; pushed a commit to branch master
 in repository name&lt;with&gt;special&amp;chars;.git.&lt;br /&gt;
 
-&lt;a href="https://github.com/git-multimail/git-multimail/commit/d245c99162aff6fff4879e5d5c17d454766b45db"&gt;View on GitHub&lt;/a&gt;.
+&lt;a href=&quot;https://github.com/git-multimail/git-multimail/commit/d245c99162aff6fff4879e5d5c17d454766b45db&quot;&gt;View on GitHub&lt;/a&gt;.
 
 </pre>
 <pre style="white-space: pre; background: #F8F8F8"><span style='display:block; white-space:pre;color:#808000;'>commit d245c99162aff6fff4879e5d5c17d454766b45db
@@ -99,9 +101,9 @@ AuthorDate: Fri Feb 3 09:32:27 2012 +0100
 <span style='display:block; white-space:pre;background:#e0ffe0;'>++m1
 </span></pre><pre style='margin:0'>
 &lt;br /&gt;
-&lt;span style="color:#808080"&gt;-- &lt;br /&gt;
+&lt;span style=&quot;color:#808080&quot;&gt;-- &lt;br /&gt;
 To stop receiving notification emails like this one, please contact
-Administrator &lt;administrator@example.com&gt; or &lt;a href="http://example.com"&gt;click here&lt;/a&gt;.
+Administrator &lt;administrator@example.com&gt; or &lt;a href=&quot;http://example.com&quot;&gt;click here&lt;/a&gt;.
 &lt;/span&gt;
 </pre>
 EOF
@@ -118,6 +120,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: name<with>special&chars;.git
 X-Git-Refname: refs/heads/master
@@ -128,12 +131,12 @@ X-Git-Multimail-Version: ...
 Auto-Submitted: auto-generated
 
 <pre style='margin:0'>
-&lt;span style="color:#808080"&gt;This is an automated email from the git hooks/post-receive script.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;span style=&quot;color:#808080&quot;&gt;This is an automated email from the git hooks/post-receive script.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;
 
 &lt;strong&gt;pushuser&lt;/strong&gt; pushed a commit to branch master
 in repository name&lt;with&gt;special&amp;chars;.git.&lt;br /&gt;
 
-&lt;a href="https://github.com/git-multimail/git-multimail/commit/902dfe1c4025851d6b175c8f1efeee9ee1a0b74d"&gt;View on GitHub&lt;/a&gt;.
+&lt;a href=&quot;https://github.com/git-multimail/git-multimail/commit/902dfe1c4025851d6b175c8f1efeee9ee1a0b74d&quot;&gt;View on GitHub&lt;/a&gt;.
 
 </pre>
 <pre style="white-space: pre; background: #F8F8F8"><span style='display:block; white-space:pre;color:#808000;'>commit 902dfe1c4025851d6b175c8f1efeee9ee1a0b74d
@@ -154,9 +157,9 @@ AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 </span><span style='display:block; white-space:pre;background:#e0ffe0;'>+5
 </span></pre><pre style='margin:0'>
 &lt;br /&gt;
-&lt;span style="color:#808080"&gt;-- &lt;br /&gt;
+&lt;span style=&quot;color:#808080&quot;&gt;-- &lt;br /&gt;
 To stop receiving notification emails like this one, please contact
-Administrator &lt;administrator@example.com&gt; or &lt;a href="http://example.com"&gt;click here&lt;/a&gt;.
+Administrator &lt;administrator@example.com&gt; or &lt;a href=&quot;http://example.com&quot;&gt;click here&lt;/a&gt;.
 &lt;/span&gt;
 </pre>
 EOF
@@ -174,6 +177,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: name<with>special&chars;.git
 X-Git-Refname: refs/heads/master
@@ -224,6 +228,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: name<with>special&chars;.git
 X-Git-Refname: refs/heads/master
@@ -260,9 +265,9 @@ AuthorDate: Fri Feb 3 09:32:27 2012 +0100
 <span style='display:block; white-space:pre;background:#e0ffe0;'>++m1
 </span></pre><pre style='margin:0'>
 &lt;br /&gt;
-&lt;span style="color:#808080"&gt;-- &lt;br /&gt;
+&lt;span style=&quot;color:#808080&quot;&gt;-- &lt;br /&gt;
 To stop receiving notification emails like this one, please contact
-Administrator &lt;administrator@example.com&gt; or &lt;a href="http://example.com"&gt;click here&lt;/a&gt;.
+Administrator &lt;administrator@example.com&gt; or &lt;a href=&quot;http://example.com&quot;&gt;click here&lt;/a&gt;.
 &lt;/span&gt;
 </pre>
 EOF
@@ -279,6 +284,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: name<with>special&chars;.git
 X-Git-Refname: refs/heads/master
@@ -313,9 +319,9 @@ AuthorDate: Fri Feb 3 09:32:50 2012 +0100
 </span><span style='display:block; white-space:pre;background:#e0ffe0;'>+5
 </span></pre><pre style='margin:0'>
 &lt;br /&gt;
-&lt;span style="color:#808080"&gt;-- &lt;br /&gt;
+&lt;span style=&quot;color:#808080&quot;&gt;-- &lt;br /&gt;
 To stop receiving notification emails like this one, please contact
-Administrator &lt;administrator@example.com&gt; or &lt;a href="http://example.com"&gt;click here&lt;/a&gt;.
+Administrator &lt;administrator@example.com&gt; or &lt;a href=&quot;http://example.com&quot;&gt;click here&lt;/a&gt;.
 &lt;/span&gt;
 </pre>
 EOF
@@ -333,6 +339,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: name<with>special&chars;.git
 X-Git-Refname: refs/heads/master
@@ -383,6 +390,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: name<with>special&chars;.git
 X-Git-Refname: refs/heads/master
@@ -436,6 +444,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: name<with>special&chars;.git
 X-Git-Refname: refs/heads/master

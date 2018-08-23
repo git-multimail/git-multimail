@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__version__ = '1.4.0'
+__version__ = '1.5.dev'
 
 # Copyright (c) 2015-2016 Matthieu Moy and others
 # Copyright (c) 2012-2014 Michael Haggerty and others
@@ -64,7 +64,9 @@ except ImportError:
     # Python < 2.6 do not have ssl, but that's OK if we don't use it.
     pass
 import time
-import cgi
+
+import uuid
+import base64
 
 PYTHON3 = sys.version_info >= (3, 0)
 
@@ -108,6 +110,12 @@ if PYTHON3:
             return out.decode(sys.getdefaultencoding())
         except UnicodeEncodeError:
             return out.decode(ENCODING)
+
+    import html
+
+    def html_escape(s):
+        return html.escape(s)
+
 else:
     def is_string(s):
         try:
@@ -130,6 +138,10 @@ else:
     def next(it):
         return it.next()
 
+    import cgi
+
+    def html_escape(s):
+        return cgi.escape(s, True)
 
 try:
     from email.charset import Charset
@@ -190,6 +202,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
+Thread-Index: %(thread_index)s
 X-Git-Host: %(fqdn)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -322,6 +335,7 @@ From: %(fromaddr)s
 Reply-To: %(reply_to)s
 In-Reply-To: %(reply_to_msgid)s
 References: %(reply_to_msgid)s
+Thread-Index: %(thread_index)s
 X-Git-Host: %(fqdn)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -852,7 +866,7 @@ class Change(object):
         if html_escape_val:
             for k in values:
                 if is_string(values[k]):
-                    values[k] = cgi.escape(values[k], True)
+                    values[k] = html_escape(values[k])
         for line in template.splitlines(True):
             yield line % values
 
@@ -936,7 +950,7 @@ class Change(object):
             yield "<pre style='margin:0'>\n"
 
             for line in lines:
-                yield cgi.escape(line)
+                yield html_escape(line)
 
             yield '</pre>\n'
         else:
@@ -1011,7 +1025,7 @@ class Change(object):
                     fgcolor = '404040'
 
                 # Chop the trailing LF, we don't want it inside <pre>.
-                line = cgi.escape(line[:-1])
+                line = html_escape(line[:-1])
 
                 if bgcolor or fgcolor:
                     style = 'display:block; white-space:pre;'
@@ -2054,6 +2068,7 @@ class SMTPMailer(Mailer):
         self.username = smtpuser
         self.password = smtppass
         self.smtpcacerts = smtpcacerts
+        self.loggedin = False
         try:
             def call(klass, server, timeout):
                 try:
@@ -2138,12 +2153,19 @@ class SMTPMailer(Mailer):
     def send(self, lines, to_addrs):
         try:
             if self.username or self.password:
-                self.smtp.login(self.username, self.password)
+                if not self.loggedin:
+                    self.smtp.login(self.username, self.password)
+                    self.loggedin = True
             msg = ''.join(lines)
             # turn comma-separated list into Python list if needed.
             if is_string(to_addrs):
                 to_addrs = [email for (name, email) in getaddresses([to_addrs])]
             self.smtp.sendmail(self.envelopesender, to_addrs, msg)
+        except socket.timeout:
+            self.environment.get_logger().error(
+                '*** Error sending email ***\n'
+                '*** SMTP server timed out (timeout is %s)\n'
+                % self.smtpservertimeout)
         except smtplib.SMTPResponseException:
             err = sys.exc_info()[1]
             self.environment.get_logger().error(
@@ -2221,6 +2243,11 @@ class Environment(object):
 
             Return a string that will be prefixed to every email's
             subject.
+
+        get_thread_index()
+
+            Return a string appropriate for the Thread-Index header,
+            needed by MS Outlook to get threading right.
 
         get_pusher()
 
@@ -2393,11 +2420,13 @@ class Environment(object):
         self.stdout = False
         self.combine_when_single_commit = True
         self.logger = None
+        self.thread_index = None
 
         self.COMPUTED_KEYS = [
             'administrator',
             'charset',
             'emailprefix',
+            'thread_index',
             'pusher',
             'pusher_email',
             'repo_path',
@@ -2442,6 +2471,13 @@ class Environment(object):
 
     def get_emailprefix(self):
         return ''
+
+    def get_thread_index(self):
+        if self.thread_index:
+            return self.thread_index
+        thread_index = b'\x01\x00\x00\x12\x34\x56' + uuid.uuid4().bytes
+        self.thread_index = base64.standard_b64encode(thread_index).decode('ascii')
+        return self.thread_index
 
     def get_repo_path(self):
         if read_git_output(['rev-parse', '--is-bare-repository']) == 'true':
@@ -2964,7 +3000,7 @@ class StaticRecipientsEnvironmentMixin(Environment):
 
 
 class CLIRecipientsEnvironmentMixin(Environment):
-    """Mixin storing recipients information comming from the
+    """Mixin storing recipients information coming from the
     command-line."""
 
     def __init__(self, cli_recipients=None, **kw):
@@ -3228,7 +3264,7 @@ class StashEnvironmentHighPrecMixin(Environment):
         self.__repo = repo
 
     def get_pusher(self):
-        return re.match('(.*?)\s*<', self.__user).group(1)
+        return re.match(r'(.*?)\s*<', self.__user).group(1)
 
     def get_pusher_email(self):
         return self.__user
@@ -3262,7 +3298,7 @@ class GerritEnvironmentHighPrecMixin(Environment):
             if self.__submitter.find('<') != -1:
                 # Submitter has a configured email, we transformed
                 # __submitter into an RFC 2822 string already.
-                return re.match('(.*?)\s*<', self.__submitter).group(1)
+                return re.match(r'(.*?)\s*<', self.__submitter).group(1)
             else:
                 # Submitter has no configured email, it's just his name.
                 return self.__submitter
@@ -3860,7 +3896,7 @@ def build_environment_klass(env_name):
         low_prec_mixin = known_env['lowprec']
         environment_mixins.append(low_prec_mixin)
     environment_mixins.append(Environment)
-    klass_name = env_name.capitalize() + 'Environement'
+    klass_name = env_name.capitalize() + 'Environment'
     environment_klass = type(
         klass_name,
         tuple(environment_mixins),
@@ -4233,6 +4269,7 @@ def main(args):
         except:
             sys.stderr.write(msg)
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])

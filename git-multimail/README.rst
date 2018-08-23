@@ -1,5 +1,5 @@
-git-multimail version 1.4.0
-===========================
+git-multimail
+=============
 
 .. image:: https://travis-ci.org/git-multimail/git-multimail.svg?branch=master
     :target: https://travis-ci.org/git-multimail/git-multimail
@@ -20,8 +20,8 @@ GPLv2 (see the COPYING file for details).
 
 Please note: although, as a convenience, git-multimail may be
 distributed along with the main Git project, development of
-git-multimail takes place in its own, separate project.  See section
-"Getting involved" below for more information.
+git-multimail takes place in its own, separate project.  Please, read
+`<CONTRIBUTING.rst>`__ for more information.
 
 
 By default, for each push received by the repository, git-multimail:
@@ -88,6 +88,10 @@ Requirements
   If this is not the case, set multimailhook.sendmailCommand, or see
   the multimailhook.mailer configuration variable below for how to
   configure git-multimail to send emails via an SMTP server.
+
+* git-multimail is currently tested only on Linux. It may or may not
+  work on other platforms such as Windows and Mac OS. See
+  `<CONTRIBUTING.rst>`__ to improve the situation.
 
 
 Invocation
@@ -369,7 +373,7 @@ multimailhook.mailer
         unset, then the value of multimailhook.from is used.
 
       multimailhook.smtpServerTimeout
-        Timeout in seconds.
+        Timeout in seconds. Default is 10.
 
       multimailhook.smtpEncryption
         Set the security type. Allowed values: ``none``, ``ssl``, ``tls`` (starttls).

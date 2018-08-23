@@ -14,6 +14,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -67,6 +68,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -111,6 +113,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -154,6 +157,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -197,6 +201,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -240,6 +245,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -283,6 +289,7 @@ From: From <from@example.com>
 Reply-To: Joe User <user@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -327,6 +334,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
@@ -362,6 +370,7 @@ From: From <from@example.com>
 Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
@@ -396,6 +405,7 @@ From: From <from@example.com>
 Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
@@ -431,6 +441,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
@@ -466,6 +477,7 @@ From: From <from@example.com>
 Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
@@ -500,6 +512,7 @@ From: From <from@example.com>
 Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
@@ -535,6 +548,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: From <from@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
@@ -581,6 +595,7 @@ From: From <from@example.com>
 Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting
@@ -634,6 +649,7 @@ From: From <from@example.com>
 Reply-To: Matthieu Moy <Matthieu.Moy@imag.fr>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/formatting

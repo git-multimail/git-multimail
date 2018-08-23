@@ -94,7 +94,7 @@ rstcheck_file () {
     f=$1
     test_expect_success rstcheck "rstcheck $f" '
 	status=0 &&
-	rstcheck "$D"/../"$f" >rstcheck.out 2>&1 || status=$? &&
+	{ rstcheck "$D"/../"$f" >rstcheck.out 2>&1 || status=$?; } &&
 	cat rstcheck.out &&
 	! test -s rstcheck.out &&
 	return $status
@@ -111,20 +111,20 @@ test_expect_success git "sign-off" '
 '
 
 # Test that each documented variable appears at least once outside
-# comments in the testsuite. It does not give real coverage garantee,
+# comments in the testsuite. It does not give real coverage guarantee,
 # and we have known untested variables in untested-variables.txt, but
 # this should ensure that new variables get a test.
 test_expect_success 'Tests for each configuration variable' '
-	variables=$(grep "^multimailhook." $D/../git-multimail/README |
-		sed "s/, /\n/g" |
-		sed "s/multimailhook\.//") &&
+	grep "^multimailhook." $D/../git-multimail/README.rst >variables-lines.txt &&
+	variables=$(sed "s/, /\n/g" <variables-lines.txt |
+		    sed "s/multimailhook\.//") &&
 	(
 	cd "$D" &&
 	status=0 &&
 	for v in $variables; do
 		if ! git grep -i "^[^#]*$v" >/dev/null
 		then
-			echo "No occurence of documented variable $v in testsuite" &&
+			echo "No occurrence of documented variable $v in testsuite" &&
 			status=1
 		fi
 	done

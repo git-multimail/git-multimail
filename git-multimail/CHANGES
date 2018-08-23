@@ -1,3 +1,12 @@
+Release 1.5.0 (in progress)
+===========================
+
+Backward-incompatible change
+----------------------------
+
+The name of classes for environment was misnamed as `*Environement`.
+It is now `*Environment`.
+
 Release 1.4.0
 =============
 

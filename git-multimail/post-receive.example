@@ -30,7 +30,6 @@ script's behavior could be changed or customized.
 """
 
 import sys
-import os
 
 # If necessary, add the path to the directory containing
 # git_multimail.py to the Python path as follows.  (This is not
