@@ -12,6 +12,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: Joe User <user@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
@@ -58,6 +59,7 @@ From: =?utf-8?q?S=C3=A9bastien?= <sebastien@example.com>
 Reply-To: =?utf-8?q?S=C3=A9bastien?= <sebastien@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
@@ -116,6 +118,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: Joe User <user@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
@@ -162,6 +165,7 @@ From: =?utf-8?q?S=C3=A9bastien?= <sebastien@example.com>
 Reply-To: =?utf-8?q?S=C3=A9bastien?= <sebastien@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
@@ -220,6 +224,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: Joe User <user@example.com>
 Reply-To: pushuser@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=
@@ -266,6 +271,7 @@ From: =?utf-8?q?S=C3=A9bastien?= <sebastien@example.com>
 Reply-To: =?utf-8?q?S=C3=A9bastien?= <sebastien@example.com>
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: =?utf-8?q?refs/heads/m=C3=A2st=C3=A9r?=

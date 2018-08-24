@@ -22,6 +22,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: <...>
 From: from-config@example.com
 Reply-To: reply-to-config@example.com
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -71,6 +72,7 @@ From: from-config@example.com
 Reply-To: reply-to-config@example.com
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master
@@ -121,6 +123,7 @@ From: from-config@example.com
 Reply-To: reply-to-config@example.com
 In-Reply-To: <...>
 References: <...>
+Thread-Index: <...>
 X-Git-Host: fqdn.example.org
 X-Git-Repo: test-repo
 X-Git-Refname: refs/heads/master

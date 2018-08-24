@@ -65,6 +65,9 @@ except ImportError:
     pass
 import time
 
+import uuid
+import base64
+
 PYTHON3 = sys.version_info >= (3, 0)
 
 if sys.version_info <= (2, 5):
@@ -199,6 +202,7 @@ Content-Transfer-Encoding: 8bit
 Message-ID: %(msgid)s
 From: %(fromaddr)s
 Reply-To: %(reply_to)s
+Thread-Index: %(thread_index)s
 X-Git-Host: %(fqdn)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -331,6 +335,7 @@ From: %(fromaddr)s
 Reply-To: %(reply_to)s
 In-Reply-To: %(reply_to_msgid)s
 References: %(reply_to_msgid)s
+Thread-Index: %(thread_index)s
 X-Git-Host: %(fqdn)s
 X-Git-Repo: %(repo_shortname)s
 X-Git-Refname: %(refname)s
@@ -1106,6 +1111,7 @@ class Revision(Change):
         values['short_refname'] = self.reference_change.short_refname
         values['refname_type'] = self.reference_change.refname_type
         values['reply_to_msgid'] = self.reference_change.msgid
+        values['thread_index'] = self.reference_change.thread_index
         values['num'] = self.num
         values['tot'] = self.tot
         values['recipients'] = self.recipients
@@ -1253,6 +1259,23 @@ class ReferenceChange(Change):
             old=old, new=new, rev=rev,
             )
 
+    @staticmethod
+    def make_thread_index():
+        """Return a string appropriate for the Thread-Index header,
+        needed by MS Outlook to get threading right.
+
+        The format is (base64-encoded):
+        - 1 byte must be 1
+        - 5 bytes encode a date (hardcoded here)
+        - 16 bytes for a globally unique identifier
+
+        FIXME: Unfortunately, even with the Thread-Index field, MS
+        Outlook doesn't seem to do the threading reliably (see
+        https://github.com/git-multimail/git-multimail/pull/194).
+        """
+        thread_index = b'\x01\x00\x00\x12\x34\x56' + uuid.uuid4().bytes
+        return base64.standard_b64encode(thread_index).decode('ascii')
+
     def __init__(self, environment, refname, short_refname, old, new, rev):
         Change.__init__(self, environment)
         self.change_type = {
@@ -1266,6 +1289,7 @@ class ReferenceChange(Change):
         self.new = new
         self.rev = rev
         self.msgid = make_msgid()
+        self.thread_index = self.make_thread_index()
         self.diffopts = environment.diffopts
         self.graphopts = environment.graphopts
         self.logopts = environment.logopts
@@ -1285,6 +1309,7 @@ class ReferenceChange(Change):
         values['refname'] = self.refname
         values['short_refname'] = self.short_refname
         values['msgid'] = self.msgid
+        values['thread_index'] = self.thread_index
         values['recipients'] = self.recipients
         values['oldrev'] = str(self.old)
         values['oldrev_short'] = self.old.short
