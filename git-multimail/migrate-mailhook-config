@@ -189,7 +189,9 @@ def migrate_config(strict=False, retain=False, overwrite=False):
             sys.stderr.write(
                 '...copying "%s.%s" to "%s.%s"\n' % (old.section, name, new.section, name)
                 )
-            new.set_recipients(name, old.get_recipients(name))
+            old_recipients = old.get_all(name, default=None)
+            old_recipients = ', '.join(o.strip() for o in old_recipients)
+            new.set_recipients(name, old_recipients)
 
     if strict:
         sys.stderr.write(
