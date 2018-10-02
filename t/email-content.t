@@ -89,6 +89,12 @@ test_email_content 'To/From/Reply-to headers' headers-specific '
 		-c multimailhook.from=from-config@example.com
 '
 
+test_email_content 'excludeMergeRevisions' ignoremerges '
+	MULTIMAIL=$SHARNESS_TEST_DIRECTORY/test_templates.py &&
+	test_update refs/heads/master refs/heads/master^^ \
+		-c multimailhook.excludeMergeRevisions=true
+'
+
 test_email_content 'emailPrefix' emailprefix '
 	verbose_do test_update refs/heads/master refs/heads/master^^ \
 		-c multimailhook.emailPrefix="XXX{%(repo_shortname)s}YYY<%(repo_shortname)s>ZZZ" &&

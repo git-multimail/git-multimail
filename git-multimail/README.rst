@@ -505,6 +505,11 @@ multimailhook.maxCommitEmails
     mailbombing, for example on an initial push.  To disable commit
     emails limit, set this option to 0.  The default is 500.
 
+multimailhook.excludeMergeRevisions
+    When sending out revision emails, do not consider merge commits (the
+    functional equivalent of `rev-list --no-merges`).
+    The default is `false` (send merge commit emails).
+
 multimailhook.emailStrictUTF8
     If this boolean option is set to `true`, then the main part of the
     email body is forced to be valid UTF-8.  Any characters that are

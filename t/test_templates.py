@@ -34,5 +34,6 @@ To stop receiving notification emails like this one, please contact
 git_multimail.REVISION_FOOTER_TEMPLATE = git_multimail.FOOTER_TEMPLATE
 git_multimail.COMBINED_FOOTER_TEMPLATE = git_multimail.FOOTER_TEMPLATE
 
+git_multimail.REVISION_HEADER_TEMPLATE += "X-Git-Parents: %(parents)s\n"
 
 git_multimail.main(sys.argv[1:])

@@ -1074,6 +1074,9 @@ class Revision(Change):
         self.author = read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
         self.recipients = self.environment.get_revision_recipients(self)
 
+        self.parents = read_git_lines(['show', '--no-patch', '--format=%P',
+                                      self.rev.sha1])[0].split()
+
         self.cc_recipients = ''
         if self.environment.get_scancommitforcc():
             self.cc_recipients = ', '.join(to.strip() for to in self._cc_recipients())
@@ -1104,6 +1107,7 @@ class Revision(Change):
             oneline = oneline[:max_subject_length - 6] + ' [...]'
 
         values['rev'] = self.rev.sha1
+        values['parents'] = ' '.join(self.parents)
         values['rev_short'] = self.rev.short
         values['change_type'] = self.change_type
         values['refname'] = self.refname
@@ -2424,6 +2428,7 @@ class Environment(object):
         self.html_in_footer = False
         self.commitBrowseURL = None
         self.maxcommitemails = 500
+        self.excludemergerevisions = False
         self.diffopts = ['--stat', '--summary', '--find-copies-harder']
         self.graphopts = ['--oneline', '--decorate']
         self.logopts = []
@@ -2662,6 +2667,8 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
             self.html_in_footer = html_in_footer
 
         self.commitBrowseURL = config.get('commitBrowseURL')
+
+        self.excludemergerevisions = config.get('excludeMergeRevisions')
 
         maxcommitemails = config.get('maxcommitemails')
         if maxcommitemails is not None:
@@ -3694,6 +3701,9 @@ class Push(object):
 
             for (num, sha1) in enumerate(sha1s):
                 rev = Revision(change, GitObject(sha1), num=num + 1, tot=len(sha1s))
+                if len(rev.parents) > 1 and change.environment.excludemergerevisions:
+                    # skipping a merge commit
+                    continue
                 if not rev.recipients and rev.cc_recipients:
                     change.environment.log_msg('*** Replacing Cc: with To:')
                     rev.recipients = rev.cc_recipients
