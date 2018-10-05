@@ -926,7 +926,7 @@ class Change(object):
 
         raise NotImplementedError()
 
-    def generate_email_body(self):
+    def generate_email_body(self, push):
         """Generate the main part of the email body, a line at a time.
 
         The text in the body might be truncated after a specified
