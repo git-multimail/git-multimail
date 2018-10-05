@@ -2220,7 +2220,8 @@ class OutputMailer(Mailer):
 
     SEPARATOR = '=' * 75 + '\n'
 
-    def __init__(self, f):
+    def __init__(self, f, environment=None):
+        super(OutputMailer, self).__init__(environment=environment)
         self.f = f
 
     def send(self, lines, to_addrs):
@@ -4281,7 +4282,7 @@ def main(args):
             show_env(environment, sys.stderr)
 
         if options.stdout or environment.stdout:
-            mailer = OutputMailer(sys.stdout)
+            mailer = OutputMailer(sys.stdout, environment)
         else:
             mailer = choose_mailer(config, environment)
 
