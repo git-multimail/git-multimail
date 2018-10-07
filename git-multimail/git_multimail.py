@@ -1982,6 +1982,9 @@ class Mailer(object):
     def __init__(self, environment):
         self.environment = environment
 
+    def close(self):
+        pass
+
     def send(self, lines, to_addrs):
         """Send an email consisting of lines.
 
@@ -2172,10 +2175,14 @@ class SMTPMailer(Mailer):
                 % (self.smtpserver, sys.exc_info()[1]))
             sys.exit(1)
 
-    def __del__(self):
+    def close(self):
         if hasattr(self, 'smtp'):
             self.smtp.quit()
             del self.smtp
+
+    def __del__(self):
+        self.close()
+        super(SendMailer, self).__del__()
 
     def send(self, lines, to_addrs):
         try:
@@ -3760,8 +3767,7 @@ def run_as_post_receive_hook(environment, mailer):
     if changes:
         push = Push(environment, changes)
         push.send_emails(mailer, body_filter=environment.filter_body)
-    if hasattr(mailer, '__del__'):
-        mailer.__del__()
+    mailer.close()
 
 
 def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=False):
@@ -3782,8 +3788,7 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=
         ]
     push = Push(environment, changes, force_send)
     push.send_emails(mailer, body_filter=environment.filter_body)
-    if hasattr(mailer, '__del__'):
-        mailer.__del__()
+    mailer.close()
 
 
 def check_ref_filter(environment):
