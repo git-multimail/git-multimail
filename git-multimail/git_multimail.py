@@ -3765,6 +3765,7 @@ def run_as_post_receive_hook(environment, mailer):
             ReferenceChange.create(environment, oldrev, newrev, refname)
             )
     if not changes:
+        mailer.close()
         return
     push = Push(environment, changes)
     try:
@@ -3790,6 +3791,7 @@ def run_as_update_hook(environment, mailer, refname, oldrev, newrev, force_send=
             ),
         ]
     if not changes:
+        mailer.close()
         return
     push = Push(environment, changes, force_send)
     try:
