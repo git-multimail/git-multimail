@@ -3232,7 +3232,7 @@ class GitoliteEnvironmentLowPrecMixin(
             re.compile(re_template % x)
             for x in (
                 r'BEGIN\s+USER\s+EMAILS',
-                '([^\s]+)\s+(.*)',
+                r'([^\s]+)\s+(.*)',
                 r'END\s+USER\s+EMAILS',
                 ))
 
