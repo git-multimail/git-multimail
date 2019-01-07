@@ -2183,7 +2183,6 @@ class SMTPMailer(Mailer):
 
     def __del__(self):
         self.close()
-        super(SendMailer, self).__del__()
 
     def send(self, lines, to_addrs):
         try:
