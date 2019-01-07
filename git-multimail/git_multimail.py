@@ -1077,7 +1077,8 @@ class Revision(Change):
         self.author = read_git_output(['log', '--no-walk', '--format=%aN <%aE>', self.rev.sha1])
         self.recipients = self.environment.get_revision_recipients(self)
 
-        self.parents = read_git_lines(['show', '--no-patch', '--format=%P',
+        # -s is short for --no-patch, but -s works on older git's (e.g. 1.7)
+        self.parents = read_git_lines(['show', '-s', '--format=%P',
                                       self.rev.sha1])[0].split()
 
         self.cc_recipients = ''
