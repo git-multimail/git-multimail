@@ -1,5 +1,5 @@
-git-multimail version 1.5.0
-===========================
+git-multimail
+=============
 
 .. image:: https://travis-ci.org/git-multimail/git-multimail.svg?branch=master
     :target: https://travis-ci.org/git-multimail/git-multimail
