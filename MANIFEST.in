@@ -1,5 +1,5 @@
 include COPYING
-include git-multimail/README
+include git-multimail/README.rst
 include git-multimail/CHANGES
 include git-multimail/README.migrate-from-post-receive-email
 include git-multimail/post-receive.example
