@@ -13,7 +13,7 @@ URL = 'https://github.com/git-multimail/git-multimail'
 def read_version():
     sys.path.insert(0, os.path.join('git-multimail'))
     import git_multimail
-    return git_multimail.__version__
+    return git_multimail.__version__ + "-post1"
 
 
 def read_readme():
