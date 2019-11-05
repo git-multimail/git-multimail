@@ -2955,9 +2955,19 @@ class ComputeFQDNEnvironmentMixin(FQDNEnvironmentMixin):
 
     def __init__(self, **kw):
         super(ComputeFQDNEnvironmentMixin, self).__init__(
-            fqdn=socket.getfqdn(),
+            fqdn=self.get_fqdn(),
             **kw
             )
+
+    def get_fqdn(self):
+        fqdn = socket.getfqdn()
+        # Sometimes, socket.getfqdn() returns localhost or
+        # localhost.localhost, which isn't very helpful. In this case,
+        # fall-back to socket.gethostname() which may return an actual
+        # hostname.
+        if fqdn == 'localhost' or fqdn == 'localhost.localdomain':
+            fqdn = socket.gethostname()
+        return fqdn
 
 
 class PusherDomainEnvironmentMixin(ConfigEnvironmentMixin):

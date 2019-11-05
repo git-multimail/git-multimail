@@ -1,7 +1,12 @@
 Release 1.6.0 (In progress)
 ===========================
 
+Bug fixes
+---------
 
+* On setups where Python's ``socket.getfqdn()`` returns ``localhost``
+  or ``localhost.localdomain``, git-multimail now sets the FQDN
+  according to ``socket.gethostname()``.
 
 Release 1.5.0
 =============
