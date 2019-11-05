@@ -1,6 +1,10 @@
 Release 1.6.0 (In progress)
 ===========================
 
+* Support for Python 2.6, 3.2 and 3.3 are dropped, as they are no
+  longer available on Travis-CI. git-multimail probably still works
+  with these versions, but they are not tested anymore.
+
 Bug fixes
 ---------
 
