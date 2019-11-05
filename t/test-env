@@ -142,11 +142,11 @@ class ConfigTest(unittest.TestCase):
                                   'announcelist': None})
         cm = git_multimail.ConfigRecipientsEnvironmentMixin(config)
         # Specificied explicitly => comma-separated value of given emails
-        self.assertEquals(cm.get_refchange_recipients(None), 'one@example.com, two@example.com')
+        self.assertEqual(cm.get_refchange_recipients(None), 'one@example.com, two@example.com')
         # Not specified => fall back to commitlist
-        self.assertEquals(cm.get_announce_recipients(None), 'one@example.com, two@example.com')
+        self.assertEqual(cm.get_announce_recipients(None), 'one@example.com, two@example.com')
         # Empty string specified => result empty
-        self.assertEquals(cm.get_revision_recipients(None), '')
+        self.assertEqual(cm.get_revision_recipients(None), '')
 
     def test_get_recipients_none(self):
         """Test get_recipients()'s handling of 'none' special value"""
@@ -158,9 +158,9 @@ class ConfigTest(unittest.TestCase):
         cm = git_multimail.ConfigRecipientsEnvironmentMixin(config)
 
         # 'none' string specified => result empty
-        self.assertEquals(cm.get_revision_recipients(None), '')
+        self.assertEqual(cm.get_revision_recipients(None), '')
         # But only single 'none' works this way
-        self.assertEquals(cm.get_refchange_recipients(None), 'none, two@example.com')
+        self.assertEqual(cm.get_refchange_recipients(None), 'none, two@example.com')
 
 
 class EnvTest(unittest.TestCase):
@@ -232,7 +232,7 @@ class EnvTest(unittest.TestCase):
                         % (name, values[name],)
                         )
             else:
-                self.assertEquals(
+                self.assertEqual(
                     values[name], value,
                     'value for %s: %r != %r' % (name, values[name], value,)
                     )
