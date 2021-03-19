@@ -11,12 +11,12 @@ as a Python module into another script.
 
 git-multimail is derived from the Git project's old
 contrib/hooks/post-receive-email, and is mostly compatible with that
-script.  See README.migrate-from-post-receive-email for details about
+script.  See `README.migrate-from-post-receive-email <git-multimail/README.migrate-from-post-receive-email>`__ for details about
 the differences and for how to migrate from post-receive-email to
 git-multimail.
 
 git-multimail, like the rest of the Git project, is licensed under
-GPLv2 (see the COPYING file for details).
+GPLv2 (see the `<COPYING>`__ file for details).
 
 Please note: although, as a convenience, git-multimail may be
 distributed along with the main Git project, development of
