@@ -2637,7 +2637,7 @@ class ConfigOptionsEnvironmentMixin(ConfigEnvironmentMixin):
     @staticmethod
     def forbid_field_values(name, value, forbidden):
         for forbidden_val in forbidden:
-            if value is not None and value.lower() == forbidden:
+            if value is not None and value.lower() == forbidden_val:
                 raise ConfigurationException(
                     '"%s" is not an allowed setting for %s' % (value, name)
                     )
