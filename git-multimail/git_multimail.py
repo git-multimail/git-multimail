@@ -2154,7 +2154,7 @@ class SMTPMailer(Mailer):
                 if not hasattr(self.smtp.sock, "read"):
                     # using httplib.FakeSocket with Python 2.5.x or earlier
                     self.smtp.sock.read = self.smtp.sock.recv
-                self.smtp.file = smtplib.SSLFakeFile(self.smtp.sock)
+                self.smtp.file = self.smtp.sock.makefile('rb')
                 self.smtp.helo_resp = None
                 self.smtp.ehlo_resp = None
                 self.smtp.esmtp_features = {}
