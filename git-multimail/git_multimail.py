@@ -2194,7 +2194,7 @@ class SMTPMailer(Mailer):
             # turn comma-separated list into Python list if needed.
             if is_string(to_addrs):
                 to_addrs = [email for (name, email) in getaddresses([to_addrs])]
-            self.smtp.sendmail(self.envelopesender, to_addrs, msg)
+            self.smtp.sendmail(self.envelopesender, to_addrs, msg.encode('utf8'))
         except socket.timeout:
             self.environment.get_logger().error(
                 '*** Error sending email ***\n'
