@@ -95,6 +95,9 @@ rstcheck_file () {
     test_expect_success rstcheck "rstcheck $f" '
 	status=0 &&
 	{ rstcheck "$D"/../"$f" >rstcheck.out 2>&1 || status=$?; } &&
+	if grep -qFx "Success! No issues detected." rstcheck.out; then
+		return 0;
+	fi &&
 	cat rstcheck.out &&
 	! test -s rstcheck.out &&
 	return $status
