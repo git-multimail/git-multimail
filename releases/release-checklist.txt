@@ -28,7 +28,9 @@ commit message)
 
 * release on pypi::
 
- python setup.py sdist upload -r pypi
+ rm -fr dist/
+ python setup.py sdist
+ twine upload -r pypi dist/*
 
 After a stable release:
 
