@@ -1,8 +1,5 @@
 At each release:
 
-* In git.git, check for changes and possibly backport them:
-  git log contrib/hooks/multimail
-
 * Test with various versions of Python and Git, add "This version has
   been tested with Python ... and Git ..." to CHANGES.
 
