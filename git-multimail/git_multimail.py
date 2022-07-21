@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 
-__version__ = '1.6.dev'
+__version__ = '1.6.0'
 
-# Copyright (c) 2015-2021 Matthieu Moy and others
+# Copyright (c) 2015-2022 Matthieu Moy and others
 # Copyright (c) 2012-2014 Michael Haggerty and others
 # Derived from contrib/hooks/post-receive-email, which is
 # Copyright (c) 2007 Andy Parkins
