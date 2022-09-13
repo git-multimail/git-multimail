@@ -1,8 +1,8 @@
 git-multimail
 =============
 
-.. image:: https://travis-ci.org/git-multimail/git-multimail.svg?branch=master
-    :target: https://travis-ci.org/git-multimail/git-multimail
+.. image:: https://github.com/git-multimail/git-multimail/workflows/main/badge.svg
+    :target: https://github.com/git-multimail/git-multimail/actions
 
 git-multimail is a tool for sending notification emails on pushes to a
 Git repository.  It includes a Python module called ``git_multimail.py``,
