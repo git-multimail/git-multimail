@@ -109,10 +109,6 @@ rstcheck_file doc/gitolite.rst
 rstcheck_file doc/gerrit.rst
 rstcheck_file t/README.rst
 
-test_expect_success git "sign-off" '
-    "$D"/check-sign-off
-'
-
 # Test that each documented variable appears at least once outside
 # comments in the testsuite. It does not give real coverage guarantee,
 # and we have known untested variables in untested-variables.txt, but
