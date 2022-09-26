@@ -82,8 +82,11 @@ test_expect_success 'Simple but verbose git-multimail run' '
 # probably keep ignoring it forever.
 pycodestyle_file () {
     f=$1
+	# W504 is line break after binary operator, which didn't exist when most
+	# code was written. Ideally we should fix the code rather than ignore the
+	# warning, but that's OK for now.
     test_expect_success pycodestyle "pycodestyle $f" '
-	pycodestyle "$D"/../"$f" --ignore=E402,E123,E741,E722 --max-line-length=99
+	pycodestyle "$D"/../"$f" --ignore=E402,E123,E741,E722,W504 --max-line-length=99
     '
 }
 pycodestyle_file git-multimail/git_multimail.py
