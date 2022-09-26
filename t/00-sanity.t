@@ -7,7 +7,7 @@ D=$SHARNESS_TEST_DIRECTORY
 
 for c in \
     python \
-    pep8 \
+    pycodestyle \
     git \
     rstcheck \
     pyflakes pyflakes3 \
@@ -80,15 +80,15 @@ test_expect_success 'Simple but verbose git-multimail run' '
 # E123: closing bracket does not match indentation of opening bracket's line
 # => not raised on all pep8 version, and really constraining. We can
 # probably keep ignoring it forever.
-pep8_file () {
+pycodestyle_file () {
     f=$1
-    test_expect_success pep8 "pep8 $f" '
-	pep8 "$D"/../"$f" --ignore=E402,E123 --max-line-length=99
+    test_expect_success pycodestyle "pycodestyle $f" '
+	pycodestyle "$D"/../"$f" --ignore=E402,E123,E741,E722 --max-line-length=99
     '
 }
-pep8_file git-multimail/git_multimail.py
-pep8_file t/test-env
-pep8_file setup.py
+pycodestyle_file git-multimail/git_multimail.py
+pycodestyle_file t/test-env
+pycodestyle_file setup.py
 
 rstcheck_file () {
     f=$1
