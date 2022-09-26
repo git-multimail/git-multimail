@@ -1,6 +1,15 @@
 Release 1.7.0
 =============
 
+* Support for Python 3.4 is dropped, as it is not available on GitHub actions.
+  git-multimail most likely still works, but is untested on this version.
+
+Internal changes
+----------------
+
+* The CI system migrated to GitHub actions.
+
+* Use pycodestyle instead of pep8. It's the same tool, but the name changed.
 
 Release 1.6.0
 =============
