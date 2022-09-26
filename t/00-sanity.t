@@ -33,7 +33,7 @@ do
     if test "$ver" = unavailable
     then
 	case "$c" in
-	    pep8|rstcheck)
+	    pycodestyle|rstcheck)
 		log "#   (please install it with e.g. 'pip install ${c}' to allow sanity checks)"
 		;;
 	    *)
