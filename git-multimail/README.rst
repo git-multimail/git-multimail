@@ -194,6 +194,17 @@ multimailhook.environment
       For more information about gerrit and git-multimail, read
       `<doc/gerrit.rst>`__
 
+    gitea
+      Environment to use when ``git-multimail`` is ran as Gitea_ or
+      Forgejo_ ``post-receive`` hook.
+
+      This environment is detected automatically, and so doesn't need
+      to be explicitly specified, normally. Just copy, or link,
+      ``git_multimail.py`` to ``hooks/post-receive.d`` subdirectory of
+      of the repository directory (e.g.
+      ``/var/lib/forgejo/data/forgejo-repositories/org/repo.git``).
+
+
     If none of these environments is suitable for your setup, then you
     can implement a Python class that inherits from Environment and
     instantiate it via a script that looks like the example
@@ -772,3 +783,7 @@ Footnotes
        emails.
 
 .. _gitolite: https://github.com/sitaramc/gitolite
+
+.. _Gitea: https://about.gitea.com/
+
+.. _Forgejo: https://forgejo.org/

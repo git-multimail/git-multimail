@@ -3424,6 +3424,25 @@ class GerritEnvironmentLowPrecMixin(Environment):
             return super(GerritEnvironmentLowPrecMixin, self).get_fromaddr(change)
 
 
+class GiteaEnvironmentHighPrecMixin(Environment):
+    def get_pusher(self):
+        return self.osenv.get('GITEA_PUSHER_NAME', 'unknown user')
+
+    def get_pusher_email(self):
+        return self.osenv.get('GITEA_PUSHER_EMAIL')
+
+
+class GiteaEnvironmentLowPrecMixin(Environment):
+    def get_repo_shortname(self):
+        return self.osenv.get('GITEA_REPO_NAME', 'unknown repository')
+
+    def get_fromaddr(self, change=None):
+        # GITEA_PUSHER_NAME doesn't include the full name, just the user name
+        # at Gitea level, so it doesn't seem useful to use it and there
+        # doesn't seem to be any simple way to get it from Gitea neither.
+        return self.osenv.get('GITEA_PUSHER_EMAIL')
+
+
 class Push(object):
     """Represent an entire push (i.e., a group of ReferenceChanges).
 
@@ -3923,6 +3942,8 @@ KNOWN_ENVIRONMENTS = {
               'lowprec': StashEnvironmentLowPrecMixin},
     'gerrit': {'highprec': GerritEnvironmentHighPrecMixin,
                'lowprec': GerritEnvironmentLowPrecMixin},
+    'gitea': {'highprec': GiteaEnvironmentHighPrecMixin,
+              'lowprec': GiteaEnvironmentLowPrecMixin},
     }
 
 
@@ -3945,6 +3966,8 @@ def choose_environment_name(config, env, osenv):
     if not env:
         if 'GL_USER' in osenv and 'GL_REPO' in osenv:
             env = 'gitolite'
+        elif 'GITEA_PUSHER_NAME' in osenv and 'GITEA_REPO_NAME' in osenv:
+            env = 'gitea'
         else:
             env = 'generic'
     return env
@@ -3987,6 +4010,7 @@ def build_environment_klass(env_name):
     return environment_klass
 
 
+GiteaEnvironment = build_environment_klass('gitea')
 GerritEnvironment = build_environment_klass('gerrit')
 StashEnvironment = build_environment_klass('stash')
 GitoliteEnvironment = build_environment_klass('gitolite')
