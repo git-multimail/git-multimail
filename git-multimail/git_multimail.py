@@ -3425,11 +3425,19 @@ class GerritEnvironmentLowPrecMixin(Environment):
 
 
 class GiteaEnvironmentHighPrecMixin(Environment):
+
+    def __init__(self, **kw):
+        super(GiteaEnvironmentHighPrecMixin, self).__init__(**kw)
+        self.COMPUTED_KEYS += ['repo_user_name']
+
     def get_pusher(self):
         return self.osenv.get('GITEA_PUSHER_NAME', 'unknown user')
 
     def get_pusher_email(self):
         return self.osenv.get('GITEA_PUSHER_EMAIL')
+
+    def get_repo_user_name(self):
+        return self.osenv.get('GITEA_REPO_USER_NAME')
 
 
 class GiteaEnvironmentLowPrecMixin(Environment):
