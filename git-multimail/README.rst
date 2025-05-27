@@ -197,6 +197,9 @@ multimailhook.environment
     gitea
       Environment to use when ``git-multimail`` is ran as Gitea_ or
       Forgejo_ ``post-receive`` hook.
+      
+      The ``%(repo_user_name)s`` placeholder is available to obtain
+      the Forgejo or Gitea organization or user name of the repository.
 
       This environment is detected automatically, and so doesn't need
       to be explicitly specified, normally. Just copy, or link,
