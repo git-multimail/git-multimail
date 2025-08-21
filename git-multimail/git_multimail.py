@@ -3264,7 +3264,10 @@ class GitoliteEnvironmentLowPrecMixin(
                 mailaddress_map = os.path.join(os.path.dirname(GL_CONF),
                                                mailaddress_map)
                 if os.path.isfile(mailaddress_map):
-                    f = open(mailaddress_map, 'rU')
+                    if sys.version_info >= (3,4):
+                        f = open(mailaddress_map, 'r')
+                    else:
+                        f = open(mailaddress_map, 'rU')
                     try:
                         # Leading '#' is optional
                         re_begin, re_user, re_end = self._compile_regex(
@@ -3288,7 +3291,10 @@ class GitoliteEnvironmentLowPrecMixin(
                         f.close()
 
             if os.path.isfile(GL_CONF):
-                f = open(GL_CONF, 'rU')
+                if sys.version_info >= (3,4):
+                    f = open(GL_CONF, 'r')
+                else:
+                    f = open(GL_CONF, 'rU')
                 try:
                     in_user_emails_section = False
                     re_begin, re_user, re_end = self._compile_regex(
